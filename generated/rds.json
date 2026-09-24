@@ -1,0 +1,947 @@
+[
+  {
+    "id": "rds-multi-az:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "rds-multi-az"
+    ],
+    "prompt": "RDS マルチ AZ（スタンバイ 1 台）の目的は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AZ 障害時に自動でフェイルオーバーする高可用性",
+        "correct": true,
+        "atomId": "rds-multi-az",
+        "why": "同期レプリケーションのスタンバイに自動で切り替わる"
+      },
+      {
+        "id": "b",
+        "text": "読み取りのクエリを複数の DB に分散する",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "リードレプリカの目的。マルチ AZ のスタンバイは読み取りに使えない"
+      },
+      {
+        "id": "c",
+        "text": "DB への接続をプールして再利用する",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "RDS Proxy の目的"
+      },
+      {
+        "id": "d",
+        "text": "別リージョンに 1 秒未満でデータを複製する",
+        "correct": false,
+        "atomId": "rds-aurora-global-database",
+        "why": "Aurora グローバルデータベースの目的"
+      }
+    ],
+    "explanation": "マルチ AZ = 可用性（読めないスタンバイ）、リードレプリカ = 読み取り性能。",
+    "keywords": [
+      "高可用性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-multi-az"
+    ],
+    "prompt": "本番の RDS for MySQL を、AZ の障害時にもデータを失わずに自動で復旧させたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチ AZ 配置",
+        "correct": true,
+        "atomId": "rds-multi-az",
+        "why": "同期レプリケーションなのでデータを失わず、自動でフェイルオーバーする"
+      },
+      {
+        "id": "b",
+        "text": "同じリージョンのリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "非同期で、自動フェイルオーバーもしない"
+      },
+      {
+        "id": "c",
+        "text": "毎日の手動スナップショット",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "復元に時間がかかり、最後のスナップショット以降のデータを失う"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "フェイルオーバーは速くなるが、それだけではスタンバイがない"
+      }
+    ],
+    "explanation": "「AZ 障害」「自動」「データを失わない」= マルチ AZ。",
+    "keywords": [
+      "AZ の障害",
+      "自動で復旧"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "rds-multi-az",
+      "rds-read-replica"
+    ],
+    "prompt": "RDS のマルチ AZ とリードレプリカの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は同期で読めないスタンバイ、後者は非同期で読める複製",
+        "correct": true,
+        "why": "可用性ならマルチ AZ、読み取り性能ならリードレプリカ。併用もできる"
+      },
+      {
+        "id": "b",
+        "text": "前者は非同期で読める複製、後者は同期で読めないスタンバイ",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は別リージョン専用、後者は同じ AZ 専用",
+        "correct": false,
+        "why": "マルチ AZ は同じリージョンの別 AZ、リードレプリカは別リージョンにも作れる"
+      },
+      {
+        "id": "d",
+        "text": "どちらも自動フェイルオーバーし、読み取りにも使える",
+        "correct": false,
+        "why": "自動フェイルオーバーはマルチ AZ、読み取りはリードレプリカ"
+      }
+    ],
+    "explanation": "企画書の典型例。「同期・可用性・読めない」と「非同期・性能・読める」。",
+    "keywords": [
+      "同期",
+      "非同期"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-multi-az"
+    ],
+    "prompt": "読み取りのクエリが多く DB が重いので、マルチ AZ を有効にした。改善しないのはなぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチ AZ のスタンバイは読み取りに使えないから",
+        "correct": true,
+        "atomId": "rds-multi-az",
+        "why": "読み取りの負荷分散にはリードレプリカを使う"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ にすると書き込みが止まるから",
+        "correct": false,
+        "why": "書き込みは止まらない"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ はストレージを半分にするから",
+        "correct": false,
+        "why": "ストレージは減らない"
+      },
+      {
+        "id": "d",
+        "text": "マルチ AZ は MySQL で使えないから",
+        "correct": false,
+        "why": "MySQL でも使える"
+      }
+    ],
+    "explanation": "「読み取りが重い」にマルチ AZ は効かない。",
+    "keywords": [
+      "読み取りのクエリが多く"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-read-replica:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-read-replica"
+    ],
+    "prompt": "本番 DB で、夜間のレポート作成の重い読み取りクエリがアプリの性能を落としている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リードレプリカを作り、レポートはそちらで実行する",
+        "correct": true,
+        "atomId": "rds-read-replica",
+        "why": "読み取りの負荷を本番のプライマリから逃がせる"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ を有効にする",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイは読み取りに使えない"
+      },
+      {
+        "id": "c",
+        "text": "ストレージの自動スケーリングを有効にする",
+        "correct": false,
+        "atomId": "rds-storage-autoscaling",
+        "why": "容量は増えるが、読み取りの負荷は減らない"
+      },
+      {
+        "id": "d",
+        "text": "手動スナップショットを毎晩取る",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "バックアップで、負荷の分散にはならない"
+      }
+    ],
+    "explanation": "読み取り負荷の分離 = リードレプリカ。",
+    "keywords": [
+      "重い読み取り",
+      "レポート"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-read-replica:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-read-replica"
+    ],
+    "prompt": "書き込み直後の最新の残高を、必ずリードレプリカから読むようにした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "非同期なので、最新の書き込みがまだ届いていないことがある",
+        "correct": true,
+        "atomId": "rds-read-replica",
+        "why": "最新の値が必須の読み取りはプライマリから行う"
+      },
+      {
+        "id": "b",
+        "text": "リードレプリカは 1 日 1 回しか更新されない",
+        "correct": false,
+        "why": "継続的に複製されるが、非同期"
+      },
+      {
+        "id": "c",
+        "text": "リードレプリカからは SELECT できない",
+        "correct": false,
+        "why": "読み取りはできる"
+      },
+      {
+        "id": "d",
+        "text": "リードレプリカは別リージョンにしか作れない",
+        "correct": false,
+        "why": "同じリージョンにも作れる"
+      }
+    ],
+    "explanation": "リードレプリカは非同期。レプリケーションの遅延を考える。",
+    "keywords": [
+      "書き込み直後",
+      "必ず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-read-replica:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-read-replica"
+    ],
+    "prompt": "東京の RDS のデータを、米国のユーザーにも低レイテンシで読ませたい。災害時には米国側を独立した DB にしたい。RDS のまま実現するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "米国リージョンにクロスリージョンリードレプリカを作る",
+        "correct": true,
+        "atomId": "rds-read-replica",
+        "why": "米国で読み取りに使え、災害時には昇格させて独立した DB にできる"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ で米国の AZ にスタンバイを置く",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "マルチ AZ は同じリージョン内の別 AZ"
+      },
+      {
+        "id": "c",
+        "text": "RDS Proxy を米国に置く",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールで、データの複製はしない"
+      },
+      {
+        "id": "d",
+        "text": "毎日スナップショットを米国にコピーするだけ",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "米国のユーザーの読み取りには使えない"
+      }
+    ],
+    "explanation": "リードレプリカは別リージョンにも作れ、昇格できる。より短い遅延・速い切り替えなら Aurora グローバルデータベース。",
+    "keywords": [
+      "米国",
+      "昇格"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-proxy:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-proxy"
+    ],
+    "prompt": "多数の Lambda 関数が同時に RDS に接続し、too many connections エラーが出る。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS Proxy で接続をプールする",
+        "correct": true,
+        "atomId": "rds-proxy",
+        "why": "接続を共有・再利用して、DB の接続数の枯渇を防ぐ"
+      },
+      {
+        "id": "b",
+        "text": "リードレプリカを追加する",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "読み取りは分散できるが、接続の急増の根本対策にならない"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ を有効にする",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "接続数の問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "DB のストレージ容量を増やす",
+        "correct": false,
+        "atomId": "rds-storage-autoscaling",
+        "why": "接続数とは関係がない"
+      }
+    ],
+    "explanation": "Lambda + RDS + 接続数 = RDS Proxy。",
+    "keywords": [
+      "Lambda",
+      "too many connections"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-proxy:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "rds-proxy"
+    ],
+    "prompt": "「接続のプール」「Lambda から RDS」「フェイルオーバーを短く」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS Proxy",
+        "correct": true,
+        "atomId": "rds-proxy",
+        "why": "接続を再利用し、フェイルオーバーの時間も短くする"
+      },
+      {
+        "id": "b",
+        "text": "RDS リードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "読み取りの分散"
+      },
+      {
+        "id": "c",
+        "text": "RDS マルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイによる高可用性"
+      },
+      {
+        "id": "d",
+        "text": "Aurora Serverless v2",
+        "correct": false,
+        "atomId": "rds-aurora-serverless",
+        "why": "容量の自動スケーリング"
+      }
+    ],
+    "explanation": "接続の問題 → RDS Proxy。",
+    "keywords": [
+      "接続のプール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-automated-backups:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-automated-backups"
+    ],
+    "prompt": "今日の 14:32 に誤って重要なテーブルを削除した。14:31 の状態に戻したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "自動バックアップのポイントインタイムリカバリ",
+        "correct": true,
+        "atomId": "rds-automated-backups",
+        "why": "保持期間内の任意の時点を指定して、新しい DB として復元できる"
+      },
+      {
+        "id": "b",
+        "text": "昨日取った手動スナップショット",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "昨日の時点にしか戻れず、今日の変更が失われる"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ のスタンバイに切り替える",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイにも削除が同期されている"
+      },
+      {
+        "id": "d",
+        "text": "リードレプリカを昇格させる",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "削除がレプリカにも複製されている"
+      }
+    ],
+    "explanation": "「任意の時点」= 自動バックアップのポイントインタイムリカバリ。",
+    "keywords": [
+      "誤って削除",
+      "14:31"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-automated-backups:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "rds-automated-backups"
+    ],
+    "prompt": "RDS の自動バックアップの最大の保持期間は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "35 日",
+        "correct": true,
+        "atomId": "rds-automated-backups",
+        "why": "それより長く保管するなら手動スナップショットや AWS Backup を使う"
+      },
+      {
+        "id": "b",
+        "text": "7 日",
+        "correct": false,
+        "why": "デフォルトの保持期間として使われることがあるが、最大ではない"
+      },
+      {
+        "id": "c",
+        "text": "90 日",
+        "correct": false,
+        "why": "最大は 35 日"
+      },
+      {
+        "id": "d",
+        "text": "無期限",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "無期限に残るのは手動スナップショット"
+      }
+    ],
+    "explanation": "自動バックアップ = 最大 35 日。",
+    "keywords": [
+      "35 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-automated-backups:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "rds-automated-backups",
+      "rds-snapshots"
+    ],
+    "prompt": "自動バックアップと手動スナップショットの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は任意の時点に戻せるが最大 35 日、後者は削除まで残る",
+        "correct": true,
+        "why": "長期保管や別リージョンへのコピーは手動スナップショット"
+      },
+      {
+        "id": "b",
+        "text": "前者は無期限に残り、後者は 35 日で消える",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は別リージョンにコピーでき、後者はできない",
+        "correct": false,
+        "why": "手動スナップショットは別リージョンにコピーできる"
+      },
+      {
+        "id": "d",
+        "text": "前者は DB を止めないと取れず、後者は止めずに取れる",
+        "correct": false,
+        "why": "どちらも DB を止めずに取得できる"
+      }
+    ],
+    "explanation": "期間内の任意の時点 = 自動バックアップ、長期・コピー・共有 = スナップショット。",
+    "keywords": [
+      "任意の時点",
+      "長期"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-snapshots:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-snapshots"
+    ],
+    "prompt": "規制で、DB のバックアップを 7 年間保管し、別リージョンにも置く必要がある。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "手動スナップショットを別リージョンにコピー",
+        "correct": true,
+        "atomId": "rds-snapshots",
+        "why": "手動スナップショットは削除するまで残り、別リージョンにコピーできる"
+      },
+      {
+        "id": "b",
+        "text": "自動バックアップの保持期間を 7 年にする",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "自動バックアップは最大 35 日"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ を有効にする",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "バックアップではなく、長期保管にもならない"
+      },
+      {
+        "id": "d",
+        "text": "リードレプリカを 7 年間動かし続ける",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "バックアップの代わりにならず、誤操作も複製される"
+      }
+    ],
+    "explanation": "長期保管 + 別リージョン = 手動スナップショットのコピー（AWS Backup でも自動化できる）。",
+    "keywords": [
+      "7 年間",
+      "別リージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-encryption:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-encryption"
+    ],
+    "prompt": "暗号化されていない本番の RDS を、暗号化されたものにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スナップショットを暗号化コピーして復元する",
+        "correct": true,
+        "atomId": "rds-encryption",
+        "why": "既存の DB に直接暗号化を有効にはできないので、暗号化したスナップショットから新しい DB を作る"
+      },
+      {
+        "id": "b",
+        "text": "稼働中の DB の設定で暗号化を有効にする",
+        "correct": false,
+        "why": "作成後の DB に、直接暗号化を有効にすることはできない"
+      },
+      {
+        "id": "c",
+        "text": "暗号化したリードレプリカを作って昇格させる",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "暗号化されていない DB から、暗号化されたリードレプリカは作れない"
+      },
+      {
+        "id": "d",
+        "text": "マルチ AZ を有効にすると暗号化される",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "マルチ AZ は暗号化とは関係がない"
+      }
+    ],
+    "explanation": "RDS の暗号化は作成時。既存 DB はスナップショット → 暗号化コピー → 復元。",
+    "keywords": [
+      "暗号化されていない",
+      "既存"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "rds-aurora"
+    ],
+    "prompt": "Amazon Aurora のストレージの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "3 つの AZ に 6 つのコピーを持ち、自動で拡張する",
+        "correct": true,
+        "atomId": "rds-aurora",
+        "why": "ストレージのレベルで高い耐久性と可用性を持つ"
+      },
+      {
+        "id": "b",
+        "text": "1 つの AZ にだけ保存し、コストを下げている",
+        "correct": false,
+        "why": "Aurora のストレージは 3 AZ に分散している"
+      },
+      {
+        "id": "c",
+        "text": "容量を事前に決め、手動で拡張する",
+        "correct": false,
+        "atomId": "rds-storage-autoscaling",
+        "why": "Aurora のストレージは自動で拡張する"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスストアを使い、停止すると消える",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "インスタンスストアの説明"
+      }
+    ],
+    "explanation": "Aurora = 3 AZ × 2 = 6 コピー、最大 15 レプリカ。",
+    "keywords": [
+      "6 つのコピー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora"
+    ],
+    "prompt": "MySQL 互換の DB で、読み取りレプリカを 10 台以上作り、障害時はレプリカに自動で切り替えたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Aurora（MySQL 互換）",
+        "correct": true,
+        "atomId": "rds-aurora",
+        "why": "最大 15 台のレプリカを作れ、プライマリの障害時はレプリカに自動でフェイルオーバーする"
+      },
+      {
+        "id": "b",
+        "text": "RDS for MySQL のマルチ AZ（スタンバイ 1 台）",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイは読み取りに使えない"
+      },
+      {
+        "id": "c",
+        "text": "RDS for MySQL の手動スナップショット",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "バックアップで、レプリカにはならない"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールで、レプリカは作らない"
+      }
+    ],
+    "explanation": "多数のレプリカ + 自動フェイルオーバー = Aurora。",
+    "keywords": [
+      "10 台以上",
+      "自動で切り替え"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-global-database:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-global-database"
+    ],
+    "prompt": "リージョン全体の障害でも、RPO 1 秒程度・RTO 1 分程度で DB を別リージョンに切り替えたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora グローバルデータベース",
+        "correct": true,
+        "atomId": "rds-aurora-global-database",
+        "why": "リージョン間の遅延が通常 1 秒未満で、セカンダリの昇格も速い"
+      },
+      {
+        "id": "b",
+        "text": "RDS のマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "同じリージョン内の別 AZ で、リージョン障害には対応できない"
+      },
+      {
+        "id": "c",
+        "text": "毎日のスナップショットを別リージョンにコピー",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "最大 1 日分のデータを失い、復元にも時間がかかる"
+      },
+      {
+        "id": "d",
+        "text": "同じリージョンのリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "リージョン障害には対応できない"
+      }
+    ],
+    "explanation": "リージョン障害 + 秒単位の RPO + 分単位の RTO = Aurora グローバルデータベース。",
+    "keywords": [
+      "リージョン全体の障害",
+      "RPO 1 秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-global-database:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-global-database",
+      "rds-read-replica"
+    ],
+    "prompt": "Aurora グローバルデータベースを、クロスリージョンリードレプリカより選ぶべきなのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リージョン間の遅延と切り替え時間を最小にしたいとき",
+        "correct": true,
+        "atomId": "rds-aurora-global-database",
+        "why": "専用のレプリケーションで遅延が 1 秒未満、リージョン障害時の昇格も速い"
+      },
+      {
+        "id": "b",
+        "text": "1 つのリージョン内の AZ 障害だけに備えたいとき",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "マルチ AZ で足りる"
+      },
+      {
+        "id": "c",
+        "text": "DB への接続数の上限が問題になっているとき",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "RDS Proxy の用途"
+      },
+      {
+        "id": "d",
+        "text": "MySQL 以外の商用 DB エンジンを使いたいとき",
+        "correct": false,
+        "why": "Aurora は MySQL と PostgreSQL 互換"
+      }
+    ],
+    "explanation": "リージョンをまたぐ DR と世界中の読み取り → Aurora グローバルデータベース。",
+    "keywords": [
+      "リージョン間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-serverless:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-serverless"
+    ],
+    "prompt": "新しいアプリの DB は、負荷が時間帯で大きく変わり、今後の負荷も予測できない。容量の管理もしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora Serverless v2",
+        "correct": true,
+        "atomId": "rds-aurora-serverless",
+        "why": "負荷に応じて容量を自動で細かく増減させる"
+      },
+      {
+        "id": "b",
+        "text": "最大の負荷に合わせた大きな RDS インスタンス",
+        "correct": false,
+        "why": "負荷が低い時間帯も大きなインスタンスの料金を払うことになる"
+      },
+      {
+        "id": "c",
+        "text": "RDS のマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "可用性の仕組みで、容量は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールで、容量は変わらない"
+      }
+    ],
+    "explanation": "「負荷が変動」「予測できない」「容量を管理したくない」= Aurora Serverless v2。",
+    "keywords": [
+      "予測できない",
+      "容量の管理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-storage-autoscaling:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-storage-autoscaling"
+    ],
+    "prompt": "RDS のデータ量の増え方が予測できず、ストレージ不足で止まるのが心配。ダウンタイムなしで対応したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS ストレージの自動スケーリング",
+        "correct": true,
+        "atomId": "rds-storage-autoscaling",
+        "why": "空き容量が少なくなると、自動でストレージを拡張する"
+      },
+      {
+        "id": "b",
+        "text": "リードレプリカを追加する",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "プライマリのストレージ不足は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールで、容量とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "手動スナップショットを毎日取る",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "バックアップで、容量不足は防げない"
+      }
+    ],
+    "explanation": "ストレージの自動拡張 = ストレージの自動スケーリング。",
+    "keywords": [
+      "ストレージ不足"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "rds-multi-az",
+      "rds-read-replica",
+      "rds-proxy"
+    ],
+    "prompt": "EC サイトの DB（RDS for PostgreSQL）で、次の問題がある。\n・AZ の障害時に DB が止まり、手動で復旧している\n・商品検索の読み取りクエリが多く、プライマリの CPU が高い\n・Lambda からの大量の接続で、接続数の上限に達することがある\n最も適切な対策の組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチ AZ + リードレプリカ + RDS Proxy",
+        "correct": true,
+        "atomId": "rds-multi-az",
+        "why": "自動フェイルオーバー、読み取りの分散、接続のプールをそれぞれ解決する"
+      },
+      {
+        "id": "b",
+        "text": "リードレプリカを 3 台追加するだけ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "自動フェイルオーバーと接続数の問題が解決しない"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ + ストレージの自動スケーリング",
+        "correct": false,
+        "atomId": "rds-storage-autoscaling",
+        "why": "読み取りの負荷と接続数の問題が解決しない"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスを最大サイズにし、スナップショットを毎時取る",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "コストが高く、自動フェイルオーバーも接続のプールもない"
+      }
+    ],
+    "explanation": "問題ごとに対策を当てる。可用性 → マルチ AZ、読み取り → リードレプリカ、接続 → RDS Proxy。",
+    "keywords": [
+      "AZ の障害",
+      "読み取り",
+      "接続数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

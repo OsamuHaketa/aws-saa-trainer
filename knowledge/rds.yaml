@@ -1,0 +1,239 @@
+# RDS / Aurora Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: rds
+
+atoms:
+  # --- 可用性とスケーリング ------------------------------------------------------
+
+  - id: rds-multi-az
+    category: availability
+    concept: RDS マルチ AZ（スタンバイ）
+    summary: 別の AZ に同期レプリケーションのスタンバイを置き、障害時に自動でフェイルオーバーする
+    facts:
+      - 別の AZ にスタンバイを置き、同期的にデータを複製する
+      - プライマリの障害時に、自動でスタンバイへフェイルオーバーする（エンドポイントは変わらない）
+      - スタンバイ（1 台のスタンバイ構成）は読み取りに使えない
+      - 目的は高可用性で、読み取り性能の向上ではない
+    triggers:
+      - DB の高可用性
+      - AZ の障害時に自動でフェイルオーバー
+      - データを失わずに切り替えたい
+    pitfalls:
+      - 読み取りの負荷分散のためにマルチ AZ を有効にしても、スタンバイは読み取りに使えない
+    relations:
+      - type: confused_with
+        target: rds-read-replica
+        distinction: マルチ AZ は同期レプリケーションの高可用性のためのスタンバイで、読み取りには使えない。リードレプリカは非同期レプリケーションで読み取りを分散するためのもので、自動フェイルオーバーはしない
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html
+
+  - id: rds-read-replica
+    category: availability
+    concept: RDS リードレプリカ
+    summary: 非同期レプリケーションで読み取り専用のコピーを作り、読み取りの負荷を分散する
+    facts:
+      - 非同期レプリケーションで、読み取り専用の DB インスタンスを作る
+      - アプリの読み取りをリードレプリカに振り分けて、プライマリの負荷を減らす
+      - 別のリージョンにも作れる（クロスリージョンリードレプリカ）
+      - 手動で昇格させて、独立した DB にできる
+    triggers:
+      - 読み取りのクエリが多く、DB が重い
+      - レポート処理の負荷を本番 DB から逃がしたい
+      - 別のリージョンに読み取り用の DB を置きたい
+    pitfalls:
+      - 非同期なので、プライマリへの書き込みがすぐには反映されないことがある
+      - 自動フェイルオーバーの仕組みではない
+    relations: []
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
+
+  - id: rds-proxy
+    category: availability
+    concept: RDS Proxy
+    summary: DB への接続をプールして共有し、大量の接続やフェイルオーバーに強くする
+    facts:
+      - アプリと DB の間で、接続をプールして再利用する
+      - Lambda のように大量の短い接続を作るアプリで、DB の接続数の枯渇を防ぐ
+      - フェイルオーバーの時間を短くする
+      - Secrets Manager や IAM 認証と連携できる
+    triggers:
+      - Lambda から RDS に接続すると、接続数が上限に達する
+      - too many connections
+      - フェイルオーバーを速くしたい
+    pitfalls:
+      - 読み取りの負荷そのものを減らしたい場合は、リードレプリカやキャッシュを使う
+    relations:
+      - type: confused_with
+        target: rds-read-replica
+        distinction: RDS Proxy は接続の数を減らして再利用する。リードレプリカは読み取りのクエリそのものを別の DB に分散する
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html
+
+  - id: rds-storage-autoscaling
+    category: availability
+    concept: RDS ストレージの自動スケーリング
+    summary: 空き容量が少なくなると、ダウンタイムなしで自動的にストレージを増やす
+    facts:
+      - 空き容量が少なくなると、自動でストレージを拡張する
+      - 拡張の上限（最大ストレージ）を設定できる
+      - ストレージの増加量が予測できないデータベースに向く
+    triggers:
+      - データ量の増加が予測できない
+      - ストレージ不足で DB が止まるのを防ぎたい
+    pitfalls:
+      - インスタンスクラス（CPU やメモリ）は自動では大きくならない
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html
+
+  # --- バックアップ・暗号化 -------------------------------------------------------
+
+  - id: rds-automated-backups
+    category: backup
+    concept: RDS 自動バックアップ
+    summary: 毎日のバックアップとトランザクションログで、保持期間内の任意の時点に復元できる
+    facts:
+      - 毎日の自動バックアップとトランザクションログを保存する
+      - 保持期間（最大 35 日）の中の任意の時点に復元できる（ポイントインタイムリカバリ）
+      - 復元すると、新しい DB インスタンスが作られる
+      - DB を削除すると、自動バックアップも削除される（最終スナップショットは残せる）
+    triggers:
+      - 誤ったデータ更新の直前に戻したい
+      - 任意の時点に復元したい
+    pitfalls:
+      - 35 日より長くバックアップを保管したい場合は、手動スナップショットや AWS Backup を使う
+    relations:
+      - type: confused_with
+        target: rds-snapshots
+        distinction: 自動バックアップは最大 35 日の保持期間内の任意の時点に戻せる。手動スナップショットは取得した時点だけに戻せるが、削除するまで無期限に残る
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html
+
+  - id: rds-snapshots
+    category: backup
+    concept: RDS 手動スナップショット
+    summary: 任意のタイミングで取得し、削除するまで残るバックアップ。別リージョンにコピーできる
+    facts:
+      - 自分で削除するまで、無期限に保管される
+      - 別のリージョンにコピーできる（災害対策）
+      - 別のアカウントと共有できる
+      - スナップショットから、新しい DB インスタンスを復元する
+    triggers:
+      - バックアップを長期間保管したい
+      - 別のリージョンにバックアップを置きたい
+      - 大きな変更の前にバックアップを取る
+    pitfalls:
+      - スナップショットの時点にしか戻れず、その後の変更は失われる
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateSnapshot.html
+
+  - id: rds-encryption
+    category: backup
+    concept: RDS の暗号化
+    summary: KMS の鍵で保存時に暗号化する。暗号化は作成時に決め、既存の DB はスナップショット経由で暗号化する
+    facts:
+      - KMS の鍵で、ストレージ、自動バックアップ、スナップショット、リードレプリカを暗号化する
+      - 暗号化は DB の作成時に有効にする
+      - 暗号化されていない既存の DB は、スナップショットを暗号化してコピーし、そこから復元して暗号化する
+      - 転送中の暗号化には SSL/TLS を使う
+    triggers:
+      - 既存の暗号化されていない DB を暗号化したい
+      - DB の保存時の暗号化
+    pitfalls:
+      - 稼働中の暗号化されていない DB に、あとから暗号化を直接有効にすることはできない
+    relations:
+      - type: used_with
+        target: rds-snapshots
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html
+
+  # --- Aurora ------------------------------------------------------------------
+
+  - id: rds-aurora
+    category: database
+    concept: Amazon Aurora
+    summary: MySQL・PostgreSQL 互換の高性能なデータベース。3 つの AZ に 6 つのコピーを持つ
+    facts:
+      - MySQL と PostgreSQL に互換性がある
+      - ストレージは 3 つの AZ に 6 つのコピーを持ち、自動で拡張する
+      - 最大 15 台の Aurora レプリカを作れ、プライマリの障害時はレプリカに自動でフェイルオーバーする
+      - 読み取りはリーダーエンドポイントで、レプリカに分散できる
+    triggers:
+      - MySQL 互換で高い可用性と性能が必要
+      - 読み取りレプリカを多く作りたい
+      - ストレージの管理をしたくない
+    pitfalls:
+      - 小規模で可用性の要件が低いシステムには、通常の RDS の方が安いことがある
+    relations: []
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html
+
+  - id: rds-aurora-global-database
+    category: database
+    concept: Aurora グローバルデータベース
+    summary: 1 つのプライマリリージョンから、最大 5 つのセカンダリリージョンへ低遅延でレプリケーションする
+    facts:
+      - リージョン間のレプリケーションの遅延は通常 1 秒未満
+      - セカンダリリージョンは読み取りに使え、世界中のユーザーに低レイテンシで読み取らせられる
+      - リージョン障害時は、セカンダリリージョンを昇格させて短時間で復旧できる
+    triggers:
+      - リージョン障害でも短い RPO・RTO で復旧したい
+      - 世界中のユーザーに低レイテンシで読み取らせたい
+    pitfalls:
+      - 1 つのリージョン内の高可用性だけが必要なら、通常の Aurora のマルチ AZ 構成で足りる
+    relations:
+      - type: confused_with
+        target: rds-read-replica
+        distinction: クロスリージョンのリードレプリカは非同期で、遅延や昇格の手間がある。Aurora グローバルデータベースは専用のレプリケーションで遅延が 1 秒未満、リージョン障害時の切り替えも速い
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html
+
+  - id: rds-aurora-serverless
+    category: database
+    concept: Aurora Serverless v2
+    summary: 負荷に応じて DB の容量を自動で細かく増減させる
+    facts:
+      - 負荷に応じて、DB の容量（ACU）を自動で細かく増減させる
+      - 使用量が大きく変動する、または予測できないワークロードに向く
+      - 容量の見積もりやインスタンスサイズの変更が不要になる
+    triggers:
+      - DB の負荷が大きく変動する
+      - 負荷が予測できない新しいアプリ
+      - 容量の管理をしたくない
+    pitfalls:
+      - 常に一定の高い負荷がかかるなら、プロビジョンドのインスタンスの方が安いことがある
+    relations: []
+    examDomains: [cost, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html
