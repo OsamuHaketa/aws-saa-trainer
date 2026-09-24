@@ -1,0 +1,326 @@
+# VPC Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: vpc
+
+atoms:
+  # --- ネットワークの基本 --------------------------------------------------------
+
+  - id: vpc-subnet
+    category: networking
+    concept: サブネット（パブリック / プライベート）
+    summary: VPC を分割した IP アドレス範囲。1 つの AZ に属し、ルートテーブルでパブリックかプライベートかが決まる
+    facts:
+      - サブネットは 1 つの AZ に属する
+      - インターネットゲートウェイへのルートがあるサブネットがパブリックサブネット、ないものがプライベートサブネット
+      - 高可用性のためには、複数の AZ にサブネットを作ってリソースを分散する
+      - 各サブネットで 5 つの IP アドレスが AWS に予約される
+    triggers:
+      - インターネットから直接アクセスさせたくないサーバー
+      - Web 層はパブリック、DB 層はプライベート
+    pitfalls:
+      - DB サーバーをパブリックサブネットに置くと、インターネットからの攻撃対象になりうる
+    relations:
+      - type: used_with
+        target: vpc-route-table
+    examDomains: [secure, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html
+
+  - id: vpc-internet-gateway
+    category: networking
+    concept: インターネットゲートウェイ（IGW）
+    summary: VPC とインターネットの間の双方向の通信を可能にする
+    facts:
+      - VPC に 1 つアタッチし、インターネットとの通信の出入口になる
+      - 冗長化されていて、可用性や帯域の管理は不要
+      - インスタンスがインターネットと通信するには、パブリック IP アドレスと IGW へのルートが必要
+    triggers:
+      - インターネットから VPC 内のサーバーにアクセスさせたい
+      - パブリックサブネットを作る
+    pitfalls:
+      - プライベートサブネットから外に出るだけなら、IGW への直接のルートではなく NAT ゲートウェイを使う
+    relations:
+      - type: confused_with
+        target: vpc-nat-gateway
+        distinction: IGW はインターネットとの双方向の通信の出入口。NAT ゲートウェイはプライベートサブネットからの外向きの通信だけを許し、外からの接続は受け付けない
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html
+
+  - id: vpc-nat-gateway
+    category: networking
+    concept: NAT ゲートウェイ
+    summary: プライベートサブネットのインスタンスが、外からの接続は受けずにインターネットへ出られるようにする
+    facts:
+      - パブリックサブネットに置き、Elastic IP アドレスを付ける
+      - プライベートサブネットからインターネットへの外向きの通信を可能にし、外から始まる接続は受け付けない
+      - AZ ごとのリソースなので、高可用性のためには AZ ごとに作る
+      - マネージドサービスで、時間単位の料金と処理したデータ量の料金がかかる
+    triggers:
+      - プライベートサブネットからパッチを取得したい
+      - 外からは接続させずに、外へは出たい
+    pitfalls:
+      - 1 つの AZ にだけ NAT ゲートウェイを置くと、その AZ の障害で全 AZ のプライベートサブネットが外に出られなくなる
+      - S3 や DynamoDB への大量の通信を NAT 経由にすると、データ処理料金がかさむ（ゲートウェイエンドポイントを使う）
+    relations: []
+    examDomains: [secure, resilient, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
+
+  - id: vpc-route-table
+    category: networking
+    concept: ルートテーブル
+    summary: サブネットからの通信をどこへ送るかを決めるルールの集まり
+    facts:
+      - 各サブネットは 1 つのルートテーブルに関連付けられる
+      - 宛先に最も具体的に一致するルート（最長一致）が使われる
+      - IGW、NAT ゲートウェイ、ピアリング、Transit Gateway、ゲートウェイエンドポイントなどへのルートを書く
+    triggers:
+      - 通信の経路を決める
+      - パブリックサブネットにする
+    pitfalls:
+      - VPC ピアリングを作っても、ルートテーブルにルートを追加しないと通信できない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html
+
+  - id: vpc-egress-only-igw
+    category: networking
+    concept: Egress-Only インターネットゲートウェイ
+    summary: IPv6 で、VPC からインターネットへの外向きの通信だけを許可する
+    facts:
+      - IPv6 用のゲートウェイ
+      - VPC からインターネットへの外向きの通信を許可し、外から始まる接続は受け付けない
+      - IPv6 には NAT がないため、その代わりに使う
+    triggers:
+      - IPv6 で外向きの通信だけを許可したい
+    pitfalls:
+      - IPv6 の通信には NAT ゲートウェイは使えない
+    relations:
+      - type: confused_with
+        target: vpc-nat-gateway
+        distinction: NAT ゲートウェイは IPv4 のプライベートサブネットから外に出るためのもの。Egress-Only IGW は IPv6 で外向きの通信だけを許すためのもの
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html
+
+  # --- アクセス制御 -------------------------------------------------------------
+
+  - id: vpc-security-group
+    category: access-control
+    concept: セキュリティグループ
+    summary: インスタンス（ENI）単位のステートフルな仮想ファイアウォール。許可ルールだけを書く
+    facts:
+      - インスタンス（ENI）単位で適用する
+      - ステートフルで、許可した通信の戻りは自動で許可される
+      - 許可ルールだけを書け、拒否ルールは書けない
+      - 送信元として、他のセキュリティグループを指定できる
+    triggers:
+      - インスタンス単位で通信を制御
+      - Web 層のセキュリティグループからの通信だけを DB で許可
+    pitfalls:
+      - 特定の IP アドレスを明示的に拒否したい場合は、セキュリティグループではできない（NACL を使う）
+    relations:
+      - type: confused_with
+        target: vpc-nacl
+        distinction: セキュリティグループはインスタンス単位・ステートフル・許可のみ。NACL はサブネット単位・ステートレス・許可と拒否の両方を書け、番号の小さいルールから評価する
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html
+
+  - id: vpc-nacl
+    category: access-control
+    concept: ネットワーク ACL（NACL）
+    summary: サブネット単位のステートレスなファイアウォール。許可と拒否の両方を書ける
+    facts:
+      - サブネット単位で適用する
+      - ステートレスで、戻りの通信も明示的に許可する必要がある（エフェメラルポートなど）
+      - 許可ルールと拒否ルールの両方を書ける
+      - ルール番号の小さい順に評価し、最初に一致したルールを適用する
+    triggers:
+      - 特定の IP アドレスからのアクセスをブロックしたい
+      - サブネット全体で通信を拒否したい
+    pitfalls:
+      - 戻りの通信（エフェメラルポート）を許可し忘れると、通信が成立しない
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html
+
+  - id: vpc-flow-logs
+    category: access-control
+    concept: VPC フローログ
+    summary: VPC、サブネット、ENI を流れる IP 通信の情報を記録する
+    facts:
+      - VPC、サブネット、ENI の単位で、通信の送信元・宛先・ポート・許可/拒否などを記録する
+      - CloudWatch Logs、S3、Data Firehose に送れる
+      - パケットの中身は記録しない
+      - セキュリティグループや NACL の設定の問題の調査に使う
+    triggers:
+      - どこからの通信が拒否されているか調べたい
+      - ネットワークの通信を監査したい
+    pitfalls:
+      - 通信の中身（ペイロード）の分析には使えない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html
+
+  - id: vpc-bastion-host
+    category: access-control
+    concept: 踏み台サーバー（Bastion Host）
+    summary: パブリックサブネットに置き、プライベートサブネットのサーバーへの SSH の入口にする
+    facts:
+      - パブリックサブネットに置いて、そこからプライベートサブネットのインスタンスへ接続する
+      - 踏み台のセキュリティグループは、接続元の IP アドレスを限定して SSH を許可する
+      - Systems Manager Session Manager を使うと、踏み台も受信ポートの開放も不要になる
+    triggers:
+      - プライベートサブネットのサーバーに SSH したい
+    pitfalls:
+      - 踏み台の SSH を 0.0.0.0/0 に開放すると、攻撃を受けやすい
+    relations: []
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html
+
+  # --- 接続 ---------------------------------------------------------------------
+
+  - id: vpc-peering
+    category: connectivity
+    concept: VPC ピアリング
+    summary: 2 つの VPC を 1 対 1 でプライベートに接続する。推移的なルーティングはできない
+    facts:
+      - 2 つの VPC を 1 対 1 で接続する（別アカウント、別リージョンでもよい）
+      - 推移的ではない（A-B と B-C を接続しても、A から C へは通信できない）
+      - CIDR が重複している VPC 同士は接続できない
+      - 両方のルートテーブルにルートを追加する必要がある
+    triggers:
+      - 2 つの VPC をつなぎたい
+      - 少数の VPC 間の通信
+    pitfalls:
+      - 多数の VPC をピアリングで網目状につなぐと、接続とルートの管理が爆発的に増える
+    relations:
+      - type: confused_with
+        target: vpc-transit-gateway
+        distinction: ピアリングは 2 つの VPC の 1 対 1 の接続で、推移的ではない。Transit Gateway はハブとして多数の VPC とオンプレミスをつなぎ、推移的なルーティングができる
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html
+
+  - id: vpc-transit-gateway
+    category: connectivity
+    concept: Transit Gateway
+    summary: 多数の VPC とオンプレミスをハブ＆スポーク型でつなぐリージョンのハブ
+    facts:
+      - 多数の VPC、VPN、Direct Connect を 1 つのハブにつなぐ
+      - ハブ経由で推移的にルーティングできる
+      - 別のリージョンの Transit Gateway とピアリングできる
+      - 接続ごとと、処理したデータ量に料金がかかる
+    triggers:
+      - 数十〜数百の VPC を相互につなぎたい
+      - VPC とオンプレミスをまとめてつなぎたい
+      - ピアリングの管理が複雑になった
+    pitfalls:
+      - 2 つの VPC をつなぐだけなら、ピアリングの方が簡単で安い
+    relations: []
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html
+
+  - id: vpc-privatelink
+    category: connectivity
+    concept: AWS PrivateLink（エンドポイントサービス）
+    summary: 自分の VPC のサービスを、ピアリングなしで他の VPC にプライベートに公開する
+    facts:
+      - サービスを NLB の背後に置き、エンドポイントサービスとして公開する
+      - 利用側はインターフェイスエンドポイントで接続する
+      - 利用側から提供側への一方向の接続で、VPC 全体はつながらない
+      - VPC の CIDR が重複していても使える
+    triggers:
+      - 自社のサービスを多数の顧客の VPC に公開したい
+      - VPC 全体ではなく、特定のサービスだけを公開したい
+      - CIDR が重複している
+    pitfalls:
+      - VPC 全体を双方向につなぐ必要がある場合には向かない
+    relations:
+      - type: confused_with
+        target: vpc-peering
+        distinction: ピアリングは VPC 全体を双方向につなぎ、CIDR の重複は不可。PrivateLink は特定のサービスだけを一方向に公開し、CIDR が重複していてもよい
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html
+
+  - id: vpc-site-to-site-vpn
+    category: connectivity
+    concept: Site-to-Site VPN
+    summary: インターネット上の IPsec トンネルで、オンプレミスと VPC を暗号化してつなぐ
+    facts:
+      - インターネット経由の IPsec で暗号化された接続
+      - AWS 側は仮想プライベートゲートウェイか Transit Gateway、オンプレミス側はカスタマーゲートウェイを使う
+      - 冗長化のため、1 つの接続に 2 本のトンネルがある
+      - すぐに使い始められるが、帯域やレイテンシはインターネットの状況に左右される
+    triggers:
+      - すぐにオンプレミスと接続したい
+      - 暗号化された接続を安く作りたい
+      - Direct Connect のバックアップ
+    pitfalls:
+      - 安定した帯域や一定のレイテンシが必要な場合は、Direct Connect を使う
+    relations:
+      - type: confused_with
+        target: vpc-direct-connect
+        distinction: VPN はインターネット経由で、すぐに作れて安いが、品質はインターネット次第。Direct Connect は専用線で、帯域とレイテンシが安定するが、開通までに時間がかかり、そのままでは暗号化されない
+    examDomains: [secure, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html
+
+  - id: vpc-direct-connect
+    category: connectivity
+    concept: AWS Direct Connect
+    summary: オンプレミスと AWS を専用線でつなぎ、安定した帯域と低いレイテンシを得る
+    facts:
+      - インターネットを経由しない専用の接続
+      - 帯域が大きく、レイテンシが安定する
+      - 開通までに数週間以上かかることがある
+      - そのままでは暗号化されない（VPN を重ねる、MACsec を使うなどで暗号化する）
+      - 高可用性のためには、複数の接続にするか、VPN をバックアップにする
+    triggers:
+      - 大量のデータを安定して転送したい
+      - 一定のレイテンシが必要
+      - インターネットを経由したくない
+    pitfalls:
+      - 1 本の Direct Connect だけでは、その回線の障害で接続が切れる
+      - 来週までに接続が必要、など急ぎの場合は間に合わないことがある（まず VPN を使う）
+    relations: []
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html

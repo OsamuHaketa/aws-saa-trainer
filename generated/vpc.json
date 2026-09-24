@@ -1,0 +1,1335 @@
+[
+  {
+    "id": "vpc-subnet:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "vpc-subnet"
+    ],
+    "prompt": "パブリックサブネットとプライベートサブネットを分けるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ルートテーブルに IGW へのルートがあるかどうか",
+        "correct": true,
+        "atomId": "vpc-subnet",
+        "why": "IGW へのルートがあればパブリック、なければプライベート"
+      },
+      {
+        "id": "b",
+        "text": "サブネットに付けたセキュリティグループの種類",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "セキュリティグループはインスタンス単位で、サブネットの種類は決めない"
+      },
+      {
+        "id": "c",
+        "text": "サブネットが属している AZ の違い",
+        "correct": false,
+        "why": "AZ はパブリック/プライベートとは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "サブネットの CIDR のサイズの違い",
+        "correct": false,
+        "why": "CIDR の大きさとは関係がない"
+      }
+    ],
+    "explanation": "パブリックかどうかは「IGW へのルート」で決まる。",
+    "keywords": [
+      "IGW へのルート"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-subnet:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-subnet"
+    ],
+    "prompt": "3 層の Web アプリを作る。DB はインターネットから直接アクセスされないようにしたい。DB をどこに置く？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベートサブネット",
+        "correct": true,
+        "atomId": "vpc-subnet",
+        "why": "IGW へのルートがなく、インターネットから直接到達できない"
+      },
+      {
+        "id": "b",
+        "text": "パブリックサブネット",
+        "correct": false,
+        "why": "インターネットから到達できる場所になる"
+      },
+      {
+        "id": "c",
+        "text": "IGW に直接アタッチする",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "IGW はインスタンスを置く場所ではない"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイと同じサブネット",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイはパブリックサブネットに置くので、DB の置き場所には向かない"
+      }
+    ],
+    "explanation": "Web 層（ALB）はパブリック、アプリ層と DB 層はプライベートが基本。",
+    "keywords": [
+      "DB",
+      "直接アクセスされない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-subnet:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "vpc-subnet"
+    ],
+    "prompt": "/24 のサブネット（256 個の IP アドレス）で、インスタンスに割り当てられる IP アドレスは最大いくつ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "251 個",
+        "correct": true,
+        "atomId": "vpc-subnet",
+        "why": "各サブネットで 5 つの IP アドレスが AWS に予約される"
+      },
+      {
+        "id": "b",
+        "text": "256 個",
+        "correct": false,
+        "why": "予約される 5 つは使えない"
+      },
+      {
+        "id": "c",
+        "text": "254 個",
+        "correct": false,
+        "why": "一般的なネットワークの計算だが、AWS は 5 つ予約する"
+      },
+      {
+        "id": "d",
+        "text": "128 個",
+        "correct": false,
+        "why": "/24 の半分ではない"
+      }
+    ],
+    "explanation": "サブネットの予約 IP は 5 つ（先頭の 4 つと最後の 1 つ）。",
+    "keywords": [
+      "5 つ予約"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-subnet:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "vpc-subnet"
+    ],
+    "prompt": "高可用性が求められる Web アプリの EC2 を、すべて 1 つのサブネットに置いた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サブネットは 1 つの AZ なので、AZ 障害で全台止まる",
+        "correct": true,
+        "atomId": "vpc-subnet",
+        "why": "複数の AZ のサブネットに分散して配置する"
+      },
+      {
+        "id": "b",
+        "text": "1 つのサブネットには 2 台までしか置けない",
+        "correct": false,
+        "why": "そのような制限はない"
+      },
+      {
+        "id": "c",
+        "text": "1 つのサブネットではセキュリティグループを使えない",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "1 つのサブネットではインターネットに出られない",
+        "correct": false,
+        "why": "ルートテーブル次第で出られる"
+      }
+    ],
+    "explanation": "サブネット = 1 AZ。高可用性には複数 AZ のサブネット。",
+    "keywords": [
+      "高可用性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nat-gateway:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-nat-gateway"
+    ],
+    "prompt": "プライベートサブネットの EC2 から、OS のアップデートをインターネットから取得したい。外からの接続は受けたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NAT ゲートウェイ",
+        "correct": true,
+        "atomId": "vpc-nat-gateway",
+        "why": "外向きの通信だけを許し、外から始まる接続は受け付けない"
+      },
+      {
+        "id": "b",
+        "text": "インターネットゲートウェイへの直接のルート",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "サブネットがパブリックになり、パブリック IP があれば外から接続されうる"
+      },
+      {
+        "id": "c",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続で、インターネットには出られない"
+      },
+      {
+        "id": "d",
+        "text": "Egress-Only インターネットゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-egress-only-igw",
+        "why": "IPv6 用で、IPv4 の通信には使えない"
+      }
+    ],
+    "explanation": "プライベートサブネットから外へ（IPv4）= NAT ゲートウェイ。",
+    "keywords": [
+      "プライベートサブネット",
+      "外からの接続は受けたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nat-gateway:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-nat-gateway"
+    ],
+    "prompt": "3 つの AZ のプライベートサブネットが、AZ-a にある 1 つの NAT ゲートウェイを共有している。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AZ-a が障害になると、全 AZ から外に出られなくなる",
+        "correct": true,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイは AZ ごとのリソース。AZ ごとに作り、各 AZ のルートで使う"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイは 1 つの AZ からしか使えない",
+        "correct": false,
+        "why": "他の AZ からも使えるが、障害時に共倒れになる"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイは同時に 3 つのサブネットを扱えない",
+        "correct": false,
+        "why": "そのような制限はない"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイはプライベートサブネットに置く必要がある",
+        "correct": false,
+        "why": "NAT ゲートウェイはパブリックサブネットに置く"
+      }
+    ],
+    "explanation": "NAT ゲートウェイは AZ ごとに 1 つ。高可用性の典型的な出題ポイント。",
+    "keywords": [
+      "1 つの NAT ゲートウェイ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nat-gateway:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-nat-gateway"
+    ],
+    "prompt": "NAT ゲートウェイを置く場所と、必要なものの組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パブリックサブネットに置き、Elastic IP を付ける",
+        "correct": true,
+        "atomId": "vpc-nat-gateway",
+        "why": "IGW 経由でインターネットに出るため、パブリックサブネットに置く"
+      },
+      {
+        "id": "b",
+        "text": "プライベートサブネットに置き、Elastic IP を付ける",
+        "correct": false,
+        "why": "プライベートサブネットからは IGW に出られない"
+      },
+      {
+        "id": "c",
+        "text": "パブリックサブネットに置き、IAM ロールを付ける",
+        "correct": false,
+        "why": "NAT ゲートウェイに必要なのは Elastic IP"
+      },
+      {
+        "id": "d",
+        "text": "VPC の外に置き、VPN で接続する",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "NAT ゲートウェイは VPC のサブネットに置く"
+      }
+    ],
+    "explanation": "NAT ゲートウェイ = パブリックサブネット + Elastic IP。",
+    "keywords": [
+      "パブリックサブネット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nat-gateway:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "vpc-nat-gateway",
+      "vpc-internet-gateway"
+    ],
+    "prompt": "NAT ゲートウェイとインターネットゲートウェイの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NAT は外向きだけ、IGW は双方向の通信を可能にする",
+        "correct": true,
+        "why": "NAT ゲートウェイは外から始まる接続を受け付けない"
+      },
+      {
+        "id": "b",
+        "text": "NAT は IPv6 専用、IGW は IPv4 専用",
+        "correct": false,
+        "atomId": "vpc-egress-only-igw",
+        "why": "IPv6 の外向き専用は Egress-Only IGW。IGW は IPv4 と IPv6 の両方に使える"
+      },
+      {
+        "id": "c",
+        "text": "NAT は VPC に 1 つ、IGW は AZ ごとに必要",
+        "correct": false,
+        "why": "逆。IGW は VPC に 1 つ、NAT ゲートウェイは AZ ごとに作るのが推奨"
+      },
+      {
+        "id": "d",
+        "text": "NAT は無料、IGW は時間単位で課金される",
+        "correct": false,
+        "why": "時間単位で課金されるのは NAT ゲートウェイ"
+      }
+    ],
+    "explanation": "IGW = 双方向の出入口、NAT = 内から外への一方向。",
+    "keywords": [
+      "外向き",
+      "双方向"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-egress-only-igw:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-egress-only-igw"
+    ],
+    "prompt": "IPv6 を使うインスタンスから、インターネットへの外向きの通信だけを許可したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Egress-Only インターネットゲートウェイ",
+        "correct": true,
+        "atomId": "vpc-egress-only-igw",
+        "why": "IPv6 で外向きの通信だけを許可する"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "IPv4 用で、IPv6 の通信には使えない"
+      },
+      {
+        "id": "c",
+        "text": "インターネットゲートウェイへの直接のルート",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "IPv6 のアドレスはグローバルなので、外から接続されうる"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリングで別の VPC を経由する",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "インターネットには出られない"
+      }
+    ],
+    "explanation": "IPv6 の外向きだけ = Egress-Only IGW。",
+    "keywords": [
+      "IPv6",
+      "外向きだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-route-table:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-route-table",
+      "vpc-peering"
+    ],
+    "prompt": "VPC A と VPC B のピアリングを作成して承認したが、通信できない。考えられる原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "両方のルートテーブルに相手の CIDR へのルートがない",
+        "correct": true,
+        "atomId": "vpc-route-table",
+        "why": "ピアリングを作っただけでは通信できず、ルートの追加が必要"
+      },
+      {
+        "id": "b",
+        "text": "ピアリングは同じアカウントの VPC 同士でしか使えない",
+        "correct": false,
+        "why": "別アカウントとも接続できる"
+      },
+      {
+        "id": "c",
+        "text": "ピアリングには NAT ゲートウェイが必要",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイは不要"
+      },
+      {
+        "id": "d",
+        "text": "ピアリングは同じ AZ の VPC 同士でしか使えない",
+        "correct": false,
+        "why": "VPC はリージョン単位で、別リージョンとも接続できる"
+      }
+    ],
+    "explanation": "ピアリング・TGW・エンドポイント、どれも「ルートテーブルの更新」を忘れない。",
+    "keywords": [
+      "通信できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-security-group:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "vpc-security-group"
+    ],
+    "prompt": "セキュリティグループの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンス単位・ステートフル・許可ルールのみ",
+        "correct": true,
+        "atomId": "vpc-security-group",
+        "why": "戻りの通信は自動で許可され、拒否ルールは書けない"
+      },
+      {
+        "id": "b",
+        "text": "サブネット単位・ステートレス・許可と拒否",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "NACL の特徴"
+      },
+      {
+        "id": "c",
+        "text": "VPC 単位・ステートフル・拒否ルールのみ",
+        "correct": false,
+        "why": "そのようなファイアウォールはない"
+      },
+      {
+        "id": "d",
+        "text": "リージョン単位・ステートレス・許可ルールのみ",
+        "correct": false,
+        "why": "セキュリティグループの特徴ではない"
+      }
+    ],
+    "explanation": "SG = インスタンス・ステートフル・許可のみ、NACL = サブネット・ステートレス・許可と拒否。",
+    "keywords": [
+      "ステートフル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-security-group:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-security-group"
+    ],
+    "prompt": "DB サーバーへの通信を、Web サーバー群からのものだけに許可したい。Web サーバーは Auto Scaling で IP が変わる。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DB の SG で、Web サーバーの SG を送信元に指定する",
+        "correct": true,
+        "atomId": "vpc-security-group",
+        "why": "IP アドレスではなくセキュリティグループを参照できるので、台数や IP が変わっても使える"
+      },
+      {
+        "id": "b",
+        "text": "DB の SG で、Web サーバーの IP を 1 つずつ許可する",
+        "correct": false,
+        "why": "IP が変わるたびに更新が必要になる"
+      },
+      {
+        "id": "c",
+        "text": "NACL で Web サーバーの IP を 1 つずつ許可する",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "IP が変わるたびに更新が必要になる"
+      },
+      {
+        "id": "d",
+        "text": "DB をパブリックサブネットに置き、全体に公開する",
+        "correct": false,
+        "atomId": "vpc-subnet",
+        "why": "誰でもアクセスできてしまう"
+      }
+    ],
+    "explanation": "セキュリティグループは他のセキュリティグループを参照できる。多層構成の定番。",
+    "keywords": [
+      "IP が変わる",
+      "Web サーバーからだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nacl:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-nacl"
+    ],
+    "prompt": "特定の IP アドレスからの攻撃を受けている。サブネット全体で、その IP からの通信を拒否したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ネットワーク ACL の拒否ルール",
+        "correct": true,
+        "atomId": "vpc-nacl",
+        "why": "NACL は拒否ルールを書け、サブネット全体に適用できる"
+      },
+      {
+        "id": "b",
+        "text": "セキュリティグループの拒否ルール",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "セキュリティグループには拒否ルールを書けない"
+      },
+      {
+        "id": "c",
+        "text": "ルートテーブルからそのルートを削除する",
+        "correct": false,
+        "atomId": "vpc-route-table",
+        "why": "特定の送信元 IP の拒否はできない"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイを削除する",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "外からの通信の拒否にはならない"
+      }
+    ],
+    "explanation": "「明示的に拒否」= NACL。セキュリティグループは許可しか書けない。",
+    "keywords": [
+      "特定の IP",
+      "拒否"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nacl:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-nacl"
+    ],
+    "prompt": "NACL の受信ルールで 443 番ポートを許可したのに、Web サイトにつながらない。セキュリティグループは正しい。原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "送信ルールで戻りのポートを許可していない",
+        "correct": true,
+        "atomId": "vpc-nacl",
+        "why": "NACL は戻りの通信（エフェメラルポート）も明示的に許可する必要がある"
+      },
+      {
+        "id": "b",
+        "text": "NACL では 443 番ポートを許可できない",
+        "correct": false,
+        "why": "許可できる"
+      },
+      {
+        "id": "c",
+        "text": "NACL はインスタンスごとに付ける必要がある",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "インスタンスごとに付けるのはセキュリティグループ"
+      },
+      {
+        "id": "d",
+        "text": "NACL の許可ルールは 1 つまでしか書けない",
+        "correct": false,
+        "why": "複数書ける"
+      }
+    ],
+    "explanation": "NACL はステートレス。戻りの通信（1024〜65535 などのエフェメラルポート）も許可する。",
+    "keywords": [
+      "つながらない",
+      "ステートレス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nacl:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-nacl"
+    ],
+    "prompt": "NACL にルール 100「全体を許可」とルール 200「特定の IP を拒否」がある。その IP からの通信はどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "許可される（番号の小さいルールが先に一致する）",
+        "correct": true,
+        "atomId": "vpc-nacl",
+        "why": "NACL は番号の小さい順に評価し、最初に一致したルールを使う。拒否は 100 より小さい番号にする"
+      },
+      {
+        "id": "b",
+        "text": "拒否される（拒否ルールが常に優先される）",
+        "correct": false,
+        "why": "NACL は番号順の評価で、拒否が常に優先されるわけではない"
+      },
+      {
+        "id": "c",
+        "text": "両方のルールが適用されてエラーになる",
+        "correct": false,
+        "why": "最初に一致したルールだけが使われる"
+      },
+      {
+        "id": "d",
+        "text": "セキュリティグループの設定で決まる",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "NACL の中の判定は NACL のルールの順序で決まる"
+      }
+    ],
+    "explanation": "NACL は番号順・最初の一致。拒否ルールは許可より小さい番号にする。",
+    "keywords": [
+      "ルール番号"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-flow-logs:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-flow-logs"
+    ],
+    "prompt": "ある EC2 への通信が拒否されている。どこからの通信が、SG と NACL のどちらで拒否されたのかを調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC フローログ",
+        "correct": true,
+        "atomId": "vpc-flow-logs",
+        "why": "通信ごとに送信元・宛先・ポート・ACCEPT/REJECT を記録する"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail",
+        "correct": false,
+        "why": "API の操作履歴で、ネットワークの通信は記録しない"
+      },
+      {
+        "id": "c",
+        "text": "S3 イベント通知",
+        "correct": false,
+        "atomId": "s3-event-notifications",
+        "why": "S3 のイベントで、ネットワークの通信とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "通信の記録の機能ではない"
+      }
+    ],
+    "explanation": "ネットワークの通信の記録 = VPC フローログ。API の操作履歴 = CloudTrail。",
+    "keywords": [
+      "拒否されている",
+      "調べたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-bastion-host:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-bastion-host"
+    ],
+    "prompt": "運用のため、踏み台サーバーのセキュリティグループで SSH（22 番）を 0.0.0.0/0 から許可した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "世界中から SSH を試行され、攻撃を受けやすい",
+        "correct": true,
+        "atomId": "vpc-bastion-host",
+        "why": "接続元の IP を限定するか、Session Manager で受信ポート自体をなくす"
+      },
+      {
+        "id": "b",
+        "text": "0.0.0.0/0 を指定すると SSH ができなくなる",
+        "correct": false,
+        "why": "SSH はできるが、誰からでも試行できる"
+      },
+      {
+        "id": "c",
+        "text": "踏み台サーバーはプライベートサブネットに置く必要がある",
+        "correct": false,
+        "why": "踏み台はパブリックサブネットに置く"
+      },
+      {
+        "id": "d",
+        "text": "SSH は NACL でしか許可できない",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "セキュリティグループで許可できる"
+      }
+    ],
+    "explanation": "SSH の全開放は典型的なアンチパターン。Session Manager なら踏み台もポート開放も不要。",
+    "keywords": [
+      "0.0.0.0/0"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-peering:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "vpc-peering"
+    ],
+    "prompt": "VPC ピアリングで A-B、B-C を接続した。A から C へ通信できる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "できない（ピアリングは推移的ではない）",
+        "correct": true,
+        "atomId": "vpc-peering",
+        "why": "A-C 間にも直接ピアリングを作るか、Transit Gateway を使う"
+      },
+      {
+        "id": "b",
+        "text": "できる（B を経由して自動でルーティングされる）",
+        "correct": false,
+        "why": "ピアリングは推移的なルーティングをしない"
+      },
+      {
+        "id": "c",
+        "text": "できる（同じリージョンなら推移的になる）",
+        "correct": false,
+        "why": "リージョンに関係なく推移的ではない"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイがあればできる",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイでは解決しない"
+      }
+    ],
+    "explanation": "ピアリング = 1 対 1、推移的ではない。多数なら Transit Gateway。",
+    "keywords": [
+      "推移的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-peering:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-peering"
+    ],
+    "prompt": "2 つの VPC（CIDR は重複していない）を、低コストかつシンプルにプライベートにつなぎたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC ピアリング",
+        "correct": true,
+        "atomId": "vpc-peering",
+        "why": "2 つの VPC を 1 対 1 でつなぐ最もシンプルな方法"
+      },
+      {
+        "id": "b",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "2 つだけなら過剰で、接続とデータ処理の料金もかかる"
+      },
+      {
+        "id": "c",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "オンプレミスとの接続向けで、VPC 同士には向かない"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "オンプレミスとの専用線"
+      }
+    ],
+    "explanation": "2 つの VPC → ピアリング、多数の VPC → Transit Gateway。",
+    "keywords": [
+      "2 つの VPC",
+      "シンプル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-peering:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-peering"
+    ],
+    "prompt": "CIDR が同じ 10.0.0.0/16 の 2 つの VPC を、ピアリングでつなごうとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CIDR が重複している VPC 同士はピアリングできない",
+        "correct": true,
+        "atomId": "vpc-peering",
+        "why": "特定のサービスだけを公開するなら PrivateLink は CIDR が重複していても使える"
+      },
+      {
+        "id": "b",
+        "text": "ピアリングは /16 の VPC に対応していない",
+        "correct": false,
+        "why": "CIDR のサイズの問題ではない"
+      },
+      {
+        "id": "c",
+        "text": "ピアリングは同じリージョンでは使えない",
+        "correct": false,
+        "why": "同じリージョンでも使える"
+      },
+      {
+        "id": "d",
+        "text": "ピアリングにはインターネットゲートウェイが必要",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "不要"
+      }
+    ],
+    "explanation": "ピアリングは CIDR の重複不可。",
+    "keywords": [
+      "CIDR が同じ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-transit-gateway:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-transit-gateway"
+    ],
+    "prompt": "50 個の VPC とオンプレミスのデータセンターを相互につなぎたい。管理をシンプルにするには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Transit Gateway をハブにしてつなぐ",
+        "correct": true,
+        "atomId": "vpc-transit-gateway",
+        "why": "ハブ経由で推移的にルーティングでき、接続の数が VPC の数だけで済む"
+      },
+      {
+        "id": "b",
+        "text": "すべての VPC の組み合わせでピアリングを作る",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "組み合わせの数だけ接続とルートが増え、管理が複雑になる"
+      },
+      {
+        "id": "c",
+        "text": "各 VPC からオンプレミスへ個別に VPN を張る",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "接続の数が増え、VPC 同士の通信もできない"
+      },
+      {
+        "id": "d",
+        "text": "すべての VPC に NAT ゲートウェイを置く",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "VPC 同士やオンプレミスとの接続にはならない"
+      }
+    ],
+    "explanation": "多数の VPC + オンプレミス = Transit Gateway。",
+    "keywords": [
+      "50 個の VPC",
+      "オンプレミス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-transit-gateway:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "vpc-transit-gateway",
+      "vpc-peering"
+    ],
+    "prompt": "Transit Gateway と VPC ピアリングの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TGW はハブで推移的にルーティングでき、ピアリングはできない",
+        "correct": true,
+        "why": "多数の VPC なら TGW、少数ならピアリング"
+      },
+      {
+        "id": "b",
+        "text": "TGW は同じアカウントの VPC 専用、ピアリングは別アカウントとも使える",
+        "correct": false,
+        "why": "どちらも別アカウントの VPC とつなげる"
+      },
+      {
+        "id": "c",
+        "text": "TGW は無料、ピアリングは時間単位で課金される",
+        "correct": false,
+        "why": "時間単位の料金がかかるのは TGW の接続"
+      },
+      {
+        "id": "d",
+        "text": "TGW はオンプレミスとつなげず、ピアリングはつなげる",
+        "correct": false,
+        "why": "逆。TGW は VPN や Direct Connect もつなげる"
+      }
+    ],
+    "explanation": "推移的ルーティングの有無が決定的な違い。",
+    "keywords": [
+      "推移的",
+      "ハブ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-privatelink:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-privatelink"
+    ],
+    "prompt": "SaaS 事業者として、自社 VPC の API を数百の顧客 VPC から使わせたい。顧客の VPC 全体とはつながず、CIDR の重複もある。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NLB の背後に API を置き、PrivateLink で公開する",
+        "correct": true,
+        "atomId": "vpc-privatelink",
+        "why": "特定のサービスだけを一方向に公開でき、CIDR が重複していても使える"
+      },
+      {
+        "id": "b",
+        "text": "すべての顧客 VPC とピアリングする",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 全体がつながり、CIDR の重複もあるので使えない"
+      },
+      {
+        "id": "c",
+        "text": "Transit Gateway にすべての顧客 VPC をつなぐ",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "顧客の VPC 全体とつながることになり、CIDR の重複も問題になる"
+      },
+      {
+        "id": "d",
+        "text": "API を公開して、IP アドレスで制限する",
+        "correct": false,
+        "why": "インターネット経由になり、プライベートではない"
+      }
+    ],
+    "explanation": "特定のサービスを多数の VPC にプライベートに公開 = PrivateLink（エンドポイントサービス）。",
+    "keywords": [
+      "数百の顧客 VPC",
+      "CIDR の重複"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-site-to-site-vpn:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-site-to-site-vpn"
+    ],
+    "prompt": "来週までに、オンプレミスと VPC を暗号化された接続でつなぐ必要がある。コストも抑えたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Site-to-Site VPN",
+        "correct": true,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "インターネット経由の IPsec で、すぐに作れて安い"
+      },
+      {
+        "id": "b",
+        "text": "Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "開通までに数週間以上かかることがあり、そのままでは暗号化もされない"
+      },
+      {
+        "id": "c",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続で、オンプレミスとはつなげない"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "外向きの通信のためのもので、オンプレミスとの接続ではない"
+      }
+    ],
+    "explanation": "「すぐに」「安く」「暗号化」= Site-to-Site VPN。",
+    "keywords": [
+      "来週までに",
+      "暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-direct-connect"
+    ],
+    "prompt": "毎日数 TB のデータを、安定した帯域と一定のレイテンシでオンプレミスから AWS へ送りたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Direct Connect",
+        "correct": true,
+        "atomId": "vpc-direct-connect",
+        "why": "専用線で帯域とレイテンシが安定する"
+      },
+      {
+        "id": "b",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "インターネット経由なので、帯域やレイテンシが安定しない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "インターネット経由の高速化で、専用線のような安定性はない"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "オンプレミスとはつなげない"
+      }
+    ],
+    "explanation": "「安定」「大量」「一定のレイテンシ」= Direct Connect。",
+    "keywords": [
+      "安定した帯域",
+      "一定のレイテンシ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-direct-connect"
+    ],
+    "prompt": "基幹システムの接続を、1 本の Direct Connect だけで構成した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "回線や拠点の障害で、オンプレミスとの接続が切れる",
+        "correct": true,
+        "atomId": "vpc-direct-connect",
+        "why": "2 本目の Direct Connect か、Site-to-Site VPN をバックアップにする"
+      },
+      {
+        "id": "b",
+        "text": "Direct Connect は 1 本では帯域が足りない",
+        "correct": false,
+        "why": "帯域の問題ではなく、単一障害点になること"
+      },
+      {
+        "id": "c",
+        "text": "Direct Connect は暗号化されているので遅い",
+        "correct": false,
+        "why": "そのままでは暗号化されない"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect は VPC と直接つなげない",
+        "correct": false,
+        "why": "仮想プライベートゲートウェイや Direct Connect ゲートウェイでつなげる"
+      }
+    ],
+    "explanation": "Direct Connect の高可用性 = 2 本目の DX、または VPN をバックアップにする。",
+    "keywords": [
+      "1 本の Direct Connect"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-direct-connect",
+      "vpc-site-to-site-vpn"
+    ],
+    "prompt": "Direct Connect の通信を暗号化する必要がある。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Direct Connect の上に VPN を張る",
+        "correct": true,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "専用線の上で IPsec による暗号化ができる（MACsec を使う方法もある）"
+      },
+      {
+        "id": "b",
+        "text": "Direct Connect はデフォルトで暗号化されるので不要",
+        "correct": false,
+        "why": "Direct Connect はそのままでは暗号化されない"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイを経由させる",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "暗号化にはならない"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを有効にする",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信を記録するだけで、暗号化はしない"
+      }
+    ],
+    "explanation": "Direct Connect は暗号化されない。VPN を重ねるか MACsec。",
+    "keywords": [
+      "暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-site-to-site-vpn:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "vpc-site-to-site-vpn",
+      "vpc-direct-connect"
+    ],
+    "prompt": "Site-to-Site VPN と Direct Connect の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPN はすぐ作れるが不安定、DX は安定だが時間がかかる",
+        "correct": true,
+        "why": "急ぎ・低コストなら VPN、安定・大容量なら DX。DX のバックアップに VPN を使うことも多い"
+      },
+      {
+        "id": "b",
+        "text": "VPN は暗号化されず、DX は暗号化される",
+        "correct": false,
+        "why": "逆。VPN は IPsec で暗号化され、DX はそのままでは暗号化されない"
+      },
+      {
+        "id": "c",
+        "text": "VPN は専用線、DX はインターネット経由",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "d",
+        "text": "VPN は VPC 同士、DX はオンプレミスと接続する",
+        "correct": false,
+        "why": "どちらもオンプレミスとの接続"
+      }
+    ],
+    "explanation": "VPN = インターネット・暗号化・すぐ・安い、DX = 専用線・安定・時間がかかる・暗号化なし。",
+    "keywords": [
+      "すぐ",
+      "安定"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nat-gateway:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "vpc-nat-gateway",
+      "vpc-subnet",
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "3 つの AZ にまたがる Web アプリを設計する。\n・EC2 はインターネットから直接アクセスさせない\n・EC2 は OS のアップデートをインターネットから取得する\n・EC2 は S3 に大量のデータを書き込み、その通信コストを抑えたい\n・1 つの AZ が止まっても動き続ける\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "各 AZ にプライベートサブネットと NAT GW、S3 にはゲートウェイエンドポイント",
+        "correct": true,
+        "atomId": "vpc-nat-gateway",
+        "why": "AZ ごとの NAT で可用性を保ち、S3 への大量の通信は無料のゲートウェイエンドポイントを通す"
+      },
+      {
+        "id": "b",
+        "text": "1 つの NAT GW を共有し、S3 への通信も NAT GW を通す",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT が単一障害点になり、S3 への通信にデータ処理料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "EC2 をパブリックサブネットに置き、パブリック IP で直接通信する",
+        "correct": false,
+        "atomId": "vpc-subnet",
+        "why": "インターネットから直接アクセスできる場所になる"
+      },
+      {
+        "id": "d",
+        "text": "各 AZ に NAT GW を置き、S3 にはインターフェイスエンドポイント",
+        "correct": false,
+        "atomId": "s3-interface-endpoint",
+        "why": "VPC 内からの通信なら無料のゲートウェイエンドポイントで足り、コストが高い"
+      }
+    ],
+    "explanation": "「直接アクセスさせない」→ プライベートサブネット、「外へ出る」→ NAT、「AZ 障害」→ AZ ごとの NAT、「S3 のコスト」→ ゲートウェイエンドポイント。",
+    "keywords": [
+      "プライベート",
+      "AZ ごと",
+      "S3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "vpc-direct-connect",
+      "vpc-site-to-site-vpn",
+      "vpc-transit-gateway"
+    ],
+    "prompt": "金融機関が、20 個の VPC とオンプレミスのデータセンターをつなぐ。\n・オンプレミスとは安定した帯域が必要\n・回線の障害時も接続を維持したい（コストは抑えたい）\n・VPC 同士も相互に通信する\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TGW をハブに、主回線は Direct Connect、バックアップは VPN",
+        "correct": true,
+        "atomId": "vpc-direct-connect",
+        "why": "TGW で多数の VPC とオンプレミスを推移的につなぎ、DX の障害時は VPN に切り替わる"
+      },
+      {
+        "id": "b",
+        "text": "各 VPC からオンプレミスへ個別に Direct Connect を 1 本ずつ引く",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "回線の数が膨大になり、VPC 同士の通信もできない"
+      },
+      {
+        "id": "c",
+        "text": "すべての VPC をピアリングで結び、オンプレミスとは VPN のみ",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ピアリングの管理が複雑で、VPN だけでは帯域が安定しない"
+      },
+      {
+        "id": "d",
+        "text": "TGW をハブに、Direct Connect を 1 本だけ引く",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "回線の障害時に接続が切れる"
+      }
+    ],
+    "explanation": "多数の VPC → TGW、安定 → DX、コストを抑えた冗長化 → VPN をバックアップ。",
+    "keywords": [
+      "20 個の VPC",
+      "安定",
+      "障害時"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
