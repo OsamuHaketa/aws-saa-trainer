@@ -1,0 +1,449 @@
+[
+  {
+    "id": "autoscaling-group:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "autoscaling-group"
+    ],
+    "prompt": "Auto Scaling グループがしてくれることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "台数を保ち、異常を置き換え、負荷で増減する",
+        "correct": true,
+        "atomId": "autoscaling-group",
+        "why": "最小・希望・最大の台数の範囲で動く"
+      },
+      {
+        "id": "b",
+        "text": "リクエストを複数のインスタンスに振り分ける",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ロードバランサーの役割"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスの料金を 1〜3 年分割引する",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "リザーブドインスタンスなどの役割"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスのバックアップを毎日取る",
+        "correct": false,
+        "why": "Auto Scaling の役割ではない"
+      }
+    ],
+    "explanation": "Auto Scaling = 台数の管理（自己修復とスケーリング）。振り分けは ELB。",
+    "keywords": [
+      "台数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-group:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-group"
+    ],
+    "prompt": "Auto Scaling グループを、1 つの AZ のサブネットだけで作った。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "その AZ が障害になると、すべてのインスタンスが止まる",
+        "correct": true,
+        "atomId": "autoscaling-group",
+        "why": "複数の AZ のサブネットを指定して分散させる"
+      },
+      {
+        "id": "b",
+        "text": "1 つの AZ では Auto Scaling が動かない",
+        "correct": false,
+        "why": "動くが、AZ 障害に弱い"
+      },
+      {
+        "id": "c",
+        "text": "1 つの AZ では最大 2 台までしか起動できない",
+        "correct": false,
+        "why": "そのような制限はない"
+      },
+      {
+        "id": "d",
+        "text": "1 つの AZ ではロードバランサーを使えない",
+        "correct": false,
+        "why": "使えるが、AZ 障害に弱い"
+      }
+    ],
+    "explanation": "Auto Scaling グループは複数 AZ に。",
+    "keywords": [
+      "1 つの AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-target-tracking:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "Web サーバー群の平均 CPU 使用率を 50% 前後に保つように、台数を自動で調整したい。最も簡単な方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ターゲット追跡スケーリング",
+        "correct": true,
+        "atomId": "autoscaling-target-tracking",
+        "why": "目標値を決めるだけで、アラームの作成も台数の調整も自動で行う"
+      },
+      {
+        "id": "b",
+        "text": "ステップスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "段階ごとの調整量を自分で決める必要があり、設定が複雑"
+      },
+      {
+        "id": "c",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "日時で台数を変えるだけで、CPU には反応しない"
+      },
+      {
+        "id": "d",
+        "text": "手動で台数を変える",
+        "correct": false,
+        "why": "自動ではない"
+      }
+    ],
+    "explanation": "「指標を一定に保つ」= ターゲット追跡。",
+    "keywords": [
+      "50% 前後に保つ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-scheduled:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-scheduled"
+    ],
+    "prompt": "社内システムは毎朝 9 時に利用者が一斉にログインし、起動が間に合わず遅くなる。時刻は毎日同じ。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "8 時半に増やすスケジュールを設定",
+        "correct": true,
+        "atomId": "autoscaling-scheduled",
+        "why": "負荷が来る時刻が分かっているので、事前に増やしておける"
+      },
+      {
+        "id": "b",
+        "text": "ターゲット追跡スケーリングだけにする",
+        "correct": false,
+        "atomId": "autoscaling-target-tracking",
+        "why": "負荷が上がってから増やすので、起動が間に合わない"
+      },
+      {
+        "id": "c",
+        "text": "登録解除の遅延を長くする",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "スケールインの設定で、朝の負荷には関係がない"
+      },
+      {
+        "id": "d",
+        "text": "スティッキーセッションを有効にする",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "負荷の増加には対応できない"
+      }
+    ],
+    "explanation": "時刻が分かっている増加 = スケジュール。パターンを自動で学ばせるなら予測スケーリング。",
+    "keywords": [
+      "毎朝 9 時",
+      "毎日同じ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-predictive:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-predictive"
+    ],
+    "prompt": "負荷には毎日・毎週の周期があるが、時刻は少しずつ変わる。インスタンスの起動に 10 分かかる。負荷が来る前に自動で増やしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "予測スケーリング",
+        "correct": true,
+        "atomId": "autoscaling-predictive",
+        "why": "過去のパターンから予測して、事前に起動しておける"
+      },
+      {
+        "id": "b",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "時刻が変わるたびに、人がスケジュールを直す必要がある"
+      },
+      {
+        "id": "c",
+        "text": "ステップスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "負荷が上がってから増やすので、起動が間に合わない"
+      },
+      {
+        "id": "d",
+        "text": "ライフサイクルフック",
+        "correct": false,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "起動・終了時の処理の仕組みで、事前に増やすものではない"
+      }
+    ],
+    "explanation": "周期的なパターン + 事前に増やす + 自動 = 予測スケーリング。",
+    "keywords": [
+      "周期",
+      "事前に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-scheduled:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-scheduled",
+      "autoscaling-predictive"
+    ],
+    "prompt": "スケジュールされたスケーリングと予測スケーリングの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は人が決めた日時、後者は過去のパターンから自動で予測",
+        "correct": true,
+        "why": "どちらも負荷の前に増やせる"
+      },
+      {
+        "id": "b",
+        "text": "前者は負荷が来てから、後者は負荷が来る前に増やす",
+        "correct": false,
+        "why": "どちらも負荷の前に増やせる"
+      },
+      {
+        "id": "c",
+        "text": "前者は CPU 使用率、後者はメモリ使用率を使う",
+        "correct": false,
+        "why": "指標の違いではない"
+      },
+      {
+        "id": "d",
+        "text": "前者は 1 つの AZ、後者は複数の AZ に使う",
+        "correct": false,
+        "why": "AZ とは関係がない"
+      }
+    ],
+    "explanation": "誰が時刻を決めるか（人か機械学習か）の違い。",
+    "keywords": [
+      "日時",
+      "予測"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-elb-health-check:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-elb-health-check"
+    ],
+    "prompt": "アプリがハングしたインスタンスが、Auto Scaling で置き換えられずに残っている。ELB からは異常と判定されている。原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ヘルスチェックの種類に ELB がない",
+        "correct": true,
+        "atomId": "autoscaling-elb-health-check",
+        "why": "デフォルトは EC2 のステータスチェックだけなので、アプリの異常では置き換えない"
+      },
+      {
+        "id": "b",
+        "text": "ELB のヘルスチェックの間隔が長すぎる",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "ELB はすでに異常と判定している"
+      },
+      {
+        "id": "c",
+        "text": "起動テンプレートのバージョンが古い",
+        "correct": false,
+        "atomId": "autoscaling-launch-template",
+        "why": "置き換えの判定とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "スティッキーセッションが有効になっている",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "置き換えの判定とは関係がない"
+      }
+    ],
+    "explanation": "Auto Scaling のヘルスチェックの種類に ELB を追加する。",
+    "keywords": [
+      "置き換えられずに残っている"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-lifecycle-hooks:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-lifecycle-hooks"
+    ],
+    "prompt": "スケールインで終了するインスタンスから、終了前にアプリのログを S3 に退避したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "終了時のライフサイクルフック",
+        "correct": true,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "終了前にインスタンスを待機させ、ログの退避などを実行できる"
+      },
+      {
+        "id": "b",
+        "text": "登録解除の遅延",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "処理中のリクエストを待つだけで、ログの退避はしない"
+      },
+      {
+        "id": "c",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "日時で台数を変えるだけ"
+      },
+      {
+        "id": "d",
+        "text": "起動テンプレートのユーザーデータ",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時に実行されるもので、終了時には動かない"
+      }
+    ],
+    "explanation": "起動時・終了時の独自の処理 = ライフサイクルフック。",
+    "keywords": [
+      "終了前",
+      "ログ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-launch-template:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-launch-template",
+      "autoscaling-group"
+    ],
+    "prompt": "Auto Scaling グループで、オンデマンドとスポットのインスタンスを組み合わせ、複数のインスタンスタイプを使いたい。何で設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "起動テンプレートと混合インスタンスポリシー",
+        "correct": true,
+        "atomId": "autoscaling-launch-template",
+        "why": "複数のタイプとオンデマンド/スポットの割合を指定できる"
+      },
+      {
+        "id": "b",
+        "text": "旧来の起動設定（Launch Configuration）",
+        "correct": false,
+        "why": "複数のタイプやスポットの混在には対応していない"
+      },
+      {
+        "id": "c",
+        "text": "ライフサイクルフック",
+        "correct": false,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "起動・終了時の処理の仕組み"
+      },
+      {
+        "id": "d",
+        "text": "スティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "ロードバランサーの設定"
+      }
+    ],
+    "explanation": "新しい構成は起動テンプレート。スポットの活用にも必要。",
+    "keywords": [
+      "オンデマンドとスポット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-step-scaling:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-step-scaling"
+    ],
+    "prompt": "CPU が 60〜80% なら 1 台、80% を超えたら一気に 3 台追加したい。負荷の大きさで増やす台数を変えるには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ステップスケーリング",
+        "correct": true,
+        "atomId": "autoscaling-step-scaling",
+        "why": "アラームの超過の度合いに応じて、調整する台数を段階的に決められる"
+      },
+      {
+        "id": "b",
+        "text": "ターゲット追跡スケーリング",
+        "correct": false,
+        "atomId": "autoscaling-target-tracking",
+        "why": "目標値に保つように自動で決めるので、段階ごとの台数は指定できない"
+      },
+      {
+        "id": "c",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "日時で変えるだけで、CPU には反応しない"
+      },
+      {
+        "id": "d",
+        "text": "予測スケーリング",
+        "correct": false,
+        "atomId": "autoscaling-predictive",
+        "why": "過去のパターンから予測するもので、段階的な指定はできない"
+      }
+    ],
+    "explanation": "段階ごとに調整量を決める = ステップスケーリング。一定に保つだけならターゲット追跡。",
+    "keywords": [
+      "60〜80%",
+      "3 台追加"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

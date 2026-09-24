@@ -1,0 +1,171 @@
+# EC2 Auto Scaling Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: autoscaling
+
+atoms:
+  - id: autoscaling-group
+    category: scaling
+    concept: Auto Scaling グループ
+    summary: 最小・希望・最大の台数を決め、複数の AZ で台数を保ち、負荷に応じて増減させる
+    facts:
+      - 最小、希望、最大のインスタンス数を設定する
+      - 複数の AZ にまたがってインスタンスを配置できる
+      - 異常なインスタンスを自動で終了し、新しいインスタンスに置き換える
+      - 起動テンプレートで、起動するインスタンスの設定を決める
+    triggers:
+      - 負荷に応じてサーバーの台数を増減したい
+      - 障害が起きたインスタンスを自動で置き換えたい
+      - 常に最低 N 台を動かしたい
+    pitfalls:
+      - 1 つの AZ だけに配置すると、AZ 障害で全台止まる
+    relations:
+      - type: used_with
+        target: autoscaling-launch-template
+    examDomains: [resilient, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html
+
+  - id: autoscaling-launch-template
+    category: scaling
+    concept: 起動テンプレート
+    summary: AMI、インスタンスタイプ、セキュリティグループなど、起動する設定をバージョン付きで保存する
+    facts:
+      - AMI、インスタンスタイプ、キーペア、セキュリティグループ、ユーザーデータなどを定義する
+      - バージョン管理ができる
+      - 複数のインスタンスタイプや、オンデマンドとスポットの組み合わせを使える
+      - 旧来の起動設定（Launch Configuration）の後継
+    triggers:
+      - Auto Scaling で起動する設定を定義する
+      - スポットとオンデマンドを混ぜて使いたい
+    pitfalls:
+      - 新しく作るなら、起動設定ではなく起動テンプレートを使う
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html
+
+  - id: autoscaling-target-tracking
+    category: scaling
+    concept: ターゲット追跡スケーリング
+    summary: CPU 使用率などの指標を目標値に保つように、自動で台数を調整する
+    facts:
+      - 「平均 CPU 使用率を 50% に保つ」のように目標値を決めるだけで、台数を自動で調整する
+      - CloudWatch のアラームは自動で作られる
+      - 最も簡単で、推奨されるスケーリングの方法
+    triggers:
+      - CPU 使用率を一定に保ちたい
+      - リクエスト数に応じて自動で増減させたい
+      - 設定を簡単にしたい
+    pitfalls:
+      - 毎日決まった時刻に急増することが分かっているなら、スケジュールや予測スケーリングで事前に増やす方がよい
+    relations:
+      - type: confused_with
+        target: autoscaling-step-scaling
+        distinction: ターゲット追跡は目標値を決めるだけで自動調整する。ステップスケーリングはアラームの超過の度合いに応じて、増減する台数を段階的に自分で決める
+    examDomains: [performance, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html
+
+  - id: autoscaling-step-scaling
+    category: scaling
+    concept: ステップスケーリング
+    summary: アラームの超過の大きさに応じて、増減させる台数を段階的に変える
+    facts:
+      - CloudWatch のアラームをきっかけに台数を増減する
+      - 「CPU 60〜80% なら 1 台、80% 超なら 3 台追加」のように、超過の度合いで調整量を変えられる
+    triggers:
+      - 負荷の大きさによって、増やす台数を変えたい
+    pitfalls:
+      - 単に指標を一定に保ちたいだけなら、ターゲット追跡の方が簡単
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
+
+  - id: autoscaling-scheduled
+    category: scaling
+    concept: スケジュールされたスケーリング
+    summary: 決まった日時に、台数を増減させる
+    facts:
+      - 「平日の 9 時に 10 台、20 時に 2 台」のように、日時を指定して台数を変える
+      - 負荷が増える時刻が分かっている場合に、事前に増やせる
+    triggers:
+      - 毎朝 9 時に負荷が増えることが分かっている
+      - キャンペーンの開始時刻に合わせて増やしたい
+    pitfalls:
+      - 予測できない負荷の変化には対応できない。ターゲット追跡と組み合わせる
+    relations:
+      - type: confused_with
+        target: autoscaling-predictive
+        distinction: スケジュールは人が決めた日時で増減する。予測スケーリングは過去の負荷のパターンから機械学習で予測し、自動で事前に増やす
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html
+
+  - id: autoscaling-predictive
+    category: scaling
+    concept: 予測スケーリング
+    summary: 過去の負荷の日次・週次のパターンから予測し、負荷が来る前に台数を増やす
+    facts:
+      - 過去の負荷の履歴を機械学習で分析し、将来の負荷を予測する
+      - 予測に基づいて、負荷が増える前にインスタンスを起動しておく
+      - 起動に時間がかかるアプリや、周期的な負荷のパターンがある場合に向く
+    triggers:
+      - 毎日同じような負荷のパターンがある
+      - インスタンスの起動に時間がかかり、負荷の増加に間に合わない
+    pitfalls:
+      - パターンのない突発的な負荷は予測できない
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-predictive-scaling.html
+
+  - id: autoscaling-elb-health-check
+    category: scaling
+    concept: Auto Scaling の ELB ヘルスチェック
+    summary: EC2 の状態だけでなく、ロードバランサーのヘルスチェックで異常なインスタンスも置き換える
+    facts:
+      - デフォルトでは、EC2 のステータスチェック（ハードウェアや OS の異常）だけで判断する
+      - ヘルスチェックの種類に ELB を追加すると、アプリが応答しないインスタンスも異常とみなして置き換える
+    triggers:
+      - アプリが応答しなくなったインスタンスを自動で置き換えたい
+    pitfalls:
+      - デフォルトのままだと、OS は動いているがアプリが止まっているインスタンスは置き換えられない
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html
+
+  - id: autoscaling-lifecycle-hooks
+    category: scaling
+    concept: ライフサイクルフック
+    summary: インスタンスの起動時や終了時に一時停止し、独自の処理を実行できるようにする
+    facts:
+      - 起動時や終了時に、インスタンスを待機状態にして、独自の処理を実行できる
+      - 終了前にログを退避したり、起動後に設定を済ませてから使い始めたりできる
+    triggers:
+      - インスタンスが終了する前にログを保存したい
+      - 起動後に準備が終わってからリクエストを受けたい
+    pitfalls:
+      - スケールインでいきなり終了すると、インスタンス内のログやデータが失われる
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html

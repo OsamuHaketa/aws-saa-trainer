@@ -1,0 +1,180 @@
+# Elastic Load Balancing Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: elb
+
+atoms:
+  - id: elb-alb
+    category: load-balancing
+    concept: Application Load Balancer（ALB）
+    summary: HTTP/HTTPS（レイヤー 7）で、パスやホスト名などの内容に応じて振り分ける
+    facts:
+      - レイヤー 7（HTTP/HTTPS）のロードバランサー
+      - URL のパス、ホスト名、ヘッダー、クエリ文字列などで振り分け先を変えられる
+      - ターゲットに EC2、IP アドレス、コンテナ、Lambda を指定できる
+      - AWS WAF と連携でき、Cognito などによるユーザー認証も行える
+    triggers:
+      - パスごとに別のサービスへ振り分けたい（/api と /images など）
+      - ホスト名ごとに振り分けたい
+      - マイクロサービス
+      - HTTP ヘッダーでルーティング
+    pitfalls:
+      - TCP/UDP の通信や、固定 IP アドレスが必要な場合は NLB を使う
+    relations:
+      - type: confused_with
+        target: elb-nlb
+        distinction: ALB はレイヤー 7 で HTTP の内容（パスやホスト名）で振り分ける。NLB はレイヤー 4 で TCP/UDP を超低レイテンシで処理し、AZ ごとに固定 IP を持てる
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html
+
+  - id: elb-nlb
+    category: load-balancing
+    concept: Network Load Balancer（NLB）
+    summary: TCP/UDP（レイヤー 4）を超低レイテンシで大量に処理し、固定 IP を持てる
+    facts:
+      - レイヤー 4（TCP、UDP、TLS）のロードバランサー
+      - 毎秒数百万リクエストを、超低レイテンシで処理できる
+      - AZ ごとに固定の IP アドレスを持ち、Elastic IP も割り当てられる
+      - PrivateLink のエンドポイントサービスの前段に使う
+    triggers:
+      - TCP や UDP の通信
+      - 固定 IP アドレスが必要
+      - 超低レイテンシ
+      - ゲームやIoT などの独自プロトコル
+    pitfalls:
+      - URL のパスで振り分けたい場合は ALB を使う
+    relations:
+      - type: confused_with
+        target: elb-gwlb
+        distinction: NLB はアプリへの TCP/UDP の通信を振り分ける。GWLB はファイアウォールなどのサードパーティの仮想アプライアンスに、通信を透過的に通す
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html
+
+  - id: elb-gwlb
+    category: load-balancing
+    concept: Gateway Load Balancer（GWLB）
+    summary: ファイアウォールや IDS/IPS などの仮想アプライアンスを、透過的に配置・スケールする
+    facts:
+      - サードパーティの仮想ネットワークアプライアンス（ファイアウォール、IDS/IPS など）の前に置く
+      - 通信を透過的にアプライアンスに通し、検査したあとで宛先へ送る
+      - GENEVE プロトコル（ポート 6081）を使う
+    triggers:
+      - サードパーティのファイアウォールで全通信を検査したい
+      - IDS/IPS のアプライアンスをスケールさせたい
+    pitfalls:
+      - 通常の Web アプリの負荷分散には使わない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html
+
+  - id: elb-cross-zone
+    category: load-balancing
+    concept: クロスゾーン負荷分散
+    summary: すべての AZ のターゲットに均等にリクエストを振り分ける
+    facts:
+      - 有効にすると、各 AZ のロードバランサーのノードが、すべての AZ のターゲットに均等に振り分ける
+      - ALB ではデフォルトで有効
+      - NLB ではデフォルトで無効で、有効にすると AZ 間のデータ転送の料金がかかる
+    triggers:
+      - AZ ごとのインスタンス数が違い、負荷が偏っている
+    pitfalls:
+      - 無効のままだと、インスタンスの少ない AZ のインスタンスに負荷が集中する
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html
+
+  - id: elb-sticky-sessions
+    category: load-balancing
+    concept: スティッキーセッション
+    summary: 同じクライアントのリクエストを、同じターゲットに送り続ける
+    facts:
+      - Cookie を使い、同じクライアントを同じターゲットに送る
+      - サーバーのメモリにセッションを持つアプリで使われる
+      - 特定のインスタンスに負荷が偏ることがある
+    triggers:
+      - ログインしたユーザーを同じサーバーに送り続けたい
+    pitfalls:
+      - スケールインでインスタンスが消えると、そのセッションも失われる。セッションは ElastiCache や DynamoDB に置く方がよい
+    relations:
+      - type: confused_with
+        target: elasticache-redis
+        distinction: スティッキーセッションはサーバーにセッションを持たせたまま同じサーバーに送る。ElastiCache にセッションを置けば、どのサーバーでも処理でき、スケールインの影響も受けない
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
+
+  - id: elb-health-checks
+    category: load-balancing
+    concept: ヘルスチェック
+    summary: ターゲットの状態を定期的に確認し、正常なターゲットにだけリクエストを送る
+    facts:
+      - 指定したパスやポートに定期的にリクエストを送り、正常かどうかを判定する
+      - 異常と判定されたターゲットには、リクエストを送らない
+      - Auto Scaling グループで ELB のヘルスチェックを使うと、異常なインスタンスを自動で置き換える
+    triggers:
+      - 異常なサーバーにリクエストを送らないようにしたい
+    pitfalls:
+      - ヘルスチェックのパスが、アプリの本当の状態を反映していないと、異常を検知できない
+    relations:
+      - type: used_with
+        target: autoscaling-elb-health-check
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html
+
+  - id: elb-deregistration-delay
+    category: load-balancing
+    concept: 登録解除の遅延（Connection Draining）
+    summary: ターゲットを外すとき、処理中のリクエストが終わるまで待つ
+    facts:
+      - ターゲットの登録を解除するとき、処理中のリクエストが完了するまで一定時間待つ
+      - 待っている間、新しいリクエストはそのターゲットに送らない
+      - スケールインやデプロイのときに、処理中のリクエストが途中で切れるのを防ぐ
+    triggers:
+      - スケールインのときに処理中のリクエストを切りたくない
+    pitfalls:
+      - 待ち時間が短すぎると、長いリクエストが途中で切断される
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html
+
+  - id: elb-tls-termination
+    category: load-balancing
+    concept: ロードバランサーでの TLS 終端（ACM）
+    summary: ACM の証明書をロードバランサーに付け、HTTPS の暗号化・復号をロードバランサーで行う
+    facts:
+      - ACM（AWS Certificate Manager）の証明書を ALB や NLB に設定する
+      - ACM のパブリック証明書は無料で、自動で更新される
+      - 暗号化・復号をロードバランサーが行うので、サーバーの負荷と証明書の管理が減る
+      - SNI で、1 つのロードバランサーに複数のドメインの証明書を設定できる
+    triggers:
+      - 証明書の更新を自動化したい
+      - サーバーでの TLS の処理をなくしたい
+      - 1 つのロードバランサーで複数のドメインを HTTPS にしたい
+    pitfalls:
+      - 各 EC2 に証明書を入れて管理すると、更新漏れが起きやすい
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html

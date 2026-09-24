@@ -1,0 +1,546 @@
+[
+  {
+    "id": "elb-alb:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elb-alb"
+    ],
+    "prompt": "1 つのドメインで、/api/* は API サーバー群、/images/* は画像サーバー群に振り分けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB のパスベースルーティング",
+        "correct": true,
+        "atomId": "elb-alb",
+        "why": "レイヤー 7 で URL のパスを見て、別々のターゲットグループに振り分けられる"
+      },
+      {
+        "id": "b",
+        "text": "Network Load Balancer",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "レイヤー 4 で、URL のパスは見られない"
+      },
+      {
+        "id": "c",
+        "text": "Gateway Load Balancer",
+        "correct": false,
+        "atomId": "elb-gwlb",
+        "why": "仮想アプライアンス用で、パスでの振り分けはできない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 の加重ルーティング",
+        "correct": false,
+        "why": "DNS はドメイン単位で、URL のパスでは振り分けられない"
+      }
+    ],
+    "explanation": "パス・ホスト名・ヘッダーで振り分け = ALB。",
+    "keywords": [
+      "パス",
+      "振り分け"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-alb:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "elb-alb"
+    ],
+    "prompt": "Application Load Balancer の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "レイヤー 7 で、HTTP の内容に応じて振り分ける",
+        "correct": true,
+        "atomId": "elb-alb",
+        "why": "パス、ホスト名、ヘッダーなどで振り分け、Lambda もターゲットにできる"
+      },
+      {
+        "id": "b",
+        "text": "レイヤー 4 で、TCP/UDP を超低レイテンシで処理",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB の特徴"
+      },
+      {
+        "id": "c",
+        "text": "仮想アプライアンスに通信を透過的に通す",
+        "correct": false,
+        "atomId": "elb-gwlb",
+        "why": "GWLB の特徴"
+      },
+      {
+        "id": "d",
+        "text": "DNS で世界中のリージョンに振り分ける",
+        "correct": false,
+        "why": "Route 53 の特徴"
+      }
+    ],
+    "explanation": "ALB = L7・HTTP・内容ベース。",
+    "keywords": [
+      "レイヤー 7"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-alb:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "elb-alb",
+      "elb-nlb"
+    ],
+    "prompt": "ALB ではなく NLB を選ぶべき要件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "UDP の通信で、固定 IP と超低レイテンシが必要",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "NLB はレイヤー 4 で UDP も扱え、AZ ごとに固定 IP を持てる"
+      },
+      {
+        "id": "b",
+        "text": "URL のパスでマイクロサービスに振り分けたい",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB の用途"
+      },
+      {
+        "id": "c",
+        "text": "ロードバランサーに WAF を付けたい",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB は WAF と連携できる"
+      },
+      {
+        "id": "d",
+        "text": "Lambda 関数をターゲットにしたい",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB は Lambda をターゲットにできる"
+      }
+    ],
+    "explanation": "企画書の比較例「ALB vs NLB」。HTTP の内容 → ALB、TCP/UDP・固定 IP・超低レイテンシ → NLB。",
+    "keywords": [
+      "UDP",
+      "固定 IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-nlb:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elb-nlb"
+    ],
+    "prompt": "取引先のファイアウォールに登録するため、ロードバランサーの IP アドレスを固定したい。通信は TCP。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Network Load Balancer",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "AZ ごとに固定の IP を持ち、Elastic IP も割り当てられる"
+      },
+      {
+        "id": "b",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "IP アドレスは固定されず、変わることがある"
+      },
+      {
+        "id": "c",
+        "text": "Gateway Load Balancer",
+        "correct": false,
+        "atomId": "elb-gwlb",
+        "why": "仮想アプライアンス用"
+      },
+      {
+        "id": "d",
+        "text": "Auto Scaling グループだけ",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "インスタンスの IP は入れ替わる"
+      }
+    ],
+    "explanation": "固定 IP のロードバランサー = NLB。",
+    "keywords": [
+      "IP アドレスを固定",
+      "TCP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-nlb:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "elb-nlb"
+    ],
+    "prompt": "「TCP/UDP」「毎秒数百万リクエスト」「超低レイテンシ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Network Load Balancer",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "レイヤー 4 で大量の接続を超低レイテンシで処理する"
+      },
+      {
+        "id": "b",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "レイヤー 7 で、UDP は扱えない"
+      },
+      {
+        "id": "c",
+        "text": "Gateway Load Balancer",
+        "correct": false,
+        "atomId": "elb-gwlb",
+        "why": "仮想アプライアンス用"
+      },
+      {
+        "id": "d",
+        "text": "Amazon CloudFront",
+        "correct": false,
+        "why": "コンテンツ配信で、ロードバランサーではない"
+      }
+    ],
+    "explanation": "L4・大量・低レイテンシ = NLB。",
+    "keywords": [
+      "TCP/UDP",
+      "超低レイテンシ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-gwlb:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elb-gwlb"
+    ],
+    "prompt": "VPC に出入りするすべての通信を、サードパーティのファイアウォールアプライアンスで検査したい。アプライアンスはスケールさせたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Gateway Load Balancer",
+        "correct": true,
+        "atomId": "elb-gwlb",
+        "why": "仮想アプライアンスの前に置き、通信を透過的に通して検査させる"
+      },
+      {
+        "id": "b",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "HTTP の振り分けで、すべての通信を透過的に検査する仕組みではない"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "外向きの通信のためのもので、検査はしない"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      }
+    ],
+    "explanation": "サードパーティのアプライアンス = GWLB。",
+    "keywords": [
+      "サードパーティのファイアウォール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-sticky-sessions:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elb-sticky-sessions",
+      "elasticache-redis"
+    ],
+    "prompt": "セッションを各サーバーのメモリに持ち、スティッキーセッションで同じサーバーに送っている。スケールインのたびにログアウトされる。根本的な対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "セッションを外部のストアに置く",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "どのサーバーでもセッションを読めるので、台数が変わっても影響を受けない"
+      },
+      {
+        "id": "b",
+        "text": "スティッキーセッションの期間を長くする",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "インスタンスが消えればセッションも消える"
+      },
+      {
+        "id": "c",
+        "text": "スケールインを無効にする",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "コストが下がらず、障害時の置き換えでも同じ問題が起きる"
+      },
+      {
+        "id": "d",
+        "text": "NLB に切り替える",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "セッションがサーバーにある問題は解決しない"
+      }
+    ],
+    "explanation": "ステートレスなサーバー + 外部のセッションストアが基本。",
+    "keywords": [
+      "ログアウト",
+      "スケールイン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-cross-zone:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "elb-cross-zone"
+    ],
+    "prompt": "AZ-a に 2 台、AZ-b に 8 台のインスタンスがあり、AZ-a の 2 台に負荷が集中している。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "クロスゾーン負荷分散を有効にする",
+        "correct": true,
+        "atomId": "elb-cross-zone",
+        "why": "すべての AZ のターゲットに均等に振り分けられる"
+      },
+      {
+        "id": "b",
+        "text": "スティッキーセッションを有効にする",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じクライアントを同じサーバーに送るだけで、偏りは解消しない"
+      },
+      {
+        "id": "c",
+        "text": "登録解除の遅延を長くする",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "負荷の偏りとは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "ヘルスチェックの間隔を短くする",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "負荷の偏りとは関係がない"
+      }
+    ],
+    "explanation": "AZ ごとの台数の差による偏り = クロスゾーン負荷分散。",
+    "keywords": [
+      "負荷が集中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-health-checks:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "elb-health-checks"
+    ],
+    "prompt": "ロードバランサーのヘルスチェックで異常と判定されたターゲットはどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "そのターゲットにはリクエストが送られなくなる",
+        "correct": true,
+        "atomId": "elb-health-checks",
+        "why": "正常なターゲットにだけ振り分ける。置き換えは Auto Scaling が行う"
+      },
+      {
+        "id": "b",
+        "text": "ロードバランサーが自動で再起動する",
+        "correct": false,
+        "why": "ロードバランサーはインスタンスを再起動しない"
+      },
+      {
+        "id": "c",
+        "text": "ロードバランサー全体が停止する",
+        "correct": false,
+        "why": "他の正常なターゲットには振り分け続ける"
+      },
+      {
+        "id": "d",
+        "text": "そのターゲットに 2 倍のリクエストを送る",
+        "correct": false,
+        "why": "異常なターゲットには送らない"
+      }
+    ],
+    "explanation": "ELB は振り分けを止めるだけ。インスタンスの置き換えは Auto Scaling の役割。",
+    "keywords": [
+      "異常"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-deregistration-delay:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "elb-deregistration-delay"
+    ],
+    "prompt": "スケールインのときに、処理中のリクエストが途中で切断されるのを防ぎたい。何を設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "登録解除の遅延",
+        "correct": true,
+        "atomId": "elb-deregistration-delay",
+        "why": "処理中のリクエストが終わるまで待ってから、ターゲットを外す"
+      },
+      {
+        "id": "b",
+        "text": "クロスゾーン負荷分散",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "AZ 間の振り分けの設定"
+      },
+      {
+        "id": "c",
+        "text": "スティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じサーバーに送り続ける設定で、切断は防げない"
+      },
+      {
+        "id": "d",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "日時で台数を変える設定"
+      }
+    ],
+    "explanation": "処理中のリクエストを切らない = 登録解除の遅延。",
+    "keywords": [
+      "処理中のリクエスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-tls-termination:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elb-tls-termination"
+    ],
+    "prompt": "20 台の Web サーバーそれぞれに証明書を入れていて、更新が大変。証明書の管理と更新を楽にしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ACM の証明書で ALB が TLS を終端する",
+        "correct": true,
+        "atomId": "elb-tls-termination",
+        "why": "ACM のパブリック証明書は無料で自動更新され、サーバーには証明書が不要になる"
+      },
+      {
+        "id": "b",
+        "text": "各サーバーの証明書の有効期限を 10 年にする",
+        "correct": false,
+        "why": "パブリック証明書の有効期限は長くできず、管理も楽にならない"
+      },
+      {
+        "id": "c",
+        "text": "NLB に切り替えて HTTP で通信する",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "暗号化されなくなる"
+      },
+      {
+        "id": "d",
+        "text": "スティッキーセッションを有効にする",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "証明書の管理とは関係がない"
+      }
+    ],
+    "explanation": "証明書の管理 = ACM + ロードバランサーで終端。",
+    "keywords": [
+      "証明書",
+      "更新"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-alb:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "elb-alb",
+      "autoscaling-group",
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "EC サイトの Web 層を設計する。\n・3 つの AZ に分散し、1 つの AZ が止まっても動き続ける\n・/api と /static で別のサーバー群に振り分ける\n・アプリが応答しなくなったサーバーは自動で置き換える\n・平均 CPU 使用率を 60% に保つように台数を自動調整する\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB のパスルーティング + 3 AZ の ASG（ELB チェック、CPU 60% の追跡）",
+        "correct": true,
+        "atomId": "elb-alb",
+        "why": "振り分け、AZ 障害、アプリの異常の置き換え、台数の自動調整をすべて満たす"
+      },
+      {
+        "id": "b",
+        "text": "NLB + 3 AZ の ASG（EC2 ヘルスチェック、ステップスケーリング）",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB はパスで振り分けられず、EC2 のチェックだけではアプリの異常で置き換わらない"
+      },
+      {
+        "id": "c",
+        "text": "ALB + 1 AZ の ASG（ELB ヘルスチェック、スケジュールされたスケーリング）",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "1 つの AZ だけでは AZ 障害に耐えられず、CPU にも反応しない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 で各サーバーに直接振り分け、台数は手動で調整する",
+        "correct": false,
+        "why": "パスでの振り分けも、自動の置き換えや台数調整もできない"
+      }
+    ],
+    "explanation": "要件を 1 つずつ当てはめる。パス → ALB、AZ 障害 → 複数 AZ、アプリの異常 → ELB ヘルスチェック、CPU を一定 → ターゲット追跡。",
+    "keywords": [
+      "3 つの AZ",
+      "/api と /static",
+      "CPU 60%"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
