@@ -1,0 +1,131 @@
+# S3 Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: s3
+
+atoms:
+  - id: s3-standard
+    category: storage-class
+    concept: S3 Standard
+    summary: 頻繁にアクセスするデータ向けの汎用ストレージクラス
+    facts:
+      - 頻繁にアクセスされるデータ向け
+      - 3 つ以上の AZ にデータを冗長保存する
+      - 取り出し料金・最低保存期間・最小課金サイズがない
+    triggers:
+      - 頻繁にアクセスされる
+      - アクセスが多い
+    pitfalls:
+      - アクセス頻度が低いデータを置き続けると、IA 系より保存料金が高くつく
+    relations:
+      - type: confused_with
+        target: s3-standard-ia
+        distinction: Standard は頻繁アクセス向けで取り出し料金なし。Standard-IA は低頻度アクセス向けで保存料金が安い代わりに取り出し料金がかかる
+    examDomains: [cost, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+
+  - id: s3-standard-ia
+    category: storage-class
+    concept: S3 Standard-IA
+    summary: アクセスは低頻度だが、必要なときはすぐ取り出したいデータ向け
+    facts:
+      - 低頻度アクセスだが、ミリ秒単位で即時に取り出せる
+      - 3 つ以上の AZ に冗長保存する
+      - 保存料金は Standard より安いが、取り出し料金がかかる
+      - 最低保存期間は 30 日、最小課金サイズは 128 KB
+    triggers:
+      - アクセス頻度は低いが、すぐに取り出せる必要がある
+      - 月に 1 回程度しかアクセスしない
+    pitfalls:
+      - 頻繁にアクセスすると取り出し料金で Standard より高くなる
+      - 30 日未満で削除しても 30 日分の料金がかかる
+    relations:
+      - type: confused_with
+        target: s3-one-zone-ia
+        distinction: Standard-IA は複数 AZ に保存するので AZ 障害に耐える。One Zone-IA は単一 AZ なので安いが AZ 障害でデータを失いうる
+      - type: confused_with
+        target: s3-intelligent-tiering
+        distinction: Standard-IA は低頻度アクセスだと分かっている場合向け。Intelligent-Tiering はアクセスパターンが予測できない場合向け
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+
+  - id: s3-one-zone-ia
+    category: storage-class
+    concept: S3 One Zone-IA
+    summary: 単一 AZ に保存する低頻度アクセス向けの安価なストレージクラス
+    facts:
+      - データを単一の AZ にのみ保存する
+      - Standard-IA より保存料金が安い
+      - AZ が失われるとデータも失われる
+      - 再作成できるデータや、別リージョンにあるデータのコピー置き場に向く
+    triggers:
+      - 再作成可能なデータ
+      - 別の場所にコピーがある
+      - 可用性より低コストを優先する
+    pitfalls:
+      - 高可用性が必要なデータや、再作成できない唯一のデータには向かない
+    relations: []
+    examDomains: [cost, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+
+  - id: s3-intelligent-tiering
+    category: storage-class
+    concept: S3 Intelligent-Tiering
+    summary: アクセスパターンが不明・変動するデータの保存階層を自動で最適化する
+    facts:
+      - アクセス状況を監視し、アクセスのないオブジェクトを自動で低コストの階層へ移す
+      - 取り出し料金がかからない
+      - オブジェクト単位の監視・自動化料金がかかる
+      - 128 KB 未満のオブジェクトは自動階層化の対象外
+    triggers:
+      - アクセスパターンが予測できない
+      - アクセス頻度が変動する
+      - ストレージクラスを手動で管理したくない
+    pitfalls:
+      - 常に最安になるわけではない。低頻度アクセスだと分かっているなら Standard-IA などを直接選ぶ方が安いことがある
+    relations:
+      - type: confused_with
+        target: s3-lifecycle
+        distinction: Intelligent-Tiering は実際のアクセス状況で自動移動する。Lifecycle は作成からの経過日数などのルールで移動する
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html
+
+  - id: s3-lifecycle
+    category: data-management
+    concept: S3 Lifecycle
+    summary: 経過日数などのルールでストレージクラスの移行や削除を自動化する
+    facts:
+      - 移行アクション（別のストレージクラスへ移す）と有効期限アクション（削除する）がある
+      - 判断基準はアクセス状況ではなく、オブジェクトの作成からの経過日数などのルール
+      - Standard-IA / One Zone-IA へ移すには、作成から 30 日以上経っている必要がある
+      - 古いバージョンの削除や、未完了のマルチパートアップロードの中止にも使える
+    triggers:
+      - 一定期間経過後にアーカイブする
+      - 90 日後に削除する
+      - 古いバージョンを自動で削除したい
+    pitfalls:
+      - アクセスパターンが予測できない場合は、日数ベースのルールでは最適化しきれない
+    relations:
+      - type: used_with
+        target: s3-standard-ia
+      - type: used_with
+        target: s3-one-zone-ia
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html

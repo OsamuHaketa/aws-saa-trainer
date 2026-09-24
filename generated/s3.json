@@ -1,0 +1,132 @@
+[
+  {
+    "id": "s3-intelligent-tiering:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": ["s3-intelligent-tiering"],
+    "prompt": "大量のログデータを S3 に保存する。アクセス頻度は予測できず、ストレージクラスを手動で管理したくない。最適なストレージクラスは？",
+    "choices": [
+      { "id": "a", "text": "S3 Intelligent-Tiering", "correct": true, "atomId": "s3-intelligent-tiering",
+        "why": "アクセス状況に応じて自動で階層を移すため、予測も手動管理も不要" },
+      { "id": "b", "text": "S3 Standard-IA", "correct": false, "atomId": "s3-standard-ia",
+        "why": "低頻度アクセスだと分かっている場合向け。アクセスが多い時期は取り出し料金がかさむ" },
+      { "id": "c", "text": "S3 One Zone-IA", "correct": false, "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ で安くなるだけで、アクセスパターンが読めない問題は解決しない" },
+      { "id": "d", "text": "S3 Standard", "correct": false, "atomId": "s3-standard",
+        "why": "アクセスが少ない期間も高い保存料金のままで、コストが最適化されない" },
+      { "id": "e", "text": "S3 Standard + Lifecycle ルール", "correct": false, "atomId": "s3-lifecycle",
+        "why": "日数ベースのルールなので、アクセスパターンが読めないと最適化しきれず、ルールの管理も必要" }
+    ],
+    "explanation": "「アクセスパターンが予測できない」「手動で管理したくない」は Intelligent-Tiering を選ばせる典型的なキーワード。",
+    "keywords": ["アクセスパターンが予測できない", "手動で管理したくない"],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-one-zone-ia:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": ["s3-one-zone-ia"],
+    "prompt": "「再作成可能なデータ」「低頻度アクセス」「コスト最優先」→ どのストレージクラス？",
+    "choices": [
+      { "id": "a", "text": "S3 One Zone-IA", "correct": true, "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ で最も安い IA 系。失っても再作成できるデータなら AZ 障害のリスクを許容できる" },
+      { "id": "b", "text": "S3 Standard-IA", "correct": false, "atomId": "s3-standard-ia",
+        "why": "複数 AZ に保存する分、再作成可能なデータには料金が過剰" },
+      { "id": "c", "text": "S3 Intelligent-Tiering", "correct": false, "atomId": "s3-intelligent-tiering",
+        "why": "アクセスパターンが予測できない場合向け。低頻度と分かっているなら不要" },
+      { "id": "d", "text": "S3 Standard", "correct": false, "atomId": "s3-standard",
+        "why": "頻繁アクセス向けで、低頻度データには保存料金が高い" }
+    ],
+    "explanation": "「再作成可能」「別の場所にコピーがある」は、単一 AZ のリスクを許容できるサイン。One Zone-IA を選ぶ。",
+    "keywords": ["再作成可能なデータ", "コスト最優先"],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard-ia:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": ["s3-standard-ia", "s3-one-zone-ia"],
+    "prompt": "S3 Standard-IA と比べたときの、S3 One Zone-IA の最も重要な違いは？",
+    "choices": [
+      { "id": "a", "text": "単一 AZ に保存するため、AZ 障害でデータを失いうる", "correct": true,
+        "why": "両者の本質的な違いは保存する AZ の数。その分 One Zone-IA は安い" },
+      { "id": "b", "text": "取り出し料金がかからず、頻繁にアクセスしても安い", "correct": false,
+        "why": "どちらも取り出し料金がかかる" },
+      { "id": "c", "text": "アーカイブ用のクラスのため、取り出しに数時間かかる", "correct": false,
+        "why": "どちらもミリ秒単位で取り出せる。数時間かかるのは Glacier 系" },
+      { "id": "d", "text": "最低保存期間がなく、短期間の保存にも向く", "correct": false,
+        "why": "どちらも最低保存期間は 30 日" }
+    ],
+    "explanation": "料金体系（取り出し料金、30 日の最低保存期間、128 KB の最小課金サイズ）は共通。違うのは AZ の数と、それに伴う耐障害性と保存料金。",
+    "keywords": ["単一 AZ", "耐障害性"],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-one-zone-ia:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": ["s3-one-zone-ia"],
+    "prompt": "長期保管が必要で、ほかにコピーのない契約書データを S3 One Zone-IA に保存した。何が問題？",
+    "choices": [
+      { "id": "a", "text": "単一 AZ のため、AZ 障害で唯一のデータを失うおそれがある", "correct": true,
+        "why": "再作成できない唯一のデータは、複数 AZ に保存するクラスに置くべき" },
+      { "id": "b", "text": "30 日を超えて保存できないため、長期保管に使えない", "correct": false,
+        "why": "保存期間の上限はない。30 日は最低保存期間" },
+      { "id": "c", "text": "保存したデータを暗号化できず、機密情報を扱えない", "correct": false,
+        "why": "ほかのストレージクラスと同様に暗号化できる" },
+      { "id": "d", "text": "取り出しに数時間かかり、急な参照に対応できない", "correct": false,
+        "why": "ミリ秒単位で取り出せる。数時間かかるのは Glacier 系" }
+    ],
+    "explanation": "One Zone-IA は「失っても困らないデータ」専用と覚える。再作成できない唯一のデータには Standard-IA などを使う。",
+    "keywords": ["ほかにコピーのない", "長期保管"],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-intelligent-tiering:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": ["s3-intelligent-tiering"],
+    "prompt": "S3 Intelligent-Tiering が最も適しているデータは？",
+    "choices": [
+      { "id": "a", "text": "アクセスパターンが不明、または変動するデータ", "correct": true, "atomId": "s3-intelligent-tiering",
+        "why": "実際のアクセス状況を見て自動で階層を移すので、予測できなくても最適化される" },
+      { "id": "b", "text": "頻繁にアクセスされることが分かっているデータ", "correct": false, "atomId": "s3-standard",
+        "why": "S3 Standard の方が監視・自動化料金がかからず適している" },
+      { "id": "c", "text": "低頻度だと分かっていて、すぐ取り出す必要のあるデータ", "correct": false, "atomId": "s3-standard-ia",
+        "why": "Standard-IA を直接選ぶ方が安くなることがある" },
+      { "id": "d", "text": "再作成が可能で、単一 AZ でも問題ないデータ", "correct": false, "atomId": "s3-one-zone-ia",
+        "why": "One Zone-IA の用途" }
+    ],
+    "explanation": "Intelligent-Tiering の価値は「予測しなくていい」こと。アクセス頻度が分かっているなら、ほかのクラスを直接選ぶ方が安いことが多い。",
+    "keywords": ["アクセスパターンが不明"],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": ["s3-lifecycle", "s3-standard-ia"],
+    "prompt": "レポートは作成後 30 日間よく参照され、その後はほぼ参照されない。1 年後に削除したい。運用負荷とコストを最小にするには？",
+    "choices": [
+      { "id": "a", "text": "Lifecycle で 30 日後に Standard-IA へ移行、365 日後に削除", "correct": true, "atomId": "s3-lifecycle",
+        "why": "アクセスの変化が日数で予測できるので、日数ベースの Lifecycle で移行と削除を自動化できる" },
+      { "id": "b", "text": "Intelligent-Tiering に保存し、1 年後に手動でまとめて削除する", "correct": false, "atomId": "s3-intelligent-tiering",
+        "why": "変化が予測できているので監視料金を払う必要がない。手動削除は運用負荷が高い" },
+      { "id": "c", "text": "作成時から Standard-IA に保存し、1 年後に手動で削除する", "correct": false, "atomId": "s3-standard-ia",
+        "why": "最初の 30 日はよく参照されるので取り出し料金がかさむ。手動削除も必要" },
+      { "id": "d", "text": "One Zone-IA に保存し、Lambda で定期的に古いものを削除する", "correct": false, "atomId": "s3-one-zone-ia",
+        "why": "耐障害性が下がるうえ、削除処理の実装と運用が必要になる" },
+      { "id": "e", "text": "S3 Standard に保存し、1 年後にスクリプトで削除する", "correct": false, "atomId": "s3-standard",
+        "why": "31 日目以降も高い保存料金を払い続け、削除スクリプトの運用も必要" }
+    ],
+    "explanation": "アクセスの変化が「◯日後」と予測できるなら Lifecycle、予測できないなら Intelligent-Tiering。「削除したい」も Lifecycle の有効期限アクションで自動化できる。",
+    "keywords": ["30 日後", "1 年後に削除", "運用負荷を最小"],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
