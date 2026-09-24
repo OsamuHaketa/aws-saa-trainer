@@ -50,15 +50,18 @@ app/                    画面と API（/api/next, /api/review）
 
 ## コンテンツの状態
 
-25 サービス・Atom 182 個・問題 391 問。**すべて `status: draft`（未レビュー）**。
+50 サービス・Atom 222 個・問題 451 問。**すべて `status: draft`（未レビュー）**。
 
-| サービス | ファイル |
+| まとまり | サービス |
 |---|---|
-| S3（154 問） | `knowledge/s3.yaml`、`generated/s3-*.json` |
-| EC2、VPC、IAM、Organizations、RDS/Aurora、DynamoDB、ElastiCache、ELB、Auto Scaling | `knowledge/<service>.yaml`、`generated/<service>.json` |
-| CloudFront、Global Accelerator、Route 53、Lambda、API Gateway、SQS、SNS、EventBridge、Kinesis | 同上 |
-| EBS、EFS、FSx、CloudWatch、CloudTrail、AWS Config | 同上 |
+| 企画書の MVP | S3（Atom 42・問題 154） |
+| 企画書の Phase 7 | EC2、VPC、IAM、Organizations、RDS/Aurora、DynamoDB、ElastiCache、ELB、Auto Scaling、CloudFront、Global Accelerator、Route 53、Lambda、API Gateway、SQS、SNS、EventBridge、Kinesis、EBS、EFS、FSx、CloudWatch、CloudTrail、AWS Config |
+| 追加（SAA で頻出） | KMS、Secrets Manager、Systems Manager、WAF、Shield、GuardDuty、Macie、Inspector、Cognito、ECS/Fargate、EKS、Step Functions、Batch、Elastic Beanstalk、Storage Gateway、DataSync、Snowball、DMS、AWS Backup、Athena、Redshift、Glue、EMR、QuickSight、OpenSearch |
+| 設計パターン | DR 戦略（バックアップと復元 / パイロットライト / ウォームスタンバイ / マルチサイト）、RPO と RTO、ステートレス、疎結合 |
 
+問題タイプの内訳: 条件→用語 224、比較 64、アンチパターン 52、用語→意味 47、トリガー 34、本番型 21、関連 5、シナリオ 4。
+
+- ファイルは `knowledge/<service>.yaml` と `generated/<service>.json`（S3 だけ `generated/s3-*.json` に分割、サービス横断の本番型は `generated/exam-cross.json`）
 - 新しい問題は `lib/config.ts` の `serviceOrder`（S3 → EC2 → VPC → …）の順に、サービスごとに出る
 - 学習画面の「範囲」で、特定のサービスだけに絞って学習できる（`/study?service=s3`）
 - 企画書の比較例（SQS vs SNS、ALB vs NLB、EBS vs EFS、Multi-AZ vs Read Replica、CloudFront vs Global Accelerator、Gateway vs Interface Endpoint、SG vs NACL、RDS vs DynamoDB、Kinesis vs SQS）は、すべて `confused_with` と比較問題にしてある
@@ -69,7 +72,8 @@ app/                    画面と API（/api/next, /api/review）
 ## 仮で決めたこと（確認・調整してほしい点）
 
 1. **新規 20 問/日、保持率 90%** — 試験日から逆算して変えてよい
-2. **新規の順番** — サービスの順（`serviceOrder`）→ Level の低い順。1 日のうちは同じ Atom の新規を 2 問以上出さないので、初日は S3 の「用語→意味」が中心になる。並び順は `lib/scheduler.ts` の `newQuestions`
+2. **新規の順番** — サービスの順（`serviceOrder`）→ Level の低い順。1 日のうちは、まだ出していない Atom の問題を優先するので、初日は S3 の「用語→意味」が中心になる。並び順は `lib/scheduler.ts` の `newQuestions`
 3. **フォローアップは誤答から 2 問後** — `config.followupAfter`
 4. **「正解だけ長い選択肢」の警告基準** — 正解が 12 字以上かつ、誤答の最長の 1.2 倍を超えたら警告
-5. **問題の内容** — 私（Claude）が書いたもので、公式ドキュメントとの照合はまだ。特に数値（S3 の 30 / 90 / 180 日、5 GB / 5 TB、3,500 / 5,500 リクエスト、取り出し時間、RDS の 35 日、スプレッドの 7 個/AZ、gp3 の 3,000 IOPS など）を確認してほしい
+5. **問題の内容** — 私（Claude）が書いたもので、公式ドキュメントとの照合はまだ。サービスの提供状況が変わりやすいもの（Snowball Edge など）も確認してほしい。特に数値（S3 の 30 / 90 / 180 日、5 GB / 5 TB、3,500 / 5,500 リクエスト、取り出し時間、RDS の 35 日、スプレッドの 7 個/AZ、gp3 の 3,000 IOPS など）を確認してほしい
+6. **企画書の Phase 7 の一覧にないサービスも追加した** — セキュリティ、コンテナ、移行、分析、DR 戦略など。不要なら該当する `knowledge/*.yaml` と `generated/*.json` を削除する（学習前なら問題ない）
