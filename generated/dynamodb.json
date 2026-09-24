@@ -1,0 +1,638 @@
+[
+  {
+    "id": "dynamodb-table:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "dynamodb-table"
+    ],
+    "prompt": "Amazon DynamoDB の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サーバーレスの NoSQL で、1 桁ミリ秒で応答する",
+        "correct": true,
+        "atomId": "dynamodb-table",
+        "why": "キーでアクセスし、自動でスケールする"
+      },
+      {
+        "id": "b",
+        "text": "SQL の JOIN が得意なリレーショナル DB",
+        "correct": false,
+        "atomId": "rds-aurora",
+        "why": "RDS や Aurora の特徴"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトを保存するストレージサービス",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "S3 の特徴"
+      },
+      {
+        "id": "d",
+        "text": "データをメモリにだけ置くキャッシュ",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "ElastiCache の特徴"
+      }
+    ],
+    "explanation": "DynamoDB = サーバーレス・キーバリュー・1 桁ミリ秒。",
+    "keywords": [
+      "NoSQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-table:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-table"
+    ],
+    "prompt": "ゲームの利用者データを、ユーザー ID で読み書きする。ピーク時は毎秒数十万リクエストになり、サーバーの管理はしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon DynamoDB",
+        "correct": true,
+        "atomId": "dynamodb-table",
+        "why": "キーでのアクセスを、サーバーレスで大規模にスケールできる"
+      },
+      {
+        "id": "b",
+        "text": "RDS for MySQL（大きなインスタンス）",
+        "correct": false,
+        "why": "書き込みのスケールに限界があり、インスタンスの管理も必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Aurora",
+        "correct": false,
+        "atomId": "rds-aurora",
+        "why": "リレーショナル DB で、キーでの単純なアクセスを毎秒数十万回さばくには DynamoDB が向く"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "オブジェクトストレージで、項目単位の低レイテンシな読み書きには向かない"
+      }
+    ],
+    "explanation": "「キーでアクセス」「大規模」「サーバーレス」= DynamoDB。",
+    "keywords": [
+      "ユーザー ID",
+      "毎秒数十万"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-table:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-table",
+      "rds-aurora"
+    ],
+    "prompt": "DynamoDB ではなく Aurora を選ぶべき要件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複数のテーブルを JOIN する複雑な SQL が多い",
+        "correct": true,
+        "atomId": "rds-aurora",
+        "why": "リレーショナル DB は結合や複雑なクエリ、トランザクションに向く"
+      },
+      {
+        "id": "b",
+        "text": "毎秒数百万のキーでの読み書きがある",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "DynamoDB が得意"
+      },
+      {
+        "id": "c",
+        "text": "サーバーを管理したくなく、容量の計画もしたくない",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "DynamoDB のオンデマンドが向く"
+      },
+      {
+        "id": "d",
+        "text": "スキーマが項目ごとにばらばらのデータを保存したい",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "DynamoDB は柔軟なスキーマ"
+      }
+    ],
+    "explanation": "企画書の比較例「RDS vs DynamoDB」。SQL・結合 → RDS/Aurora、キー・大規模・サーバーレス → DynamoDB。",
+    "keywords": [
+      "JOIN",
+      "SQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-on-demand:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-on-demand"
+    ],
+    "prompt": "新しく公開するアプリの DynamoDB テーブル。アクセスがどれくらい来るか全く予測できない。容量の計画をせずに済ませたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドキャパシティモード",
+        "correct": true,
+        "atomId": "dynamodb-on-demand",
+        "why": "容量を決めずに、リクエスト数に応じて自動で対応する"
+      },
+      {
+        "id": "b",
+        "text": "プロビジョンドキャパシティ（固定値）",
+        "correct": false,
+        "atomId": "dynamodb-provisioned",
+        "why": "予測できないと、容量の不足や余りが出る"
+      },
+      {
+        "id": "c",
+        "text": "DAX を追加する",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "読み取りのキャッシュで、容量の計画の問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブルにする",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "マルチリージョンの複製で、容量の計画の問題は解決しない"
+      }
+    ],
+    "explanation": "「予測できない」「計画したくない」= オンデマンド。",
+    "keywords": [
+      "予測できない",
+      "容量の計画"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-provisioned:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-provisioned"
+    ],
+    "prompt": "DynamoDB テーブルへのアクセスは、毎日ほぼ同じ量で安定している。コストを最も下げるには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンドキャパシティ（オートスケーリング付き）",
+        "correct": true,
+        "atomId": "dynamodb-provisioned",
+        "why": "予測できる一定の負荷なら、オンデマンドより安い"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドキャパシティ",
+        "correct": false,
+        "atomId": "dynamodb-on-demand",
+        "why": "便利だが、安定した負荷ならプロビジョンドより割高になりやすい"
+      },
+      {
+        "id": "c",
+        "text": "DAX を 3 ノードで追加する",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュの料金が増える"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブルで 3 リージョンに複製する",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "複製の分だけコストが増える"
+      }
+    ],
+    "explanation": "安定・予測できる → プロビジョンド、予測できない → オンデマンド。",
+    "keywords": [
+      "安定",
+      "コスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-on-demand:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-on-demand",
+      "dynamodb-provisioned"
+    ],
+    "prompt": "DynamoDB のオンデマンドとプロビジョンドの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は容量を決めずリクエスト課金、後者は容量を事前に決める",
+        "correct": true,
+        "why": "予測できない負荷はオンデマンド、安定した負荷はプロビジョンド"
+      },
+      {
+        "id": "b",
+        "text": "前者は 1 つの AZ、後者は 3 つの AZ にデータを置く",
+        "correct": false,
+        "why": "どちらも 3 AZ に複製される"
+      },
+      {
+        "id": "c",
+        "text": "前者は読み取り専用、後者は書き込みもできる",
+        "correct": false,
+        "why": "どちらも読み書きできる"
+      },
+      {
+        "id": "d",
+        "text": "前者は 1 年契約が必要、後者は契約不要",
+        "correct": false,
+        "why": "オンデマンドに契約は不要"
+      }
+    ],
+    "explanation": "キャパシティモードの違いは「容量を決めるかどうか」。",
+    "keywords": [
+      "容量"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-dax:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-dax"
+    ],
+    "prompt": "DynamoDB への読み取りが多く、レイテンシをマイクロ秒にしたい。アプリのコードはほとんど変えたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB Accelerator（DAX）",
+        "correct": true,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB と API 互換のインメモリキャッシュで、マイクロ秒で読み取れる"
+      },
+      {
+        "id": "b",
+        "text": "ElastiCache（Valkey/Redis）",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "キャッシュの読み書きの処理をアプリに書く必要がある"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録で、読み取りは速くならない"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "複数リージョンへの複製で、キャッシュではない"
+      }
+    ],
+    "explanation": "DynamoDB + マイクロ秒 + コード変更なし = DAX。",
+    "keywords": [
+      "マイクロ秒",
+      "コードはほとんど変えたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-dax:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-dax",
+      "elasticache-redis"
+    ],
+    "prompt": "DAX と ElastiCache の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DAX は DynamoDB 専用で API 互換、ElastiCache は汎用",
+        "correct": true,
+        "why": "DynamoDB の読み取りなら DAX、RDS の結果やセッションなら ElastiCache"
+      },
+      {
+        "id": "b",
+        "text": "DAX は汎用、ElastiCache は DynamoDB 専用",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "DAX は書き込みを速くし、ElastiCache は読み取りを速くする",
+        "correct": false,
+        "why": "DAX も主に読み取りを速くする"
+      },
+      {
+        "id": "d",
+        "text": "DAX はディスクに、ElastiCache はメモリにデータを置く",
+        "correct": false,
+        "why": "どちらもインメモリのキャッシュ"
+      }
+    ],
+    "explanation": "DynamoDB 専用のキャッシュ = DAX。それ以外 = ElastiCache。",
+    "keywords": [
+      "専用",
+      "汎用"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-global-tables:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-global-tables"
+    ],
+    "prompt": "世界中で使われるアプリで、米国・欧州・アジアのどのリージョンでもユーザーのデータを低レイテンシで読み書きさせたい。DynamoDB で何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB グローバルテーブル",
+        "correct": true,
+        "atomId": "dynamodb-global-tables",
+        "why": "複数のリージョンにレプリカを持ち、どのリージョンでも書き込める"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB Accelerator（DAX）",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "1 つのリージョンのキャッシュで、書き込みは速くならない"
+      },
+      {
+        "id": "c",
+        "text": "ポイントインタイムリカバリ",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "バックアップの機能"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB Streams だけ",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録で、自分で複製の仕組みを作る必要がある"
+      }
+    ],
+    "explanation": "マルチリージョン・マルチアクティブの NoSQL = グローバルテーブル。",
+    "keywords": [
+      "どのリージョンでも",
+      "読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-streams:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-streams"
+    ],
+    "prompt": "DynamoDB に注文が追加されたら、すぐに確認メールを送りたい。テーブルを定期的にスキャンしたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Streams で Lambda を起動する",
+        "correct": true,
+        "atomId": "dynamodb-streams",
+        "why": "項目の追加を順番どおりに受け取り、処理をすぐ実行できる"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB TTL で注文の項目を削除する",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "期限切れの項目の削除で、通知はできない"
+      },
+      {
+        "id": "c",
+        "text": "DAX で注文をキャッシュする",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "読み取りのキャッシュで、変更の検知はできない"
+      },
+      {
+        "id": "d",
+        "text": "ポイントインタイムリカバリを有効にする",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "バックアップの機能"
+      }
+    ],
+    "explanation": "DynamoDB の変更をきっかけに処理 = Streams + Lambda。",
+    "keywords": [
+      "追加されたら",
+      "スキャンしたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-ttl:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-ttl"
+    ],
+    "prompt": "DynamoDB に保存したセッション情報を、最終アクセスから 24 時間後に自動で削除したい。書き込みの料金も増やしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB TTL",
+        "correct": true,
+        "atomId": "dynamodb-ttl",
+        "why": "期限の時刻を入れておけば自動で削除され、削除に書き込み容量を使わない"
+      },
+      {
+        "id": "b",
+        "text": "毎時 Lambda でスキャンして削除する",
+        "correct": false,
+        "why": "スキャンと削除の読み書きの料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録で、削除はしない"
+      },
+      {
+        "id": "d",
+        "text": "ポイントインタイムリカバリ",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "バックアップの機能"
+      }
+    ],
+    "explanation": "期限切れのデータを無料で自動削除 = TTL。",
+    "keywords": [
+      "自動で削除",
+      "料金も増やしたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-pitr:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-pitr"
+    ],
+    "prompt": "アプリのバグで、DynamoDB のテーブルの多くの項目が 10 分前に誤って上書きされた。上書きの直前の状態に戻したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ポイントインタイムリカバリで直前の時刻に復元",
+        "correct": true,
+        "atomId": "dynamodb-pitr",
+        "why": "過去 35 日以内の任意の秒に、新しいテーブルとして復元できる"
+      },
+      {
+        "id": "b",
+        "text": "グローバルテーブルの別リージョンから読む",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "上書きも別リージョンに複製されている"
+      },
+      {
+        "id": "c",
+        "text": "DAX のキャッシュから読む",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュはいずれ上書き後のデータになり、復元の仕組みでもない"
+      },
+      {
+        "id": "d",
+        "text": "TTL で上書きされた項目を削除する",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "削除するだけで、元には戻らない"
+      }
+    ],
+    "explanation": "DynamoDB の任意の時点への復元 = PITR（35 日）。",
+    "keywords": [
+      "誤って上書き",
+      "直前"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-gsi:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "dynamodb-gsi"
+    ],
+    "prompt": "DynamoDB のテーブルを作成したあとで、別の属性をパーティションキーにして検索できるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "グローバルセカンダリインデックス（GSI）",
+        "correct": true,
+        "atomId": "dynamodb-gsi",
+        "why": "テーブル作成後にも追加でき、別のパーティションキーで検索できる"
+      },
+      {
+        "id": "b",
+        "text": "ローカルセカンダリインデックス（LSI）",
+        "correct": false,
+        "why": "パーティションキーは同じで、テーブル作成時にしか作れない"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録で、検索はできない"
+      },
+      {
+        "id": "d",
+        "text": "テーブル全体のスキャン",
+        "correct": false,
+        "why": "できるが、遅くて読み取りの料金が高い"
+      }
+    ],
+    "explanation": "GSI = 別のパーティションキー・後から追加可。LSI = 同じパーティションキー・作成時のみ。",
+    "keywords": [
+      "作成したあとで",
+      "別の属性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-table:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "dynamodb-table",
+      "dynamodb-dax",
+      "dynamodb-global-tables"
+    ],
+    "prompt": "モバイルゲームのバックエンドを設計する。\n・プレイヤーのデータを ID で読み書きし、ピークは毎秒数十万リクエスト\n・同じプレイヤーのプロフィールが何度も読まれ、マイクロ秒で返したい\n・米国とアジアのプレイヤーが、それぞれ近いリージョンで書き込む\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB グローバルテーブル + DAX",
+        "correct": true,
+        "atomId": "dynamodb-table",
+        "why": "大規模なキーアクセスは DynamoDB、マイクロ秒の読み取りは DAX、リージョンごとの書き込みはグローバルテーブル"
+      },
+      {
+        "id": "b",
+        "text": "Aurora グローバルデータベース + ElastiCache",
+        "correct": false,
+        "atomId": "rds-aurora-global-database",
+        "why": "セカンダリリージョンは読み取り専用で、各リージョンでの書き込みに対応しない"
+      },
+      {
+        "id": "c",
+        "text": "RDS for MySQL のマルチ AZ + リードレプリカ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "毎秒数十万の書き込みや、複数リージョンでの書き込みに向かない"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB（1 リージョン）+ DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "複数リージョンでの書き込みとマイクロ秒の読み取りに対応しない"
+      }
+    ],
+    "explanation": "大規模キーアクセス → DynamoDB、マイクロ秒 → DAX、マルチリージョン書き込み → グローバルテーブル。",
+    "keywords": [
+      "毎秒数十万",
+      "マイクロ秒",
+      "近いリージョンで書き込む"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

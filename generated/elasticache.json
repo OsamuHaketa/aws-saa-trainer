@@ -1,0 +1,227 @@
+[
+  {
+    "id": "elasticache-redis:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elasticache-redis"
+    ],
+    "prompt": "RDS に同じ商品情報の読み取りが集中している。よく読まれるデータをキャッシュして、DB の負荷とレイテンシを下げたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ElastiCache（Valkey/Redis）",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "クエリ結果をメモリに置き、サブミリ秒で返せる"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB Accelerator（DAX）",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB 専用のキャッシュで、RDS には使えない"
+      },
+      {
+        "id": "c",
+        "text": "RDS のマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "可用性の仕組みで、読み取りは速くならない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化"
+      }
+    ],
+    "explanation": "RDS の読み取りのキャッシュ = ElastiCache。",
+    "keywords": [
+      "同じ商品情報",
+      "キャッシュ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-redis:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elasticache-redis"
+    ],
+    "prompt": "Auto Scaling で台数が変わる Web サーバー群で、ログインのセッション情報を共有したい。サーバーが減っても消えないようにしたい。どこに置く？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ElastiCache（Valkey/Redis）",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "サーバーの外にセッションを置けば、どのサーバーからも読め、台数の増減の影響を受けない"
+      },
+      {
+        "id": "b",
+        "text": "各 EC2 インスタンスのインスタンスストア",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "サーバーごとに別々で、インスタンスが終了すると消える"
+      },
+      {
+        "id": "c",
+        "text": "各 EC2 インスタンスのメモリ上",
+        "correct": false,
+        "why": "サーバーごとに別々で、スケールインで消える"
+      },
+      {
+        "id": "d",
+        "text": "RDS の手動スナップショット",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "バックアップで、セッションの共有には使えない"
+      }
+    ],
+    "explanation": "ステートレスなサーバーにするため、セッションは外部（ElastiCache や DynamoDB）に置く。",
+    "keywords": [
+      "セッション",
+      "共有"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-redis:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "elasticache-redis",
+      "elasticache-memcached"
+    ],
+    "prompt": "ElastiCache で Memcached ではなく Valkey / Redis OSS を選ぶべきなのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "レプリケーションと自動フェイルオーバーが必要なとき",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "Valkey / Redis OSS はマルチ AZ の自動フェイルオーバーや永続化に対応する"
+      },
+      {
+        "id": "b",
+        "text": "とにかくシンプルなキャッシュで十分なとき",
+        "correct": false,
+        "atomId": "elasticache-memcached",
+        "why": "Memcached で足りる"
+      },
+      {
+        "id": "c",
+        "text": "マルチスレッドで CPU を使い切りたいとき",
+        "correct": false,
+        "atomId": "elasticache-memcached",
+        "why": "Memcached の特徴"
+      },
+      {
+        "id": "d",
+        "text": "キャッシュのデータが消えても全く問題ないとき",
+        "correct": false,
+        "atomId": "elasticache-memcached",
+        "why": "Memcached で足りる"
+      }
+    ],
+    "explanation": "高可用性・永続化・データ構造 → Valkey / Redis OSS、シンプル・マルチスレッド → Memcached。",
+    "keywords": [
+      "自動フェイルオーバー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-redis:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "elasticache-redis"
+    ],
+    "prompt": "「リアルタイムのランキング」「ソート済みセット」「インメモリ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ElastiCache（Valkey/Redis）",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "ソート済みセットで、スコア順のランキングを高速に扱える"
+      },
+      {
+        "id": "b",
+        "text": "ElastiCache（Memcached）",
+        "correct": false,
+        "atomId": "elasticache-memcached",
+        "why": "シンプルなキーバリューで、ソート済みセットはない"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Accelerator（DAX）",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB の読み取りのキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Aurora",
+        "correct": false,
+        "atomId": "rds-aurora",
+        "why": "ディスクベースのリレーショナル DB"
+      }
+    ],
+    "explanation": "ランキング = Valkey / Redis OSS のソート済みセット。",
+    "keywords": [
+      "ランキング"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-caching-strategies:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "elasticache-caching-strategies"
+    ],
+    "prompt": "キャッシュの遅延読み込みと書き込みスルーの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はミス時にだけ読み込み、後者は書き込み時にも更新",
+        "correct": true,
+        "atomId": "elasticache-caching-strategies",
+        "why": "遅延読み込みは古いデータが残りうる。書き込みスルーは常に新しいが、使われないデータも入る"
+      },
+      {
+        "id": "b",
+        "text": "前者は書き込み時に、後者は読み取り時にキャッシュする",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は Memcached 専用、後者は Redis 専用",
+        "correct": false,
+        "why": "どちらのエンジンでも使える戦略"
+      },
+      {
+        "id": "d",
+        "text": "前者はキャッシュが常に最新、後者は古いデータが残る",
+        "correct": false,
+        "why": "逆。古いデータが残りうるのは遅延読み込み"
+      }
+    ],
+    "explanation": "遅延読み込み = 読むときに入れる、書き込みスルー = 書くときに入れる。TTL で補う。",
+    "keywords": [
+      "遅延読み込み",
+      "書き込みスルー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,74 @@
+# ElastiCache Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: elasticache
+
+atoms:
+  - id: elasticache-redis
+    category: caching
+    concept: ElastiCache（Valkey / Redis OSS）
+    summary: 高機能なインメモリキャッシュ。レプリケーション、自動フェイルオーバー、豊富なデータ構造を持つ
+    facts:
+      - DB のクエリ結果やセッションをメモリに置き、サブミリ秒で読み書きできる
+      - レプリケーションとマルチ AZ の自動フェイルオーバーに対応する
+      - ソート済みセットなどのデータ構造があり、ランキングなどに使える
+      - データの永続化（スナップショット）ができる
+    triggers:
+      - DB の読み取り負荷をキャッシュで減らしたい
+      - セッション情報を複数のサーバーで共有したい
+      - リアルタイムのランキング
+    pitfalls:
+      - キャッシュを使うには、アプリにキャッシュの読み書きの処理を組み込む必要がある
+    relations:
+      - type: confused_with
+        target: elasticache-memcached
+        distinction: Valkey / Redis OSS はレプリケーション、自動フェイルオーバー、永続化、豊富なデータ構造を持つ。Memcached はシンプルでマルチスレッドだが、レプリケーションや永続化がない
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html
+
+  - id: elasticache-memcached
+    category: caching
+    concept: ElastiCache（Memcached）
+    summary: シンプルでマルチスレッドのインメモリキャッシュ。レプリケーションや永続化はない
+    facts:
+      - シンプルなキーバリューのキャッシュ
+      - マルチスレッドで、ノードを増やして水平にスケールする
+      - レプリケーション、自動フェイルオーバー、永続化の機能はない
+    triggers:
+      - シンプルなキャッシュ
+      - マルチスレッド
+      - キャッシュが消えても問題ない
+    pitfalls:
+      - キャッシュの高可用性や永続化が必要なら、Valkey / Redis OSS を使う
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html
+
+  - id: elasticache-caching-strategies
+    category: caching
+    concept: キャッシュ戦略（遅延読み込み / 書き込みスルー）
+    summary: 読み取り時にキャッシュする遅延読み込みと、書き込み時にキャッシュも更新する書き込みスルー
+    facts:
+      - 遅延読み込み（キャッシュアサイド）は、キャッシュにないときだけ DB から読み、キャッシュに入れる
+      - 遅延読み込みは必要なデータだけがキャッシュされるが、古いデータが残ることがある
+      - 書き込みスルーは、DB に書き込むときにキャッシュも更新するので、キャッシュが常に新しい
+      - TTL を組み合わせて、古いデータや使われないデータを消す
+    triggers:
+      - キャッシュのデータが古くなるのを防ぎたい
+      - 必要なデータだけをキャッシュしたい
+    pitfalls:
+      - 書き込みスルーだけだと、一度も読まれないデータまでキャッシュされる
+    relations:
+      - type: part_of
+        target: elasticache-redis
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html

@@ -1,0 +1,205 @@
+# DynamoDB Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: dynamodb
+
+atoms:
+  - id: dynamodb-table
+    category: database
+    concept: Amazon DynamoDB
+    summary: サーバーレスのキーバリュー型 NoSQL データベース。どんな規模でも 1 桁ミリ秒で応答する
+    facts:
+      - フルマネージドでサーバーレスの NoSQL（キーバリュー・ドキュメント）データベース
+      - 規模に関係なく、1 桁ミリ秒のレイテンシで読み書きできる
+      - データは 3 つの AZ に自動で複製される
+      - パーティションキー（とソートキー）でアクセスする。複雑な結合（JOIN）は苦手
+    triggers:
+      - キーバリュー
+      - 毎秒数百万リクエストにスケールする
+      - スキーマが柔軟なデータ
+      - サーバーレスのデータベース
+    pitfalls:
+      - 複雑な JOIN や集計を多用するアプリには、リレーショナル DB の方が向く
+    relations:
+      - type: confused_with
+        target: rds-aurora
+        distinction: DynamoDB はキーでアクセスする NoSQL で、大規模にスケールしサーバー管理が不要。Aurora / RDS はリレーショナル DB で、SQL による結合や複雑なクエリ、トランザクションに向く
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html
+
+  - id: dynamodb-on-demand
+    category: scaling
+    concept: DynamoDB オンデマンドキャパシティ
+    summary: 容量の計画なしに、リクエストの数に応じて払う
+    facts:
+      - 読み書きの容量を事前に決める必要がない
+      - リクエストの数に応じて課金される
+      - 急なトラフィックの増加にも自動で対応する
+      - トラフィックが予測できない新しいアプリや、アクセスが少ないテーブルに向く
+    triggers:
+      - トラフィックが予測できない
+      - 容量の計画をしたくない
+      - 急なスパイク
+    pitfalls:
+      - 一定のトラフィックが予測できるなら、プロビジョンドの方が安いことがある
+    relations:
+      - type: confused_with
+        target: dynamodb-provisioned
+        distinction: オンデマンドは容量を決めずにリクエスト単位で払う。プロビジョンドは読み書きの容量（RCU/WCU）を事前に決め、予測できる一定の負荷なら安い
+    examDomains: [cost, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html
+
+  - id: dynamodb-provisioned
+    category: scaling
+    concept: DynamoDB プロビジョンドキャパシティ
+    summary: 読み書きの容量（RCU/WCU）を事前に決める。オートスケーリングも使える
+    facts:
+      - 読み込み容量ユニット（RCU）と書き込み容量ユニット（WCU）を事前に設定する
+      - オートスケーリングで、使用率に合わせて容量を自動調整できる
+      - 予測できる一定のトラフィックなら、オンデマンドより安い
+      - 容量を超えるとスロットリングが起きる
+    triggers:
+      - トラフィックが予測でき、安定している
+      - コストを最適化したい定常的なワークロード
+    pitfalls:
+      - 急なスパイクがあると、オートスケーリングが追いつかずスロットリングが起きることがある
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html
+
+  - id: dynamodb-dax
+    category: caching
+    concept: DynamoDB Accelerator（DAX）
+    summary: DynamoDB 専用のインメモリキャッシュ。読み取りをマイクロ秒にする
+    facts:
+      - DynamoDB の前に置くインメモリキャッシュ
+      - 読み取りのレイテンシをミリ秒からマイクロ秒にする
+      - DynamoDB と API の互換性があり、アプリの変更が少なくて済む
+      - 同じデータを何度も読む、読み取りの多いワークロードに向く
+    triggers:
+      - DynamoDB の読み取りをマイクロ秒にしたい
+      - DynamoDB の読み取り負荷を減らしたい
+      - アプリのコードをほとんど変えずにキャッシュしたい
+    pitfalls:
+      - 書き込みの多いワークロードや、毎回違うデータを読むワークロードには効果が小さい
+    relations:
+      - type: confused_with
+        target: elasticache-redis
+        distinction: DAX は DynamoDB 専用で、API 互換なのでコードの変更が少ない。ElastiCache は汎用のキャッシュで、RDS の結果やセッションなど何でも置けるが、キャッシュの処理をアプリに書く必要がある
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html
+
+  - id: dynamodb-global-tables
+    category: availability
+    concept: DynamoDB グローバルテーブル
+    summary: 複数のリージョンにテーブルを複製し、どのリージョンでも読み書きできる（マルチアクティブ）
+    facts:
+      - 複数のリージョンにテーブルのレプリカを作り、自動で複製する
+      - どのリージョンのレプリカにも書き込める（マルチリージョン・マルチアクティブ）
+      - 世界中のユーザーに低レイテンシで読み書きさせたり、リージョン障害に備えたりできる
+    triggers:
+      - 複数リージョンで読み書きしたい
+      - グローバルなアプリで低レイテンシ
+      - リージョン障害に備える NoSQL
+    pitfalls:
+      - 同じ項目を複数のリージョンで同時に更新すると、最後の書き込みが勝つ
+    relations: []
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html
+
+  - id: dynamodb-streams
+    category: database
+    concept: DynamoDB Streams
+    summary: テーブルの項目の変更を順番どおりに記録し、Lambda などで処理できるようにする
+    facts:
+      - 項目の追加・更新・削除を、時系列の順に記録する
+      - レコードは 24 時間保持される
+      - Lambda をトリガーして、変更に応じた処理（通知、集計、別システムへの連携）を実行できる
+    triggers:
+      - テーブルの変更をきっかけに処理したい
+      - 項目が追加されたら通知したい
+      - 変更データのキャプチャ
+    pitfalls:
+      - 定期的にテーブル全体をスキャンして変更を探すのは、遅くてコストも高い
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html
+
+  - id: dynamodb-ttl
+    category: database
+    concept: DynamoDB TTL（有効期限）
+    summary: 項目ごとに期限の時刻を設定し、期限が過ぎた項目を自動で削除する
+    facts:
+      - 項目の属性に期限の時刻（エポック秒）を入れておくと、期限後に自動で削除される
+      - 削除に書き込み容量を消費せず、追加料金もかからない
+      - セッション情報や一時的なデータの削除に向く
+    triggers:
+      - 期限が切れたセッションを自動で消したい
+      - 一定期間後にデータを自動で削除
+    pitfalls:
+      - 削除は期限ちょうどではなく、期限後しばらくしてから行われる
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
+
+  - id: dynamodb-pitr
+    category: backup
+    concept: DynamoDB ポイントインタイムリカバリ（PITR）
+    summary: 継続的にバックアップし、過去 35 日の任意の時点に復元できる
+    facts:
+      - 有効にすると、継続的にバックアップされる
+      - 過去 35 日以内の任意の秒の時点に復元できる
+      - 復元は新しいテーブルとして作られる
+      - 長期保管したい場合は、オンデマンドバックアップを使う
+    triggers:
+      - 誤って書き換えたデータを、直前の状態に戻したい
+    pitfalls:
+      - PITR を有効にしていないと、過去の任意の時点には戻せない
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery.html
+
+  - id: dynamodb-gsi
+    category: database
+    concept: グローバルセカンダリインデックス（GSI）
+    summary: テーブルとは別のパーティションキーで検索できるようにするインデックス
+    facts:
+      - テーブルと異なるパーティションキー・ソートキーで検索できる
+      - テーブルの作成後にも追加できる
+      - 読み取りは結果整合性のみ
+      - ローカルセカンダリインデックス（LSI）はパーティションキーが同じでソートキーだけ変えるもので、テーブル作成時にしか作れない
+    triggers:
+      - 別の属性で検索したい
+      - パーティションキー以外で問い合わせたい
+    pitfalls:
+      - 検索のたびにテーブル全体をスキャンすると、遅くて高い
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html
