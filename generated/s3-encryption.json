@@ -491,5 +491,184 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-kms:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-sse-kms"
+    ],
+    "prompt": "「鍵の使用を監査」「鍵のアクセスを分離」→ どの暗号化？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSE-KMS",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "鍵の使用が CloudTrail に記録され、鍵ポリシーで復号できる人を制御できる"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "鍵の監査や鍵のアクセス制御はできない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-C",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "鍵を自分で管理する方式で、KMS による監査はない"
+      },
+      {
+        "id": "d",
+        "text": "S3 バケットキー",
+        "correct": false,
+        "atomId": "s3-bucket-key",
+        "why": "SSE-KMS のコスト削減の機能で、暗号化方式ではない"
+      }
+    ],
+    "explanation": "監査・職務分離・鍵のローテーション管理 → SSE-KMS。",
+    "keywords": [
+      "監査",
+      "鍵のアクセス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-client-side-encryption:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-client-side-encryption"
+    ],
+    "prompt": "「AWS に平文を渡さない」「送信前に暗号化」→ どの暗号化？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "クライアント側暗号化",
+        "correct": true,
+        "atomId": "s3-client-side-encryption",
+        "why": "S3 には暗号文だけが届き、AWS は平文を扱わない"
+      },
+      {
+        "id": "b",
+        "text": "SSE-KMS",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "S3 が平文を受け取ってから暗号化する"
+      },
+      {
+        "id": "c",
+        "text": "SSE-C",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "鍵は顧客のものだが、暗号化するのは S3"
+      },
+      {
+        "id": "d",
+        "text": "SSE-S3",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "S3 が平文を受け取ってから暗号化する"
+      }
+    ],
+    "explanation": "SSE はすべて「サーバー側」。送信前の暗号化はクライアント側暗号化だけ。",
+    "keywords": [
+      "平文を渡さない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-kms:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-sse-kms"
+    ],
+    "prompt": "SSE-KMS の特徴として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵の使用を CloudTrail で監査できる",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "監査と、S3 の権限とは別の鍵のアクセス制御ができる"
+      },
+      {
+        "id": "b",
+        "text": "追加料金なしで、鍵の管理も不要で使える",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "SSE-S3 の特徴"
+      },
+      {
+        "id": "c",
+        "text": "リクエストごとに顧客が鍵を渡す必要がある",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "SSE-C の特徴"
+      },
+      {
+        "id": "d",
+        "text": "AWS は暗号化されたデータしか受け取らない",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "クライアント側暗号化の特徴"
+      }
+    ],
+    "explanation": "SSE-KMS = 監査 + 鍵ポリシー。代わりに KMS の料金とクォータがかかる。",
+    "keywords": [
+      "CloudTrail",
+      "鍵ポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-s3:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "s3-sse-s3"
+    ],
+    "prompt": "「暗号鍵の使用を監査できること」という要件に対して、SSE-S3 を選んだ。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSE-S3 では鍵の使用履歴を利用者が監査できない",
+        "correct": true,
+        "atomId": "s3-sse-s3",
+        "why": "鍵の使用を CloudTrail で監査するなら SSE-KMS を使う"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3 はデータを暗号化しない",
+        "correct": false,
+        "why": "AES-256 で保存時に暗号化する"
+      },
+      {
+        "id": "c",
+        "text": "SSE-S3 は追加料金が高い",
+        "correct": false,
+        "why": "追加料金はかからない"
+      },
+      {
+        "id": "d",
+        "text": "SSE-S3 はバージョニングと併用できない",
+        "correct": false,
+        "why": "併用できる"
+      }
+    ],
+    "explanation": "「監査」「鍵の制御」が要件にあれば SSE-S3 では足りない。",
+    "keywords": [
+      "監査"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

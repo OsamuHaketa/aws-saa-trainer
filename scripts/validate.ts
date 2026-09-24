@@ -53,8 +53,9 @@ for (const q of questions.values()) {
   const correct = q.choices.find((c) => c.correct);
   const wrong = q.choices.filter((c) => !c.correct);
   if (correct && wrong.length > 0) {
+    // サービス名のような短い選択肢は、長さの差で答えがばれることはないので対象外
     const longestWrong = Math.max(...wrong.map((c) => c.text.length));
-    if (correct.text.length > longestWrong * 1.2) {
+    if (correct.text.length >= 12 && correct.text.length > longestWrong * 1.2) {
       warnings.push(`${q.id} 正解の選択肢だけ長い（${correct.text.length} 字 / 誤答の最長 ${longestWrong} 字）`);
     }
     if (q.prompt.includes(correct.text)) {

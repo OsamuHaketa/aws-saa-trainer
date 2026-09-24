@@ -1,0 +1,627 @@
+[
+  {
+    "id": "s3-multipart-upload:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-multipart-upload"
+    ],
+    "prompt": "1 回の PUT でアップロードできるオブジェクトの最大サイズと、S3 のオブジェクトの最大サイズは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "PUT は 5 GB まで、オブジェクトは 5 TB まで",
+        "correct": true,
+        "atomId": "s3-multipart-upload",
+        "why": "5 GB を超えるならマルチパートアップロードが必須"
+      },
+      {
+        "id": "b",
+        "text": "PUT は 5 TB まで、オブジェクトは 5 PB まで",
+        "correct": false,
+        "why": "PUT の上限は 5 GB、オブジェクトの上限は 5 TB"
+      },
+      {
+        "id": "c",
+        "text": "PUT は 100 MB まで、オブジェクトは 5 GB まで",
+        "correct": false,
+        "why": "100 MB はマルチパートアップロードの推奨の目安"
+      },
+      {
+        "id": "d",
+        "text": "PUT もオブジェクトも上限はない",
+        "correct": false,
+        "why": "どちらにも上限がある"
+      }
+    ],
+    "explanation": "5 GB（単一 PUT）/ 5 TB（オブジェクト）/ 100 MB 超でマルチパート推奨。",
+    "keywords": [
+      "5 GB",
+      "5 TB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-multipart-upload:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-multipart-upload"
+    ],
+    "prompt": "動画編集チームが 20 GB の動画を S3 にアップロードする。回線が不安定で、途中で失敗するとやり直しになっている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチパートアップロードで分割して並列に送る",
+        "correct": true,
+        "atomId": "s3-multipart-upload",
+        "why": "失敗したパートだけを再送でき、並列化で速くもなる。5 GB 超なので必須でもある"
+      },
+      {
+        "id": "b",
+        "text": "S3 Transfer Acceleration だけを有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "遠距離の転送は速くなるが、5 GB を超えるファイルは 1 回の PUT で送れない"
+      },
+      {
+        "id": "c",
+        "text": "バイト範囲フェッチを使ってアップロードする",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "バイト範囲フェッチはダウンロード側の機能"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard-IA に保存先を変える",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "ストレージクラスを変えても、アップロードの問題は解決しない"
+      }
+    ],
+    "explanation": "「大きなファイル」「途中で失敗」「速くしたい」= マルチパートアップロード。",
+    "keywords": [
+      "20 GB",
+      "途中で失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-multipart-upload:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-multipart-upload",
+      "s3-lifecycle"
+    ],
+    "prompt": "マルチパートアップロードが途中で失敗したまま放置され、保存料金が増えていた。対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lifecycle で未完了のマルチパートアップロードを自動で中止する",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "未完了のアップロードのパートにも保存料金がかかる。一定日数後に自動で中止できる"
+      },
+      {
+        "id": "b",
+        "text": "マルチパートアップロードをやめ、1 回の PUT で送る",
+        "correct": false,
+        "why": "5 GB を超えるファイルは 1 回の PUT で送れない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Intelligent-Tiering で自動的に安い階層へ移す",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "未完了のパートはオブジェクトではなく、階層化の対象にもならない"
+      },
+      {
+        "id": "d",
+        "text": "S3 バージョニングを停止して古いデータを消す",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "バージョニングと未完了のパートは関係がない"
+      }
+    ],
+    "explanation": "Lifecycle の「未完了のマルチパートアップロードの中止」はコスト対策の定番。",
+    "keywords": [
+      "未完了",
+      "保存料金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-multipart-upload:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-multipart-upload",
+      "s3-transfer-acceleration"
+    ],
+    "prompt": "マルチパートアップロードと Transfer Acceleration の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はファイルを分割して並列に、後者はエッジ経由で遠距離を速く送る",
+        "correct": true,
+        "why": "大きなファイルならマルチパート、遠距離ならアクセラレーション。併用もできる"
+      },
+      {
+        "id": "b",
+        "text": "前者はダウンロード、後者はアップロードを速くする",
+        "correct": false,
+        "why": "どちらもアップロードを速くする仕組み。ダウンロードの並列化はバイト範囲フェッチ"
+      },
+      {
+        "id": "c",
+        "text": "前者は追加料金がかかり、後者は無料で使える",
+        "correct": false,
+        "why": "追加料金がかかるのは Transfer Acceleration"
+      },
+      {
+        "id": "d",
+        "text": "前者は同じリージョン内、後者は別リージョンへのコピーに使う",
+        "correct": false,
+        "why": "どちらもリージョン間コピーの機能ではない"
+      }
+    ],
+    "explanation": "「ファイルが大きい」→ マルチパート、「距離が遠い」→ Transfer Acceleration。",
+    "keywords": [
+      "分割",
+      "エッジロケーション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-transfer-acceleration:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-transfer-acceleration"
+    ],
+    "prompt": "世界中の拠点から、東京リージョンの 1 つのバケットへデータをアップロードしている。海外拠点からのアップロードが遅い。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": true,
+        "atomId": "s3-transfer-acceleration",
+        "why": "近くのエッジロケーションで受け取り、AWS のネットワークでバケットへ転送する"
+      },
+      {
+        "id": "b",
+        "text": "S3 クロスリージョンレプリケーションを各拠点向けに設定",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "バケット間のコピーで、拠点からのアップロードは速くならない"
+      },
+      {
+        "id": "c",
+        "text": "バイト範囲フェッチを使う",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "ダウンロード側の機能"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard-IA に保存先を変える",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "ストレージクラスは転送速度に関係しない"
+      }
+    ],
+    "explanation": "「世界中から 1 つのバケットへ」「遠距離のアップロードが遅い」= Transfer Acceleration。",
+    "keywords": [
+      "世界中の拠点",
+      "アップロードが遅い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-transfer-acceleration:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-transfer-acceleration"
+    ],
+    "prompt": "バケットと同じリージョンの EC2 からのアップロードを速くするため、Transfer Acceleration を有効にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "同じリージョン内ではほとんど効果がなく、料金だけかかりうる",
+        "correct": true,
+        "atomId": "s3-transfer-acceleration",
+        "why": "Transfer Acceleration は地理的に遠い場所からの転送で効果がある"
+      },
+      {
+        "id": "b",
+        "text": "EC2 からは Transfer Acceleration を使えない",
+        "correct": false,
+        "why": "使えるが、同じリージョン内では効果が小さい"
+      },
+      {
+        "id": "c",
+        "text": "Transfer Acceleration を有効にすると暗号化が無効になる",
+        "correct": false,
+        "why": "暗号化には影響しない"
+      },
+      {
+        "id": "d",
+        "text": "Transfer Acceleration は 5 GB 以上のファイルに対応しない",
+        "correct": false,
+        "why": "マルチパートアップロードと併用できる"
+      }
+    ],
+    "explanation": "同じリージョン内の転送を速くしたいなら、マルチパートアップロードによる並列化などを検討する。",
+    "keywords": [
+      "同じリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-transfer-acceleration:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-transfer-acceleration"
+    ],
+    "prompt": "S3 Transfer Acceleration の仕組みは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エッジロケーションで受け、AWS 網でバケットへ運ぶ",
+        "correct": true,
+        "atomId": "s3-transfer-acceleration",
+        "why": "インターネット上の長い経路を避けることで、遠距離の転送が速くなる"
+      },
+      {
+        "id": "b",
+        "text": "ファイルを複数のパートに分割し、並列にアップロードする",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "マルチパートアップロードの仕組み"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトの一部の範囲だけを並列にダウンロードする",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "バイト範囲フェッチの仕組み"
+      },
+      {
+        "id": "d",
+        "text": "オブジェクトを別リージョンのバケットへ非同期にコピーする",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "クロスリージョンレプリケーションの仕組み"
+      }
+    ],
+    "explanation": "Transfer Acceleration = CloudFront のエッジ + AWS バックボーン。",
+    "keywords": [
+      "エッジロケーション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-byte-range-fetch:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-byte-range-fetch"
+    ],
+    "prompt": "数 GB の大きなログファイルのうち、先頭の数 KB にあるヘッダー情報だけを読みたい。効率的な方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Range ヘッダーで必要な範囲だけ取得する",
+        "correct": true,
+        "atomId": "s3-byte-range-fetch",
+        "why": "バイト範囲フェッチで、オブジェクトの一部だけを取得できる"
+      },
+      {
+        "id": "b",
+        "text": "毎回ファイル全体をダウンロードして先頭を読む",
+        "correct": false,
+        "why": "不要なデータまで転送するので、時間もコストも無駄"
+      },
+      {
+        "id": "c",
+        "text": "マルチパートアップロードで分割して保存し直す",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "アップロードの機能で、読み取りの効率化にはならない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送は速くなるが、全体をダウンロードする無駄は残る"
+      }
+    ],
+    "explanation": "「一部だけ読みたい」「ダウンロードを並列化したい」= バイト範囲フェッチ。",
+    "keywords": [
+      "一部だけ",
+      "先頭"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-byte-range-fetch:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-byte-range-fetch",
+      "s3-multipart-upload"
+    ],
+    "prompt": "バイト範囲フェッチとマルチパートアップロードの関係として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はダウンロード、後者はアップロードを並列化",
+        "correct": true,
+        "why": "どちらも「分割して並列に」だが、方向が逆"
+      },
+      {
+        "id": "b",
+        "text": "どちらもアップロードを速くするための機能",
+        "correct": false,
+        "why": "バイト範囲フェッチはダウンロード（GET）の機能"
+      },
+      {
+        "id": "c",
+        "text": "前者は 5 GB 超のファイルに必須、後者は任意",
+        "correct": false,
+        "why": "5 GB を超えるときに必須なのはマルチパートアップロード"
+      },
+      {
+        "id": "d",
+        "text": "どちらも追加料金がかかる有料オプション",
+        "correct": false,
+        "why": "どちらも有料オプションではない（リクエスト料金は通常どおりかかる）"
+      }
+    ],
+    "explanation": "アップロード = マルチパート、ダウンロード = バイト範囲フェッチ。",
+    "keywords": [
+      "ダウンロード",
+      "アップロード"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-prefix-performance:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-prefix-performance"
+    ],
+    "prompt": "S3 が 1 つのプレフィックスあたりで処理できるリクエスト数の目安は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "毎秒 3,500 回の書き込み系と 5,500 回の読み取り系",
+        "correct": true,
+        "atomId": "s3-prefix-performance",
+        "why": "PUT/COPY/POST/DELETE が 3,500 回、GET/HEAD が 5,500 回以上"
+      },
+      {
+        "id": "b",
+        "text": "毎秒 100 回の書き込み系と 300 回の読み取り系",
+        "correct": false,
+        "why": "かつての目安よりもさらに低い数字で、現在の S3 とは違う"
+      },
+      {
+        "id": "c",
+        "text": "毎秒 5,500 回の書き込み系と 3,500 回の読み取り系",
+        "correct": false,
+        "why": "書き込みと読み取りの数字が逆"
+      },
+      {
+        "id": "d",
+        "text": "バケット全体で毎秒 1,000 回まで",
+        "correct": false,
+        "why": "上限はプレフィックスごとで、プレフィックスの数に上限はない"
+      }
+    ],
+    "explanation": "3,500（書き込み）/ 5,500（読み取り）はプレフィックスごと。プレフィックスを分ければ全体で増やせる。",
+    "keywords": [
+      "3,500",
+      "5,500"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-prefix-performance:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "s3-prefix-performance"
+    ],
+    "prompt": "1 つのプレフィックスに全データを置いた分析基盤で、読み取りが毎秒数万回になり 503 Slow Down が出る。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "データを複数のプレフィックスに分けて、並列に読み取る",
+        "correct": true,
+        "atomId": "s3-prefix-performance",
+        "why": "性能はプレフィックスごとなので、分散すると全体の処理量を増やせる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "遠距離の転送を速くする機能で、リクエスト数の上限は変わらない"
+      },
+      {
+        "id": "c",
+        "text": "すべてのデータを S3 Standard-IA に移す",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "ストレージクラスを変えてもリクエスト性能は上がらない"
+      },
+      {
+        "id": "d",
+        "text": "S3 バージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "リクエスト性能とは関係がない"
+      }
+    ],
+    "explanation": "503 Slow Down はリクエストが多すぎるサイン。プレフィックスを分散する。",
+    "keywords": [
+      "503 Slow Down",
+      "毎秒数万回"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-multipart-upload:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-multipart-upload"
+    ],
+    "prompt": "「5 GB を超えるファイル」「失敗したら一部だけ再送」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチパートアップロード",
+        "correct": true,
+        "atomId": "s3-multipart-upload",
+        "why": "分割して並列に送り、失敗したパートだけ再送できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "遠距離の転送を速くするが、5 GB を超える単一 PUT はできない"
+      },
+      {
+        "id": "c",
+        "text": "バイト範囲フェッチ",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "ダウンロード側の機能"
+      },
+      {
+        "id": "d",
+        "text": "S3 バッチオペレーション",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "既存オブジェクトへの一括操作"
+      }
+    ],
+    "explanation": "5 GB 超は必須、100 MB 超は推奨。",
+    "keywords": [
+      "5 GB を超える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-transfer-acceleration:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-transfer-acceleration"
+    ],
+    "prompt": "「世界中から 1 つのバケットへ」「遠距離のアップロード」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Transfer Acceleration",
+        "correct": true,
+        "atomId": "s3-transfer-acceleration",
+        "why": "エッジロケーションで受け取り、AWS のネットワークで運ぶ"
+      },
+      {
+        "id": "b",
+        "text": "マルチパートアップロード",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "並列化はできるが、遠距離の経路の遅さは解決しない"
+      },
+      {
+        "id": "c",
+        "text": "S3 クロスリージョンレプリケーション（CRR）",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "バケット間のコピーで、アップロードは速くならない"
+      },
+      {
+        "id": "d",
+        "text": "バイト範囲フェッチ",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "ダウンロード側の機能"
+      }
+    ],
+    "explanation": "距離の問題 → Transfer Acceleration。サイズの問題 → マルチパート。",
+    "keywords": [
+      "世界中から",
+      "遠距離"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-multipart-upload:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-multipart-upload"
+    ],
+    "prompt": "S3 マルチパートアップロードの利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パートを並列に送れ、失敗したパートだけ再送できる",
+        "correct": true,
+        "atomId": "s3-multipart-upload",
+        "why": "大きなファイルのアップロードが速く、失敗にも強くなる"
+      },
+      {
+        "id": "b",
+        "text": "エッジロケーション経由で遠距離の転送を速くする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "Transfer Acceleration の利点"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトの必要な範囲だけをダウンロードできる",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "バイト範囲フェッチの利点"
+      },
+      {
+        "id": "d",
+        "text": "アップロードと同時に別リージョンへコピーする",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "レプリケーションの機能"
+      }
+    ],
+    "explanation": "マルチパート = 並列化 + 部分的な再送。5 GB 超では必須。",
+    "keywords": [
+      "並列",
+      "再送"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

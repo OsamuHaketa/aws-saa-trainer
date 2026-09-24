@@ -1,0 +1,389 @@
+[
+  {
+    "id": "s3-object-lock-compliance:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-object-lock-compliance",
+      "s3-cross-region-replication",
+      "s3-sse-kms"
+    ],
+    "prompt": "金融機関が取引記録を S3 に保存する。要件は次のとおり。\n・7 年間、ルートユーザーを含め誰も削除・改ざんできないこと\n・リージョン障害に備え、別リージョンにもコピーを持つこと\n・暗号鍵の使用を監査できること\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Object Lock コンプライアンスモード + CRR + SSE-KMS",
+        "correct": true,
+        "atomId": "s3-object-lock-compliance",
+        "why": "誰も解除できない WORM、別リージョンへの自動コピー、鍵の使用の監査をすべて満たす"
+      },
+      {
+        "id": "b",
+        "text": "Object Lock ガバナンスモード + CRR + SSE-S3",
+        "correct": false,
+        "atomId": "s3-object-lock-governance",
+        "why": "ガバナンスモードは特別な権限で解除でき、SSE-S3 では鍵の使用を監査できない"
+      },
+      {
+        "id": "c",
+        "text": "MFA Delete + SRR + SSE-KMS",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "MFA があれば削除でき、SRR は同じリージョン内なのでリージョン障害に備えられない"
+      },
+      {
+        "id": "d",
+        "text": "バージョニング + CRR + SSE-C",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "権限があれば過去のバージョンも削除でき、SSE-C では KMS による監査ができない"
+      }
+    ],
+    "explanation": "要件を 1 つずつサービスに対応させる。「誰も」→ コンプライアンスモード、「別リージョン」→ CRR、「鍵の監査」→ SSE-KMS。",
+    "keywords": [
+      "誰も削除できない",
+      "別リージョン",
+      "監査"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-origin-access-control:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-origin-access-control",
+      "s3-block-public-access",
+      "s3-static-website-hosting"
+    ],
+    "prompt": "企業の公式サイト（HTML・画像のみ）を世界中に配信する。要件は次のとおり。\n・HTTPS で配信し、独自ドメインを使う\n・世界中で低レイテンシ\n・S3 のバケットは非公開のままにし、直接アクセスさせない\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront + OAC、バケットは Block Public Access で非公開",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "CloudFront で HTTPS とキャッシュを提供し、OAC で CloudFront からのアクセスだけを許可する"
+      },
+      {
+        "id": "b",
+        "text": "S3 静的ウェブサイトホスティングを直接公開して Route 53 で独自ドメイン",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "ウェブサイトエンドポイントは HTTP のみで、バケットも公開する必要がある"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront のオリジンに公開設定の S3 ウェブサイトエンドポイント",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "バケットが公開されたままで、S3 に直接アクセスできてしまう"
+      },
+      {
+        "id": "d",
+        "text": "各リージョンに EC2 の Web サーバーを置き、S3 から同期する",
+        "correct": false,
+        "why": "サーバーの運用が必要で、静的サイトには過剰"
+      }
+    ],
+    "explanation": "静的サイトの本番構成は「CloudFront + OAC + 非公開バケット」が定番。",
+    "keywords": [
+      "HTTPS",
+      "非公開",
+      "世界中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-lifecycle",
+      "s3-standard-ia",
+      "s3-glacier-flexible-retrieval",
+      "s3-glacier-deep-archive"
+    ],
+    "prompt": "アプリのログを S3 に保存する。アクセスの傾向は次のとおり。\n・作成後 30 日間は頻繁に分析する\n・30〜90 日は月に数回、すぐに参照することがある\n・90 日〜1 年は監査のときだけ参照し、数時間待ってもよい\n・1 年を過ぎたら 7 年まで保管し、その後は削除する\n最もコスト効率が良い構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lifecycle で 30 日後 Standard-IA、90 日後 Glacier Flexible、1 年後 Deep Archive、7 年後に削除",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "アクセスの変化が日数で予測できるので、期間ごとに最適なクラスへ移し、最後に削除する"
+      },
+      {
+        "id": "b",
+        "text": "最初から Glacier Deep Archive に保存し、7 年後に手動で削除する",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "最初の 30 日の頻繁な分析や、30〜90 日のすぐの参照に対応できない"
+      },
+      {
+        "id": "c",
+        "text": "Intelligent-Tiering に保存し、7 年後に Lifecycle で削除する",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "変化が予測できるので監視料金は不要で、アーカイブ階層の設定もしないと安くならない"
+      },
+      {
+        "id": "d",
+        "text": "Lifecycle で 30 日後に One Zone-IA、1 年後に Glacier Instant Retrieval へ移す",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ で監査ログの耐障害性が下がり、長期の保管コストも下がりきらず、削除もしていない"
+      }
+    ],
+    "explanation": "期間ごとの「アクセス頻度」と「取り出しまでの許容時間」から、それぞれのクラスを選ぶ。",
+    "keywords": [
+      "30 日",
+      "90 日",
+      "1 年",
+      "7 年"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-gateway-endpoint:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-gateway-endpoint",
+      "s3-bucket-policy"
+    ],
+    "prompt": "プライベートサブネットの EC2 だけが、機密データの S3 バケットにアクセスする。要件は次のとおり。\n・通信はインターネットを経由しない\n・追加のネットワーク料金をかけない\n・バケットへは、この VPC 以外からのアクセスをすべて拒否する\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ゲートウェイエンドポイント + aws:SourceVpce 以外を Deny するバケットポリシー",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "無料でプライベートに接続でき、バケットポリシーでこのエンドポイント以外からのアクセスを拒否できる"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイ + 送信元 IP で制限するバケットポリシー",
+        "correct": false,
+        "why": "インターネットを経由し、NAT のデータ処理料金もかかる"
+      },
+      {
+        "id": "c",
+        "text": "インターフェイスエンドポイント + S3 Block Public Access のみ",
+        "correct": false,
+        "atomId": "s3-interface-endpoint",
+        "why": "エンドポイントの料金がかかり、Block Public Access だけでは他の VPC からの認証済みアクセスを拒否できない"
+      },
+      {
+        "id": "d",
+        "text": "ゲートウェイエンドポイント + IAM ポリシーで EC2 に読み取りを許可",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "IAM ポリシーだけでは、他の経路からのアクセスをバケット側で拒否できない"
+      }
+    ],
+    "explanation": "経路（ゲートウェイエンドポイント）と、バケット側での制限（aws:SourceVpce）をセットで考える。",
+    "keywords": [
+      "インターネットを経由しない",
+      "追加料金なし",
+      "VPC 以外を拒否"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-transfer-acceleration:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-transfer-acceleration",
+      "s3-multipart-upload",
+      "s3-event-notifications"
+    ],
+    "prompt": "世界中の撮影チームが、1 本 20〜50 GB の動画を東京リージョンの S3 にアップロードする。要件は次のとおり。\n・海外からのアップロードをできるだけ速くする\n・回線が不安定でも、最初からやり直さずに済むようにする\n・アップロードが終わったら、自動で変換処理を始める\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Transfer Acceleration + マルチパートアップロード + イベント通知で処理を起動",
+        "correct": true,
+        "atomId": "s3-transfer-acceleration",
+        "why": "距離の問題、サイズと失敗の問題、処理の起動をそれぞれ解決する"
+      },
+      {
+        "id": "b",
+        "text": "マルチパートアップロードのみを使い、変換処理は毎時のバッチで起動する",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "遠距離の転送が速くならず、アップロード後すぐに処理も始まらない"
+      },
+      {
+        "id": "c",
+        "text": "各地域のバケットにアップロードし、CRR で東京へ集めて手動で変換",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "構成が複雑で、手動の変換は運用負荷が高い"
+      },
+      {
+        "id": "d",
+        "text": "Transfer Acceleration を使い、1 回の PUT でアップロードして Lambda を定期実行",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "5 GB を超えるファイルは 1 回の PUT で送れず、定期実行はポーリングになる"
+      }
+    ],
+    "explanation": "「遠い」→ Transfer Acceleration、「大きい・不安定」→ マルチパート、「終わったら処理」→ イベント通知。",
+    "keywords": [
+      "世界中",
+      "20〜50 GB",
+      "自動で変換"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-versioning:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-versioning",
+      "s3-mfa-delete",
+      "s3-lifecycle"
+    ],
+    "prompt": "設計資料を保存するバケットで、次の要件がある。\n・誤った上書きや削除から、過去の版に戻せること\n・過去の版を完全に消すときは、多要素認証を必須にすること\n・90 日より古い過去の版は自動で削除し、コストを抑えること\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バージョニング + MFA Delete + 古いバージョンを期限切れにする Lifecycle",
+        "correct": true,
+        "atomId": "s3-versioning",
+        "why": "過去の版を残し、完全削除に MFA を求め、古い版だけを 90 日で自動削除する"
+      },
+      {
+        "id": "b",
+        "text": "Object Lock コンプライアンスモード（90 日）+ Lifecycle で削除",
+        "correct": false,
+        "atomId": "s3-object-lock-compliance",
+        "why": "通常の更新や不要な版の整理もできなくなり、MFA の要件も満たさない"
+      },
+      {
+        "id": "c",
+        "text": "CRR で別リージョンにコピーし、コピー先を 90 日で削除する",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "上書きや削除もコピーされうるうえ、MFA の要件を満たさない"
+      },
+      {
+        "id": "d",
+        "text": "バージョニング + IAM ポリシーで削除を拒否し、手動で古い版を消す",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "多要素認証の要件を満たさず、手動の削除は運用負荷が高い"
+      }
+    ],
+    "explanation": "バージョニングは「MFA Delete（削除の保護）」と「Lifecycle（古い版の整理）」とセットで出題されやすい。",
+    "keywords": [
+      "過去の版",
+      "多要素認証",
+      "90 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-kms:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-sse-kms",
+      "s3-bucket-policy",
+      "s3-iam-policy"
+    ],
+    "prompt": "アカウント A のバケットに、SSE-KMS で暗号化したデータがある。アカウント B の分析用ロールに、このデータを読み取らせたい。必要な設定の組み合わせとして最も適切なものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A のバケットポリシーと鍵ポリシーで B を許可し、B の IAM でも許可",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "S3 の読み取りと KMS の復号の両方で、リソース側（A）と利用者側（B）の許可が必要"
+      },
+      {
+        "id": "b",
+        "text": "A のバケットポリシーで B を許可するだけでよい",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "KMS の復号の許可と、B 側の IAM の許可が足りない"
+      },
+      {
+        "id": "c",
+        "text": "AWS マネージドキー（aws/s3）の鍵ポリシーに B を追加する",
+        "correct": false,
+        "why": "AWS マネージドキーの鍵ポリシーは編集できない"
+      },
+      {
+        "id": "d",
+        "text": "A の IAM ユーザーのアクセスキーを B のロールに渡す",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "認証情報の共有は不適切で、最小権限にもならない"
+      }
+    ],
+    "explanation": "クロスアカウント × SSE-KMS は「バケットポリシー」「鍵ポリシー（カスタマーマネージドキー）」「相手側の IAM」の 3 点セット。",
+    "keywords": [
+      "クロスアカウント",
+      "SSE-KMS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-presigned-url",
+      "s3-event-notifications"
+    ],
+    "prompt": "スマホアプリの利用者が、写真を非公開の S3 バケットにアップロードする。要件は次のとおり。\n・アプリに AWS の認証情報を持たせない\n・アプリのサーバーに写真のデータを経由させない\n・アップロード後、自動でサムネイルを作る\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "PUT 用の署名付き URL を発行し、イベント通知で Lambda 起動",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "アプリは URL で S3 に直接アップロードでき、アップロードのイベントで処理が始まる"
+      },
+      {
+        "id": "b",
+        "text": "アプリに IAM ユーザーのアクセスキーを埋め込み、Lambda を定期実行",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "認証情報を持たせない要件に反し、定期実行はポーリングになる"
+      },
+      {
+        "id": "c",
+        "text": "写真をアプリのサーバーで受け取り、サーバーから S3 へアップロード",
+        "correct": false,
+        "why": "サーバーにデータを経由させない要件に反する"
+      },
+      {
+        "id": "d",
+        "text": "バケットを公開して書き込みを許可し、S3 Lifecycle でサムネイル化",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも書き込めてしまい、Lifecycle ではサムネイルを作れない"
+      }
+    ],
+    "explanation": "「認証情報を渡さずに直接アップロード」→ 署名付き URL、「アップロード後に処理」→ イベント通知。",
+    "keywords": [
+      "認証情報を持たせない",
+      "直接",
+      "自動で"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

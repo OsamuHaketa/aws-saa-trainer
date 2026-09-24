@@ -625,5 +625,412 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-versioning:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-versioning"
+    ],
+    "prompt": "「誤削除から復元」「上書き前に戻したい」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バージョニング",
+        "correct": true,
+        "atomId": "s3-versioning",
+        "why": "過去のバージョンが残るので、削除や上書きから復元できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Lifecycle",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "移行や削除のルールで、復元の仕組みではない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化"
+      },
+      {
+        "id": "d",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の防止"
+      }
+    ],
+    "explanation": "誤削除対策の基本はバージョニング。",
+    "keywords": [
+      "誤削除",
+      "復元"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-cross-region-replication:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-cross-region-replication"
+    ],
+    "prompt": "「別リージョンにコピー」「リージョン障害に備える」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 クロスリージョンレプリケーション",
+        "correct": true,
+        "atomId": "s3-cross-region-replication",
+        "why": "別リージョンのバケットへ自動でコピーする"
+      },
+      {
+        "id": "b",
+        "text": "S3 同一リージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-same-region-replication",
+        "why": "同じリージョン内なので、リージョン障害への備えにならない"
+      },
+      {
+        "id": "c",
+        "text": "S3 バージョニング",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "同じバケット内に過去のバージョンを残すだけ"
+      },
+      {
+        "id": "d",
+        "text": "S3 バッチオペレーション",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "1 回限りの一括操作で、継続的なコピーではない"
+      }
+    ],
+    "explanation": "リージョン障害・DR・地理的分離 → CRR。",
+    "keywords": [
+      "別リージョン",
+      "リージョン障害"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-event-notifications:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-event-notifications"
+    ],
+    "prompt": "「アップロードされたら処理」「ポーリングしない」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 イベント通知",
+        "correct": true,
+        "atomId": "s3-event-notifications",
+        "why": "オブジェクト作成のイベントで Lambda や SQS などに通知する"
+      },
+      {
+        "id": "b",
+        "text": "S3 Lifecycle",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "日数ベースの移行や削除で、処理の起動はできない"
+      },
+      {
+        "id": "c",
+        "text": "S3 バッチオペレーション",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "既存のオブジェクトへの一括操作で、アップロードごとの処理ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化"
+      }
+    ],
+    "explanation": "イベント駆動の処理 → S3 イベント通知。",
+    "keywords": [
+      "アップロードされたら"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-batch-operations:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-batch-operations"
+    ],
+    "prompt": "「既存の数億個のオブジェクト」「一括でタグ付け」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バッチオペレーション",
+        "correct": true,
+        "atomId": "s3-batch-operations",
+        "why": "オブジェクトの一覧に対して、1 つのジョブで一括実行する"
+      },
+      {
+        "id": "b",
+        "text": "S3 イベント通知",
+        "correct": false,
+        "atomId": "s3-event-notifications",
+        "why": "新しいイベントに反応するもので、既存のオブジェクトは対象外"
+      },
+      {
+        "id": "c",
+        "text": "S3 Lifecycle",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "タグの一括付与はできない"
+      },
+      {
+        "id": "d",
+        "text": "S3 同一リージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-same-region-replication",
+        "why": "コピーの仕組みで、タグ付けではない"
+      }
+    ],
+    "explanation": "既存の大量オブジェクトへの一括操作 → バッチオペレーション。",
+    "keywords": [
+      "既存",
+      "一括"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-same-region-replication:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-same-region-replication"
+    ],
+    "prompt": "「同じリージョン内」「ログの集約」「国外に出さない」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 同一リージョンレプリケーション",
+        "correct": true,
+        "atomId": "s3-same-region-replication",
+        "why": "同じリージョン内の別バケットへ自動でコピーする"
+      },
+      {
+        "id": "b",
+        "text": "S3 クロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "別リージョンにコピーしてしまう"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化で、コピーは作らない"
+      },
+      {
+        "id": "d",
+        "text": "S3 バッチオペレーション",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "1 回限りの一括操作"
+      }
+    ],
+    "explanation": "同じリージョン内のコピー → SRR。",
+    "keywords": [
+      "同じリージョン内",
+      "ログの集約"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-cross-region-replication:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "s3-cross-region-replication"
+    ],
+    "prompt": "東京リージョンのバケットにある動画を、米国のユーザーにも低レイテンシで読ませたい。米国のアプリは米国リージョンの S3 から読む。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "米国リージョンへ CRR でコピーする",
+        "correct": true,
+        "atomId": "s3-cross-region-replication",
+        "why": "別リージョンにコピーを持つことで、近いリージョンから読める"
+      },
+      {
+        "id": "b",
+        "text": "東京のバケットで SRR を設定する",
+        "correct": false,
+        "atomId": "s3-same-region-replication",
+        "why": "同じリージョン内のコピーで、米国に近づかない"
+      },
+      {
+        "id": "c",
+        "text": "東京のバケットでバージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "コピーは作られない"
+      },
+      {
+        "id": "d",
+        "text": "東京のバケットでバッチ操作を毎日実行する",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "継続的に新しいオブジェクトをコピーする仕組みではない"
+      }
+    ],
+    "explanation": "CRR の用途は DR だけでなく「別リージョンのユーザーへの低レイテンシ」「コンプライアンス」もある。",
+    "keywords": [
+      "低レイテンシ",
+      "米国リージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-same-region-replication:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-same-region-replication"
+    ],
+    "prompt": "リージョン障害への備えとして、同じリージョン内の別バケットに SRR でコピーした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "同じリージョン内なので、リージョン障害でコピーも使えなくなる",
+        "correct": true,
+        "atomId": "s3-same-region-replication",
+        "why": "リージョン障害に備えるなら CRR で別リージョンにコピーする"
+      },
+      {
+        "id": "b",
+        "text": "SRR はバージョニングがなくても動くので、設定が不完全",
+        "correct": false,
+        "why": "SRR にもバージョニングが必要"
+      },
+      {
+        "id": "c",
+        "text": "SRR は別アカウントのバケットにコピーできない",
+        "correct": false,
+        "why": "別アカウントのバケットにもコピーできる"
+      },
+      {
+        "id": "d",
+        "text": "SRR はオブジェクトを暗号化したままコピーできない",
+        "correct": false,
+        "why": "暗号化されたオブジェクトもコピーできる"
+      }
+    ],
+    "explanation": "「リージョン障害」「DR」→ CRR。SRR ではリージョン単位の障害に耐えられない。",
+    "keywords": [
+      "リージョン障害"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-replication-time-control:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-replication-time-control"
+    ],
+    "prompt": "S3 Replication Time Control（RTC）の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SLA 付きで 99.99% を 15 分以内に複製",
+        "correct": true,
+        "atomId": "s3-replication-time-control",
+        "why": "レプリケーションの遅延を監視するメトリクスと通知も使える"
+      },
+      {
+        "id": "b",
+        "text": "既存のオブジェクトを、まとめてレプリケーションする",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "S3 バッチレプリケーション（バッチオペレーション）の特徴"
+      },
+      {
+        "id": "c",
+        "text": "遠距離からのアップロードを、エッジ経由で速くする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "Transfer Acceleration の特徴"
+      },
+      {
+        "id": "d",
+        "text": "同じリージョン内の別バケットへコピーする",
+        "correct": false,
+        "atomId": "s3-same-region-replication",
+        "why": "SRR の特徴"
+      }
+    ],
+    "explanation": "RTC =「15 分以内」「SLA」。",
+    "keywords": [
+      "15 分以内",
+      "SLA"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-batch-operations:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-batch-operations",
+      "s3-event-notifications"
+    ],
+    "prompt": "既存の 1 億個のオブジェクトを再処理するため、S3 イベント通知を新しく設定した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "新しいイベントにしか反応せず、既存分は対象外",
+        "correct": true,
+        "atomId": "s3-batch-operations",
+        "why": "既存のオブジェクトの一括処理にはバッチオペレーション（Lambda の呼び出し）を使う"
+      },
+      {
+        "id": "b",
+        "text": "イベント通知は 1 日 100 件までしか送れない",
+        "correct": false,
+        "why": "そのような上限はない"
+      },
+      {
+        "id": "c",
+        "text": "イベント通知は Lambda を起動できない",
+        "correct": false,
+        "why": "Lambda を直接起動できる"
+      },
+      {
+        "id": "d",
+        "text": "イベント通知を設定すると既存オブジェクトが消える",
+        "correct": false,
+        "why": "消えることはない"
+      }
+    ],
+    "explanation": "新しいもの → イベント通知、既存のもの → バッチオペレーション。",
+    "keywords": [
+      "既存",
+      "再処理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

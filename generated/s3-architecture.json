@@ -1,0 +1,972 @@
+[
+  {
+    "id": "s3-gateway-endpoint:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "プライベートサブネットの EC2 から S3 にアクセスしている。NAT ゲートウェイのデータ処理料金を減らしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 のゲートウェイエンドポイントを作り、ルートテーブルに追加する",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "無料で、S3 への通信が NAT ゲートウェイを通らなくなる"
+      },
+      {
+        "id": "b",
+        "text": "S3 のインターフェイスエンドポイントを作る",
+        "correct": false,
+        "atomId": "s3-interface-endpoint",
+        "why": "NAT は通らなくなるが、時間単位とデータ処理の料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "EC2 をパブリックサブネットに移し、パブリック IP を付ける",
+        "correct": false,
+        "why": "インターネットに出ることになり、セキュリティが下がる"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "NAT ゲートウェイを通る経路は変わらない"
+      }
+    ],
+    "explanation": "VPC 内から S3 へ、コストをかけずにプライベートに = ゲートウェイエンドポイント。",
+    "keywords": [
+      "NAT ゲートウェイの料金",
+      "プライベートサブネット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-gateway-endpoint:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-gateway-endpoint",
+      "s3-interface-endpoint"
+    ],
+    "prompt": "S3 のゲートウェイエンドポイントとインターフェイスエンドポイントの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は無料だが VPC 内専用、後者は有料だがオンプレミスからも使える",
+        "correct": true,
+        "why": "ゲートウェイはルートテーブルの経路、インターフェイスはプライベート IP を持つ ENI"
+      },
+      {
+        "id": "b",
+        "text": "前者は有料だがオンプレミスからも使え、後者は無料で VPC 内専用",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は DynamoDB 専用で、後者は S3 専用",
+        "correct": false,
+        "why": "ゲートウェイエンドポイントは S3 と DynamoDB に対応する"
+      },
+      {
+        "id": "d",
+        "text": "前者はインターネットを経由し、後者は経由しない",
+        "correct": false,
+        "why": "どちらもインターネットを経由しない"
+      }
+    ],
+    "explanation": "無料・ルートテーブル・VPC 内のみ = ゲートウェイ。有料・ENI・オンプレミスから可 = インターフェイス。",
+    "keywords": [
+      "無料",
+      "オンプレミス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-gateway-endpoint:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "ゲートウェイエンドポイントに対応している AWS サービスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 と DynamoDB",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ゲートウェイエンドポイントが使えるのはこの 2 つだけ"
+      },
+      {
+        "id": "b",
+        "text": "S3 と SQS",
+        "correct": false,
+        "why": "SQS はインターフェイスエンドポイントで接続する"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB と Lambda",
+        "correct": false,
+        "why": "Lambda はインターフェイスエンドポイントで接続する"
+      },
+      {
+        "id": "d",
+        "text": "すべての AWS サービス",
+        "correct": false,
+        "why": "ほとんどのサービスはインターフェイスエンドポイントを使う"
+      }
+    ],
+    "explanation": "ゲートウェイエンドポイント = S3 と DynamoDB だけ。",
+    "keywords": [
+      "S3 と DynamoDB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-interface-endpoint:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-interface-endpoint"
+    ],
+    "prompt": "オンプレミスのサーバーから Direct Connect 経由で、インターネットを通らずに S3 にアクセスしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 インターフェイスエンドポイント",
+        "correct": true,
+        "atomId": "s3-interface-endpoint",
+        "why": "VPC 内にプライベート IP の ENI ができ、Direct Connect や VPN 経由で使える"
+      },
+      {
+        "id": "b",
+        "text": "S3 のゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "VPC 内からしか使えず、オンプレミスからは使えない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "インターネット経由のエッジロケーションを使う"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "why": "VPC からインターネットに出るための仕組みで、オンプレミスからの入口ではない"
+      }
+    ],
+    "explanation": "「オンプレミスから」「プライベート IP で」= インターフェイスエンドポイント。",
+    "keywords": [
+      "オンプレミス",
+      "Direct Connect"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-static-website-hosting:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-static-website-hosting"
+    ],
+    "prompt": "HTML、CSS、画像だけの社内向けキャンペーンサイトを、サーバーを使わずに最も安く公開したい。HTTP でよい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 の静的ウェブサイトホスティングで公開する",
+        "correct": true,
+        "atomId": "s3-static-website-hosting",
+        "why": "サーバー不要で、S3 の料金だけで公開できる。HTTP のみでよいなら追加の構成もいらない"
+      },
+      {
+        "id": "b",
+        "text": "EC2 に Web サーバーを立てて公開する",
+        "correct": false,
+        "why": "サーバーの管理と料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットを作り、署名付き URL を配る",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "サイトとして公開するには、ページごとに URL を配ることになり不便"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送を速くする機能で、サイトの公開はできない"
+      }
+    ],
+    "explanation": "静的サイト + サーバー不要 = S3 静的ウェブサイトホスティング。HTTPS が必要なら CloudFront を前段に置く。",
+    "keywords": [
+      "静的",
+      "サーバーを使わず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-static-website-hosting:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-static-website-hosting"
+    ],
+    "prompt": "S3 の静的ウェブサイトホスティングで、HTTPS 必須の会員サイトを直接公開しようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ウェブサイトエンドポイントが HTTPS 非対応",
+        "correct": true,
+        "atomId": "s3-static-website-hosting",
+        "why": "HTTPS が必要なら CloudFront を前段に置く"
+      },
+      {
+        "id": "b",
+        "text": "S3 は画像ファイルを配信できない",
+        "correct": false,
+        "why": "画像も配信できる"
+      },
+      {
+        "id": "c",
+        "text": "静的ウェブサイトホスティングは 1 GB までしか使えない",
+        "correct": false,
+        "why": "容量の上限はない"
+      },
+      {
+        "id": "d",
+        "text": "静的ウェブサイトは Standard-IA でしか使えない",
+        "correct": false,
+        "why": "ストレージクラスの制約はない"
+      }
+    ],
+    "explanation": "S3 のウェブサイトエンドポイント = HTTP のみ。HTTPS・独自ドメインの証明書 → CloudFront。",
+    "keywords": [
+      "HTTPS 必須"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-static-website-hosting:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "s3-static-website-hosting",
+      "s3-origin-access-control"
+    ],
+    "prompt": "静的サイトを S3 の静的ウェブサイトホスティングで公開する場合と、CloudFront + OAC で配信する場合の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は公開バケットで HTTP、後者は非公開で HTTPS",
+        "correct": true,
+        "why": "CloudFront + OAC ならバケットを非公開にでき、HTTPS やキャッシュも使える"
+      },
+      {
+        "id": "b",
+        "text": "前者は HTTPS に対応し、後者は HTTP のみ",
+        "correct": false,
+        "why": "逆。ウェブサイトエンドポイントは HTTP のみ"
+      },
+      {
+        "id": "c",
+        "text": "前者はキャッシュされ、後者はキャッシュされない",
+        "correct": false,
+        "why": "キャッシュするのは CloudFront の方"
+      },
+      {
+        "id": "d",
+        "text": "前者は動的なページも実行でき、後者は静的なページのみ",
+        "correct": false,
+        "why": "S3 は動的なページ（サーバー側の処理）を実行できない"
+      }
+    ],
+    "explanation": "本番の静的サイトは CloudFront + OAC（バケット非公開、HTTPS、キャッシュ）が定番。",
+    "keywords": [
+      "非公開",
+      "HTTPS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-origin-access-control:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-origin-access-control"
+    ],
+    "prompt": "S3 の画像を CloudFront で配信している。利用者が S3 の URL に直接アクセスできないようにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OAC を使い、CloudFront からだけ許可する",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "バケットを非公開にし、バケットポリシーで特定のディストリビューションからだけ許可する"
+      },
+      {
+        "id": "b",
+        "text": "S3 の静的ウェブサイトホスティングを有効にする",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "バケットを公開することになり、直接アクセスできてしまう"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "アクセス制御の機能ではない"
+      },
+      {
+        "id": "d",
+        "text": "すべての画像に S3 の署名付き URL を発行する",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "CloudFront を経由させる仕組みにはならず、キャッシュも効きにくい"
+      }
+    ],
+    "explanation": "「CloudFront 経由だけ」「S3 に直接アクセスさせない」= OAC。旧来の OAI の後継。",
+    "keywords": [
+      "直接アクセスできないように",
+      "CloudFront"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-origin-access-control:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-origin-access-control"
+    ],
+    "prompt": "CloudFront のオリジンアクセスコントロール（OAC）でできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バケットを非公開のまま、CloudFront からのアクセスだけを許可する",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "バケットポリシーで CloudFront のサービスプリンシパルと対象のディストリビューションを指定する"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront のキャッシュを、S3 の更新に合わせて自動で消す",
+        "correct": false,
+        "why": "キャッシュの削除（無効化）は OAC の機能ではない"
+      },
+      {
+        "id": "c",
+        "text": "S3 のオブジェクトを、世界中のリージョンに自動でコピーする",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "リージョン間のコピーはレプリケーションの機能"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront へのアクセスを、特定の国からだけに制限する",
+        "correct": false,
+        "why": "地域制限は CloudFront の別の機能"
+      }
+    ],
+    "explanation": "OAC = S3 オリジンを CloudFront 専用にする仕組み。",
+    "keywords": [
+      "CloudFront だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-requester-pays:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-requester-pays"
+    ],
+    "prompt": "研究機関が数百 TB のデータセットを他の組織に共有したい。ダウンロードの料金は利用する側に負担してもらいたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バケットをリクエスタ支払いに設定する",
+        "correct": true,
+        "atomId": "s3-requester-pays",
+        "why": "リクエストとデータ転送の料金を、取得した側の AWS アカウントが払う"
+      },
+      {
+        "id": "b",
+        "text": "バケットを公開して、誰でもダウンロードできるようにする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "ダウンロードの料金はすべてバケット所有者が払うことになる"
+      },
+      {
+        "id": "c",
+        "text": "データを Glacier Deep Archive に移す",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "保存料金は下がるが、ダウンロード料金の負担者は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送が速くなるだけで、料金の負担者は変わらない"
+      }
+    ],
+    "explanation": "「ダウンロードの料金を利用者に払わせたい」= リクエスタ支払い。匿名アクセスには使えない。",
+    "keywords": [
+      "ダウンロードの料金",
+      "利用する側"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-strong-consistency:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-strong-consistency"
+    ],
+    "prompt": "S3 にオブジェクトを PUT した直後に GET すると、どうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "必ず最新の内容が返る（強い整合性）",
+        "correct": true,
+        "atomId": "s3-strong-consistency",
+        "why": "S3 は PUT や DELETE の直後の読み取りと一覧で、最新の結果を返す"
+      },
+      {
+        "id": "b",
+        "text": "数秒間は古い内容が返ることがある",
+        "correct": false,
+        "why": "かつての S3 の説明。現在は強い整合性がある"
+      },
+      {
+        "id": "c",
+        "text": "数分間はオブジェクトが見つからないことがある",
+        "correct": false,
+        "why": "現在の S3 では起こらない"
+      },
+      {
+        "id": "d",
+        "text": "整合性のオプションを有効にしたときだけ最新が返る",
+        "correct": false,
+        "why": "追加の設定なしで、自動で強い整合性になる"
+      }
+    ],
+    "explanation": "S3 は強い書き込み後の読み取り整合性を持つ。古い「結果整合性」の知識に注意。",
+    "keywords": [
+      "直後",
+      "最新"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-gateway-endpoint:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "「VPC から S3 へ」「無料」「ルートテーブル」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 ゲートウェイエンドポイント",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ルートテーブルに経路を追加し、無料で使える"
+      },
+      {
+        "id": "b",
+        "text": "S3 インターフェイスエンドポイント",
+        "correct": false,
+        "atomId": "s3-interface-endpoint",
+        "why": "有料で、ENI を作る方式"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "why": "インターネット経由になり、データ処理料金がかかる"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "エッジ経由の転送高速化"
+      }
+    ],
+    "explanation": "無料・ルートテーブル → ゲートウェイエンドポイント。",
+    "keywords": [
+      "無料",
+      "ルートテーブル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-origin-access-control:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-origin-access-control"
+    ],
+    "prompt": "「CloudFront 経由のみ」「バケットは非公開」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オリジンアクセスコントロール（OAC）",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "特定のディストリビューションからのアクセスだけを許可する"
+      },
+      {
+        "id": "b",
+        "text": "S3 静的ウェブサイトホスティング",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "バケットを公開することになる"
+      },
+      {
+        "id": "c",
+        "text": "S3 署名付き URL",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "オブジェクトごとの一時的な共有で、CloudFront 専用にはできない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Block Public Access だけ",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開は防げるが、CloudFront からのアクセスも許可されない"
+      }
+    ],
+    "explanation": "CloudFront + 非公開 S3 = OAC。",
+    "keywords": [
+      "CloudFront 経由のみ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-interface-endpoint:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-interface-endpoint"
+    ],
+    "prompt": "「オンプレミスから」「プライベート IP で S3」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 インターフェイスエンドポイント",
+        "correct": true,
+        "atomId": "s3-interface-endpoint",
+        "why": "PrivateLink の ENI を、Direct Connect や VPN 経由で使える"
+      },
+      {
+        "id": "b",
+        "text": "S3 ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "VPC 内からしか使えない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "インターネット経由のエッジを使う"
+      },
+      {
+        "id": "d",
+        "text": "S3 アクセスポイント",
+        "correct": false,
+        "atomId": "s3-access-points",
+        "why": "アクセス管理の入口で、ネットワーク経路ではない"
+      }
+    ],
+    "explanation": "オンプレミスからのプライベート接続 → インターフェイスエンドポイント。",
+    "keywords": [
+      "オンプレミスから"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-event-notifications:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "s3-event-notifications"
+    ],
+    "prompt": "S3（画像のアップロード）→ ? → Lambda（サムネイル生成）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 イベント通知",
+        "correct": true,
+        "atomId": "s3-event-notifications",
+        "why": "オブジェクト作成のイベントで Lambda を直接起動できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Lifecycle",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "日数ベースのルールで、Lambda の起動はできない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化"
+      },
+      {
+        "id": "d",
+        "text": "S3 ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "VPC から S3 への経路で、Lambda の起動とは関係がない"
+      }
+    ],
+    "explanation": "S3 から処理を起動するときの入口は S3 イベント通知。",
+    "keywords": [
+      "アップロード",
+      "Lambda"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-origin-access-control:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "s3-origin-access-control"
+    ],
+    "prompt": "利用者 → CloudFront → ? → 非公開の S3 バケット。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オリジンアクセスコントロール（OAC）",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "CloudFront にだけバケットへのアクセスを許可する"
+      },
+      {
+        "id": "b",
+        "text": "S3 静的ウェブサイトエンドポイント",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "バケットを公開する必要がある"
+      },
+      {
+        "id": "c",
+        "text": "S3 インターフェイスエンドポイント",
+        "correct": false,
+        "atomId": "s3-interface-endpoint",
+        "why": "VPC やオンプレミスからの接続用"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "アップロードの高速化"
+      }
+    ],
+    "explanation": "CloudFront と非公開 S3 をつなぐのは OAC。",
+    "keywords": [
+      "CloudFront",
+      "非公開"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-gateway-endpoint:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "プライベートサブネットの EC2 → ? → S3（無料、インターネットを通らない）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 ゲートウェイエンドポイント",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ルートテーブルの経路で、無料でプライベートに S3 へ接続する"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "why": "インターネット経由で、データ処理料金もかかる"
+      },
+      {
+        "id": "c",
+        "text": "インターネットゲートウェイ",
+        "correct": false,
+        "why": "プライベートサブネットからは直接使えず、インターネットを通る"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "エッジを使う転送の高速化"
+      }
+    ],
+    "explanation": "VPC 内から S3・DynamoDB へ無料でプライベートに → ゲートウェイエンドポイント。",
+    "keywords": [
+      "プライベートサブネット",
+      "無料"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-interface-endpoint:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "s3-interface-endpoint"
+    ],
+    "prompt": "オンプレミス → Direct Connect → VPC 内の ? → S3。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 インターフェイスエンドポイント",
+        "correct": true,
+        "atomId": "s3-interface-endpoint",
+        "why": "VPC 内のプライベート IP を持つ ENI に、オンプレミスから到達できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "オンプレミスからは使えない"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "why": "VPC からインターネットへ出るためのもの"
+      },
+      {
+        "id": "d",
+        "text": "S3 アクセスポイント",
+        "correct": false,
+        "atomId": "s3-access-points",
+        "why": "アクセス管理の入口で、ネットワークの経路ではない"
+      }
+    ],
+    "explanation": "オンプレミス経由はインターフェイスエンドポイント。ゲートウェイは VPC 内だけ。",
+    "keywords": [
+      "オンプレミス",
+      "Direct Connect"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-requester-pays:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-requester-pays"
+    ],
+    "prompt": "誰でもログインなしでダウンロードできる公開データセットに、リクエスタ支払いを設定した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リクエスタ支払いでは匿名アクセスができず、公開できない",
+        "correct": true,
+        "atomId": "s3-requester-pays",
+        "why": "リクエスタは料金を払うため、AWS で認証されている必要がある"
+      },
+      {
+        "id": "b",
+        "text": "リクエスタ支払いにすると保存料金も利用者の負担になる",
+        "correct": false,
+        "why": "保存料金はバケット所有者が払う"
+      },
+      {
+        "id": "c",
+        "text": "リクエスタ支払いは 1 TB 以上のバケットで使えない",
+        "correct": false,
+        "why": "そのような制限はない"
+      },
+      {
+        "id": "d",
+        "text": "リクエスタ支払いにするとダウンロードが遅くなる",
+        "correct": false,
+        "why": "転送速度には影響しない"
+      }
+    ],
+    "explanation": "リクエスタ支払い = 認証済みの利用者が料金を払う。匿名の公開とは両立しない。",
+    "keywords": [
+      "ログインなし",
+      "公開データセット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-strong-consistency:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-strong-consistency"
+    ],
+    "prompt": "「S3 は書き込み直後に古いデータが返る」と考え、書き込み後に必ず 10 秒待つ処理を入れた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "強い整合性があり、待つ必要がなく遅くなるだけ",
+        "correct": true,
+        "atomId": "s3-strong-consistency",
+        "why": "PUT や DELETE の直後の読み取りでも最新の結果が返る"
+      },
+      {
+        "id": "b",
+        "text": "10 秒では足りず、1 分以上待つ必要がある",
+        "correct": false,
+        "why": "待つ必要自体がない"
+      },
+      {
+        "id": "c",
+        "text": "待っている間に S3 の料金が増える",
+        "correct": false,
+        "why": "待機で S3 の料金は増えない"
+      },
+      {
+        "id": "d",
+        "text": "S3 は書き込み後 10 秒間は読み取りを拒否する",
+        "correct": false,
+        "why": "そのような動作はない"
+      }
+    ],
+    "explanation": "「S3 は結果整合性」は古い知識。現在は強い書き込み後の読み取り整合性がある。",
+    "keywords": [
+      "書き込み直後"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-gateway-endpoint:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "オンプレミスから Direct Connect で VPC に接続し、S3 のゲートウェイエンドポイント経由で S3 を使おうとしたが、つながらない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ゲートウェイエンドポイントは VPC の外から使えないから",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "オンプレミスから使うならインターフェイスエンドポイントが必要"
+      },
+      {
+        "id": "b",
+        "text": "ゲートウェイエンドポイントは DynamoDB 専用だから",
+        "correct": false,
+        "why": "S3 と DynamoDB に対応している"
+      },
+      {
+        "id": "c",
+        "text": "Direct Connect は S3 に対応していないから",
+        "correct": false,
+        "why": "インターフェイスエンドポイントやパブリック VIF で使える"
+      },
+      {
+        "id": "d",
+        "text": "ゲートウェイエンドポイントは有料で、未払いだから",
+        "correct": false,
+        "why": "ゲートウェイエンドポイントは無料"
+      }
+    ],
+    "explanation": "ゲートウェイ = VPC 内専用。オンプレミスや別リージョンからはインターフェイス。",
+    "keywords": [
+      "オンプレミス",
+      "つながらない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-interface-endpoint:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-interface-endpoint"
+    ],
+    "prompt": "VPC 内の EC2 だけが S3 を使う環境で、インターフェイスエンドポイントを作った。コストの面で何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC 内だけなら、無料のゲートウェイエンドポイントで足りる",
+        "correct": true,
+        "atomId": "s3-interface-endpoint",
+        "why": "インターフェイスエンドポイントは時間単位とデータ処理の料金がかかる"
+      },
+      {
+        "id": "b",
+        "text": "インターフェイスエンドポイントは S3 に対応していない",
+        "correct": false,
+        "why": "S3 にも対応している"
+      },
+      {
+        "id": "c",
+        "text": "インターフェイスエンドポイントはインターネットを経由する",
+        "correct": false,
+        "why": "インターネットは経由しない"
+      },
+      {
+        "id": "d",
+        "text": "インターフェイスエンドポイントは EC2 から使えない",
+        "correct": false,
+        "why": "EC2 から使える"
+      }
+    ],
+    "explanation": "要件が VPC 内だけならゲートウェイ（無料）を選ぶ。",
+    "keywords": [
+      "VPC 内だけ",
+      "コスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

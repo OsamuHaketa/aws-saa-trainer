@@ -1305,5 +1305,321 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-policy:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-bucket-policy"
+    ],
+    "prompt": "「別アカウントに許可」「送信元 IP で制限」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バケットポリシー",
+        "correct": true,
+        "atomId": "s3-bucket-policy",
+        "why": "リソースベースで、他アカウントへの許可や条件付きの制御ができる"
+      },
+      {
+        "id": "b",
+        "text": "IAM ポリシー",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "自アカウントのプリンシパルに付けるもので、他アカウントには許可できない"
+      },
+      {
+        "id": "c",
+        "text": "S3 アクセスポイント",
+        "correct": false,
+        "atomId": "s3-access-points",
+        "why": "用途ごとの入口を作る仕組みで、まずはバケットポリシーで足りる"
+      },
+      {
+        "id": "d",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "パブリックアクセスを禁止するだけ"
+      }
+    ],
+    "explanation": "他アカウント・条件付き（IP、VPC エンドポイント、HTTPS）はバケットポリシー。",
+    "keywords": [
+      "別アカウント",
+      "送信元 IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-presigned-url"
+    ],
+    "prompt": "「非公開のまま」「期限付き」「特定のファイルを共有」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 署名付き URL",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "URL を持つ人に、有効期限まで特定のオブジェクトへのアクセスを与える"
+      },
+      {
+        "id": "b",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開を禁止するもので、共有はできない"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットポリシー",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "継続的な許可で、期限付きの共有には向かない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Object Lock",
+        "correct": false,
+        "atomId": "s3-object-lock",
+        "why": "削除の防止で、共有の仕組みではない"
+      }
+    ],
+    "explanation": "「期限付き」「一時的」は署名付き URL の合図。",
+    "keywords": [
+      "期限付き",
+      "一時的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-object-lock"
+    ],
+    "prompt": "「WORM」「改ざん防止」「一定期間削除させない」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Object Lock",
+        "correct": true,
+        "atomId": "s3-object-lock",
+        "why": "保持期間中はオブジェクトの削除や上書きができない"
+      },
+      {
+        "id": "b",
+        "text": "S3 MFA Delete",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "MFA があれば削除できる"
+      },
+      {
+        "id": "c",
+        "text": "S3 バージョニング",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "権限があれば過去のバージョンも削除できる"
+      },
+      {
+        "id": "d",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の防止で、削除の防止ではない"
+      }
+    ],
+    "explanation": "WORM が出たら Object Lock。誰にも解除させないならコンプライアンスモード。",
+    "keywords": [
+      "WORM",
+      "改ざん防止"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-block-public-access:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-block-public-access"
+    ],
+    "prompt": "「誤公開を防ぎたい」「アカウント内の全バケット」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Block Public Access",
+        "correct": true,
+        "atomId": "s3-block-public-access",
+        "why": "アカウント単位で、パブリックアクセスを一括でブロックできる"
+      },
+      {
+        "id": "b",
+        "text": "バケットポリシーを定期的に見直す運用",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "バケットごとの設定で、設定ミスによる公開を防ぎきれない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-KMS によるデフォルト暗号化",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "暗号化で、公開そのものは防げない"
+      },
+      {
+        "id": "d",
+        "text": "S3 アクセスポイント",
+        "correct": false,
+        "atomId": "s3-access-points",
+        "why": "入口の管理で、誤公開の一括防止ではない"
+      }
+    ],
+    "explanation": "組織的な誤公開の防止はアカウント単位の Block Public Access。",
+    "keywords": [
+      "誤公開"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-enforce-https:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-enforce-https"
+    ],
+    "prompt": "「HTTP を拒否」「転送中の暗号化を強制」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "aws:SecureTransport 条件",
+        "correct": true,
+        "atomId": "s3-enforce-https",
+        "why": "バケットポリシーで、false のリクエストを Deny する"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3 のデフォルト暗号化",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "保存時の暗号化で、HTTP は拒否できない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Object Lock",
+        "correct": false,
+        "atomId": "s3-object-lock",
+        "why": "削除の防止で、通信の暗号化とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "aws:PrincipalOrgID 条件",
+        "correct": false,
+        "why": "自組織のアカウントに限定する条件で、HTTP の拒否ではない"
+      }
+    ],
+    "explanation": "転送中 = aws:SecureTransport、保存時 = SSE。",
+    "keywords": [
+      "転送中の暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-access-points:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-access-points"
+    ],
+    "prompt": "「共有データセット」「チームごとに別ポリシー」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 アクセスポイント",
+        "correct": true,
+        "atomId": "s3-access-points",
+        "why": "用途ごとの入口に専用のポリシーを付けられる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の防止で、チームごとの権限管理ではない"
+      },
+      {
+        "id": "c",
+        "text": "S3 署名付き URL",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "一時的な共有で、チームごとの継続的な権限管理には向かない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Object Lock",
+        "correct": false,
+        "atomId": "s3-object-lock",
+        "why": "削除の防止"
+      }
+    ],
+    "explanation": "多数のアプリやチームで共有 → アクセスポイント。",
+    "keywords": [
+      "共有データセット",
+      "チームごと"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-iam-policy:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "s3-iam-policy"
+    ],
+    "prompt": "Lambda から S3 にアクセスするため、IAM ユーザーのアクセスキーを環境変数に設定した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "長期の認証情報が漏れるリスクがあり、実行ロールを使うべき",
+        "correct": true,
+        "atomId": "s3-iam-policy",
+        "why": "Lambda には実行ロールを付ければ、一時的な認証情報が自動で使われる"
+      },
+      {
+        "id": "b",
+        "text": "Lambda の環境変数には 10 文字以上の値を設定できない",
+        "correct": false,
+        "why": "そのような制限はない"
+      },
+      {
+        "id": "c",
+        "text": "Lambda は S3 にアクセスすることができない",
+        "correct": false,
+        "why": "実行ロールに権限を付ければアクセスできる"
+      },
+      {
+        "id": "d",
+        "text": "アクセスキーを使うと S3 の料金が 2 倍になる",
+        "correct": false,
+        "why": "料金は変わらない"
+      }
+    ],
+    "explanation": "AWS のサービスには IAM ロール。アクセスキーは作らない、埋め込まない。",
+    "keywords": [
+      "アクセスキー",
+      "環境変数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

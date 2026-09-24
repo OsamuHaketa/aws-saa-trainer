@@ -65,9 +65,18 @@ export function followupCandidates(
     }
   }
 
+  // 本番型は長く、すぐ見分けを確かめる用途には重いので後回しにする
+  const penalty = (q: QuestionEntry) => (q.type === "exam" ? 10 : 0);
+  // 出題済みの問題を優先する（見分けの確認で、新しい問題を次々に増やさないため）
+  const unseen = (q: QuestionEntry) => (cards.has(q.id) ? 0 : 1);
   const lastReview = (q: QuestionEntry) => cards.get(q.id)?.lastReview?.getTime() ?? 0;
   return scored
-    .sort((a, b) => a.score - b.score || lastReview(a.question) - lastReview(b.question))
+    .sort(
+      (a, b) =>
+        a.score + penalty(a.question) - (b.score + penalty(b.question)) ||
+        unseen(a.question) - unseen(b.question) ||
+        lastReview(a.question) - lastReview(b.question),
+    )
     .map(({ question, mustIncludeAtomId }) => ({ question, mustIncludeAtomId }));
 }
 

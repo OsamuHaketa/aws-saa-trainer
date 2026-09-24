@@ -4,6 +4,7 @@ import { pickChoices } from "./choices";
 import { parseContent, type Content } from "./content";
 import { openDb, type DB } from "./db";
 import { followups, reviewLogs } from "./db/schema";
+import { config } from "./config";
 import { toRating } from "./fsrs";
 import { getNextQuestion, loadCards, recordReview } from "./study";
 
@@ -139,7 +140,7 @@ describe("出題と記録", () => {
       answer(next.question.id, "correct", now);
       if (++guard > 100) throw new Error("終わらない");
     }
-    // 全問に 1 回ずつ正解したら、同じ時刻では出すものがない
-    expect(loadCards(db).size).toBe(content.questions.size);
+    // 同じ時刻のまま正解し続けると、新規の上限まで出したところで終わる
+    expect(loadCards(db).size).toBe(Math.min(config.newPerDay, content.questions.size));
   });
 });
