@@ -1,0 +1,24 @@
+# OpenSearch Knowledge Atoms
+service: opensearch
+
+atoms:
+  - id: opensearch-domain
+    category: analytics
+    concept: Amazon OpenSearch Service
+    summary: 全文検索とログの分析・可視化のための、マネージドな検索エンジン
+    facts:
+      - 全文検索、ログやイベントのリアルタイムの分析に使う
+      - OpenSearch Dashboards で可視化できる
+      - Data Firehose や CloudWatch Logs からデータを取り込める
+    triggers:
+      - 全文検索
+      - ログの検索と可視化
+      - 商品の検索機能
+    pitfalls:
+      - 主要なデータの保存先（トランザクションの DB）としては使わない
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html

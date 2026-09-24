@@ -1,0 +1,25 @@
+# Redshift Knowledge Atoms
+service: redshift
+
+atoms:
+  - id: redshift-cluster
+    category: analytics
+    concept: Amazon Redshift
+    summary: 列指向で大量の構造化データを高速に分析する、ペタバイト規模のデータウェアハウス
+    facts:
+      - 列指向のストレージと並列処理で、大量のデータの集計や分析を高速に行う
+      - BI ツールからの複雑な分析クエリ（OLAP）に向く
+      - Redshift Spectrum で、S3 のデータもクエリできる
+      - サーバーレスの選択肢もある
+    triggers:
+      - データウェアハウス
+      - 大量の履歴データを BI で分析したい
+      - OLAP
+    pitfalls:
+      - 1 件ずつの読み書きが多いアプリ（OLTP）の DB には向かない。RDS や DynamoDB を使う
+    relations: []
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html

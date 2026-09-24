@@ -1,0 +1,47 @@
+[
+  {
+    "id": "beanstalk-environment:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "beanstalk-environment"
+    ],
+    "prompt": "インフラの知識が少ない開発チームが、Java の Web アプリを ELB と Auto Scaling 付きですぐにデプロイしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic Beanstalk",
+        "correct": true,
+        "atomId": "beanstalk-environment",
+        "why": "コードをアップロードするだけで、ELB や Auto Scaling を含む環境を自動で作る"
+      },
+      {
+        "id": "b",
+        "text": "EC2 と ELB を手動で構築する",
+        "correct": false,
+        "why": "インフラの知識と作業が必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EKS",
+        "correct": false,
+        "atomId": "eks-cluster",
+        "why": "Kubernetes の知識が必要"
+      },
+      {
+        "id": "d",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチジョブ向け"
+      }
+    ],
+    "explanation": "コードだけで環境を自動構築 = Elastic Beanstalk。",
+    "keywords": [
+      "インフラの知識が少ない",
+      "すぐにデプロイ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

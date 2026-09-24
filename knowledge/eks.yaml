@@ -1,0 +1,27 @@
+# EKS Knowledge Atoms
+service: eks
+
+atoms:
+  - id: eks-cluster
+    category: containers
+    concept: Amazon EKS
+    summary: マネージドな Kubernetes。既存の Kubernetes のワークロードや知識をそのまま使える
+    facts:
+      - Kubernetes のコントロールプレーンを AWS が管理する
+      - オンプレミスや他のクラウドの Kubernetes と同じツールや設定を使える
+      - ノードには EC2 か Fargate を使える
+    triggers:
+      - Kubernetes
+      - オンプレミスの Kubernetes を AWS に移行したい
+      - マルチクラウドで同じコンテナの管理方法を使いたい
+    pitfalls:
+      - Kubernetes を使う必要がなければ、ECS の方が運用がシンプル
+    relations:
+      - type: confused_with
+        target: ecs-fargate
+        distinction: EKS は Kubernetes をマネージドで提供する。ECS は AWS 独自のコンテナ管理サービスでシンプル。Fargate はどちらでも使えるサーバーレスの実行環境
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html

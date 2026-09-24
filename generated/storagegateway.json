@@ -1,0 +1,140 @@
+[
+  {
+    "id": "storagegateway-file:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "storagegateway-file"
+    ],
+    "prompt": "オンプレミスのファイルサーバーの容量が足りない。アプリは NFS のまま変えずに、データの実体を S3 に置きたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 File Gateway",
+        "correct": true,
+        "atomId": "storagegateway-file",
+        "why": "オンプレミスから NFS/SMB で使え、ファイルは S3 に保存される"
+      },
+      {
+        "id": "b",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "データの移動・同期で、オンプレミスから継続的にファイル共有として使う仕組みではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでの一度きりの移行"
+      },
+      {
+        "id": "d",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "VPC 内の共有ファイルシステムで、オンプレミスのキャッシュ付きの共有ではない"
+      }
+    ],
+    "explanation": "オンプレミス + NFS/SMB + 実体は S3 = S3 File Gateway。",
+    "keywords": [
+      "NFS のまま",
+      "S3 に置きたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-tape:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "storagegateway-tape"
+    ],
+    "prompt": "物理テープへのバックアップをやめたい。今のバックアップソフトはそのまま使い、テープの保管もクラウドに移したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Storage Gateway（Tape Gateway）",
+        "correct": true,
+        "atomId": "storagegateway-tape",
+        "why": "バックアップソフトから仮想テープとして使え、S3 や Glacier に保存される"
+      },
+      {
+        "id": "b",
+        "text": "Storage Gateway（File Gateway）",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ファイル共有で、テープのインターフェイスではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送で、テープのインターフェイスではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Glacier Deep Archive に直接書く",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "バックアップソフトの変更が必要になる"
+      }
+    ],
+    "explanation": "テープの置き換え + ソフトはそのまま = Tape Gateway。",
+    "keywords": [
+      "物理テープ",
+      "バックアップソフトはそのまま"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-volume:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "storagegateway-volume"
+    ],
+    "prompt": "オンプレミスのサーバーが使う iSCSI のブロックストレージを、AWS にバックアップしたい。データの本体はローカルに置いたままにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Volume Gateway の保管型",
+        "correct": true,
+        "atomId": "storagegateway-volume",
+        "why": "本体をローカルに置き、非同期で AWS に EBS スナップショットとしてバックアップする"
+      },
+      {
+        "id": "b",
+        "text": "Volume Gateway のキャッシュ型",
+        "correct": false,
+        "atomId": "storagegateway-volume",
+        "why": "データの本体は AWS に置く"
+      },
+      {
+        "id": "c",
+        "text": "S3 File Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ファイル共有で、iSCSI のブロックストレージではない"
+      },
+      {
+        "id": "d",
+        "text": "Tape Gateway",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "仮想テープのインターフェイス"
+      }
+    ],
+    "explanation": "本体がローカル = 保管型、本体が AWS = キャッシュ型。",
+    "keywords": [
+      "iSCSI",
+      "本体はローカル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

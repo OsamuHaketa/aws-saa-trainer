@@ -1,0 +1,47 @@
+[
+  {
+    "id": "redshift-cluster:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "redshift-cluster"
+    ],
+    "prompt": "数年分の販売データ（数十 TB）を集め、多数の BI ユーザーが複雑な集計クエリを毎日高速に実行したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Redshift",
+        "correct": true,
+        "atomId": "redshift-cluster",
+        "why": "列指向と並列処理で、大量のデータの複雑な集計を高速に処理する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon RDS for MySQL",
+        "correct": false,
+        "why": "OLTP 向けで、数十 TB の分析クエリには向かない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon DynamoDB",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "キーでのアクセス向けで、複雑な集計には向かない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon ElastiCache",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "キャッシュで、分析基盤ではない"
+      }
+    ],
+    "explanation": "データウェアハウス・OLAP・BI = Redshift。",
+    "keywords": [
+      "数十 TB",
+      "複雑な集計"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

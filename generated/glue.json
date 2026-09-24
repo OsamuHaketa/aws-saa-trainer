@@ -1,0 +1,91 @@
+[
+  {
+    "id": "glue-etl:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "glue-etl"
+    ],
+    "prompt": "S3 に届く CSV を、サーバーを管理せずに毎日 Parquet に変換し、Athena から使えるようにテーブル定義も管理したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Glue",
+        "correct": true,
+        "atomId": "glue-etl",
+        "why": "サーバーレスで変換し、Data Catalog のテーブル定義を Athena が使う"
+      },
+      {
+        "id": "b",
+        "text": "Amazon EMR のクラスターを常時起動",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "できるが、クラスターの管理が必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon QuickSight",
+        "correct": false,
+        "atomId": "quicksight-dashboard",
+        "why": "可視化のサービスで、変換はしない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "データウェアハウスで、S3 のファイルの変換ツールではない"
+      }
+    ],
+    "explanation": "サーバーレスの ETL + データカタログ = Glue。",
+    "keywords": [
+      "サーバーを管理せずに",
+      "テーブル定義"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "glue-etl:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "glue-etl",
+      "emr-cluster"
+    ],
+    "prompt": "Glue と EMR の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サーバーレスなら Glue、クラスター制御なら EMR",
+        "correct": true,
+        "why": "EMR は Hadoop や Spark のクラスターを細かく設定して使う"
+      },
+      {
+        "id": "b",
+        "text": "Glue はリアルタイム、EMR はバッチ専用",
+        "correct": false,
+        "why": "そのような区別ではない"
+      },
+      {
+        "id": "c",
+        "text": "Glue は Hadoop、EMR は SQL 専用",
+        "correct": false,
+        "why": "Hadoop や Spark を動かすのは EMR"
+      },
+      {
+        "id": "d",
+        "text": "Glue は有料、EMR は無料",
+        "correct": false,
+        "why": "どちらも有料"
+      }
+    ],
+    "explanation": "サーバーレス（Glue）か、クラスター（EMR）か。",
+    "keywords": [
+      "サーバーレス",
+      "クラスター"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

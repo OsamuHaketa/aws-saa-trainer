@@ -1,0 +1,23 @@
+# QuickSight Knowledge Atoms
+service: quicksight
+
+atoms:
+  - id: quicksight-dashboard
+    category: analytics
+    concept: Amazon QuickSight
+    summary: サーバーレスの BI サービス。データを可視化するダッシュボードを作って共有する
+    facts:
+      - Athena、Redshift、RDS、S3 などのデータから、グラフやダッシュボードを作れる
+      - サーバーレスで、利用者の数に合わせてスケールする
+    triggers:
+      - ダッシュボード
+      - BI
+      - 分析結果を可視化して共有したい
+    pitfalls:
+      - データの保存や変換はしない。可視化の前段に Athena や Redshift を使う
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/quicksight/latest/user/welcome.html

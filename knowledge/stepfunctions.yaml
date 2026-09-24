@@ -1,0 +1,25 @@
+# Step Functions Knowledge Atoms
+service: stepfunctions
+
+atoms:
+  - id: stepfunctions-state-machine
+    category: orchestration
+    concept: AWS Step Functions
+    summary: 複数の Lambda や AWS サービスを順番・分岐・並列・再試行でつなぐワークフローを、サーバーレスで作る
+    facts:
+      - 処理の流れ（順番、分岐、並列、待機）をステートマシンとして定義する
+      - エラー時の再試行や、失敗時の処理を定義できる
+      - 人の承認を待つ、長時間かかるワークフローも実行できる
+      - Lambda の 15 分の制限を超える処理を、小さな処理に分けてつなげられる
+    triggers:
+      - 複数の Lambda を順番に実行したい
+      - ワークフローのオーケストレーション
+      - 再試行とエラー処理を含む処理の流れ
+    pitfalls:
+      - Lambda の中から次の Lambda を呼び出してつなぐと、エラー処理や状態の管理が複雑になる
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html

@@ -1,0 +1,48 @@
+[
+  {
+    "id": "batch-jobs:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "batch-jobs"
+    ],
+    "prompt": "研究所で数千本の計算ジョブ（1 本数時間）を実行したい。キューで管理し、スポットを使ってコストを下げたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Batch",
+        "correct": true,
+        "atomId": "batch-jobs",
+        "why": "ジョブのキューと計算環境を管理し、スポットも使える"
+      },
+      {
+        "id": "b",
+        "text": "AWS Lambda",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "1 回 15 分までで、数時間のジョブは実行できない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Step Functions だけ",
+        "correct": false,
+        "atomId": "stepfunctions-state-machine",
+        "why": "処理の流れを制御するもので、計算環境の管理はしない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon QuickSight",
+        "correct": false,
+        "atomId": "quicksight-dashboard",
+        "why": "BI のダッシュボード"
+      }
+    ],
+    "explanation": "大量のバッチジョブ = AWS Batch。",
+    "keywords": [
+      "数千本",
+      "数時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

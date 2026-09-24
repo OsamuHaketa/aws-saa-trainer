@@ -1,0 +1,47 @@
+[
+  {
+    "id": "opensearch-domain:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "opensearch-domain"
+    ],
+    "prompt": "EC サイトの商品を、キーワードの部分一致やあいまい検索で高速に探せるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OpenSearch Service",
+        "correct": true,
+        "atomId": "opensearch-domain",
+        "why": "全文検索のエンジンで、あいまい検索やスコアリングができる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon DynamoDB のスキャン",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "キーでのアクセス向けで、全文検索は苦手"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 へのアドホックな SQL で、検索機能の提供には向かない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "分析向けで、サイトの検索には向かない"
+      }
+    ],
+    "explanation": "全文検索・ログの検索 = OpenSearch。",
+    "keywords": [
+      "あいまい検索"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

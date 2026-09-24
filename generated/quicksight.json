@@ -1,0 +1,48 @@
+[
+  {
+    "id": "quicksight-dashboard:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "quicksight-dashboard"
+    ],
+    "prompt": "Athena で分析した売上のデータを、経営層向けのダッシュボードにして共有したい。サーバーは管理したくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon QuickSight",
+        "correct": true,
+        "atomId": "quicksight-dashboard",
+        "why": "サーバーレスの BI で、ダッシュボードを作って共有できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon OpenSearch Service",
+        "correct": false,
+        "atomId": "opensearch-domain",
+        "why": "検索とログ分析が主な用途"
+      },
+      {
+        "id": "c",
+        "text": "AWS Glue",
+        "correct": false,
+        "atomId": "glue-etl",
+        "why": "ETL のサービスで、可視化はしない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon CloudWatch ダッシュボード",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "運用のメトリクスの可視化向け"
+      }
+    ],
+    "explanation": "ビジネスの BI ダッシュボード = QuickSight。",
+    "keywords": [
+      "ダッシュボード",
+      "経営層"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

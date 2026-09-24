@@ -1,0 +1,24 @@
+# Snow Family Knowledge Atoms
+service: snow
+
+atoms:
+  - id: snow-snowball
+    category: migration
+    concept: AWS Snowball Edge
+    summary: 物理デバイスでデータを運び、ネットワークでは時間がかかりすぎる大量のデータを AWS に移す
+    facts:
+      - AWS から届いたデバイスにデータをコピーし、送り返すと S3 に取り込まれる
+      - 数十 TB〜PB 規模で、ネットワークでの転送に時間がかかりすぎる場合に使う
+      - ネットワークが限られた現場でのエッジコンピューティングにも使える
+    triggers:
+      - 回線が遅く、ネットワークで転送すると数か月かかる
+      - 数百 TB のデータを移行したい
+      - オフラインでのデータ転送
+    pitfalls:
+      - 十分な帯域があるなら、DataSync や Direct Connect でのオンラインの転送の方が早いことがある
+    relations: []
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html

@@ -1,0 +1,24 @@
+# EMR Knowledge Atoms
+service: emr
+
+atoms:
+  - id: emr-cluster
+    category: analytics
+    concept: Amazon EMR
+    summary: Hadoop や Spark のクラスターを使い、大規模なビッグデータ処理を行う
+    facts:
+      - Apache Hadoop、Spark、Hive、Presto などを、マネージドなクラスターで実行する
+      - 大量のデータの処理や機械学習の前処理に使う
+      - スポットインスタンスを使ってコストを下げられる
+    triggers:
+      - Hadoop
+      - Spark
+      - オンプレミスの Hadoop クラスターを移行したい
+    pitfalls:
+      - クラスターの管理をしたくない、簡単な ETL だけなら Glue の方が向く
+    relations: []
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html

@@ -1,0 +1,24 @@
+# DMS Knowledge Atoms
+service: dms
+
+atoms:
+  - id: dms-replication
+    category: migration
+    concept: AWS Database Migration Service（DMS）
+    summary: 移行元の DB を動かしたまま、データベースを AWS へ移行し、変更も継続的に複製する
+    facts:
+      - 移行中も移行元の DB を使い続けられ、ダウンタイムを最小にできる
+      - 変更データキャプチャ（CDC）で、移行後の切り替えまで変更を継続的に複製する
+      - Oracle から Aurora PostgreSQL のような異なるエンジン間の移行では、スキーマ変換（DMS Schema Conversion / SCT）を使う
+    triggers:
+      - ダウンタイムを最小にして DB を移行したい
+      - オンプレミスの Oracle を Aurora に移行したい
+      - 異なる DB エンジンへの移行
+    pitfalls:
+      - スキーマの変換は DMS のデータ移行だけでは行われない。異なるエンジン間ではスキーマ変換のツールも使う
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html

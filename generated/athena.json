@@ -1,0 +1,134 @@
+[
+  {
+    "id": "athena-query:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "athena-query"
+    ],
+    "prompt": "S3 に貯めた ALB のアクセスログを、ときどき SQL で調べたい。サーバーやデータのロードはしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Athena",
+        "correct": true,
+        "atomId": "athena-query",
+        "why": "S3 のデータにそのまま SQL を実行でき、スキャン量に応じた料金"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "データウェアハウスで、ときどきの調査には過剰"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EMR",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "クラスターの管理が必要"
+      },
+      {
+        "id": "d",
+        "text": "Amazon RDS",
+        "correct": false,
+        "why": "データをロードする必要がある"
+      }
+    ],
+    "explanation": "S3 + アドホックな SQL + サーバーレス = Athena。",
+    "keywords": [
+      "S3",
+      "ときどき SQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "athena-query:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "athena-query"
+    ],
+    "prompt": "Athena で毎日、S3 の数 TB の CSV 全体をスキャンするクエリを実行しており、料金が高い。どう改善する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Parquet に変換し、日付でパーティション分割する",
+        "correct": true,
+        "atomId": "athena-query",
+        "why": "列指向の形式とパーティションで、スキャンするデータ量を大きく減らせる"
+      },
+      {
+        "id": "b",
+        "text": "CSV のまま、クエリの回数を増やす",
+        "correct": false,
+        "why": "料金はさらに増える"
+      },
+      {
+        "id": "c",
+        "text": "S3 のストレージクラスを Glacier に変える",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "Athena から直接読めなくなる"
+      },
+      {
+        "id": "d",
+        "text": "Athena の代わりに毎回全データを手元にダウンロード",
+        "correct": false,
+        "why": "転送量と手間が増える"
+      }
+    ],
+    "explanation": "Athena のコスト = スキャン量。列指向 + パーティション + 圧縮。",
+    "keywords": [
+      "料金が高い",
+      "全体をスキャン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "athena-query:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "athena-query",
+      "redshift-cluster"
+    ],
+    "prompt": "Athena と Redshift の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アドホックなら Athena、定常の大規模分析は Redshift",
+        "correct": true,
+        "why": "Redshift はデータをロードして、複雑な分析を高速・大量に処理する"
+      },
+      {
+        "id": "b",
+        "text": "Athena はデータのロードが必要、Redshift は不要",
+        "correct": false,
+        "why": "逆。Athena は S3 のまま、Redshift はロードが基本"
+      },
+      {
+        "id": "c",
+        "text": "Athena は OLTP、Redshift は OLAP",
+        "correct": false,
+        "why": "どちらも分析（OLAP）向け"
+      },
+      {
+        "id": "d",
+        "text": "Athena は有料、Redshift は無料",
+        "correct": false,
+        "why": "どちらも有料"
+      }
+    ],
+    "explanation": "アドホック・サーバーレス → Athena、データウェアハウス → Redshift。",
+    "keywords": [
+      "アドホック",
+      "データウェアハウス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

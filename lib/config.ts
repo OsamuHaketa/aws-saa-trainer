@@ -25,6 +25,9 @@ export const config = {
     "cloudfront", "globalaccelerator", "route53", "lambda", "apigateway", "sqs", "sns", "eventbridge",
     "kinesis", "ebs", "efs", "fsx", "cloudwatch", "cloudtrail", "config",
     "kms", "secretsmanager", "ssm", "waf", "shield", "guardduty", "macie", "inspector", "cognito",
+    "ecs", "eks", "stepfunctions", "batch", "beanstalk",
+    "storagegateway", "datasync", "snow", "dms", "backup",
+    "athena", "redshift", "glue", "emr", "quicksight", "opensearch",
   ] as readonly string[],
 } as const;
 

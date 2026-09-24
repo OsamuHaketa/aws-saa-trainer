@@ -1,0 +1,47 @@
+# ECS / Fargate Knowledge Atoms
+service: ecs
+
+atoms:
+  - id: ecs-fargate
+    category: containers
+    concept: AWS Fargate
+    summary: サーバー（EC2）を管理せずにコンテナを実行するサーバーレスのコンピューティング
+    facts:
+      - コンテナを動かす EC2 の管理（パッチ、スケーリング、台数の管理）が不要
+      - タスクに割り当てた vCPU とメモリの量と時間で課金される
+      - ECS と EKS のどちらでも使える
+      - Lambda の 15 分の制限を超える長時間の処理もコンテナで実行できる
+    triggers:
+      - サーバーを管理せずにコンテナを動かしたい
+      - サーバーレスのコンテナ
+    pitfalls:
+      - GPU や特定のインスタンスタイプが必要な場合は、EC2 起動タイプを使う
+    relations:
+      - type: confused_with
+        target: ecs-ec2-launch-type
+        distinction: Fargate はコンテナを動かすサーバーの管理が不要。EC2 起動タイプは自分で EC2 のクラスターを管理する代わりに、インスタンスタイプの選択や GPU、RI・スポットの活用などの自由度がある
+    examDomains: [performance, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html
+
+  - id: ecs-ec2-launch-type
+    category: containers
+    concept: ECS の EC2 起動タイプ
+    summary: 自分で管理する EC2 のクラスターの上でコンテナを実行する
+    facts:
+      - コンテナを動かす EC2 インスタンスを自分で用意・管理する
+      - GPU や特定のインスタンスタイプを選べる
+      - リザーブドインスタンスやスポットを使ってコストを最適化できる
+    triggers:
+      - GPU が必要なコンテナ
+      - インスタンスのレベルで細かく制御したい
+    pitfalls:
+      - インスタンスのパッチやスケーリングの運用が必要になる
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html

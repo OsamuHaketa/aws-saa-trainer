@@ -1,0 +1,91 @@
+[
+  {
+    "id": "dms-replication:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dms-replication"
+    ],
+    "prompt": "オンプレミスの MySQL を Aurora に移行したい。移行中も業務を止めず、切り替えまでの変更も反映したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS DMS（変更データキャプチャ付き）",
+        "correct": true,
+        "atomId": "dms-replication",
+        "why": "移行元を動かしたまま移行し、変更も継続的に複製する"
+      },
+      {
+        "id": "b",
+        "text": "mysqldump を取って Aurora に復元する",
+        "correct": false,
+        "why": "ダンプ以降の変更が反映されず、停止時間も長くなりがち"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送で、DB の移行ではない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでの一度きりの転送で、変更の継続的な複製はできない"
+      }
+    ],
+    "explanation": "ダウンタイム最小の DB 移行 = DMS + CDC。",
+    "keywords": [
+      "業務を止めず",
+      "変更も反映"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dms-replication:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dms-replication"
+    ],
+    "prompt": "オンプレミスの Oracle を Aurora PostgreSQL に移行する。テーブル定義やストアドプロシージャの変換も必要。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スキーマ変換ツールで変換し、DMS でデータを移す",
+        "correct": true,
+        "atomId": "dms-replication",
+        "why": "エンジンが違う移行では、スキーマ変換とデータ移行を組み合わせる"
+      },
+      {
+        "id": "b",
+        "text": "DMS だけでスキーマも自動ですべて変換する",
+        "correct": false,
+        "why": "DMS のデータ移行だけではスキーマやコードは変換されない"
+      },
+      {
+        "id": "c",
+        "text": "Oracle のダンプを Aurora にそのまま復元する",
+        "correct": false,
+        "why": "エンジンが違うのでそのままでは復元できない"
+      },
+      {
+        "id": "d",
+        "text": "AWS DataSync で DB ファイルをコピーする",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "エンジンが違う DB のファイルは使えない"
+      }
+    ],
+    "explanation": "異なるエンジン間 = スキーマ変換（DMS Schema Conversion / SCT）+ DMS。",
+    "keywords": [
+      "Oracle",
+      "Aurora PostgreSQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

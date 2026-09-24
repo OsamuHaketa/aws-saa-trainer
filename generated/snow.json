@@ -1,0 +1,48 @@
+[
+  {
+    "id": "snow-snowball:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "snow-snowball"
+    ],
+    "prompt": "工場の 500 TB のデータを S3 に移したい。回線は 100 Mbps で、ネットワークで送ると 1 年以上かかる。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Snowball Edge",
+        "correct": true,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスにコピーして送り返し、S3 に取り込む"
+      },
+      {
+        "id": "b",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ネットワーク経由なので、帯域が足りず時間がかかりすぎる"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "回線の帯域そのものは増えない"
+      },
+      {
+        "id": "d",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "インターネット回線の帯域は変わらない"
+      }
+    ],
+    "explanation": "回線が遅い + 大量のデータ = Snowball（物理デバイス）。",
+    "keywords": [
+      "500 TB",
+      "1 年以上"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

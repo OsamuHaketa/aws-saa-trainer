@@ -1,0 +1,27 @@
+# DataSync Knowledge Atoms
+service: datasync
+
+atoms:
+  - id: datasync-task
+    category: migration
+    concept: AWS DataSync
+    summary: オンプレミスと AWS の間で、大量のファイルをネットワーク経由で高速に移動・同期する
+    facts:
+      - NFS、SMB、HDFS などから、S3、EFS、FSx へデータを転送する
+      - 転送の暗号化、整合性の検証、スケジュール実行を自動で行う
+      - 自前のスクリプトより高速に転送できる
+    triggers:
+      - オンプレミスの NAS のデータを S3 や EFS に移行したい
+      - 定期的にオンプレミスと AWS のデータを同期したい
+      - ネットワーク経由の大量のデータ移行
+    pitfalls:
+      - ネットワークの帯域が足りず、転送に何か月もかかる量なら、物理デバイスでの転送を検討する
+    relations:
+      - type: confused_with
+        target: snow-snowball
+        distinction: DataSync はネットワーク経由でオンラインに転送する。Snowball は物理デバイスにデータを入れて送る、帯域が足りない場合のオフラインの転送
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html

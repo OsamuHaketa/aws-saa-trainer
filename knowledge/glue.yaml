@@ -1,0 +1,28 @@
+# Glue Knowledge Atoms
+service: glue
+
+atoms:
+  - id: glue-etl
+    category: analytics
+    concept: AWS Glue
+    summary: サーバーレスの ETL と、データのスキーマを管理する Data Catalog
+    facts:
+      - サーバーレスで、データの抽出・変換・ロード（ETL）を行う
+      - クローラーが S3 などのデータを調べ、スキーマを Data Catalog に登録する
+      - Data Catalog は Athena、Redshift Spectrum、EMR から使える
+      - CSV を Parquet に変換するなどの処理に使う
+    triggers:
+      - サーバーレスの ETL
+      - S3 のデータのスキーマを自動で見つけたい
+      - データカタログ
+    pitfalls:
+      - Spark や Hadoop のクラスターを細かく制御して動かしたいなら EMR を使う
+    relations:
+      - type: confused_with
+        target: emr-cluster
+        distinction: Glue はサーバーレスの ETL とデータカタログで、クラスターの管理が不要。EMR は Hadoop や Spark のクラスターを使い、大規模なビッグデータ処理を細かく制御できる
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html

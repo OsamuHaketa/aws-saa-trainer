@@ -1,0 +1,27 @@
+# AWS Batch Knowledge Atoms
+service: batch
+
+atoms:
+  - id: batch-jobs
+    category: compute
+    concept: AWS Batch
+    summary: 大量のバッチジョブを、キューに入れて自動で用意した計算環境で実行する
+    facts:
+      - ジョブのキューと計算環境を管理し、必要なだけのインスタンスを自動で起動して実行する
+      - 計算環境に EC2、スポット、Fargate を使える
+      - 実行時間の制限がなく、長時間のバッチ処理に向く
+    triggers:
+      - 数千の計算ジョブを並列で実行したい
+      - 長時間のバッチ処理
+      - スポットを使ってバッチのコストを下げたい
+    pitfalls:
+      - 数秒で終わるイベント駆動の処理なら Lambda の方が簡単
+    relations:
+      - type: confused_with
+        target: lambda-function
+        distinction: Lambda は 15 分までのイベント駆動の短い処理。AWS Batch は時間の制限がなく、大量のバッチジョブをキューで管理して実行する
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/batch/latest/userguide/what-is-batch.html

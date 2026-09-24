@@ -1,0 +1,28 @@
+# Athena Knowledge Atoms
+service: athena
+
+atoms:
+  - id: athena-query
+    category: analytics
+    concept: Amazon Athena
+    summary: S3 のデータに、サーバーなしで直接 SQL を実行する。スキャンしたデータ量で課金
+    facts:
+      - S3 のデータ（CSV、JSON、Parquet など）に、そのまま SQL を実行できる
+      - サーバーレスで、スキャンしたデータ量に応じて課金される
+      - Parquet などの列指向の形式や、パーティション分割でスキャン量を減らすとコストが下がる
+      - Glue Data Catalog のテーブル定義を使う
+    triggers:
+      - S3 のログをその場で SQL で分析したい
+      - アドホックな分析
+      - サーバーを用意せずにクエリしたい
+    pitfalls:
+      - 複雑な分析を大量のユーザーが常時行うなら、データウェアハウス（Redshift）の方が向く
+    relations:
+      - type: confused_with
+        target: redshift-cluster
+        distinction: Athena は S3 のデータにサーバーレスで SQL を投げるアドホックな分析向け。Redshift はデータをロードして、大量の複雑な分析クエリを高速に処理するデータウェアハウス
+    examDomains: [cost, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/athena/latest/ug/what-is.html

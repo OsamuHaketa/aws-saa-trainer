@@ -1,0 +1,48 @@
+[
+  {
+    "id": "stepfunctions-state-machine:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "stepfunctions-state-machine"
+    ],
+    "prompt": "注文処理を「在庫確認 → 決済 → 発送」の 3 つの Lambda で順に実行し、失敗したら再試行や取り消しをしたい。どう組む？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Step Functions のステートマシンでつなぐ",
+        "correct": true,
+        "atomId": "stepfunctions-state-machine",
+        "why": "順番、分岐、再試行、エラー時の処理を定義できる"
+      },
+      {
+        "id": "b",
+        "text": "1 つ目の Lambda から次の Lambda を直接呼ぶ",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "エラー処理や状態の管理をすべて自分で書くことになる"
+      },
+      {
+        "id": "c",
+        "text": "SNS で 3 つの Lambda に同時に送る",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "同時に実行され、順番が守られない"
+      },
+      {
+        "id": "d",
+        "text": "EventBridge のスケジュールで順に実行",
+        "correct": false,
+        "atomId": "eventbridge-scheduler",
+        "why": "前の処理の結果に応じた制御ができない"
+      }
+    ],
+    "explanation": "複数の処理の順番・分岐・再試行 = Step Functions。",
+    "keywords": [
+      "順に実行",
+      "再試行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

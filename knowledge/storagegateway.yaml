@@ -1,0 +1,68 @@
+# Storage Gateway Knowledge Atoms
+service: storagegateway
+
+atoms:
+  - id: storagegateway-file
+    category: migration
+    concept: Storage Gateway（S3 File Gateway）
+    summary: オンプレミスのサーバーから NFS/SMB のファイル共有として使え、実体は S3 に保存する
+    facts:
+      - オンプレミスに置いたゲートウェイを、NFS や SMB のファイル共有としてマウントする
+      - ファイルは S3 のオブジェクトとして保存され、よく使うデータはローカルにキャッシュされる
+      - オンプレミスのアプリを変えずに、クラウドのストレージを使える
+    triggers:
+      - オンプレミスのファイルサーバーの容量を、S3 で拡張したい
+      - オンプレミスから NFS/SMB で S3 を使いたい
+      - ハイブリッドストレージ
+    pitfalls:
+      - 一度だけ大量のデータを移したいだけなら DataSync の方が向く
+    relations:
+      - type: confused_with
+        target: datasync-task
+        distinction: Storage Gateway はオンプレミスからクラウドのストレージを継続的に使うためのもの（ハイブリッド）。DataSync はオンプレミスと AWS の間でデータを移動・同期する転送サービス
+    examDomains: [resilient, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html
+
+  - id: storagegateway-tape
+    category: migration
+    concept: Storage Gateway（Tape Gateway）
+    summary: 既存のバックアップソフトの仮想テープとして使え、テープのデータを S3 や Glacier に保存する
+    facts:
+      - 既存のバックアップソフトから、仮想テープライブラリ（VTL）として使える
+      - 仮想テープは S3 に保存され、アーカイブすると S3 Glacier 系に移る
+      - 物理テープとテープの保管の運用をなくせる
+    triggers:
+      - 物理テープのバックアップをクラウドに置き換えたい
+      - バックアップソフトはそのまま使いたい
+    pitfalls:
+      - バックアップソフトの変更が不要という点が特徴。ソフトを変えてよいなら AWS Backup なども検討できる
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html
+
+  - id: storagegateway-volume
+    category: migration
+    concept: Storage Gateway（Volume Gateway）
+    summary: オンプレミスのサーバーに iSCSI のブロックストレージを提供し、データを AWS に保存・バックアップする
+    facts:
+      - オンプレミスのサーバーから iSCSI のブロックデバイスとして使える
+      - キャッシュ型はデータの本体を AWS に置き、よく使うデータをローカルに持つ
+      - 保管型はデータの本体をローカルに置き、非同期で AWS にバックアップする
+      - バックアップは EBS スナップショットとして保存される
+    triggers:
+      - オンプレミスのブロックストレージを AWS にバックアップしたい
+      - iSCSI
+    pitfalls:
+      - ファイル単位で S3 に置きたいなら File Gateway を使う
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/storagegateway/latest/vgw/WhatIsStorageGateway.html

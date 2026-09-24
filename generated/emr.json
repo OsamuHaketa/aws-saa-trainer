@@ -1,0 +1,48 @@
+[
+  {
+    "id": "emr-cluster:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "emr-cluster"
+    ],
+    "prompt": "オンプレミスの Hadoop と Spark のジョブを、ほぼそのまま AWS で動かしたい。コストを抑えるためスポットも使いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EMR",
+        "correct": true,
+        "atomId": "emr-cluster",
+        "why": "マネージドな Hadoop/Spark のクラスターで、スポットも使える"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "SQL のクエリで、Hadoop のジョブはそのまま動かない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Glue",
+        "correct": false,
+        "atomId": "glue-etl",
+        "why": "サーバーレスの ETL で、既存の Hadoop の構成をそのまま使うには向かない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "データウェアハウス"
+      }
+    ],
+    "explanation": "Hadoop / Spark = EMR。",
+    "keywords": [
+      "Hadoop",
+      "Spark"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,136 @@
+[
+  {
+    "id": "ecs-fargate:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ecs-fargate"
+    ],
+    "prompt": "コンテナ化した Web API を動かしたい。コンテナを載せるサーバーのパッチ適用や台数の管理はしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ECS on Fargate",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "コンテナを動かすサーバーの管理が不要"
+      },
+      {
+        "id": "b",
+        "text": "ECS の EC2 起動タイプ",
+        "correct": false,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "コンテナを載せる EC2 を自分で管理する必要がある"
+      },
+      {
+        "id": "c",
+        "text": "EC2 に Docker を入れて手動で運用",
+        "correct": false,
+        "why": "サーバーの管理がすべて必要"
+      },
+      {
+        "id": "d",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチジョブ向けで、常時動く Web API には向かない"
+      }
+    ],
+    "explanation": "サーバーレスのコンテナ = Fargate。",
+    "keywords": [
+      "サーバーの管理はしたくない",
+      "コンテナ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-fargate:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ecs-fargate",
+      "ecs-ec2-launch-type"
+    ],
+    "prompt": "Fargate と ECS の EC2 起動タイプの使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "管理を減らすなら Fargate、GPU や細かい制御なら EC2",
+        "correct": true,
+        "why": "EC2 起動タイプは RI やスポットの活用、インスタンスタイプの選択ができる"
+      },
+      {
+        "id": "b",
+        "text": "Fargate は ECS 専用、EC2 起動タイプは EKS 専用",
+        "correct": false,
+        "why": "Fargate は ECS と EKS のどちらでも使える"
+      },
+      {
+        "id": "c",
+        "text": "Fargate は GPU 必須、EC2 起動タイプは GPU 不可",
+        "correct": false,
+        "why": "GPU が必要なら EC2 起動タイプを使う"
+      },
+      {
+        "id": "d",
+        "text": "Fargate は短時間、EC2 起動タイプは 15 分まで",
+        "correct": false,
+        "why": "どちらにも 15 分の制限はない"
+      }
+    ],
+    "explanation": "管理の手間（Fargate）か、制御の自由度（EC2）か。",
+    "keywords": [
+      "管理",
+      "制御"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-fargate:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ecs-fargate",
+      "lambda-function"
+    ],
+    "prompt": "毎時 30〜40 分かかるデータ変換を、サーバーを管理せずに動かしたい。Lambda では時間が足りない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コンテナにして Fargate のタスクで実行する",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "サーバーレスで、15 分の制限もない"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のタイムアウトを 60 分にする",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "Lambda の上限は 15 分"
+      },
+      {
+        "id": "c",
+        "text": "Lambda のメモリを最大にする",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "速くなることはあっても、15 分の上限は超えられない"
+      },
+      {
+        "id": "d",
+        "text": "常時起動の EC2 で cron 実行する",
+        "correct": false,
+        "why": "サーバーの管理が必要"
+      }
+    ],
+    "explanation": "15 分を超えるサーバーレス処理 = Fargate（や Batch、Step Functions での分割）。",
+    "keywords": [
+      "30〜40 分",
+      "サーバーを管理せずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

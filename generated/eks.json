@@ -1,0 +1,48 @@
+[
+  {
+    "id": "eks-cluster:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "eks-cluster"
+    ],
+    "prompt": "オンプレミスで Kubernetes のマニフェストとツールで運用しているコンテナを、そのまま AWS に移したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EKS",
+        "correct": true,
+        "atomId": "eks-cluster",
+        "why": "マネージドな Kubernetes で、既存のマニフェストやツールを使える"
+      },
+      {
+        "id": "b",
+        "text": "Amazon ECS",
+        "correct": false,
+        "atomId": "ecs-fargate",
+        "why": "AWS 独自のコンテナ管理で、Kubernetes のマニフェストはそのまま使えない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Elastic Beanstalk",
+        "correct": false,
+        "atomId": "beanstalk-environment",
+        "why": "Kubernetes のマニフェストは使えない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチジョブ向け"
+      }
+    ],
+    "explanation": "Kubernetes = EKS。",
+    "keywords": [
+      "Kubernetes",
+      "そのまま"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

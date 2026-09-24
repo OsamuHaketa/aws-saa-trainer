@@ -1,0 +1,92 @@
+[
+  {
+    "id": "backup-plan:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "backup-plan"
+    ],
+    "prompt": "EBS、RDS、DynamoDB、EFS のバックアップを、1 つのポリシーで毎日取り、別のリージョンにもコピーしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Backup のバックアッププラン",
+        "correct": true,
+        "atomId": "backup-plan",
+        "why": "複数のサービスのバックアップを一元的にスケジュールし、別のリージョンにもコピーできる"
+      },
+      {
+        "id": "b",
+        "text": "サービスごとに個別にバックアップを設定する",
+        "correct": false,
+        "why": "設定がばらばらになり、管理や監査が難しい"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync でデータをコピーする",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "バックアップの世代管理の仕組みではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のクロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "S3 のオブジェクトの複製で、他のサービスは対象外"
+      }
+    ],
+    "explanation": "バックアップの一元管理 = AWS Backup。",
+    "keywords": [
+      "1 つのポリシー",
+      "別のリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "backup-plan:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "backup-plan"
+    ],
+    "prompt": "ランサムウェア対策として、管理者の権限を奪われてもバックアップを削除されないようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Backup Vault Lock",
+        "correct": true,
+        "atomId": "backup-plan",
+        "why": "バックアップの削除や保持期間の変更をできなくする（WORM）"
+      },
+      {
+        "id": "b",
+        "text": "バックアップを取る頻度を増やす",
+        "correct": false,
+        "why": "バックアップ自体を削除されれば意味がない"
+      },
+      {
+        "id": "c",
+        "text": "IAM ポリシーで削除を拒否する",
+        "correct": false,
+        "atomId": "iam-policy-evaluation",
+        "why": "権限を奪われるとポリシーを変更されてしまう"
+      },
+      {
+        "id": "d",
+        "text": "バックアップを SSE-S3 で暗号化する",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "暗号化しても削除は防げない"
+      }
+    ],
+    "explanation": "バックアップの WORM = Vault Lock。S3 の Object Lock と同じ考え方。",
+    "keywords": [
+      "削除されない",
+      "ランサムウェア"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

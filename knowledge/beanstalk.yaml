@@ -1,0 +1,23 @@
+# Elastic Beanstalk Knowledge Atoms
+service: beanstalk
+
+atoms:
+  - id: beanstalk-environment
+    category: compute
+    concept: AWS Elastic Beanstalk
+    summary: コードをアップロードするだけで、ロードバランサーや Auto Scaling を含む実行環境を自動で作る
+    facts:
+      - アプリのコードをアップロードすると、EC2、ELB、Auto Scaling、監視を自動で構成する
+      - Java、Python、Node.js、.NET、Docker などに対応する
+      - 作られたリソースは自分のアカウントにあり、必要なら細かく設定を変えられる
+    triggers:
+      - インフラの知識が少なくても、Web アプリをすぐにデプロイしたい
+      - 開発者がコードだけに集中したい
+    pitfalls:
+      - 細かいインフラの構成を自分で設計したい場合は、CloudFormation などで個別に構築する
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html

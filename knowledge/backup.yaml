@@ -1,0 +1,25 @@
+# AWS Backup Knowledge Atoms
+service: backup
+
+atoms:
+  - id: backup-plan
+    category: backup
+    concept: AWS Backup
+    summary: EBS、RDS、DynamoDB、EFS、S3 などのバックアップを、ポリシーで一元管理・自動化する
+    facts:
+      - 複数のサービスのバックアップを、バックアッププランで一元的にスケジュール・保持する
+      - 別のリージョンや別のアカウントにバックアップをコピーできる
+      - Organizations と連携し、組織全体のバックアップのポリシーを管理できる
+      - Backup Vault Lock で、バックアップを削除・変更できないようにできる（WORM）
+    triggers:
+      - 複数のサービスのバックアップを一元管理したい
+      - バックアップを別のアカウントやリージョンにもコピーしたい
+      - バックアップの削除を防ぎたい
+    pitfalls:
+      - サービスごとにバラバラにバックアップを設定すると、管理と監査が難しくなる
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html

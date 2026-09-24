@@ -49,6 +49,22 @@ export const SERVICE_LABEL: Record<string, string> = {
   macie: "Macie",
   inspector: "Inspector",
   cognito: "Cognito",
+  ecs: "ECS / Fargate",
+  eks: "EKS",
+  stepfunctions: "Step Functions",
+  batch: "AWS Batch",
+  beanstalk: "Elastic Beanstalk",
+  storagegateway: "Storage Gateway",
+  datasync: "DataSync",
+  snow: "Snow Family",
+  dms: "DMS",
+  backup: "AWS Backup",
+  athena: "Athena",
+  redshift: "Redshift",
+  glue: "Glue",
+  emr: "EMR",
+  quicksight: "QuickSight",
+  opensearch: "OpenSearch",
 };
 
 export const serviceLabel = (s: string) => SERVICE_LABEL[s] ?? s.toUpperCase();
@@ -88,6 +104,10 @@ export const CATEGORY_LABEL: Record<string, string> = {
   "threat-detection": "脅威検出",
   secrets: "秘密情報",
   operations: "運用",
+  containers: "コンテナ",
+  orchestration: "ワークフロー",
+  migration: "移行・ハイブリッド",
+  analytics: "分析",
 };
 
 export const categoryLabel = (c: string) => CATEGORY_LABEL[c] ?? c;

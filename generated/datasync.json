@@ -1,0 +1,92 @@
+[
+  {
+    "id": "datasync-task:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "datasync-task"
+    ],
+    "prompt": "オンプレミスの NAS にある 50 TB のファイルを、Direct Connect 経由で EFS に移行し、切り替えまでは毎晩差分を同期したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS DataSync",
+        "correct": true,
+        "atomId": "datasync-task",
+        "why": "ネットワーク経由で高速に転送し、スケジュールで差分を同期できる"
+      },
+      {
+        "id": "b",
+        "text": "AWS Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでの一度きりの転送で、毎晩の同期はできない"
+      },
+      {
+        "id": "c",
+        "text": "Storage Gateway（Tape Gateway）",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "テープのバックアップ用"
+      },
+      {
+        "id": "d",
+        "text": "AWS DMS",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "データベースの移行用で、ファイルの転送ではない"
+      }
+    ],
+    "explanation": "ファイルのオンライン移行・同期 = DataSync。",
+    "keywords": [
+      "NAS",
+      "毎晩差分を同期"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "datasync-task:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "datasync-task",
+      "snow-snowball"
+    ],
+    "prompt": "DataSync と Snowball Edge の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "帯域が十分なら DataSync、不足なら Snowball",
+        "correct": true,
+        "why": "ネットワークで送ると時間がかかりすぎる量なら、物理デバイスで運ぶ"
+      },
+      {
+        "id": "b",
+        "text": "小さなファイルは Snowball、大きなファイルは DataSync",
+        "correct": false,
+        "why": "ファイルの大きさで選ぶものではない"
+      },
+      {
+        "id": "c",
+        "text": "DataSync は DB、Snowball はファイル用",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "DB の移行は DMS"
+      },
+      {
+        "id": "d",
+        "text": "どちらもオンプレミスのファイル共有として使う",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ファイル共有として使うのは Storage Gateway"
+      }
+    ],
+    "explanation": "オンライン（DataSync）か、オフライン（Snowball）か。",
+    "keywords": [
+      "帯域"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
