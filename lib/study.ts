@@ -7,7 +7,7 @@ import type { DB } from "./db";
 import { cards, followups, reviewLogs, type CardRow, type MistakeType } from "./db/schema";
 import { cardToRow, rowToCard, scheduler, toRating } from "./fsrs";
 import { atomMastery } from "./mastery";
-import { chooseNext, followupCandidates, newQuestions, type PickReason, type SchedulerState } from "./scheduler";
+import { chooseNext, followupCandidates, inScope, newQuestions, type PickReason, type SchedulerState } from "./scheduler";
 
 /** 学習日の開始時刻（config.dayStartHour 時） */
 export function dayStart(now: Date): Date {
@@ -21,7 +21,7 @@ export function loadCards(db: DB): Map<string, CardRow> {
   return new Map(db.select().from(cards).all().map((c) => [c.questionId, c]));
 }
 
-export function loadState(db: DB, now: Date, extraNew = 0): SchedulerState {
+export function loadState(db: DB, now: Date, extraNew = 0, service?: string): SchedulerState {
   const cardMap = loadCards(db);
   const today = dayStart(now);
   const intro = { introducedToday: 0, introducedAtomsToday: new Set<string>() };
@@ -60,7 +60,7 @@ export function loadState(db: DB, now: Date, extraNew = 0): SchedulerState {
     .all()
     .map((r) => ({ ...r.followup, reviewsSince: r.reviewsSince }));
 
-  return { now, cards: cardMap, recent, openFollowups, extraNew, ...intro };
+  return { now, cards: cardMap, recent, openFollowups, extraNew, service, ...intro };
 }
 
 export type NextQuestion = ReturnType<typeof getNextQuestion>;
@@ -73,8 +73,8 @@ export function distinction(content: Content, a: string | undefined, b: string |
   return find(a, b) ?? find(b, a);
 }
 
-export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 0, rng?: Rng) {
-  const state = loadState(db, now, extraNew);
+export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 0, rng?: Rng, service?: string) {
+  const state = loadState(db, now, extraNew, service);
   const mastery = atomMastery(content, state.cards, now);
   const pick = chooseNext(content, state, mastery, config);
   const summary = summarize(content, state);
@@ -122,8 +122,8 @@ export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 
 
 export type QueueSummary = ReturnType<typeof summarize>;
 
-export function getQueueSummary(db: DB, content: Content, now: Date): QueueSummary {
-  return summarize(content, loadState(db, now));
+export function getQueueSummary(db: DB, content: Content, now: Date, service?: string): QueueSummary {
+  return summarize(content, loadState(db, now, 0, service));
 }
 
 function summarize(content: Content, state: SchedulerState) {
@@ -131,7 +131,8 @@ function summarize(content: Content, state: SchedulerState) {
   let learning = 0;
   let review = 0;
   for (const c of cardMap.values()) {
-    if (!content.questions.has(c.questionId) || content.questions.get(c.questionId)?.status === "retired") continue;
+    const q = content.questions.get(c.questionId);
+    if (!q || q.status === "retired" || !inScope(q, state.service)) continue;
     if (c.state === State.Learning || c.state === State.Relearning) learning++;
     else if (c.state === State.Review && c.due <= now) review++;
   }

@@ -173,3 +173,18 @@
   font-size: 0.8rem;
   overflow-x: auto;
 }
+
+.serviceSelect {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.serviceSelect select {
+  font: inherit;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}

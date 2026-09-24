@@ -17,7 +17,10 @@ const MISTAKE_KEYS: [string, MistakeType][] = [
   ["t", "detail"],
 ];
 
-export function Study() {
+type ServiceOption = { id: string; label: string; count: number };
+
+export function Study({ services, initialService }: { services: ServiceOption[]; initialService?: string }) {
+  const [service, setService] = useState(initialService ?? "");
   const [data, setData] = useState<NextQuestion | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -29,10 +32,12 @@ export function Study() {
   const [session, setSession] = useState({ answered: 0, correct: 0 });
   const startedAt = useRef(0);
 
-  const load = useCallback(async (extra: number) => {
+  const load = useCallback(async (extra: number, svc: string) => {
     setError(null);
     try {
-      const res = await fetch(`/api/next?extraNew=${extra}`, { cache: "no-store" });
+      const params = new URLSearchParams({ extraNew: String(extra) });
+      if (svc) params.set("service", svc);
+      const res = await fetch(`/api/next?${params}`, { cache: "no-store" });
       if (!res.ok) throw new Error(await res.text());
       setData(await res.json());
       setSelected(null);
@@ -45,8 +50,22 @@ export function Study() {
   }, []);
 
   useEffect(() => {
-    load(0);
+    load(0, service);
+    // 初回だけ読み込む（サービスの切り替えは changeService で読み込む）
   }, [load]);
+
+  const changeService = useCallback(
+    (svc: string) => {
+      setService(svc);
+      setExtraNew(0);
+      const url = new URL(window.location.href);
+      if (svc) url.searchParams.set("service", svc);
+      else url.searchParams.delete("service");
+      window.history.replaceState(null, "", url);
+      load(0, svc);
+    },
+    [load],
+  );
 
   const q = data && !data.done ? (data as Loaded) : null;
   const selectedChoice = q?.choices.find((c) => c.id === selected);
@@ -87,19 +106,19 @@ export function Study() {
       });
       if (!res.ok) throw new Error(await res.text());
       setSession((s) => ({ answered: s.answered + 1, correct: s.correct + (isCorrect ? 1 : 0) }));
-      await load(extraNew);
+      await load(extraNew, service);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setSubmitting(false);
     }
-  }, [q, selectedChoice, submitting, responseMs, guessed, mistake, isCorrect, load, extraNew]);
+  }, [q, selectedChoice, submitting, responseMs, guessed, mistake, isCorrect, load, extraNew, service]);
 
   const moreNew = useCallback(() => {
     const extra = extraNew + 10;
     setExtraNew(extra);
-    load(extra);
-  }, [extraNew, load]);
+    load(extra, service);
+  }, [extraNew, load, service]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -129,13 +148,27 @@ export function Study() {
       <div className="card">
         <p>エラーが発生しました。</p>
         <pre className={styles.error}>{error}</pre>
-        <button className="button" onClick={() => load(extraNew)}>
+        <button className="button" onClick={() => load(extraNew, service)}>
           再読み込み
         </button>
       </div>
     );
   }
   if (!data) return <p className="muted">読み込み中…</p>;
+
+  const serviceSelect = (
+    <label className={`small ${styles.serviceSelect}`}>
+      <span className="muted">範囲</span>
+      <select value={service} onChange={(e) => changeService(e.target.value)}>
+        <option value="">すべてのサービス</option>
+        {services.map((s) => (
+          <option key={s.id} value={s.id}>
+            {s.label}（{s.count} 問）
+          </option>
+        ))}
+      </select>
+    </label>
+  );
 
   const summaryLine = (
     <p className={`muted small ${styles.summary}`}>
@@ -153,9 +186,10 @@ export function Study() {
   if (data.done) {
     return (
       <>
+        {serviceSelect}
         {summaryLine}
         <div className="card">
-          <h1>今日の分は終わりました</h1>
+          <h1>{service ? "このサービスの今日の分は終わりました" : "今日の分は終わりました"}</h1>
           <p className="muted">
             復習予定の問題はありません。今日の新規問題は {data.summary.introducedToday} 問出しました。
           </p>
@@ -176,6 +210,7 @@ export function Study() {
 
   return (
     <>
+      {serviceSelect}
       {summaryLine}
       <article className={`card ${styles.question}`}>
         <div className={styles.meta}>

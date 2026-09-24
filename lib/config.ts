@@ -16,6 +16,15 @@ export const config = {
   masteryHorizonDays: 30,
   /** Atom の習熟度がこれ以上なら「習得済み」とみなす */
   masteredThreshold: 0.8,
+  /**
+   * 新しい問題を出すサービスの順番（企画書の Phase 7 の順）。
+   * 前のサービスの問題を出し終えてから次のサービスに進む。ここにないサービスは最後。
+   */
+  serviceOrder: [
+    "s3", "ec2", "vpc", "iam", "organizations", "rds", "dynamodb", "elasticache", "elb", "autoscaling",
+    "cloudfront", "globalaccelerator", "route53", "lambda", "apigateway", "sqs", "sns", "eventbridge",
+    "kinesis", "ebs", "efs", "fsx", "cloudwatch", "cloudtrail", "config",
+  ] as readonly string[],
 } as const;
 
 export type Config = typeof config;

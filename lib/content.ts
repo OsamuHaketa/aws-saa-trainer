@@ -1,11 +1,13 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse as parseYaml } from "yaml";
+import { config } from "./config";
 import { KnowledgeFile, type Atom } from "./schema/atom";
 import { QuestionFile, type Question } from "./schema/question";
 
 export type AtomEntry = Atom & { service: string; order: number };
-export type QuestionEntry = Question & { order: number };
+/** service は主 Atom（atomIds の先頭）のサービス */
+export type QuestionEntry = Question & { order: number; service: string };
 
 export type Content = {
   atoms: Map<string, AtomEntry>;
@@ -49,11 +51,19 @@ export function parseContent(root: string): ParseResult {
     }
     for (const q of result.data) {
       if (questions.has(q.id)) errors.push(`${file} question id が重複: ${q.id}`);
-      questions.set(q.id, { ...q, order: questions.size });
+      questions.set(q.id, { ...q, order: questions.size, service: atoms.get(q.atomIds[0])?.service ?? "" });
     }
   }
 
-  return { atoms, questions, errors };
+  // Atom の順番を、config.serviceOrder のサービス順 → ファイル内の順 にする
+  const rank = (service: string) => {
+    const i = config.serviceOrder.indexOf(service);
+    return i === -1 ? config.serviceOrder.length : i;
+  };
+  const sorted = [...atoms.values()].sort((a, b) => rank(a.service) - rank(b.service) || a.order - b.order);
+  sorted.forEach((atom, i) => (atom.order = i));
+
+  return { atoms: new Map(sorted.map((a) => [a.id, a])), questions, errors };
 }
 
 // --- アプリ用: ファイルが変わったら読み直す（開発中に問題を直してもすぐ反映される） ---

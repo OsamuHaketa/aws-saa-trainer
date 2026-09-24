@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { getContent } from "@/lib/content";
+import { Meter } from "@/app/components/Meter";
+import { activeQuestions, getContent } from "@/lib/content";
 import { getDb } from "@/lib/db";
 import { dashboard } from "@/lib/stats";
-import { getQueueSummary, todayStats } from "@/lib/study";
+import { serviceLabel } from "@/lib/labels";
+import { getQueueSummary, loadCards, todayStats } from "@/lib/study";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,15 @@ export default function Home() {
   const now = new Date();
   const queue = getQueueSummary(db, content, now);
   const today = todayStats(db, now);
-  const { coverage } = dashboard(db, content, now);
+  const { coverage, byService } = dashboard(db, content, now);
+  const cards = loadCards(db);
+  const seenByService = new Map<string, { seen: number; total: number }>();
+  for (const q of activeQuestions(content)) {
+    const s = seenByService.get(q.service) ?? { seen: 0, total: 0 };
+    s.total += 1;
+    s.seen += cards.has(q.id) ? 1 : 0;
+    seenByService.set(q.service, s);
+  }
   const waiting = queue.review + queue.learning + queue.newAvailable;
 
   return (
@@ -54,6 +64,40 @@ export default function Home() {
         習得済み = その Atom の全問題を平均して、30 日後にも 80% 以上の確率で思い出せる状態。キーボード操作: 1〜4 で回答、Enter で次へ、G
         で「勘だった」。
       </p>
+
+      <h2>サービス別</h2>
+      <p className="muted small">新しい問題はこの順番で出ます。学習画面で範囲を絞ることもできます。</p>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>サービス</th>
+              <th className="num">出題済み</th>
+              <th>習熟度</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {byService.map((s) => {
+              const seen = seenByService.get(s.service) ?? { seen: 0, total: 0 };
+              return (
+                <tr key={s.key}>
+                  <td>{serviceLabel(s.service)}</td>
+                  <td className="num">
+                    {seen.seen} / {seen.total}
+                  </td>
+                  <td>
+                    <Meter value={s.mastery} />
+                  </td>
+                  <td className="num">
+                    <Link href={`/study?service=${s.service}`}>学習</Link>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

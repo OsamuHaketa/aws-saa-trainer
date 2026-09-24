@@ -1,5 +1,5 @@
 import { State } from "ts-fsrs";
-import type { Config } from "./config";
+import { config, type Config } from "./config";
 import { activeQuestions, type Content, type QuestionEntry } from "./content";
 import type { CardRow, FollowupRow } from "./db/schema";
 
@@ -8,7 +8,7 @@ import type { CardRow, FollowupRow } from "./db/schema";
  *   1. 混同フォローアップ（誤答から config.followupAfter 問以上たったもの）
  *   2. 学習中（Learning / Relearning）で予定時刻を過ぎた問題
  *   3. 復習予定日を過ぎた問題（習熟度の低い Atom を優先）
- *   4. 新しい問題（1 日の上限まで。Level の低い順）
+ *   4. 新しい問題（1 日の上限まで。サービスの順 → Level の低い順）
  *   5. 学習中で、予定時刻まで config.learnAheadMinutes 分以内の問題（前倒し）
  * 各段階で、直近に出た Atom の問題は後回しにする。
  */
@@ -25,7 +25,14 @@ export type SchedulerState = {
   openFollowups: (FollowupRow & { reviewsSince: number })[];
   /** 「もう少し新しい問題をやる」で増やした今日の上限 */
   extraNew: number;
+  /** 学習するサービスを絞り込む（未指定ならすべて） */
+  service?: string;
 };
+
+/** 絞り込み中のサービスの問題か */
+export function inScope(q: QuestionEntry, service: string | undefined): boolean {
+  return !service || q.service === service;
+}
 
 export type PickReason = "followup" | "learning" | "review" | "new" | "ahead";
 
@@ -47,12 +54,13 @@ export function followupCandidates(
   content: Content,
   followup: Pick<FollowupRow, "atomId" | "confusedAtomId" | "sourceQuestionId">,
   cards: Map<string, CardRow>,
+  service?: string,
 ): { question: QuestionEntry; mustIncludeAtomId?: string }[] {
   const { atomId, confusedAtomId } = followup;
   const scored: { question: QuestionEntry; mustIncludeAtomId?: string; score: number }[] = [];
 
   for (const q of activeQuestions(content)) {
-    if (q.id === followup.sourceQuestionId) continue;
+    if (q.id === followup.sourceQuestionId || !inScope(q, service)) continue;
     const correct = q.choices.find((c) => c.correct);
     const wrongAtoms = new Set(q.choices.filter((c) => !c.correct).map((c) => c.atomId));
     if (q.atomIds.includes(atomId) && q.atomIds.includes(confusedAtomId)) {
@@ -106,11 +114,17 @@ export function newQuestions(content: Content, state: SchedulerState): QuestionE
   const importance = (q: QuestionEntry) => IMPORTANCE_ORDER[content.atoms.get(q.atomIds[0])?.importance ?? "low"];
   const seenToday = (q: QuestionEntry) => (q.atomIds.some((a) => state.introducedAtomsToday.has(a)) ? 1 : 0);
 
+  const serviceRank = (q: QuestionEntry) => {
+    const i = config.serviceOrder.indexOf(q.service);
+    return i === -1 ? config.serviceOrder.length : i;
+  };
+
   return active
-    .filter((q) => !state.cards.has(q.id) && isUnlocked(q, byAtom, state.cards))
+    .filter((q) => inScope(q, state.service) && !state.cards.has(q.id) && isUnlocked(q, byAtom, state.cards))
     .sort(
       (a, b) =>
         seenToday(a) - seenToday(b) || // 今日まだ出していない Atom を優先
+        serviceRank(a) - serviceRank(b) || // サービスごとに進める
         a.level - b.level ||
         importance(a) - importance(b) ||
         atomOrder(a) - atomOrder(b) ||
@@ -129,13 +143,13 @@ export function chooseNext(
   // 1. フォローアップ
   for (const f of state.openFollowups) {
     if (f.reviewsSince < config.followupAfter) continue;
-    const [candidate] = followupCandidates(content, f, cards);
+    const [candidate] = followupCandidates(content, f, cards, state.service);
     if (candidate) return { ...candidate, reason: "followup", followup: f };
   }
 
   const recentAtoms = new Set(state.recent.slice(0, config.recentAtomWindow).flatMap((r) => r.atomIds));
   const lastQuestionId = state.recent[0]?.questionId;
-  const active = activeQuestions(content).filter((q) => q.id !== lastQuestionId);
+  const active = activeQuestions(content).filter((q) => q.id !== lastQuestionId && inScope(q, state.service));
   const withCard = active.flatMap((q) => {
     const card = cards.get(q.id);
     return card ? [{ q, card }] : [];
@@ -180,7 +194,7 @@ export function chooseNext(
   if (lastQuestionId) {
     const card = cards.get(lastQuestionId);
     const q = content.questions.get(lastQuestionId);
-    if (q && q.status !== "retired" && card && isLearning(card) && card.due <= aheadLimit) {
+    if (q && q.status !== "retired" && inScope(q, state.service) && card && isLearning(card) && card.due <= aheadLimit) {
       return { question: q, reason: card.due <= now ? "learning" : "ahead" };
     }
   }

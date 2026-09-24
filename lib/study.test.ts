@@ -154,3 +154,20 @@ describe("distinction", () => {
     expect(distinction(content, a, a)).toBeUndefined();
   });
 });
+
+describe("サービスの順番と絞り込み", () => {
+  it("新規は config.serviceOrder の先頭のサービスから出す", () => {
+    const next = getNextQuestion(db, content, T0);
+    if (next.done) throw new Error("done");
+    expect(next.question.service).toBe(config.serviceOrder[0]);
+  });
+
+  it("サービスを指定すると、そのサービスの問題だけを出す", () => {
+    for (let i = 0; i < 10; i++) {
+      const next = getNextQuestion(db, content, minutes(i), 0, undefined, "vpc");
+      if (next.done) throw new Error("done");
+      expect(next.question.service).toBe("vpc");
+      answer(next.question.id, i % 3 === 0 ? "wrong" : "correct", minutes(i));
+    }
+  });
+});
