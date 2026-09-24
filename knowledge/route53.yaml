@@ -1,0 +1,233 @@
+# Route 53 Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: route53
+
+atoms:
+  - id: route53-simple
+    category: dns
+    concept: シンプルルーティング
+    summary: 1 つのリソースへ名前を解決する基本のルーティング。ヘルスチェックは使えない
+    facts:
+      - 1 つのレコードに 1 つまたは複数の値を設定する
+      - 複数の値がある場合は、ランダムな順で返される
+      - ヘルスチェックと組み合わせられない
+    triggers:
+      - 1 台の Web サーバーの名前解決
+    pitfalls:
+      - 障害時に別の宛先へ切り替えたいなら、フェイルオーバールーティングを使う
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html
+
+  - id: route53-weighted
+    category: dns
+    concept: 加重ルーティング
+    summary: 設定した重みの割合で、複数の宛先にトラフィックを分ける
+    facts:
+      - 各レコードに重みを付け、その割合でトラフィックを振り分ける
+      - 新しいバージョンに 10% だけ流す（カナリア、ブルー/グリーン）などに使う
+      - ヘルスチェックと組み合わせられる
+    triggers:
+      - 新しいバージョンに一部のトラフィックだけ流したい
+      - A/B テスト
+      - 割合で振り分ける
+    pitfalls:
+      - 重みを 0 にするとトラフィックが流れなくなる
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html
+
+  - id: route53-latency
+    category: dns
+    concept: レイテンシーベースルーティング
+    summary: ユーザーからのレイテンシが最も低いリージョンの宛先を返す
+    facts:
+      - 複数のリージョンにあるリソースのうち、ユーザーからのレイテンシが最も低いものに振り分ける
+      - ヘルスチェックと組み合わせて、異常なリージョンを避けられる
+    triggers:
+      - 複数リージョンに展開したアプリで、最も速いリージョンに振り分けたい
+      - 低レイテンシ
+    pitfalls:
+      - 地理的に近いリージョンが必ずしもレイテンシが最も低いとは限らない
+    relations:
+      - type: confused_with
+        target: route53-geolocation
+        distinction: レイテンシーベースは通信の速さで振り分ける。位置情報ルーティングはユーザーの国や大陸で振り分け、速さは考慮しない
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html
+
+  - id: route53-failover
+    category: dns
+    concept: フェイルオーバールーティング
+    summary: プライマリがヘルスチェックで異常になったら、セカンダリへ切り替える（アクティブ/パッシブ）
+    facts:
+      - プライマリとセカンダリのレコードを作る
+      - プライマリのヘルスチェックが異常になると、セカンダリの値を返す
+      - セカンダリに S3 の静的サイトなどを置き、障害時のお知らせページにできる
+    triggers:
+      - アクティブ/パッシブ
+      - 障害時に DR サイトへ切り替えたい
+      - 障害時にメンテナンスページを表示したい
+    pitfalls:
+      - ヘルスチェックを設定しないと、プライマリの異常を検知できない
+    relations:
+      - type: used_with
+        target: route53-health-checks
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
+
+  - id: route53-geolocation
+    category: dns
+    concept: 位置情報ルーティング
+    summary: ユーザーの国や大陸に応じて、宛先を振り分ける
+    facts:
+      - ユーザーの位置（国、大陸など）に応じて、異なる宛先を返す
+      - 国ごとの言語のサイトや、データの所在の規制への対応に使う
+      - どの位置にも一致しないユーザーのために、デフォルトのレコードを作る
+    triggers:
+      - 国ごとに別のサイトを表示したい
+      - 欧州のユーザーは欧州のリージョンで処理する必要がある
+    pitfalls:
+      - デフォルトのレコードがないと、どの位置にも一致しないユーザーは名前解決できない
+    relations:
+      - type: confused_with
+        target: route53-geoproximity
+        distinction: 位置情報はユーザーのいる国や大陸で振り分ける。地理的近接性はユーザーとリソースの距離で振り分け、バイアスで範囲を広げたり狭めたりできる
+    examDomains: [secure, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html
+
+  - id: route53-geoproximity
+    category: dns
+    concept: 地理的近接性ルーティング
+    summary: ユーザーとリソースの地理的な距離で振り分け、バイアスで振り分ける範囲を調整する
+    facts:
+      - ユーザーとリソースの地理的な位置関係で振り分ける
+      - バイアスを設定して、あるリージョンに流すトラフィックの範囲を広げたり狭めたりできる
+    triggers:
+      - あるリージョンに流すトラフィックを少しずつ増やしたい
+      - 地理的な範囲をバイアスで調整したい
+    pitfalls:
+      - 国単位でコンテンツを分けたいだけなら、位置情報ルーティングで足りる
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html
+
+  - id: route53-multivalue
+    category: dns
+    concept: 複数値回答ルーティング
+    summary: ヘルスチェックに合格した最大 8 つの値を、ランダムに返す
+    facts:
+      - 正常な値（最大 8 つ）を返し、クライアントはその中から選ぶ
+      - ヘルスチェックに合格しない値は返さない
+      - DNS での簡易的な負荷分散になるが、ロードバランサーの代わりではない
+    triggers:
+      - 複数のサーバーの IP を返し、異常なものは除外したい
+    pitfalls:
+      - 本格的な負荷分散や、セッションの管理には ELB を使う
+    relations:
+      - type: confused_with
+        target: route53-simple
+        distinction: シンプルルーティングも複数の値を返せるが、ヘルスチェックは使えない。複数値回答はヘルスチェックに合格した値だけを返す
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html
+
+  - id: route53-health-checks
+    category: dns
+    concept: Route 53 ヘルスチェック
+    summary: エンドポイントの状態を監視し、異常な宛先を DNS の応答から外す
+    facts:
+      - エンドポイント（IP やドメイン）を定期的に確認する
+      - 他のヘルスチェックの結果をまとめた計算済みヘルスチェックや、CloudWatch アラームに基づくヘルスチェックも作れる
+      - フェイルオーバー、加重、レイテンシーなどのルーティングと組み合わせる
+    triggers:
+      - 異常なリージョンや宛先を自動で避けたい
+    pitfalls:
+      - プライベートな宛先を監視するには、CloudWatch アラームに基づくヘルスチェックを使う
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html
+
+  - id: route53-alias
+    category: dns
+    concept: エイリアスレコード
+    summary: ALB や CloudFront などの AWS リソースを名前で指し、ゾーンの頂点（example.com）にも使える
+    facts:
+      - ALB、CloudFront、S3 の静的サイト、API Gateway などの AWS リソースを指せる
+      - ゾーンの頂点（example.com のようなサブドメインなしの名前）にも設定できる
+      - AWS リソースを指すエイリアスへのクエリは無料
+      - CNAME はゾーンの頂点に設定できない
+    triggers:
+      - example.com（ネイキッドドメイン）を ALB に向けたい
+      - CloudFront を独自ドメインで使いたい
+    pitfalls:
+      - ゾーンの頂点に CNAME は作れない。エイリアスレコードを使う
+    relations: []
+    examDomains: [performance, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html
+
+  - id: route53-private-hosted-zone
+    category: dns
+    concept: プライベートホストゾーン
+    summary: 関連付けた VPC の中でだけ名前解決できる、社内向けの DNS ゾーン
+    facts:
+      - 関連付けた VPC の中からだけ名前解決できる
+      - db.internal などの内部の名前を、インターネットに公開せずに使える
+      - 複数の VPC（別アカウントも含む）に関連付けられる
+    triggers:
+      - VPC 内だけで使う内部のドメイン名
+    pitfalls:
+      - パブリックホストゾーンに内部のサーバーの名前を登録すると、構成が外から見えてしまう
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html
+
+  - id: route53-resolver
+    category: dns
+    concept: Route 53 Resolver エンドポイント
+    summary: オンプレミスと VPC の間で、互いの DNS の名前を解決できるようにする
+    facts:
+      - インバウンドエンドポイントで、オンプレミスから VPC 内の名前を解決できる
+      - アウトバウンドエンドポイントと転送ルールで、VPC からオンプレミスの名前を解決できる
+      - Direct Connect や VPN でつないだハイブリッド環境で使う
+    triggers:
+      - オンプレミスから VPC 内のプライベートな名前を解決したい
+      - VPC からオンプレミスの DNS の名前を解決したい
+    pitfalls:
+      - EC2 に自前の DNS サーバーを立てると、運用と冗長化の負担が大きい
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html

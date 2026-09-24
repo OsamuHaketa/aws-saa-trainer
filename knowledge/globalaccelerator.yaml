@@ -1,0 +1,27 @@
+# Global Accelerator Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: globalaccelerator
+
+atoms:
+  - id: globalaccelerator-accelerator
+    category: routing
+    concept: AWS Global Accelerator
+    summary: 2 つの固定エニーキャスト IP で受け、AWS のネットワーク経由で最適なリージョンへ届ける
+    facts:
+      - 2 つの固定のエニーキャスト IP アドレスを提供する
+      - ユーザーに最も近いエッジから AWS のグローバルネットワークを通り、最適なリージョンのエンドポイント（ALB、NLB、EC2、Elastic IP）へ届ける
+      - ヘルスチェックで、異常なリージョンから数十秒で切り替える
+      - TCP と UDP に対応し、キャッシュはしない
+    triggers:
+      - 固定の IP アドレスでグローバルに配信したい
+      - ゲームや VoIP など UDP の通信を高速化したい
+      - リージョン間の高速なフェイルオーバー
+    pitfalls:
+      - 静的コンテンツのキャッシュが目的なら CloudFront を使う
+    relations: []
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html

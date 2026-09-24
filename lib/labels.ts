@@ -27,6 +27,7 @@ export const SERVICE_LABEL: Record<string, string> = {
   elb: "ELB",
   autoscaling: "Auto Scaling",
   cloudfront: "CloudFront",
+  globalaccelerator: "Global Accelerator",
   route53: "Route 53",
   lambda: "Lambda",
   sqs: "SQS",
@@ -67,6 +68,8 @@ export const CATEGORY_LABEL: Record<string, string> = {
   storage: "ストレージ",
   compute: "コンピューティング",
   database: "データベース",
+  "edge-security": "エッジのセキュリティ",
+  dns: "DNS",
 };
 
 export const categoryLabel = (c: string) => CATEGORY_LABEL[c] ?? c;

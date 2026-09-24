@@ -1,0 +1,139 @@
+[
+  {
+    "id": "globalaccelerator-accelerator:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "複数リージョンで動くオンラインゲームのサーバー（UDP）に、世界中のプレイヤーを低レイテンシで接続させたい。接続先の IP も固定したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Global Accelerator",
+        "correct": true,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "固定のエニーキャスト IP で受け、AWS のネットワーク経由で最適なリージョンへ届ける。UDP にも対応"
+      },
+      {
+        "id": "b",
+        "text": "Amazon CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "HTTP(S) のコンテンツ配信で、UDP のゲーム通信には使えない"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のレイテンシールーティング",
+        "correct": false,
+        "atomId": "route53-latency",
+        "why": "DNS で宛先を選ぶだけで、IP は固定されず、経路も最適化されない"
+      },
+      {
+        "id": "d",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "1 つのリージョン内の HTTP の負荷分散"
+      }
+    ],
+    "explanation": "UDP・固定 IP・グローバル = Global Accelerator。",
+    "keywords": [
+      "UDP",
+      "IP も固定"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "globalaccelerator-accelerator:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "2 つのリージョンの ALB でアクティブ/アクティブに動くアプリ。リージョン障害時に、DNS のキャッシュに左右されず数十秒で切り替えたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Global Accelerator",
+        "correct": true,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "固定 IP のまま、ヘルスチェックで異常なリージョンから数十秒で切り替える"
+      },
+      {
+        "id": "b",
+        "text": "Route 53 のフェイルオーバールーティング",
+        "correct": false,
+        "atomId": "route53-failover",
+        "why": "クライアントや DNS のキャッシュ（TTL）によって切り替えが遅れることがある"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront の地域制限",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限で、障害時の切り替えではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 クロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "データのコピーで、トラフィックの切り替えではない"
+      }
+    ],
+    "explanation": "DNS のキャッシュに依存しない高速な切り替え = Global Accelerator。",
+    "keywords": [
+      "DNS のキャッシュに左右されず",
+      "数十秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "globalaccelerator-accelerator:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "「2 つの固定エニーキャスト IP」「TCP/UDP」「AWS のグローバルネットワーク」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Global Accelerator",
+        "correct": true,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "固定 IP でエッジから最適なリージョンへ届ける"
+      },
+      {
+        "id": "b",
+        "text": "Amazon CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "HTTP のキャッシュ配信"
+      },
+      {
+        "id": "c",
+        "text": "Network Load Balancer",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "1 つのリージョン内の L4 の負荷分散"
+      },
+      {
+        "id": "d",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "VPC とオンプレミスをつなぐハブ"
+      }
+    ],
+    "explanation": "エニーキャスト IP = Global Accelerator。",
+    "keywords": [
+      "エニーキャスト IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

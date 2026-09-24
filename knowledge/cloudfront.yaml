@@ -1,0 +1,138 @@
+# CloudFront / Global Accelerator Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: cloudfront
+
+atoms:
+  - id: cloudfront-distribution
+    category: caching
+    concept: Amazon CloudFront
+    summary: 世界中のエッジロケーションでコンテンツをキャッシュして、低レイテンシで配信する CDN
+    facts:
+      - 世界中のエッジロケーションでコンテンツをキャッシュし、ユーザーの近くから配信する
+      - オリジン（S3、ALB、EC2、任意の HTTP サーバー）の負荷を減らせる
+      - HTTPS の配信、AWS WAF や Shield との連携ができる
+      - 静的コンテンツだけでなく、動的コンテンツや API の配信も高速化できる
+    triggers:
+      - 世界中のユーザーに静的コンテンツを低レイテンシで配信したい
+      - オリジンの負荷を減らしたい
+      - グローバル
+      - キャッシュ
+    pitfalls:
+      - HTTP 以外の TCP/UDP の通信（ゲームや VoIP など）の高速化には使えない。Global Accelerator を使う
+    relations:
+      - type: confused_with
+        target: globalaccelerator-accelerator
+        distinction: CloudFront はエッジでコンテンツをキャッシュして HTTP(S) を配信する。Global Accelerator はキャッシュせず、固定のエニーキャスト IP で TCP/UDP の通信を AWS のネットワーク経由で最適なリージョンへ届ける
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html
+
+  - id: cloudfront-signed-urls
+    category: edge-security
+    concept: CloudFront 署名付き URL / 署名付き Cookie
+    summary: CloudFront で配信する有料・限定のコンテンツに、期限付きのアクセスを与える
+    facts:
+      - 署名付き URL は、1 つのファイルごとにアクセスを許可する
+      - 署名付き Cookie は、URL を変えずに複数のファイル（会員向けエリア全体など）へのアクセスを許可する
+      - 有効期限や、アクセス元の IP アドレスを制限できる
+    triggers:
+      - 有料会員だけに動画を配信したい
+      - CloudFront で限定公開のコンテンツを配信する
+      - 複数のファイルへのアクセスをまとめて許可したい
+    pitfalls:
+      - CloudFront で配信しているのに S3 の署名付き URL を使うと、CloudFront を経由せずキャッシュも効かない
+    relations:
+      - type: confused_with
+        target: s3-presigned-url
+        distinction: CloudFront の署名付き URL は CloudFront 経由の配信に使い、キャッシュも効く。S3 の署名付き URL は S3 に直接アクセスさせるもので、アップロードにも使える
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+
+  - id: cloudfront-invalidation
+    category: caching
+    concept: キャッシュの無効化（Invalidation）
+    summary: TTL の期限前に、エッジにキャッシュされたファイルを削除して最新のものを配信させる
+    facts:
+      - 指定したパスのキャッシュをエッジから削除し、次のリクエストでオリジンから取り直させる
+      - TTL の期限を待たずに、更新したファイルを配信できる
+      - ファイル名にバージョンを付ける方法（app.v2.js など）なら、無効化をせずに新しいファイルを配信できる
+    triggers:
+      - 更新したファイルがすぐに反映されない
+      - キャッシュを今すぐ消したい
+    pitfalls:
+      - 頻繁に大量のパスを無効化すると料金がかかる。ファイル名のバージョニングも検討する
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html
+
+  - id: cloudfront-geo-restriction
+    category: edge-security
+    concept: CloudFront の地域制限
+    summary: 国単位で、コンテンツの配信を許可・拒否する
+    facts:
+      - 許可する国のリスト、または拒否する国のリストを設定する
+      - ライセンスの都合で、特定の国にだけ配信したいときに使う
+    triggers:
+      - 特定の国からのアクセスを禁止したい
+      - 配信権の都合で国を限定したい
+    pitfalls:
+      - DNS でユーザーの地域ごとに振り分けたいだけなら、Route 53 の位置情報ルーティングを使う
+    relations:
+      - type: confused_with
+        target: route53-geolocation
+        distinction: CloudFront の地域制限は国単位でコンテンツの配信を拒否する。Route 53 の位置情報ルーティングは、ユーザーの地域ごとに別の宛先へ振り分ける
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html
+
+  - id: cloudfront-origin-failover
+    category: availability
+    concept: オリジンフェイルオーバー（オリジングループ）
+    summary: プライマリのオリジンがエラーを返したら、セカンダリのオリジンから配信する
+    facts:
+      - プライマリとセカンダリのオリジンをまとめたオリジングループを作る
+      - プライマリが特定の HTTP ステータスコード（500 系など）を返すと、セカンダリに切り替える
+      - 別リージョンの S3 バケットをセカンダリにすると、リージョン障害に備えられる
+    triggers:
+      - オリジンの障害時も配信を続けたい
+      - 別リージョンのバケットに自動で切り替えたい
+    pitfalls:
+      - オリジンが 1 つだけだと、オリジンの障害でキャッシュにないコンテンツが配信できなくなる
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html
+
+  - id: cloudfront-functions
+    category: caching
+    concept: CloudFront Functions / Lambda@Edge
+    summary: エッジでリクエストやレスポンスを加工するコードを実行する
+    facts:
+      - CloudFront Functions は軽量な JavaScript で、ヘッダーの操作や URL の書き換えなどを大量・低コストで実行する
+      - Lambda@Edge は Node.js や Python で、より重い処理や外部へのネットワークアクセスができる
+      - どちらもユーザーに近いエッジで実行されるので、オリジンまで行かずに処理できる
+    triggers:
+      - エッジでヘッダーを追加したい
+      - URL をリダイレクト・書き換えたい
+      - エッジで簡単な認証をしたい
+    pitfalls:
+      - 単純なヘッダーの操作に Lambda@Edge を使うと、CloudFront Functions より高くつく
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions.html

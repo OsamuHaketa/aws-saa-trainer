@@ -1,0 +1,407 @@
+[
+  {
+    "id": "cloudfront-distribution:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-distribution"
+    ],
+    "prompt": "東京リージョンの S3 に置いた画像や動画を、世界中のユーザーに低レイテンシで配信したい。オリジンの負荷も減らしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon CloudFront",
+        "correct": true,
+        "atomId": "cloudfront-distribution",
+        "why": "エッジロケーションでキャッシュし、ユーザーの近くから配信する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Global Accelerator",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "キャッシュをしないので、オリジンの負荷は減らない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "主にアップロードの高速化で、キャッシュ配信ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 クロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "リージョンは増やせるが、世界中のエッジでキャッシュはしない"
+      }
+    ],
+    "explanation": "「世界中」「静的コンテンツ」「キャッシュ」= CloudFront。",
+    "keywords": [
+      "世界中",
+      "低レイテンシ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-distribution:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-distribution",
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "CloudFront と Global Accelerator の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はエッジでキャッシュ、後者は固定 IP で経路を最適化",
+        "correct": true,
+        "why": "HTTP のコンテンツ配信なら CloudFront、TCP/UDP や固定 IP なら Global Accelerator"
+      },
+      {
+        "id": "b",
+        "text": "前者は TCP/UDP 専用、後者は HTTP 専用",
+        "correct": false,
+        "why": "逆。CloudFront は HTTP(S)、Global Accelerator は TCP/UDP"
+      },
+      {
+        "id": "c",
+        "text": "前者は固定の IP を 2 つ持ち、後者は持たない",
+        "correct": false,
+        "why": "固定のエニーキャスト IP を持つのは Global Accelerator"
+      },
+      {
+        "id": "d",
+        "text": "前者は 1 つのリージョン内、後者は世界中で使う",
+        "correct": false,
+        "why": "どちらも世界中のエッジを使う"
+      }
+    ],
+    "explanation": "企画書の比較例「CloudFront vs Global Accelerator」。キャッシュの有無と、HTTP か TCP/UDP か。",
+    "keywords": [
+      "キャッシュ",
+      "固定 IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-distribution:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-distribution"
+    ],
+    "prompt": "「グローバル」「静的コンテンツ」「低レイテンシ」「キャッシュ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon CloudFront",
+        "correct": true,
+        "atomId": "cloudfront-distribution",
+        "why": "エッジでキャッシュして配信する CDN"
+      },
+      {
+        "id": "b",
+        "text": "AWS Global Accelerator",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "キャッシュはしない"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のレイテンシールーティング",
+        "correct": false,
+        "atomId": "route53-latency",
+        "why": "DNS で宛先を選ぶだけで、キャッシュはしない"
+      },
+      {
+        "id": "d",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "1 つのリージョンでの負荷分散"
+      }
+    ],
+    "explanation": "企画書のトリガー例そのもの。",
+    "keywords": [
+      "グローバル",
+      "静的コンテンツ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-signed-urls:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-signed-urls"
+    ],
+    "prompt": "CloudFront で配信している会員限定エリアの、数百のファイルへのアクセスを、URL を変えずに有料会員だけに許可したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront の署名付き Cookie",
+        "correct": true,
+        "atomId": "cloudfront-signed-urls",
+        "why": "URL を変えずに、複数のファイルへのアクセスをまとめて許可できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront の署名付き URL",
+        "correct": false,
+        "atomId": "cloudfront-signed-urls",
+        "why": "ファイルごとに URL が変わり、数百のファイルでは扱いにくい"
+      },
+      {
+        "id": "c",
+        "text": "S3 の署名付き URL",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "CloudFront を経由せず、キャッシュも効かない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront の地域制限",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限で、会員かどうかは判定できない"
+      }
+    ],
+    "explanation": "1 ファイル → 署名付き URL、複数ファイル・URL を変えない → 署名付き Cookie。",
+    "keywords": [
+      "数百のファイル",
+      "URL を変えずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-signed-urls:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-signed-urls",
+      "s3-presigned-url"
+    ],
+    "prompt": "CloudFront の署名付き URL と S3 の署名付き URL の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront 経由なら前者、S3 直接なら後者",
+        "correct": true,
+        "why": "CloudFront の署名付き URL はキャッシュも効く。S3 の署名付き URL はアップロードにも使える"
+      },
+      {
+        "id": "b",
+        "text": "前者はアップロード専用、後者はダウンロード専用",
+        "correct": false,
+        "why": "S3 の署名付き URL はアップロードとダウンロードの両方に使える"
+      },
+      {
+        "id": "c",
+        "text": "前者は無期限、後者は期限付き",
+        "correct": false,
+        "why": "どちらも期限付き"
+      },
+      {
+        "id": "d",
+        "text": "前者は S3 専用、後者は EC2 専用",
+        "correct": false,
+        "why": "そのような区別はない"
+      }
+    ],
+    "explanation": "配信経路で選ぶ。CloudFront を使っているなら CloudFront の署名付き URL/Cookie。",
+    "keywords": [
+      "CloudFront 経由"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-invalidation:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-invalidation"
+    ],
+    "prompt": "サイトの CSS を修正して S3 にアップロードしたが、CloudFront のキャッシュが残って古いまま表示される。すぐに反映したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "そのパスのキャッシュを無効化する",
+        "correct": true,
+        "atomId": "cloudfront-invalidation",
+        "why": "エッジのキャッシュを削除し、次のリクエストでオリジンから取り直させる"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront の地域制限を設定する",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の配信制限で、キャッシュは消えない"
+      },
+      {
+        "id": "c",
+        "text": "オリジンフェイルオーバーを設定する",
+        "correct": false,
+        "atomId": "cloudfront-origin-failover",
+        "why": "オリジンの障害時の切り替えで、キャッシュは消えない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "S3 のバージョンで、CloudFront のキャッシュは消えない"
+      }
+    ],
+    "explanation": "すぐに反映 = 無効化。今後はファイル名にバージョンを付けるのも有効。",
+    "keywords": [
+      "古いまま",
+      "すぐに反映"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-geo-restriction:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-geo-restriction"
+    ],
+    "prompt": "動画の配信権の都合で、特定の国からの視聴をブロックしたい。CloudFront で配信している。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront の地域制限で、その国を拒否する",
+        "correct": true,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位で配信を許可・拒否できる"
+      },
+      {
+        "id": "b",
+        "text": "Route 53 の加重ルーティング",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "割合で振り分けるもので、国での拒否はできない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "パブリックアクセスの禁止で、国単位の制御はできない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront のキャッシュの無効化",
+        "correct": false,
+        "atomId": "cloudfront-invalidation",
+        "why": "キャッシュの削除で、配信の制限はできない"
+      }
+    ],
+    "explanation": "国単位の配信制限 = CloudFront の地域制限（または WAF の地域ルール）。",
+    "keywords": [
+      "特定の国",
+      "ブロック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-origin-failover:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-origin-failover"
+    ],
+    "prompt": "CloudFront のオリジンの S3 バケットがあるリージョンで障害が起きても、配信を続けたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "別リージョンのバケットをセカンダリにしたオリジングループ",
+        "correct": true,
+        "atomId": "cloudfront-origin-failover",
+        "why": "プライマリがエラーを返すと、セカンダリのオリジンから配信する"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュの TTL を 1 秒にする",
+        "correct": false,
+        "why": "オリジンへの問い合わせが増え、障害の影響がむしろ大きくなる"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront の地域制限を設定する",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限で、障害対策にはならない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化で、障害対策にはならない"
+      }
+    ],
+    "explanation": "オリジンの冗長化 = オリジングループ（オリジンフェイルオーバー）。",
+    "keywords": [
+      "リージョンで障害",
+      "配信を続けたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-functions:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-functions"
+    ],
+    "prompt": "CloudFront のすべてのレスポンスにセキュリティ用のヘッダーを付けたい。処理は単純で、リクエスト数が非常に多い。最もコストを抑えるには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront Functions",
+        "correct": true,
+        "atomId": "cloudfront-functions",
+        "why": "軽量な処理を大量かつ低コストでエッジで実行できる"
+      },
+      {
+        "id": "b",
+        "text": "Lambda@Edge",
+        "correct": false,
+        "atomId": "cloudfront-functions",
+        "why": "できるが、単純な処理には CloudFront Functions より高くつく"
+      },
+      {
+        "id": "c",
+        "text": "オリジンの EC2 でヘッダーを付ける",
+        "correct": false,
+        "why": "キャッシュされたレスポンスには付かず、オリジンの負荷も増える"
+      },
+      {
+        "id": "d",
+        "text": "AWS Global Accelerator",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "ヘッダーを加工する機能はない"
+      }
+    ],
+    "explanation": "単純・大量 → CloudFront Functions、重い処理・外部アクセス → Lambda@Edge。",
+    "keywords": [
+      "ヘッダー",
+      "非常に多い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
