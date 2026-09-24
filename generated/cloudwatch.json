@@ -1,0 +1,137 @@
+[
+  {
+    "id": "cloudwatch-metrics:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-metrics",
+      "cloudwatch-agent"
+    ],
+    "prompt": "EC2 のメモリ使用率でアラームを作ろうとしたが、CloudWatch にメモリのメトリクスがない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メモリは標準で集めず、エージェントが必要だから",
+        "correct": true,
+        "atomId": "cloudwatch-agent",
+        "why": "CloudWatch エージェントを入れると、メモリやディスクの使用率を送れる"
+      },
+      {
+        "id": "b",
+        "text": "EC2 はメモリを使っていないから",
+        "correct": false,
+        "why": "メモリは使っている。標準のメトリクスに含まれないだけ"
+      },
+      {
+        "id": "c",
+        "text": "メモリのメトリクスは有料プランでしか見られないから",
+        "correct": false,
+        "why": "エージェントを入れれば送れる"
+      },
+      {
+        "id": "d",
+        "text": "IAM ロールがないと CPU も見られないから",
+        "correct": false,
+        "why": "CPU は標準で見られる"
+      }
+    ],
+    "explanation": "メモリ・ディスク使用率 = CloudWatch エージェントが必要。",
+    "keywords": [
+      "メモリのメトリクスがない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-alarms:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-alarms"
+    ],
+    "prompt": "EC2 のハードウェア障害でシステムのステータスチェックが失敗したら、自動でインスタンスを復旧させたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アラームで EC2 の復旧アクションを実行",
+        "correct": true,
+        "atomId": "cloudwatch-alarms",
+        "why": "ステータスチェックの失敗で、インスタンスを別のハードウェアで復旧できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail の証跡を有効にする",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、復旧はしない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config のルールを作る",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価で、障害からの復旧はしない"
+      },
+      {
+        "id": "d",
+        "text": "CloudWatch Logs の保持期間を延ばす",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログの保管の設定"
+      }
+    ],
+    "explanation": "メトリクスのしきい値で自動アクション = CloudWatch アラーム。",
+    "keywords": [
+      "ハードウェア障害",
+      "自動で復旧"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-logs"
+    ],
+    "prompt": "アプリのログに ERROR が 1 分間に 10 回以上出たら、運用チームに通知したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メトリクスフィルターでエラー数を数えてアラーム",
+        "correct": true,
+        "atomId": "cloudwatch-logs",
+        "why": "ログの中の ERROR の数をメトリクスにし、アラームから SNS で通知する"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail で ERROR を検索する",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作履歴で、アプリのログは含まれない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config のルールで ERROR を評価する",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "リソースの設定の評価で、ログは見ない"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを有効にする",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録で、アプリのログは含まれない"
+      }
+    ],
+    "explanation": "ログの中身でアラーム = CloudWatch Logs のメトリクスフィルター。",
+    "keywords": [
+      "ERROR",
+      "通知"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

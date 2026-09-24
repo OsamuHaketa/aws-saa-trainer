@@ -1,0 +1,136 @@
+[
+  {
+    "id": "efs-filesystem:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "efs-filesystem"
+    ],
+    "prompt": "3 つの AZ にまたがる数十台の Linux の Web サーバーで、アップロードされた画像ファイルを共有したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EFS",
+        "correct": true,
+        "atomId": "efs-filesystem",
+        "why": "複数の AZ の多数のインスタンスから同時にマウントできる"
+      },
+      {
+        "id": "b",
+        "text": "EBS ボリューム（gp3）",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "基本的に 1 つの AZ の 1 台に接続するもので、多数の AZ から共有できない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストア",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "インスタンスごとの一時的な領域"
+      },
+      {
+        "id": "d",
+        "text": "FSx for Windows File Server",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "Windows の SMB 向けで、Linux の共有には EFS が向く"
+      }
+    ],
+    "explanation": "Linux・複数 AZ・共有 = EFS。",
+    "keywords": [
+      "複数の AZ",
+      "共有"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-filesystem:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "efs-filesystem",
+      "ec2-ebs-volume"
+    ],
+    "prompt": "EBS と EFS の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EBS は 1 AZ で主に 1 台、EFS は複数 AZ の多数で共有",
+        "correct": true,
+        "why": "ブロックストレージか、共有のファイルストレージか"
+      },
+      {
+        "id": "b",
+        "text": "EBS は複数の AZ で共有でき、EFS は 1 台専用",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "EBS はファイルストレージ、EFS はブロックストレージ",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "d",
+        "text": "EBS は Windows 専用、EFS は Linux 専用",
+        "correct": false,
+        "why": "EBS は OS を問わない"
+      }
+    ],
+    "explanation": "企画書の比較例「EBS vs EFS」。",
+    "keywords": [
+      "共有",
+      "1 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-storage-classes:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "efs-storage-classes"
+    ],
+    "prompt": "EFS に置いたファイルの大半は、作成から 1 か月後にはほとんど読まれない。コストを下げたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ライフサイクル管理で IA クラスに自動で移す",
+        "correct": true,
+        "atomId": "efs-storage-classes",
+        "why": "一定期間アクセスのないファイルを、安いストレージクラスへ自動で移す"
+      },
+      {
+        "id": "b",
+        "text": "ファイルを EBS に移す",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "共有できなくなる"
+      },
+      {
+        "id": "c",
+        "text": "EFS を FSx for Lustre に置き換える",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "高性能向けで、コストを下げる目的には合わない"
+      },
+      {
+        "id": "d",
+        "text": "すべてのファイルを毎月手動で削除する",
+        "correct": false,
+        "why": "必要なファイルも失う"
+      }
+    ],
+    "explanation": "EFS のコスト削減 = ライフサイクル管理で IA / アーカイブへ。",
+    "keywords": [
+      "ほとんど読まれない",
+      "コスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

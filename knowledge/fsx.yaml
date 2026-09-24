@@ -1,0 +1,50 @@
+# FSx Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: fsx
+
+atoms:
+  - id: fsx-windows
+    category: file-storage
+    concept: FSx for Windows File Server
+    summary: Windows のファイルサーバー（SMB）をマネージドで提供し、Active Directory と連携する
+    facts:
+      - SMB プロトコルで使える、Windows ネイティブのファイルシステム
+      - Active Directory と連携し、Windows の ACL でアクセスを制御できる
+      - マルチ AZ の構成にできる
+    triggers:
+      - Windows のファイルサーバーを AWS に移行したい
+      - SMB
+      - Active Directory のユーザーでアクセス制御
+    pitfalls:
+      - Linux から NFS で共有したいだけなら EFS を使う
+    relations:
+      - type: confused_with
+        target: efs-filesystem
+        distinction: EFS は Linux 向けの NFS の共有ファイルシステム。FSx for Windows は Windows 向けの SMB のファイルサーバーで、Active Directory と連携する
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html
+
+  - id: fsx-lustre
+    category: file-storage
+    concept: FSx for Lustre
+    summary: HPC や機械学習向けの高性能な並列ファイルシステム。S3 と連携できる
+    facts:
+      - 数百 GB/秒のスループットと、サブミリ秒のレイテンシを出す高性能なファイルシステム
+      - HPC、機械学習、動画処理など、大量のデータを高速に処理する用途に使う
+      - S3 のバケットと連携し、S3 のデータをファイルとして高速に処理できる
+    triggers:
+      - HPC
+      - 機械学習の学習データを高速に読む
+      - S3 のデータを高性能なファイルシステムで処理したい
+    pitfalls:
+      - 一般的なファイル共有には過剰で、EFS や FSx for Windows の方が向く
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html

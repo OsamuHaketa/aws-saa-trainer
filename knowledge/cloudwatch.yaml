@@ -1,0 +1,88 @@
+# CloudWatch Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: cloudwatch
+
+atoms:
+  - id: cloudwatch-metrics
+    category: monitoring
+    concept: CloudWatch メトリクス
+    summary: AWS リソースの性能の数値を集めて監視する。EC2 のメモリやディスクの使用率は標準では集めない
+    facts:
+      - EC2 の CPU 使用率やネットワークなどは、標準で集められる
+      - EC2 のメモリ使用率やディスクの空き容量は、標準では集められない（CloudWatch エージェントが必要）
+      - 独自のメトリクス（カスタムメトリクス）を送れる
+    triggers:
+      - AWS リソースの性能を監視したい
+      - EC2 のメモリ使用率を監視したい
+    pitfalls:
+      - エージェントを入れないと、メモリ使用率のメトリクスは存在しない
+    relations:
+      - type: used_with
+        target: cloudwatch-agent
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/working_with_metrics.html
+
+  - id: cloudwatch-agent
+    category: monitoring
+    concept: CloudWatch エージェント
+    summary: EC2 やオンプレミスのサーバーから、メモリやディスクのメトリクスとログを集める
+    facts:
+      - サーバーに入れて、メモリ使用率やディスクの使用率などの OS 内部のメトリクスを送る
+      - アプリのログファイルを CloudWatch Logs に送れる
+      - オンプレミスのサーバーにも入れられる
+    triggers:
+      - メモリ使用率を監視したい
+      - サーバーのログを CloudWatch に集めたい
+    pitfalls:
+      - エージェントなしでは、OS の中の情報は CloudWatch から見えない
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html
+
+  - id: cloudwatch-alarms
+    category: monitoring
+    concept: CloudWatch アラーム
+    summary: メトリクスがしきい値を超えたら、通知や Auto Scaling、EC2 の復旧などを実行する
+    facts:
+      - メトリクスがしきい値を一定期間超えると、アラームの状態になる
+      - SNS での通知、Auto Scaling のスケーリング、EC2 の停止・再起動・復旧を実行できる
+      - 複数のアラームを組み合わせた複合アラームで、誤報を減らせる
+    triggers:
+      - CPU が高くなったら通知したい
+      - EC2 のハードウェア障害時に自動で復旧させたい
+    pitfalls:
+      - しきい値を超えた瞬間ごとに通知すると誤報が多くなる。評価期間や複合アラームで調整する
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html
+
+  - id: cloudwatch-logs
+    category: monitoring
+    concept: CloudWatch Logs
+    summary: アプリや AWS サービスのログを集めて保管・検索し、メトリクスフィルターで監視する
+    facts:
+      - アプリ、Lambda、VPC フローログなどのログを集めて保管する
+      - 保持期間を設定できる
+      - メトリクスフィルターで、ログの中の特定の文字列（ERROR など）の数をメトリクスにし、アラームを設定できる
+      - Logs Insights でログを検索・分析できる
+    triggers:
+      - ログに ERROR が出たら通知したい
+      - ログを集めて検索したい
+    pitfalls:
+      - 保持期間を「無期限」のままにすると、保管料金が増え続ける
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html

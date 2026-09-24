@@ -1,0 +1,137 @@
+[
+  {
+    "id": "cloudtrail-trail:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudtrail-trail"
+    ],
+    "prompt": "本番の S3 バケットが削除された。誰が、いつ、どこから削除したのかを調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS CloudTrail",
+        "correct": true,
+        "atomId": "cloudtrail-trail",
+        "why": "API の呼び出しを、誰がいつどこから行ったかと共に記録している"
+      },
+      {
+        "id": "b",
+        "text": "CloudWatch メトリクス",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "性能の数値で、誰が操作したかは分からない"
+      },
+      {
+        "id": "c",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "ネットワークの通信の記録で、API の操作者は分からない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Lifecycle",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "移行や削除のルールで、操作の記録ではない"
+      }
+    ],
+    "explanation": "「誰が」「いつ」「何をした」= CloudTrail。",
+    "keywords": [
+      "誰が",
+      "いつ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-trail:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "cloudtrail-trail",
+      "cloudwatch-metrics"
+    ],
+    "prompt": "CloudTrail と CloudWatch の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudTrail は操作の履歴、CloudWatch は状態や性能の監視",
+        "correct": true,
+        "why": "誰が何をしたか → CloudTrail、CPU やログの監視 → CloudWatch"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail は性能の監視、CloudWatch は操作の履歴",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail はログを保存できず、CloudWatch は保存できる",
+        "correct": false,
+        "why": "CloudTrail も証跡で S3 に保存できる"
+      },
+      {
+        "id": "d",
+        "text": "どちらも同じで、名前が違うだけ",
+        "correct": false,
+        "why": "役割が違う"
+      }
+    ],
+    "explanation": "名前が似ている定番の比較。Trail = 足跡（操作）、Watch = 見張り（状態）。",
+    "keywords": [
+      "操作の履歴",
+      "監視"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-trail:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-trail"
+    ],
+    "prompt": "Organizations のすべてのアカウントの API 操作の記録を、1 つの S3 バケットにまとめて長期保管し、改ざんも検知したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "組織の証跡を作り、ログファイルの整合性の検証を有効に",
+        "correct": true,
+        "atomId": "cloudtrail-trail",
+        "why": "全アカウントの記録を集め、ログの改ざんを検知できる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントで CloudWatch Logs に送る",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "アカウントごとにばらばらで、改ざんの検知もできない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config のルールを各アカウントに作る",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価で、API 操作の記録ではない"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを 1 つのバケットに送る",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録で、API 操作は含まれない"
+      }
+    ],
+    "explanation": "組織全体の操作記録 = 組織の証跡。改ざん検知 = ログファイルの整合性の検証。",
+    "keywords": [
+      "すべてのアカウント",
+      "改ざん"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

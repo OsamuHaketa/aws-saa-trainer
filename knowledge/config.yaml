@@ -1,0 +1,26 @@
+# AWS Config Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: config
+
+atoms:
+  - id: config-rules
+    category: audit
+    concept: AWS Config
+    summary: リソースの設定の変更履歴を記録し、ルールに沿っているかを継続的に評価する
+    facts:
+      - リソースの設定と、その変更の履歴を記録する
+      - 「S3 バケットが公開されていないか」などのルールで、設定が準拠しているかを継続的に評価する
+      - 違反したリソースを、自動で修復するアクション（Systems Manager Automation）を設定できる
+    triggers:
+      - 設定がルールに違反していないか継続的にチェックしたい
+      - リソースの設定が過去にどう変わったかを知りたい
+      - コンプライアンスの監査
+    pitfalls:
+      - 違反を「防ぐ」のではなく「検出する」仕組み。事前に禁止したいなら SCP などを使う
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html

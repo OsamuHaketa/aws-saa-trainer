@@ -1,0 +1,137 @@
+[
+  {
+    "id": "fsx-windows:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "fsx-windows"
+    ],
+    "prompt": "オンプレミスの Windows ファイルサーバー（SMB、Active Directory でアクセス制御）を AWS に移したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FSx for Windows",
+        "correct": true,
+        "atomId": "fsx-windows",
+        "why": "SMB と Active Directory の連携に対応した、Windows ネイティブのファイルシステム"
+      },
+      {
+        "id": "b",
+        "text": "Amazon EFS（NFS）",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "Linux 向けの NFS で、SMB や Windows の ACL には対応しない"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Lustre",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "HPC 向けの高性能ファイルシステム"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard に置いて共有する",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "オブジェクトストレージで、SMB のファイル共有ではない"
+      }
+    ],
+    "explanation": "Windows・SMB・AD = FSx for Windows File Server。",
+    "keywords": [
+      "Windows",
+      "SMB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-lustre:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "fsx-lustre"
+    ],
+    "prompt": "S3 にある数百 TB の学習データを、GPU の学習ジョブが非常に高いスループットで読む必要がある。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 と連携した FSx for Lustre",
+        "correct": true,
+        "atomId": "fsx-lustre",
+        "why": "S3 のデータを、高性能な並列ファイルシステムとして読める"
+      },
+      {
+        "id": "b",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "共有には使えるが、HPC ほどの性能を目的としていない"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Windows File Server",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "Windows の SMB 向け"
+      },
+      {
+        "id": "d",
+        "text": "EBS（sc1）",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "最も遅い HDD で、共有もできない"
+      }
+    ],
+    "explanation": "HPC・ML・S3 連携の高性能ファイルシステム = FSx for Lustre。",
+    "keywords": [
+      "非常に高いスループット",
+      "S3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-windows:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "fsx-windows",
+      "efs-filesystem"
+    ],
+    "prompt": "EFS と FSx for Windows File Server の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NFS なら EFS、SMB なら FSx",
+        "correct": true,
+        "why": "OS とプロトコルで選ぶ"
+      },
+      {
+        "id": "b",
+        "text": "小さなファイルなら EFS、大きなファイルなら FSx",
+        "correct": false,
+        "why": "ファイルの大きさで選ぶものではない"
+      },
+      {
+        "id": "c",
+        "text": "1 つの AZ なら EFS、複数の AZ なら FSx",
+        "correct": false,
+        "why": "どちらも複数 AZ の構成にできる"
+      },
+      {
+        "id": "d",
+        "text": "読み取りなら EFS、書き込みなら FSx",
+        "correct": false,
+        "why": "どちらも読み書きできる"
+      }
+    ],
+    "explanation": "Linux/NFS → EFS、Windows/SMB → FSx for Windows、HPC → FSx for Lustre。",
+    "keywords": [
+      "NFS",
+      "SMB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

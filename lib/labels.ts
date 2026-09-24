@@ -18,6 +18,7 @@ export const SERVICE_LABEL: Record<string, string> = {
   ec2: "EC2",
   ebs: "EBS",
   efs: "EFS",
+  fsx: "FSx",
   vpc: "VPC",
   iam: "IAM",
   rds: "RDS",
@@ -36,6 +37,8 @@ export const SERVICE_LABEL: Record<string, string> = {
   eventbridge: "EventBridge",
   kinesis: "Kinesis",
   cloudwatch: "CloudWatch",
+  cloudtrail: "CloudTrail",
+  config: "AWS Config",
   organizations: "Organizations",
   kms: "KMS",
 };
@@ -71,6 +74,9 @@ export const CATEGORY_LABEL: Record<string, string> = {
   database: "データベース",
   "edge-security": "エッジのセキュリティ",
   dns: "DNS",
+  "file-storage": "ファイルストレージ",
+  "block-storage": "ブロックストレージ",
+  audit: "監査",
 };
 
 export const categoryLabel = (c: string) => CATEGORY_LABEL[c] ?? c;

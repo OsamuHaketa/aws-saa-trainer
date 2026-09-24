@@ -1,0 +1,50 @@
+# EFS Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: efs
+
+atoms:
+  - id: efs-filesystem
+    category: file-storage
+    concept: Amazon EFS
+    summary: 複数の AZ の多数の Linux インスタンスから同時にマウントできる、共有のファイルストレージ（NFS）
+    facts:
+      - NFS でマウントする共有ファイルシステム
+      - 複数の AZ にある多数の EC2（Linux）や、ECS、Lambda から同時にアクセスできる
+      - 容量は自動で増減し、事前の容量の設定が不要
+      - データは複数の AZ に保存される（1 つの AZ に保存する選択肢もある）
+    triggers:
+      - 複数のサーバーでファイルを共有したい
+      - 複数の AZ から同じファイルにアクセス
+      - Linux の共有ファイルシステム
+    pitfalls:
+      - Windows のサーバーから SMB で使うなら FSx for Windows File Server を使う
+    relations:
+      - type: confused_with
+        target: ec2-ebs-volume
+        distinction: EBS は基本的に 1 つの AZ の 1 台のインスタンスに接続するブロックストレージ。EFS は複数の AZ の多数のインスタンスから同時にマウントできる共有のファイルストレージ
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html
+
+  - id: efs-storage-classes
+    category: file-storage
+    concept: EFS のストレージクラスとライフサイクル管理
+    summary: アクセスの少ないファイルを、自動で低頻度アクセス（IA）やアーカイブのクラスへ移してコストを下げる
+    facts:
+      - Standard、低頻度アクセス（IA）、アーカイブのストレージクラスがある
+      - ライフサイクル管理で、一定期間アクセスされないファイルを自動で IA やアーカイブに移す
+      - アクセスされると Standard に戻すように設定できる
+    triggers:
+      - EFS のコストを下げたい
+      - ほとんど読まれないファイルが多い
+    pitfalls:
+      - すべてのファイルを Standard に置き続けると、読まれないファイルにも高い料金を払う
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html

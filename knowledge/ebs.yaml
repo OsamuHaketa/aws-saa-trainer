@@ -1,0 +1,137 @@
+# EBS Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: ebs
+
+atoms:
+  - id: ebs-gp3
+    category: block-storage
+    concept: 汎用 SSD（gp3）
+    summary: 容量に関係なく IOPS とスループットを設定できる、汎用の SSD ボリューム
+    facts:
+      - 容量に関係なく、ベースラインで 3,000 IOPS と 125 MB/秒を持つ
+      - IOPS とスループットを、容量とは別に追加で設定できる
+      - gp2 より安く、多くのワークロードの標準の選択肢
+      - ブートボリュームに使える
+    triggers:
+      - 一般的なアプリや開発環境のボリューム
+      - IOPS のために容量を増やしたくない
+    pitfalls:
+      - 非常に高い IOPS と低レイテンシが常に必要な重要な DB には、io2 を使う
+    relations:
+      - type: confused_with
+        target: ebs-io2
+        distinction: gp3 は汎用でコスト効率が良い。io2 はプロビジョンド IOPS で、より高い IOPS と耐久性を持ち、ミッションクリティカルな DB 向け
+    examDomains: [cost, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html
+
+  - id: ebs-io2
+    category: block-storage
+    concept: プロビジョンド IOPS SSD（io2）
+    summary: 高い IOPS を安定して必要とする、重要なデータベース向けの SSD ボリューム
+    facts:
+      - 必要な IOPS を指定して確保する
+      - io2 Block Express では、最大 256,000 IOPS の非常に高い性能を出せる
+      - 同じ AZ の複数のインスタンスに同時に接続できる（マルチアタッチ）
+      - 耐久性が高い
+    triggers:
+      - I/O の多いミッションクリティカルな DB
+      - 数万 IOPS 以上が安定して必要
+    pitfalls:
+      - それほど高い IOPS が要らない用途では、gp3 より大幅に高くつく
+    relations: []
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html
+
+  - id: ebs-st1
+    category: block-storage
+    concept: スループット最適化 HDD（st1）
+    summary: 大量のデータを順番に読み書きする処理向けの、低コストの HDD ボリューム
+    facts:
+      - 大きなデータを連続して読み書きするスループット重視の HDD
+      - ビッグデータ、データウェアハウス、ログ処理に向く
+      - ブートボリュームには使えない
+    triggers:
+      - 大量のデータを順番に読む
+      - スループット重視で安く
+    pitfalls:
+      - ランダムな小さい読み書きが多い DB には向かない（SSD を使う）
+    relations:
+      - type: confused_with
+        target: ebs-sc1
+        distinction: st1 は頻繁にアクセスするスループット重視のデータ向け。sc1 はほとんどアクセスしないデータ向けで、最も安い
+    examDomains: [cost, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html
+
+  - id: ebs-sc1
+    category: block-storage
+    concept: Cold HDD（sc1）
+    summary: アクセスの少ないデータ向けの、最も安い EBS ボリューム
+    facts:
+      - EBS で最も安いボリュームタイプ
+      - アクセスの少ない、大きなデータ向け
+      - ブートボリュームには使えない
+    triggers:
+      - アクセスの少ないデータを最も安く EBS に置きたい
+    pitfalls:
+      - 性能が必要な処理には向かない
+    relations: []
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html
+
+  - id: ebs-snapshots
+    category: backup
+    concept: EBS スナップショット
+    summary: ボリュームの増分バックアップ。別の AZ やリージョンにボリュームを復元できる
+    facts:
+      - 前回からの変更分だけを保存する増分バックアップ
+      - スナップショットから、別の AZ にボリュームを作れる
+      - 別のリージョンにコピーでき、別のアカウントと共有できる
+      - Data Lifecycle Manager や AWS Backup で、取得と削除を自動化できる
+    triggers:
+      - EBS のバックアップ
+      - 別の AZ やリージョンにボリュームを移したい
+      - バックアップを自動化したい
+    pitfalls:
+      - スナップショットから作ったボリュームは、最初の読み取りが遅いことがある（高速スナップショット復元で解消）
+    relations:
+      - type: used_with
+        target: ec2-ebs-volume
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html
+
+  - id: ebs-encryption
+    category: block-storage
+    concept: EBS の暗号化
+    summary: KMS の鍵でボリュームとスナップショットを暗号化する。リージョンごとにデフォルトで暗号化できる
+    facts:
+      - KMS の鍵で、ボリューム、スナップショット、インスタンスとの間の通信を暗号化する
+      - リージョン単位で「デフォルトで暗号化」を有効にすると、新しいボリュームが自動で暗号化される
+      - 暗号化されていないボリュームは、スナップショットを暗号化してコピーし、そこから作り直して暗号化する
+      - 暗号化による性能への影響はほとんどない
+    triggers:
+      - 新しく作るすべての EBS を暗号化したい
+      - 既存の暗号化されていないボリュームを暗号化したい
+    pitfalls:
+      - 既存のボリュームに、直接暗号化を有効にすることはできない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html

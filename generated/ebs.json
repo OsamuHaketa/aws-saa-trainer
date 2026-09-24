@@ -1,0 +1,445 @@
+[
+  {
+    "id": "ebs-gp3:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-gp3"
+    ],
+    "prompt": "一般的な Web アプリのブートボリュームと、データ用のボリュームを選ぶ。コスト効率を重視したい。どれを使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "汎用 SSD（gp3）",
+        "correct": true,
+        "atomId": "ebs-gp3",
+        "why": "ベースラインの性能が高く安い、多くのワークロードの標準"
+      },
+      {
+        "id": "b",
+        "text": "プロビジョンド IOPS SSD（io2）",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "高い IOPS が必要な重要な DB 向けで、一般的な用途には高い"
+      },
+      {
+        "id": "c",
+        "text": "スループット最適化 HDD（st1）",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "ブートボリュームに使えない"
+      },
+      {
+        "id": "d",
+        "text": "Cold HDD（sc1）",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "ブートボリュームに使えず、性能も低い"
+      }
+    ],
+    "explanation": "迷ったら gp3。HDD はブートに使えない。",
+    "keywords": [
+      "一般的",
+      "コスト効率"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-gp3:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "ebs-gp3"
+    ],
+    "prompt": "gp3 ボリュームのベースライン性能は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "容量に関係なく 3,000 IOPS と 125 MB/秒",
+        "correct": true,
+        "atomId": "ebs-gp3",
+        "why": "それ以上は、容量とは別に追加で設定できる"
+      },
+      {
+        "id": "b",
+        "text": "1 GB あたり 3 IOPS で、容量に比例する",
+        "correct": false,
+        "why": "容量に比例するのは gp2"
+      },
+      {
+        "id": "c",
+        "text": "容量に関係なく 256,000 IOPS",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "io2 Block Express の最大値"
+      },
+      {
+        "id": "d",
+        "text": "ベースラインはなく、すべて手動で設定する",
+        "correct": false,
+        "why": "3,000 IOPS と 125 MB/秒のベースラインがある"
+      }
+    ],
+    "explanation": "gp3 = 3,000 IOPS / 125 MB/秒が標準。gp2 は容量に比例。",
+    "keywords": [
+      "3,000 IOPS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-io2:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-io2"
+    ],
+    "prompt": "ミッションクリティカルな Oracle DB を EC2 で動かす。常に 5 万 IOPS 以上を安定して必要とする。どのボリュームを使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンド IOPS SSD（io2）",
+        "correct": true,
+        "atomId": "ebs-io2",
+        "why": "必要な IOPS を確保でき、耐久性も高い"
+      },
+      {
+        "id": "b",
+        "text": "汎用 SSD（gp3）",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "IOPS を追加できるが、このレベルの安定した高 IOPS には io2 が向く"
+      },
+      {
+        "id": "c",
+        "text": "スループット最適化 HDD（st1）",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "ランダムな I/O の多い DB には向かない"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスストア",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "停止や故障でデータが消え、DB の永続的な保存先にならない"
+      }
+    ],
+    "explanation": "高 IOPS・重要な DB = io2。",
+    "keywords": [
+      "5 万 IOPS",
+      "ミッションクリティカル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-io2:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ebs-io2",
+      "ebs-gp3"
+    ],
+    "prompt": "io2 と gp3 の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "重要な高 IOPS の DB は io2、他は gp3",
+        "correct": true,
+        "why": "gp3 はコスト効率が良く、io2 は性能と耐久性を重視"
+      },
+      {
+        "id": "b",
+        "text": "ブートボリュームは io2、データ用は gp3",
+        "correct": false,
+        "why": "どちらもブートに使え、用途による区別ではない"
+      },
+      {
+        "id": "c",
+        "text": "io2 は HDD、gp3 は SSD",
+        "correct": false,
+        "why": "どちらも SSD"
+      },
+      {
+        "id": "d",
+        "text": "io2 は安く、gp3 は高い",
+        "correct": false,
+        "why": "io2 の方が高い"
+      }
+    ],
+    "explanation": "性能要件で選ぶ。まず gp3、足りなければ io2。",
+    "keywords": [
+      "IOPS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-st1:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-st1"
+    ],
+    "prompt": "EC2 上の Hadoop で、大量のログを順番に読み込んで処理する。スループット重視で安くしたい。どのボリュームを使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スループット最適化 HDD（st1）",
+        "correct": true,
+        "atomId": "ebs-st1",
+        "why": "大きなデータの連続した読み書きを安く処理できる"
+      },
+      {
+        "id": "b",
+        "text": "プロビジョンド IOPS SSD（io2）",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "ランダム I/O 向けで、この用途には高すぎる"
+      },
+      {
+        "id": "c",
+        "text": "Cold HDD（sc1）",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "アクセスの少ないデータ向けで、頻繁な処理には性能が足りない"
+      },
+      {
+        "id": "d",
+        "text": "汎用 SSD（gp3）",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "使えるが、大量の連続読み込みなら st1 の方が安い"
+      }
+    ],
+    "explanation": "連続読み書き・スループット・安く = st1。",
+    "keywords": [
+      "順番に読み込んで",
+      "スループット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-sc1:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ebs-sc1",
+      "ebs-st1"
+    ],
+    "prompt": "st1 と sc1 の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "st1 は頻繁に使うデータ、sc1 はほぼ使わないデータ向け",
+        "correct": true,
+        "why": "どちらも HDD でブートボリュームには使えない"
+      },
+      {
+        "id": "b",
+        "text": "st1 は SSD、sc1 は HDD",
+        "correct": false,
+        "why": "どちらも HDD"
+      },
+      {
+        "id": "c",
+        "text": "st1 はブートに使え、sc1 は使えない",
+        "correct": false,
+        "why": "どちらもブートに使えない"
+      },
+      {
+        "id": "d",
+        "text": "st1 は 1 つの AZ、sc1 は複数の AZ に保存",
+        "correct": false,
+        "why": "どちらも 1 つの AZ のボリューム"
+      }
+    ],
+    "explanation": "HDD のうち、使う頻度で st1（頻繁）と sc1（まれ）を選ぶ。",
+    "keywords": [
+      "頻繁",
+      "ほぼ使わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-snapshots:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-snapshots"
+    ],
+    "prompt": "EC2 の EBS ボリュームのバックアップを毎日取り、7 日より古いものは自動で消したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Data Lifecycle Manager で自動化",
+        "correct": true,
+        "atomId": "ebs-snapshots",
+        "why": "スナップショットの取得スケジュールと保持数を設定できる（AWS Backup でもよい）"
+      },
+      {
+        "id": "b",
+        "text": "毎日手動でスナップショットを取り、古いものを手動で消す",
+        "correct": false,
+        "why": "手作業で漏れが起きやすい"
+      },
+      {
+        "id": "c",
+        "text": "ボリュームを io2 に変える",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "性能の話で、バックアップにはならない"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスストアにコピーする",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "停止で消える一時的な領域で、バックアップにならない"
+      }
+    ],
+    "explanation": "EBS のバックアップの自動化 = Data Lifecycle Manager / AWS Backup。",
+    "keywords": [
+      "毎日",
+      "自動で消したい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-snapshots:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "ebs-snapshots"
+    ],
+    "prompt": "EBS スナップショットの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "変更分だけを保存する増分バックアップ",
+        "correct": true,
+        "atomId": "ebs-snapshots",
+        "why": "別の AZ やリージョンにボリュームを復元できる"
+      },
+      {
+        "id": "b",
+        "text": "毎回ボリューム全体を丸ごとコピーする",
+        "correct": false,
+        "why": "2 回目以降は増分"
+      },
+      {
+        "id": "c",
+        "text": "同じ AZ にしか復元できない",
+        "correct": false,
+        "why": "別の AZ にも、コピーすれば別のリージョンにも復元できる"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスのメモリの内容も保存する",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "メモリを保存するのは休止（Hibernate）"
+      }
+    ],
+    "explanation": "スナップショット = 増分・AZ やリージョンをまたいで復元。",
+    "keywords": [
+      "増分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-encryption:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-encryption"
+    ],
+    "prompt": "このリージョンで今後作る EBS ボリュームが、作成者が意識しなくても必ず暗号化されるようにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EBS の「デフォルトで暗号化」を有効にする",
+        "correct": true,
+        "atomId": "ebs-encryption",
+        "why": "リージョン単位の設定で、新しいボリュームが自動で暗号化される"
+      },
+      {
+        "id": "b",
+        "text": "作成のたびに暗号化にチェックするよう周知する",
+        "correct": false,
+        "why": "人の作業に頼ると漏れが起きる"
+      },
+      {
+        "id": "c",
+        "text": "すべてのボリュームを io2 にする",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "暗号化とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のデフォルト暗号化を有効にする",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "S3 の設定で、EBS には影響しない"
+      }
+    ],
+    "explanation": "新しい EBS を必ず暗号化 = デフォルトで暗号化（リージョン単位）。",
+    "keywords": [
+      "必ず暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-encryption:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ebs-encryption",
+      "ebs-snapshots"
+    ],
+    "prompt": "暗号化されていない既存の EBS ボリュームを暗号化したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "暗号化したスナップショットから作り直す",
+        "correct": true,
+        "atomId": "ebs-encryption",
+        "why": "既存のボリュームに直接暗号化は有効にできない"
+      },
+      {
+        "id": "b",
+        "text": "ボリュームの設定で暗号化を有効にする",
+        "correct": false,
+        "why": "既存のボリュームには直接有効にできない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを再起動すると暗号化される",
+        "correct": false,
+        "why": "再起動では暗号化されない"
+      },
+      {
+        "id": "d",
+        "text": "ボリュームタイプを gp3 に変更する",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "タイプの変更では暗号化されない"
+      }
+    ],
+    "explanation": "RDS と同じく、既存のものはスナップショット → 暗号化コピー → 復元。",
+    "keywords": [
+      "既存",
+      "暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,134 @@
+[
+  {
+    "id": "config-rules:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "config-rules"
+    ],
+    "prompt": "すべての S3 バケットが公開設定になっていないかを継続的にチェックし、違反があれば自動で修正したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Config のルールと自動修復",
+        "correct": true,
+        "atomId": "config-rules",
+        "why": "設定の準拠を継続的に評価し、違反を自動で修復できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail の証跡",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、設定の準拠の評価はしない"
+      },
+      {
+        "id": "c",
+        "text": "CloudWatch のメトリクス",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "性能の数値の監視"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバージョニング",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "誤削除対策で、公開の評価はしない"
+      }
+    ],
+    "explanation": "設定のルール違反の継続的なチェック = AWS Config。",
+    "keywords": [
+      "継続的にチェック",
+      "自動で修正"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "config-rules:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "config-rules",
+      "cloudtrail-trail"
+    ],
+    "prompt": "AWS Config と CloudTrail の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Config は設定の変更履歴と準拠、CloudTrail は API 操作の履歴",
+        "correct": true,
+        "why": "設定がどう変わりルールに合っているか → Config、誰が操作したか → CloudTrail"
+      },
+      {
+        "id": "b",
+        "text": "Config は API 操作の履歴、CloudTrail は設定の評価",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "Config は性能の監視、CloudTrail はログの検索",
+        "correct": false,
+        "why": "どちらの説明も誤り"
+      },
+      {
+        "id": "d",
+        "text": "Config は違反を事前に防ぎ、CloudTrail は検出する",
+        "correct": false,
+        "why": "Config は違反を検出する仕組み"
+      }
+    ],
+    "explanation": "監査系 3 兄弟: CloudTrail（操作）、Config（設定）、CloudWatch（状態）。",
+    "keywords": [
+      "設定",
+      "操作"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "config-rules:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "config-rules"
+    ],
+    "prompt": "「特定のリージョンでリソースを作らせない」ために、AWS Config のルールを作った。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Config は違反を検出するだけで、作成は防げない",
+        "correct": true,
+        "atomId": "config-rules",
+        "why": "事前に禁止するなら SCP や IAM ポリシーを使う"
+      },
+      {
+        "id": "b",
+        "text": "Config はリージョンを判定できない",
+        "correct": false,
+        "why": "判定できるが、防ぐことはできない"
+      },
+      {
+        "id": "c",
+        "text": "Config のルールは 1 つしか作れない",
+        "correct": false,
+        "why": "複数作れる"
+      },
+      {
+        "id": "d",
+        "text": "Config を使うと CloudTrail が無効になる",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "関係がない"
+      }
+    ],
+    "explanation": "防ぐ（予防）= SCP/IAM、見つける（検出）= Config。",
+    "keywords": [
+      "作らせない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,32 @@
+# CloudTrail Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: cloudtrail
+
+atoms:
+  - id: cloudtrail-trail
+    category: audit
+    concept: AWS CloudTrail
+    summary: 誰が、いつ、どの API を呼んだかという操作の履歴を記録する
+    facts:
+      - AWS アカウントでの API の呼び出し（コンソールの操作も含む）を記録する
+      - 誰が、いつ、どこから、何をしたかを調べられる
+      - 証跡を作ると、ログを S3 に長期保存できる。Organizations の全アカウント分をまとめることもできる
+      - ログファイルの整合性の検証で、改ざんを検知できる
+    triggers:
+      - 誰がリソースを削除したか調べたい
+      - API の操作履歴の監査
+    pitfalls:
+      - 性能のメトリクスの監視には CloudWatch を使う
+    relations:
+      - type: confused_with
+        target: cloudwatch-metrics
+        distinction: CloudTrail は「誰が何の操作をしたか」の履歴。CloudWatch は「リソースの状態や性能」の数値とログの監視
+      - type: confused_with
+        target: config-rules
+        distinction: CloudTrail は API の操作の履歴。AWS Config はリソースの設定の変更履歴を記録し、ルールに違反していないかを評価する
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html
