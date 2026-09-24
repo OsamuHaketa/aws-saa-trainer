@@ -1,0 +1,310 @@
+[
+  {
+    "id": "organizations-scp:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "organizations-scp"
+    ],
+    "prompt": "組織内のすべてのアカウントで、東京と大阪以外のリージョンの利用を禁止したい。アカウントの管理者にも解除させたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SCP でその他のリージョンを拒否する",
+        "correct": true,
+        "atomId": "organizations-scp",
+        "why": "メンバーアカウントのルートユーザーも含めて、権限の上限を強制できる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントの IAM ポリシーでリージョンを拒否する",
+        "correct": false,
+        "why": "各アカウントの管理者がポリシーを変更できてしまう"
+      },
+      {
+        "id": "c",
+        "text": "アクセス許可の境界をすべてのユーザーに付ける",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "アカウントの管理者が付け外しできてしまう"
+      },
+      {
+        "id": "d",
+        "text": "各アカウントの VPC を削除する",
+        "correct": false,
+        "why": "VPC がなくても使えるサービスがあり、禁止にならない"
+      }
+    ],
+    "explanation": "組織全体への強制 = SCP。アカウント内の管理者でも解除できない。",
+    "keywords": [
+      "すべてのアカウント",
+      "解除させたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-scp:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "organizations-scp"
+    ],
+    "prompt": "SCP で S3 の操作をすべて許可したのに、新しい IAM ユーザーが S3 を使えない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SCP は上限を決めるだけで、IAM での許可も必要だから",
+        "correct": true,
+        "atomId": "organizations-scp",
+        "why": "SCP は権限を与えない。IAM ポリシーで明示的に許可する"
+      },
+      {
+        "id": "b",
+        "text": "SCP は S3 には適用できないから",
+        "correct": false,
+        "why": "S3 にも適用できる"
+      },
+      {
+        "id": "c",
+        "text": "SCP を付けると IAM ユーザーは無効になるから",
+        "correct": false,
+        "why": "無効にはならない"
+      },
+      {
+        "id": "d",
+        "text": "SCP の反映には 1 週間かかるから",
+        "correct": false,
+        "why": "1 週間もかからない"
+      }
+    ],
+    "explanation": "SCP = 上限（ガードレール）。権限を与えるのは IAM ポリシー。",
+    "keywords": [
+      "許可したのに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-scp:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "organizations-scp"
+    ],
+    "prompt": "SCP の説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウントや OU で使える権限の上限を決める",
+        "correct": true,
+        "atomId": "organizations-scp",
+        "why": "権限は与えず、メンバーアカウントのルートユーザーにも適用される"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーに権限を与えるポリシー",
+        "correct": false,
+        "why": "IAM ポリシーの説明"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットに付けるリソースベースのポリシー",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "バケットポリシーの説明"
+      },
+      {
+        "id": "d",
+        "text": "個々のロールの権限の上限を決める",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "アクセス許可の境界の説明"
+      }
+    ],
+    "explanation": "SCP は Organizations の機能で、アカウント単位の上限。",
+    "keywords": [
+      "上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-ou:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "organizations-ou"
+    ],
+    "prompt": "本番アカウント群と開発アカウント群で、別々の SCP を適用したい。アカウントは今後も増える。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "本番用と開発用の OU を作り、OU に SCP を付ける",
+        "correct": true,
+        "atomId": "organizations-ou",
+        "why": "新しいアカウントを OU に入れるだけで、同じルールが適用される"
+      },
+      {
+        "id": "b",
+        "text": "アカウントごとに SCP を付ける",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "アカウントが増えるたびに設定が必要で、漏れが起きやすい"
+      },
+      {
+        "id": "c",
+        "text": "すべてのアカウントを 1 つの IAM グループに入れる",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "IAM グループにはアカウントを入れられない"
+      },
+      {
+        "id": "d",
+        "text": "本番と開発で別々の組織を作る",
+        "correct": false,
+        "why": "管理と請求が分かれ、一元管理できなくなる"
+      }
+    ],
+    "explanation": "アカウントのグループ化 = OU。",
+    "keywords": [
+      "本番",
+      "開発",
+      "増える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-consolidated-billing:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "organizations-consolidated-billing"
+    ],
+    "prompt": "子会社ごとに分かれた 10 個の AWS アカウントの請求をまとめ、利用量の割引も最大にしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Organizations の一括請求",
+        "correct": true,
+        "atomId": "organizations-consolidated-billing",
+        "why": "請求をまとめ、利用量を合算して割引を受けられる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントで個別にリザーブドインスタンスを買う",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "請求はまとまらず、アカウント間で割引を共有しにくい"
+      },
+      {
+        "id": "c",
+        "text": "各アカウントの請求書を手作業で集計する",
+        "correct": false,
+        "why": "割引は合算されない"
+      },
+      {
+        "id": "d",
+        "text": "すべての子会社を 1 つのアカウントに統合する",
+        "correct": false,
+        "why": "権限や責任の分離ができなくなる"
+      }
+    ],
+    "explanation": "請求の一元化と割引の合算 = 一括請求。RI や Savings Plans の割引も共有できる。",
+    "keywords": [
+      "請求をまとめ",
+      "割引"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-control-tower:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "organizations-control-tower"
+    ],
+    "prompt": "ベストプラクティスに沿ったマルチアカウント環境をすぐに作り、ガードレールで統制したい。新しいアカウントも標準の設定で払い出したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Control Tower",
+        "correct": true,
+        "atomId": "organizations-control-tower",
+        "why": "ランディングゾーンを自動で作り、コントロールと Account Factory を提供する"
+      },
+      {
+        "id": "b",
+        "text": "IAM Identity Center だけ",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "シングルサインオンの仕組みで、環境の構築や統制はできない"
+      },
+      {
+        "id": "c",
+        "text": "各アカウントで手作業で設定する",
+        "correct": false,
+        "why": "時間がかかり、設定漏れも起きやすい"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ネットワークの接続"
+      }
+    ],
+    "explanation": "マルチアカウント環境の自動構築 + ガードレール = Control Tower。",
+    "keywords": [
+      "ベストプラクティス",
+      "ガードレール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-control-tower:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "organizations-control-tower",
+      "organizations-scp"
+    ],
+    "prompt": "Control Tower と SCP の関係として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Control Tower は SCP などを使い、環境構築と統制を自動化する",
+        "correct": true,
+        "atomId": "organizations-control-tower",
+        "why": "予防のコントロールには SCP が使われる"
+      },
+      {
+        "id": "b",
+        "text": "Control Tower は SCP の代わりで、同時に使えない",
+        "correct": false,
+        "why": "Control Tower は内部で SCP を使う"
+      },
+      {
+        "id": "c",
+        "text": "SCP は Control Tower がないと使えない",
+        "correct": false,
+        "why": "SCP は Organizations だけで使える"
+      },
+      {
+        "id": "d",
+        "text": "Control Tower は 1 つのアカウント専用の機能",
+        "correct": false,
+        "why": "マルチアカウント環境のための機能"
+      }
+    ],
+    "explanation": "Control Tower = Organizations + SCP + 設定の検出などをまとめて自動化したもの。",
+    "keywords": [
+      "ガードレール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

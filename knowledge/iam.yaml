@@ -1,0 +1,265 @@
+# IAM Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: iam
+
+atoms:
+  - id: iam-root-user
+    category: identity
+    concept: ルートユーザー
+    summary: アカウント作成時のメールアドレスでログインする、すべての権限を持つユーザー
+    facts:
+      - アカウントのすべてのリソースと請求情報に対する完全な権限を持つ
+      - IAM ポリシーでは権限を制限できない
+      - MFA を有効にし、日常の作業には使わない
+      - ルートユーザーのアクセスキーは作らない
+    triggers:
+      - アカウントの最上位の権限
+      - ルートユーザーの保護
+    pitfalls:
+      - 日常の管理作業をルートユーザーで行うのは不適切。管理者権限を持つ IAM ユーザーや Identity Center のユーザーを使う
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html
+
+  - id: iam-user
+    category: identity
+    concept: IAM ユーザー
+    summary: パスワードやアクセスキーなどの長期の認証情報を持つ、人やアプリの ID
+    facts:
+      - パスワード（コンソール用）とアクセスキー（API 用）という長期の認証情報を持てる
+      - 人がアクセスする場合は、IAM Identity Center やフェデレーションで一時的な認証情報を使うのが推奨
+      - アクセスキーは定期的にローテーションする
+    triggers:
+      - 個人ごとの ID を作る
+      - アクセスキーを発行する
+    pitfalls:
+      - 複数人で 1 つの IAM ユーザーを共有すると、誰が操作したかわからなくなる
+    relations:
+      - type: confused_with
+        target: iam-role
+        distinction: IAM ユーザーは長期の認証情報を持つ固定の ID。IAM ロールは長期の認証情報を持たず、引き受けた人やサービスに一時的な認証情報を渡す
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html
+
+  - id: iam-group
+    category: identity
+    concept: IAM グループ
+    summary: IAM ユーザーをまとめ、グループに付けたポリシーを全員に適用する
+    facts:
+      - 複数の IAM ユーザーに、同じ権限をまとめて付けられる
+      - グループの中にグループを入れる（入れ子にする）ことはできない
+      - グループはポリシーの Principal として指定できない
+    triggers:
+      - 部署ごとに同じ権限をまとめて付けたい
+      - 人の異動に合わせて権限を付け替えたい
+    pitfalls:
+      - ユーザーごとに個別にポリシーを付けると、管理が煩雑になる
+    relations: []
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
+
+  - id: iam-role
+    category: identity
+    concept: IAM ロール
+    summary: 長期の認証情報を持たず、引き受けた人や AWS サービスに一時的な認証情報を渡す ID
+    facts:
+      - 引き受ける（AssumeRole）と、STS から一時的な認証情報が発行される
+      - EC2（インスタンスプロファイル）や Lambda などの AWS サービスに権限を与えるのに使う
+      - 別アカウントのユーザーや、外部の ID プロバイダーのユーザーにも使わせられる
+      - 信頼ポリシーで「誰が引き受けられるか」を、権限ポリシーで「何ができるか」を決める
+    triggers:
+      - AWS のサービスに権限を与える
+      - 一時的な認証情報
+      - アクセスキーを使いたくない
+    pitfalls:
+      - アプリにアクセスキーを埋め込むのではなく、ロールを使う
+    relations:
+      - type: used_with
+        target: iam-sts
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
+
+  - id: iam-sts
+    category: identity
+    concept: AWS STS（Security Token Service）
+    summary: ロールの引き受けやフェデレーションのために、一時的な認証情報を発行する
+    facts:
+      - 有効期限付きの一時的な認証情報（アクセスキー、シークレット、セッショントークン）を発行する
+      - AssumeRole（ロールの引き受け）、AssumeRoleWithSAML（SAML フェデレーション）、AssumeRoleWithWebIdentity（Web ID フェデレーション）などがある
+      - 期限が切れると自動で使えなくなるので、長期の認証情報より安全
+    triggers:
+      - 一時的な認証情報を発行する
+      - 有効期限付きの認証情報
+    pitfalls:
+      - 長期のアクセスキーを配るより、一時的な認証情報を使う方が漏えい時の影響が小さい
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html
+
+  - id: iam-cross-account-role
+    category: access-control
+    concept: クロスアカウントロール
+    summary: 別アカウントのユーザーに、自分のアカウントのロールを引き受けさせてアクセスさせる
+    facts:
+      - アクセスされる側のアカウントでロールを作り、信頼ポリシーで相手のアカウントを許可する
+      - 相手のアカウントのユーザーは AssumeRole で一時的な認証情報を得てアクセスする
+      - アカウントごとに IAM ユーザーを作る必要がない
+      - サードパーティにアクセスさせるときは、外部 ID を条件にして「混乱した代理」の問題を防ぐ
+    triggers:
+      - 別のアカウントのリソースを操作させたい
+      - 複数アカウントを 1 つのユーザーで行き来したい
+      - 外部の業者にアカウントへのアクセスを許可する
+    pitfalls:
+      - 相手のアカウントごとに IAM ユーザーとアクセスキーを作って渡すのは不適切
+    relations:
+      - type: used_with
+        target: iam-role
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html
+
+  - id: iam-policy-evaluation
+    category: access-control
+    concept: ポリシーの評価ロジック
+    summary: 明示的な拒否 > 明示的な許可 > 暗黙的な拒否 の順で、アクセスの可否が決まる
+    facts:
+      - 何も許可されていなければ、デフォルトで拒否される（暗黙的な拒否）
+      - どこかで明示的に許可されていれば許可される
+      - どこかに明示的な拒否（Deny）があれば、許可があっても必ず拒否される
+    triggers:
+      - Allow と Deny の両方がある場合
+      - 権限があるはずなのに拒否される
+    pitfalls:
+      - 許可のポリシーを追加しても、別のポリシー（SCP やバケットポリシーなど）の明示的な Deny は上書きできない
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html
+
+  - id: iam-permissions-boundary
+    category: access-control
+    concept: アクセス許可の境界（Permissions Boundary）
+    summary: IAM ユーザーやロールが持てる権限の上限を設定する
+    facts:
+      - ユーザーやロールに付けられる権限の最大値を決める
+      - 実際の権限は、アイデンティティベースのポリシーと境界の両方で許可されたものだけ（重なった部分）
+      - 開発者にロールの作成を任せつつ、権限の昇格を防ぐのに使う
+    triggers:
+      - 開発者に IAM ロールを作らせたいが、管理者権限は付けさせたくない
+      - 権限の上限を決めたい
+    pitfalls:
+      - 境界だけでは権限は与えられない。アイデンティティベースのポリシーでの許可も必要
+    relations:
+      - type: confused_with
+        target: organizations-scp
+        distinction: アクセス許可の境界は個々の IAM ユーザーやロールの権限の上限。SCP は Organizations のアカウント（OU）全体の権限の上限
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+
+  - id: iam-least-privilege
+    category: access-control
+    concept: 最小権限の原則
+    summary: 作業に必要な最小限の権限だけを与える
+    facts:
+      - ユーザーやロールには、必要な操作とリソースだけを許可する
+      - AdministratorAccess などの広い権限を日常的に使わない
+      - IAM Access Analyzer で、実際の利用履歴から最小権限のポリシーを作れる
+    triggers:
+      - 必要最小限の権限
+      - 権限を絞りたい
+    pitfalls:
+      - 「とりあえず」で管理者権限や "*" を付けると、誤操作や漏えいの影響が大きくなる
+    relations:
+      - type: used_with
+        target: iam-access-analyzer
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html
+
+  - id: iam-mfa
+    category: identity
+    concept: 多要素認証（MFA）
+    summary: パスワードに加えて、デバイスなどによる 2 つ目の要素で認証する
+    facts:
+      - ルートユーザーと、権限の強いユーザーには MFA を必ず設定する
+      - ポリシーの条件 aws:MultiFactorAuthPresent で、MFA を使った場合だけ操作を許可できる
+    triggers:
+      - パスワードが漏れても不正ログインされないようにしたい
+      - 重要な操作に MFA を必須にしたい
+    pitfalls:
+      - パスワードの複雑さだけに頼ると、漏えいしたときに防げない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html
+
+  - id: iam-identity-center
+    category: identity
+    concept: IAM Identity Center
+    summary: 複数の AWS アカウントやアプリへの従業員のアクセスを、1 か所でシングルサインオン管理する
+    facts:
+      - Organizations の複数アカウントへのアクセスを一元管理し、シングルサインオンを提供する
+      - Active Directory や Okta などの外部の ID プロバイダーと連携できる
+      - 許可セットで、アカウントごとに付ける権限を定義する
+      - 利用者は一時的な認証情報でアクセスするので、IAM ユーザーを作らなくてよい
+    triggers:
+      - 複数アカウントへのシングルサインオン
+      - 社内の Active Directory のユーザーで AWS にログインしたい
+      - 従業員のアクセスを一元管理したい
+    pitfalls:
+      - アカウントごとに IAM ユーザーを作ると、アカウントと人の数だけ管理が増える
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html
+
+  - id: iam-access-analyzer
+    category: access-control
+    concept: IAM Access Analyzer
+    summary: 外部と共有されているリソースや、使われていない権限を見つけ、最小権限のポリシー作成を助ける
+    facts:
+      - S3 バケット、KMS キー、IAM ロールなどが、アカウントや組織の外と共有されていないかを検出する
+      - 使われていないアクセス権限を見つけられる
+      - CloudTrail の履歴から、実際に使った操作だけを許可するポリシーを生成できる
+      - ポリシーの文法やベストプラクティスを検証できる
+    triggers:
+      - 外部に公開されているリソースを見つけたい
+      - 使っていない権限を洗い出したい
+      - 最小権限のポリシーを作りたい
+    pitfalls:
+      - 手作業でポリシーを見直すだけでは、外部との共有を見落としやすい
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html

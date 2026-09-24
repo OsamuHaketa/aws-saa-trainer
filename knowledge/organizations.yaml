@@ -1,0 +1,93 @@
+# AWS Organizations Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: organizations
+
+atoms:
+  - id: organizations-scp
+    category: governance
+    concept: サービスコントロールポリシー（SCP）
+    summary: 組織のアカウントや OU で使える権限の上限を決める。権限は与えない
+    facts:
+      - OU やアカウントに付け、その中のユーザーやロール（メンバーアカウントのルートユーザーも含む）が使える権限の上限を決める
+      - SCP だけでは権限は与えられず、IAM ポリシーでの許可も必要
+      - 特定のリージョンの利用禁止や、重要なサービスの無効化の禁止などを組織全体に強制できる
+      - 管理アカウントには適用されない
+    triggers:
+      - 組織内のすべてのアカウントで特定の操作を禁止したい
+      - 特定のリージョン以外を使わせたい
+      - メンバーアカウントのルートユーザーも含めて制限したい
+    pitfalls:
+      - SCP で許可しただけでは使えない。IAM ポリシーでの許可も必要
+    relations:
+      - type: part_of
+        target: organizations-ou
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html
+
+  - id: organizations-ou
+    category: governance
+    concept: 組織単位（OU）
+    summary: 組織内のアカウントをグループにまとめ、ポリシーをまとめて適用する
+    facts:
+      - アカウントを本番・開発・セキュリティなどの OU に分けて管理する
+      - OU に付けた SCP は、その OU の中のアカウントすべてに適用される
+      - OU は入れ子にでき、上位の OU のポリシーは下位にも継承される
+    triggers:
+      - 本番と開発のアカウントに別々のルールを適用したい
+      - アカウントをグループで管理したい
+    pitfalls:
+      - アカウントごとに個別に設定すると、アカウントが増えたときに設定漏れが起きやすい
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html
+
+  - id: organizations-consolidated-billing
+    category: governance
+    concept: 一括請求（Consolidated Billing）
+    summary: 組織の全アカウントの請求を管理アカウントにまとめ、利用量の割引を合算する
+    facts:
+      - すべてのメンバーアカウントの請求を、管理アカウントでまとめて支払う
+      - 利用量を合算するので、ボリュームディスカウントを受けやすくなる
+      - リザーブドインスタンスや Savings Plans の割引を、組織内のアカウントで共有できる
+    triggers:
+      - 複数アカウントの請求をまとめたい
+      - アカウントをまたいで割引を共有したい
+    pitfalls:
+      - アカウントごとに別々に支払うと、合算による割引を受けられない
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html
+
+  - id: organizations-control-tower
+    category: governance
+    concept: AWS Control Tower
+    summary: ベストプラクティスに沿ったマルチアカウント環境（ランディングゾーン）を自動で作り、統制する
+    facts:
+      - Organizations を使ったマルチアカウント環境（ランディングゾーン）を自動で構築する
+      - コントロール（ガードレール）で、禁止事項の予防や設定違反の検出を行う
+      - ダッシュボードで、アカウントごとのコンプライアンス状況を確認できる
+      - 新しいアカウントを、決まった設定で素早く作れる（Account Factory）
+    triggers:
+      - マルチアカウント環境を素早くベストプラクティスで作りたい
+      - ガードレール
+      - 新しいアカウントを標準の設定で払い出したい
+    pitfalls:
+      - Organizations と SCP を一から手作業で設計すると、時間がかかり設定漏れも起きやすい
+    relations:
+      - type: used_with
+        target: organizations-scp
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html

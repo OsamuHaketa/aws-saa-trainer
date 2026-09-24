@@ -1,0 +1,796 @@
+[
+  {
+    "id": "iam-root-user:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "iam-root-user"
+    ],
+    "prompt": "チームの日常のインフラ作業を、ルートユーザーのアクセスキーで行っている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "全権限を持つ認証情報が漏れると、アカウント全体を失う",
+        "correct": true,
+        "atomId": "iam-root-user",
+        "why": "ルートユーザーは日常で使わず、アクセスキーも作らない。作業には権限を絞った ID を使う"
+      },
+      {
+        "id": "b",
+        "text": "ルートユーザーは EC2 を操作できない",
+        "correct": false,
+        "why": "すべての操作ができる"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーのアクセスキーは 1 日で失効する",
+        "correct": false,
+        "why": "自動では失効しない"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーは MFA を設定できない",
+        "correct": false,
+        "why": "MFA を設定できる（必ず設定すべき）"
+      }
+    ],
+    "explanation": "ルートユーザー = MFA を付けて金庫にしまう。日常作業には使わない。",
+    "keywords": [
+      "ルートユーザー",
+      "アクセスキー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-root-user:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "iam-root-user"
+    ],
+    "prompt": "ルートユーザーの扱いとして正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MFA を設定し、日常の作業には使わない",
+        "correct": true,
+        "atomId": "iam-root-user",
+        "why": "アカウントの設定変更など、ルートユーザーでしかできない作業のときだけ使う"
+      },
+      {
+        "id": "b",
+        "text": "アクセスキーを作り、自動化スクリプトで使う",
+        "correct": false,
+        "why": "ルートユーザーのアクセスキーは作らない"
+      },
+      {
+        "id": "c",
+        "text": "チーム全員でパスワードを共有して使う",
+        "correct": false,
+        "why": "共有すると誰が操作したかわからず、漏えいのリスクも高い"
+      },
+      {
+        "id": "d",
+        "text": "IAM ポリシーで権限を絞ってから使う",
+        "correct": false,
+        "why": "ルートユーザーの権限は IAM ポリシーでは制限できない"
+      }
+    ],
+    "explanation": "ルートユーザーは IAM ポリシーで制限できない。だからこそ使わない。",
+    "keywords": [
+      "MFA"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-role:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-role"
+    ],
+    "prompt": "Lambda 関数から DynamoDB のテーブルに書き込ませたい。最も安全な方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "必要な権限を付けた実行ロールを Lambda に設定する",
+        "correct": true,
+        "atomId": "iam-role",
+        "why": "一時的な認証情報が自動で使われ、アクセスキーを管理しなくてよい"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーのアクセスキーを環境変数に入れる",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報が漏れるリスクがある"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーのアクセスキーを使う",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "全権限の認証情報を使うことになり、最も危険"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB のテーブルを公開する",
+        "correct": false,
+        "why": "DynamoDB のテーブルは公開して使うものではない"
+      }
+    ],
+    "explanation": "AWS サービス → サービスへのアクセスは IAM ロール。",
+    "keywords": [
+      "Lambda",
+      "安全"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-role:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "iam-role",
+      "iam-user"
+    ],
+    "prompt": "IAM ロールと IAM ユーザーの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ロールは長期の認証情報を持たず、一時的な認証情報を使う",
+        "correct": true,
+        "atomId": "iam-role",
+        "why": "ロールを引き受けると STS から有効期限付きの認証情報が発行される"
+      },
+      {
+        "id": "b",
+        "text": "ロールはパスワードでコンソールにログインできる",
+        "correct": false,
+        "why": "パスワードを持つのは IAM ユーザー"
+      },
+      {
+        "id": "c",
+        "text": "ロールには IAM ポリシーを付けられない",
+        "correct": false,
+        "why": "権限ポリシーを付けられる"
+      },
+      {
+        "id": "d",
+        "text": "ロールは同じアカウントの中でしか使えない",
+        "correct": false,
+        "atomId": "iam-cross-account-role",
+        "why": "別アカウントからも引き受けられる（クロスアカウントロール）"
+      }
+    ],
+    "explanation": "ユーザー = 長期の認証情報、ロール = 一時的な認証情報。",
+    "keywords": [
+      "一時的な認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-role:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-role"
+    ],
+    "prompt": "IAM ロールで「誰がこのロールを引き受けられるか」を決めるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "信頼ポリシー",
+        "correct": true,
+        "atomId": "iam-role",
+        "why": "Principal に、ロールを引き受けられるサービスやアカウントを書く"
+      },
+      {
+        "id": "b",
+        "text": "権限ポリシー",
+        "correct": false,
+        "why": "ロールを引き受けたあとに何ができるかを決める"
+      },
+      {
+        "id": "c",
+        "text": "アクセス許可の境界",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "権限の上限を決める"
+      },
+      {
+        "id": "d",
+        "text": "サービスコントロールポリシー",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "組織のアカウント全体の権限の上限を決める"
+      }
+    ],
+    "explanation": "信頼ポリシー = 誰が、権限ポリシー = 何を。",
+    "keywords": [
+      "誰が引き受けられるか"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-sts:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "iam-sts"
+    ],
+    "prompt": "AWS STS の役割は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "有効期限付きの一時的な認証情報を発行する",
+        "correct": true,
+        "atomId": "iam-sts",
+        "why": "ロールの引き受けやフェデレーションで使う"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーのパスワードを定期的に変更する",
+        "correct": false,
+        "why": "STS の役割ではない"
+      },
+      {
+        "id": "c",
+        "text": "API の操作履歴を記録する",
+        "correct": false,
+        "why": "CloudTrail の役割"
+      },
+      {
+        "id": "d",
+        "text": "暗号鍵を作成して管理する",
+        "correct": false,
+        "why": "KMS の役割"
+      }
+    ],
+    "explanation": "STS = Security Token Service = 一時的な認証情報。",
+    "keywords": [
+      "一時的な認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-cross-account-role:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-cross-account-role"
+    ],
+    "prompt": "開発アカウントの開発者に、本番アカウントのログを読み取らせたい。本番アカウントに IAM ユーザーは作りたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "本番に読み取り用ロールを作り、開発アカウントを信頼させる",
+        "correct": true,
+        "atomId": "iam-cross-account-role",
+        "why": "開発者は AssumeRole で一時的な認証情報を得て、本番のログを読める"
+      },
+      {
+        "id": "b",
+        "text": "本番アカウントのルートユーザーを共有する",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "全権限を渡すことになり、最も危険"
+      },
+      {
+        "id": "c",
+        "text": "本番アカウントの IAM ユーザーのアクセスキーを渡す",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "IAM ユーザーを作りたくないという要件に反し、長期の認証情報も漏れやすい"
+      },
+      {
+        "id": "d",
+        "text": "開発アカウントに本番のログをすべてコピーする",
+        "correct": false,
+        "why": "データの管理が二重になり、読み取りの権限管理の解決にもならない"
+      }
+    ],
+    "explanation": "アカウントをまたぐアクセス = クロスアカウントロール。",
+    "keywords": [
+      "別のアカウント",
+      "IAM ユーザーは作りたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-cross-account-role:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-cross-account-role"
+    ],
+    "prompt": "監視ツールのベンダーに、自社アカウントへの読み取り権限を与える。ベンダーが他社の設定を使って自社のロールを悪用する（混乱した代理）のを防ぎたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "信頼ポリシーの条件に外部 ID（sts:ExternalId）を指定する",
+        "correct": true,
+        "atomId": "iam-cross-account-role",
+        "why": "ベンダーが自社用の外部 ID を付けてロールを引き受けたときだけ許可される"
+      },
+      {
+        "id": "b",
+        "text": "ベンダーに IAM ユーザーのアクセスキーを渡す",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報を渡すことになり、混乱した代理の対策にもならない"
+      },
+      {
+        "id": "c",
+        "text": "ロールの権限ポリシーを AdministratorAccess にする",
+        "correct": false,
+        "atomId": "iam-least-privilege",
+        "why": "権限が広がるだけで、対策にならない"
+      },
+      {
+        "id": "d",
+        "text": "ロールに MFA を必須にする",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "ベンダーのシステムからの自動アクセスには向かず、混乱した代理の対策でもない"
+      }
+    ],
+    "explanation": "サードパーティのクロスアカウントアクセス = 外部 ID。",
+    "keywords": [
+      "ベンダー",
+      "混乱した代理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-evaluation:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-policy-evaluation"
+    ],
+    "prompt": "IAM ポリシーで s3:DeleteObject を許可されたユーザーに対し、バケットポリシーで s3:DeleteObject を明示的に拒否している。結果は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "拒否される（明示的な拒否が常に優先される）",
+        "correct": true,
+        "atomId": "iam-policy-evaluation",
+        "why": "どこかに明示的な Deny があれば、許可があっても拒否される"
+      },
+      {
+        "id": "b",
+        "text": "許可される（IAM ポリシーが優先される）",
+        "correct": false,
+        "why": "明示的な Deny が常に優先される"
+      },
+      {
+        "id": "c",
+        "text": "許可される（後から設定した方が優先される）",
+        "correct": false,
+        "why": "設定した順番は関係ない"
+      },
+      {
+        "id": "d",
+        "text": "エラーになり、どちらのポリシーも無効になる",
+        "correct": false,
+        "why": "エラーにはならず、拒否される"
+      }
+    ],
+    "explanation": "評価の順番: 明示的な拒否 > 明示的な許可 > 暗黙的な拒否。",
+    "keywords": [
+      "明示的に拒否"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-evaluation:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "iam-policy-evaluation"
+    ],
+    "prompt": "何のポリシーでも許可も拒否もされていない操作はどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "拒否される（暗黙的な拒否）",
+        "correct": true,
+        "atomId": "iam-policy-evaluation",
+        "why": "デフォルトではすべての操作が拒否され、明示的な許可が必要"
+      },
+      {
+        "id": "b",
+        "text": "許可される（デフォルトで許可）",
+        "correct": false,
+        "why": "デフォルトは拒否"
+      },
+      {
+        "id": "c",
+        "text": "管理者に承認を求めるメールが送られる",
+        "correct": false,
+        "why": "そのような仕組みはない"
+      },
+      {
+        "id": "d",
+        "text": "読み取りだけ許可される",
+        "correct": false,
+        "why": "読み取りもデフォルトでは拒否"
+      }
+    ],
+    "explanation": "IAM はデフォルト拒否。必要なものだけを許可する。",
+    "keywords": [
+      "デフォルト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-evaluation:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-evaluation",
+      "organizations-scp"
+    ],
+    "prompt": "メンバーアカウントで管理者ポリシーを付けたのに、特定のリージョンで EC2 を起動できない。考えられる原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "組織の SCP でそのリージョンの利用が拒否されている",
+        "correct": true,
+        "atomId": "organizations-scp",
+        "why": "SCP の明示的な拒否は、アカウント内の IAM ポリシーでは上書きできない"
+      },
+      {
+        "id": "b",
+        "text": "管理者ポリシーには EC2 の権限が含まれていない",
+        "correct": false,
+        "why": "AdministratorAccess はすべての操作を許可する"
+      },
+      {
+        "id": "c",
+        "text": "EC2 は 1 つのリージョンでしか起動できない",
+        "correct": false,
+        "why": "どのリージョンでも起動できる"
+      },
+      {
+        "id": "d",
+        "text": "IAM ポリシーの反映には 24 時間かかる",
+        "correct": false,
+        "why": "24 時間もかからない"
+      }
+    ],
+    "explanation": "IAM で許可しても、SCP やバケットポリシーの Deny があれば拒否される。",
+    "keywords": [
+      "管理者ポリシー",
+      "起動できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-permissions-boundary:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-permissions-boundary"
+    ],
+    "prompt": "開発者に、自分で Lambda 用の IAM ロールを作らせたい。ただし、開発者が自分より強い権限のロールを作れないようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アクセス許可の境界",
+        "correct": true,
+        "atomId": "iam-permissions-boundary",
+        "why": "作成できるロールに境界の付与を必須にすれば、境界を超える権限は持てない"
+      },
+      {
+        "id": "b",
+        "text": "IAM グループ",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "ユーザーをまとめるだけで、作成するロールの権限の上限は決められない"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーの MFA",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "開発者の権限の昇格は防げない"
+      },
+      {
+        "id": "d",
+        "text": "クロスアカウントロール",
+        "correct": false,
+        "atomId": "iam-cross-account-role",
+        "why": "アカウントをまたぐアクセスの仕組み"
+      }
+    ],
+    "explanation": "権限の委任と昇格の防止 = アクセス許可の境界。",
+    "keywords": [
+      "自分より強い権限",
+      "作らせたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-permissions-boundary:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "iam-permissions-boundary",
+      "organizations-scp"
+    ],
+    "prompt": "アクセス許可の境界と SCP の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "境界は個々のユーザーやロール、SCP はアカウントや OU の上限",
+        "correct": true,
+        "why": "どちらも権限を与えず、上限を決めるだけ"
+      },
+      {
+        "id": "b",
+        "text": "境界は権限を与え、SCP は権限を制限する",
+        "correct": false,
+        "why": "どちらも権限は与えない"
+      },
+      {
+        "id": "c",
+        "text": "境界は Organizations が必要、SCP は不要",
+        "correct": false,
+        "why": "逆。SCP は Organizations の機能"
+      },
+      {
+        "id": "d",
+        "text": "境界は管理アカウントにも効き、SCP は効かない",
+        "correct": false,
+        "why": "境界の説明として誤り。SCP は管理アカウントに適用されない"
+      }
+    ],
+    "explanation": "上限を決める仕組みは 2 つ。対象の単位（ID か、アカウント・OU か）で区別する。",
+    "keywords": [
+      "上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-least-privilege:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-least-privilege",
+      "iam-access-analyzer"
+    ],
+    "prompt": "新しいアプリのロールに付けた権限が広すぎる。実際に使った操作だけを許可するポリシーに絞りたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Access Analyzer で利用履歴からポリシーを生成",
+        "correct": true,
+        "atomId": "iam-access-analyzer",
+        "why": "CloudTrail の履歴をもとに、実際に使った操作だけを許可するポリシーを作れる"
+      },
+      {
+        "id": "b",
+        "text": "ロールに AdministratorAccess を付けたままにする",
+        "correct": false,
+        "why": "最小権限に反する"
+      },
+      {
+        "id": "c",
+        "text": "ロールをルートユーザーに置き換える",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も権限の強い ID を使うことになる"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーのアクセスキーに切り替える",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "権限の広さは変わらず、長期の認証情報のリスクも増える"
+      }
+    ],
+    "explanation": "最小権限の実践 = 使った分だけ許可。Access Analyzer のポリシー生成が使える。",
+    "keywords": [
+      "実際に使った操作だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-access-analyzer:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-access-analyzer"
+    ],
+    "prompt": "アカウント内の S3 バケットや KMS キーのうち、外部のアカウントに共有されているものを洗い出したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Access Analyzer",
+        "correct": true,
+        "atomId": "iam-access-analyzer",
+        "why": "組織やアカウントの外と共有されているリソースを検出する"
+      },
+      {
+        "id": "b",
+        "text": "VPC フローログの分析",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "ネットワークの通信の記録で、リソースの共有設定は分からない"
+      },
+      {
+        "id": "c",
+        "text": "IAM グループの一覧表示",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "ユーザーをまとめる仕組みで、リソースの共有は分からない"
+      },
+      {
+        "id": "d",
+        "text": "AWS STS のトークン発行履歴",
+        "correct": false,
+        "atomId": "iam-sts",
+        "why": "STS は一時的な認証情報を発行するもので、リソースの共有は分からない"
+      }
+    ],
+    "explanation": "外部との共有の検出 = IAM Access Analyzer。",
+    "keywords": [
+      "外部のアカウントに共有"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-mfa:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-mfa"
+    ],
+    "prompt": "EC2 インスタンスを終了する操作は、MFA でサインインしたユーザーにだけ許可したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MFA の有無を条件にしたポリシー",
+        "correct": true,
+        "atomId": "iam-mfa",
+        "why": "MFA で認証したセッションにだけ許可できる"
+      },
+      {
+        "id": "b",
+        "text": "ルートユーザーだけに操作させる",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "日常の操作をルートユーザーで行うことになる"
+      },
+      {
+        "id": "c",
+        "text": "IAM グループを作って操作を許可する",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "MFA の有無で制御できない"
+      },
+      {
+        "id": "d",
+        "text": "操作するたびに新しい IAM ユーザーを作る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "管理が破綻し、MFA の要件も満たせない"
+      }
+    ],
+    "explanation": "MFA を条件にした許可 = aws:MultiFactorAuthPresent。",
+    "keywords": [
+      "MFA でサインイン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-identity-center:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-identity-center"
+    ],
+    "prompt": "30 個の AWS アカウントに、社内の Active Directory のユーザーでシングルサインオンさせたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Identity Center",
+        "correct": true,
+        "atomId": "iam-identity-center",
+        "why": "外部の ID プロバイダーと連携し、複数アカウントへのアクセスを一元管理できる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントに IAM ユーザーを作る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "アカウントと人の数だけユーザーの管理が増える"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーのパスワードを共有する",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も危険な方法"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ネットワークの接続で、ID の管理とは関係がない"
+      }
+    ],
+    "explanation": "複数アカウント + シングルサインオン + 社内の ID = IAM Identity Center。",
+    "keywords": [
+      "シングルサインオン",
+      "Active Directory"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-group:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-group"
+    ],
+    "prompt": "経理部の 20 人に、同じ請求情報の閲覧権限を付けたい。異動のたびの作業も減らしたい。IAM ユーザーを使う場合、どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "経理部の IAM グループに権限を付けて所属させる",
+        "correct": true,
+        "atomId": "iam-group",
+        "why": "異動のときはグループへの出し入れだけで済む"
+      },
+      {
+        "id": "b",
+        "text": "20 人それぞれに同じポリシーを付ける",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "人数分の設定と、異動のたびの付け外しが必要"
+      },
+      {
+        "id": "c",
+        "text": "経理部で 1 つの IAM ユーザーを共有する",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "誰が操作したかわからなくなる"
+      },
+      {
+        "id": "d",
+        "text": "全員にルートユーザーのパスワードを教える",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "全権限を渡すことになる"
+      }
+    ],
+    "explanation": "同じ権限をまとめて管理 = IAM グループ。",
+    "keywords": [
+      "20 人",
+      "同じ権限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
