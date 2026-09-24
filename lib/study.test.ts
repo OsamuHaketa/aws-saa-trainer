@@ -6,7 +6,7 @@ import { openDb, type DB } from "./db";
 import { followups, reviewLogs } from "./db/schema";
 import { config } from "./config";
 import { toRating } from "./fsrs";
-import { getNextQuestion, loadCards, recordReview } from "./study";
+import { distinction, getNextQuestion, loadCards, recordReview } from "./study";
 
 const ROOT = process.cwd();
 const T0 = new Date("2026-09-25T10:00:00");
@@ -142,5 +142,15 @@ describe("出題と記録", () => {
     }
     // 同じ時刻のまま正解し続けると、新規の上限まで出したところで終わる
     expect(loadCards(db).size).toBe(Math.min(config.newPerDay, content.questions.size));
+  });
+});
+
+describe("distinction", () => {
+  it("confused_with の見分け方を、どちら向きでも引ける", () => {
+    const a = "s3-standard-ia";
+    const b = "s3-one-zone-ia";
+    expect(distinction(content, a, b)).toContain("単一 AZ");
+    expect(distinction(content, b, a)).toBe(distinction(content, a, b));
+    expect(distinction(content, a, a)).toBeUndefined();
   });
 });

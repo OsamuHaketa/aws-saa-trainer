@@ -203,6 +203,9 @@ th.num {
 .table-wrap {
   overflow-x: auto;
 }
+td:first-child {
+  min-width: 7.5em;
+}
 
 /* 習熟度・正答率のバー */
 .meter {
@@ -222,6 +225,11 @@ th.num {
   height: 100%;
   border-radius: 4px;
   background: var(--accent);
+}
+@media (max-width: 520px) {
+  .meter {
+    min-width: 88px;
+  }
 }
 .meter .pct {
   width: 3.2em;

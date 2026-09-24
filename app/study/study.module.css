@@ -106,6 +106,16 @@
   color: var(--ng);
 }
 
+.distinction {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--warn-soft);
+  color: var(--text);
+}
+.distinction strong {
+  color: var(--warn);
+}
+
 .keywords {
   display: flex;
   flex-wrap: wrap;

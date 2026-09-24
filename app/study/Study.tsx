@@ -215,6 +215,15 @@ export function Study() {
               {isCorrect ? "正解" : "不正解"}
               <span className="muted small"> ・ {(responseMs / 1000).toFixed(1)} 秒</span>
             </p>
+            {!isCorrect && selectedChoice?.distinction && (
+              <p className={`small ${styles.distinction}`}>
+                <strong>
+                  見分け方（{correctChoice?.atomConcept} と {selectedChoice.atomConcept}）
+                </strong>
+                <br />
+                {selectedChoice.distinction}
+              </p>
+            )}
             <p>{question.explanation}</p>
             {question.keywords.length > 0 && (
               <p className={styles.keywords}>

@@ -65,6 +65,14 @@ export function loadState(db: DB, now: Date, extraNew = 0): SchedulerState {
 
 export type NextQuestion = ReturnType<typeof getNextQuestion>;
 
+/** 2 つの Atom の見分け方（confused_with の distinction。どちら側に書いてあってもよい） */
+export function distinction(content: Content, a: string | undefined, b: string | undefined): string | undefined {
+  if (!a || !b || a === b) return undefined;
+  const find = (from: string, to: string) =>
+    content.atoms.get(from)?.relations.find((r) => r.target === to && r.distinction)?.distinction;
+  return find(a, b) ?? find(b, a);
+}
+
 export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 0, rng?: Rng) {
   const state = loadState(db, now, extraNew);
   const mastery = atomMastery(content, state.cards, now);
@@ -76,6 +84,7 @@ export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 
   const choices = pickChoices(q, { mustIncludeAtomId: pick.mustIncludeAtomId, rng });
   const atomLabel = (id: string | undefined) => (id ? content.atoms.get(id)?.concept : undefined);
   const primary = content.atoms.get(q.atomIds[0]);
+  const correctAtomId = choices.find((c) => c.correct)?.atomId;
 
   return {
     done: false as const,
@@ -92,7 +101,12 @@ export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 
       category: primary?.category ?? "",
       atoms: q.atomIds.map((id) => ({ id, concept: atomLabel(id) ?? id, summary: content.atoms.get(id)?.summary ?? "" })),
     },
-    choices: choices.map((c) => ({ ...c, atomConcept: atomLabel(c.atomId) })),
+    choices: choices.map((c) => ({
+      ...c,
+      atomConcept: atomLabel(c.atomId),
+      // 誤答で選ばれたときに表示する、正解の Atom との見分け方
+      distinction: c.correct ? undefined : distinction(content, correctAtomId, c.atomId),
+    })),
     followup: pick.followup && {
       id: pick.followup.id,
       atom: atomLabel(pick.followup.atomId) ?? pick.followup.atomId,
