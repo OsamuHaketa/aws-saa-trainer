@@ -12,6 +12,8 @@ export const config = {
   recentAtomWindow: 2,
   /** 復習予定まで N 分以内なら、ほかに問題がないとき前倒しで出す */
   learnAheadMinutes: 20,
+  /** 習熟度 = 今から N 日後にも思い出せる確率。直後の「覚えている」ではなく定着度を見るため */
+  masteryHorizonDays: 30,
   /** Atom の習熟度がこれ以上なら「習得済み」とみなす */
   masteredThreshold: 0.8,
 } as const;

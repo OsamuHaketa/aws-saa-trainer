@@ -1,0 +1,165 @@
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin: 0 0 12px;
+}
+
+.question {
+  padding: 24px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.followup {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.prompt {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 16px 0 20px;
+}
+
+.choices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.choice:not(:disabled):hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.choice:disabled {
+  cursor: default;
+}
+.choice .kbd {
+  margin-top: 3px;
+}
+
+.choiceBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.why {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.correct {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.wrong {
+  border-color: var(--ng);
+  background: var(--ng-soft);
+}
+.dim {
+  opacity: 0.75;
+}
+
+.result {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.ok,
+.ng {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.ok {
+  color: var(--ok);
+}
+.ng {
+  color: var(--ng);
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.atoms {
+  margin: 8px 0 16px;
+  padding-left: 18px;
+}
+
+.toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.mistakes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.chipOn {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.error {
+  white-space: pre-wrap;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}

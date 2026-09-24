@@ -103,15 +103,18 @@ export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 
 
 export type QueueSummary = ReturnType<typeof summarize>;
 
+export function getQueueSummary(db: DB, content: Content, now: Date): QueueSummary {
+  return summarize(content, loadState(db, now));
+}
+
 function summarize(content: Content, state: SchedulerState) {
   const { now, cards: cardMap } = state;
   let learning = 0;
   let review = 0;
   for (const c of cardMap.values()) {
     if (!content.questions.has(c.questionId) || content.questions.get(c.questionId)?.status === "retired") continue;
-    if (c.due > now) continue;
-    if (c.state === State.Review) review++;
-    else learning++;
+    if (c.state === State.Learning || c.state === State.Relearning) learning++;
+    else if (c.state === State.Review && c.due <= now) review++;
   }
   const newLimitLeft = Math.max(0, config.newPerDay + state.extraNew - state.introducedToday);
   const newAvailable = Math.min(newLimitLeft, newQuestions(content, state).length);

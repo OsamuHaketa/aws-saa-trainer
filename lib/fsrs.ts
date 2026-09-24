@@ -51,8 +51,8 @@ export function cardToRow(questionId: string, card: Card, firstSeenAt: Date): Ca
   };
 }
 
-/** 今この問題を思い出せる確率（0〜1）。未出題は 0 */
-export function retrievability(row: CardRow | undefined, now: Date): number {
+/** 時刻 at にこの問題を思い出せる確率（0〜1）。未出題は 0 */
+export function retrievability(row: CardRow | undefined, at: Date): number {
   if (!row) return 0;
-  return scheduler.get_retrievability(rowToCard(row, now), now, false);
+  return scheduler.get_retrievability(rowToCard(row, at), at, false);
 }

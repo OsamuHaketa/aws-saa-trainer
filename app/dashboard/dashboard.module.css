@@ -1,0 +1,86 @@
+.chart {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 180px;
+  padding: 16px 12px 8px;
+}
+
+.col {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  outline: none;
+}
+
+.barArea {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.bar {
+  width: min(18px, 70%);
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--accent);
+}
+
+.axis {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* 狭い画面では日付ラベルを間引く */
+@media (max-width: 520px) {
+  .col:nth-child(odd) .axis {
+    visibility: hidden;
+  }
+}
+
+.tip {
+  position: absolute;
+  bottom: calc(100% - 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+}
+
+.col:hover .tip,
+.col:focus .tip {
+  opacity: 1;
+}
+
+.col:hover .bar,
+.col:focus .bar {
+  filter: brightness(1.15);
+}
+
+/* 端の列のツールチップが画面外にはみ出さないようにする */
+.col:nth-child(-n + 2) .tip {
+  left: 0;
+  transform: none;
+}
+.col:nth-last-child(-n + 2) .tip {
+  left: auto;
+  right: 0;
+  transform: none;
+}

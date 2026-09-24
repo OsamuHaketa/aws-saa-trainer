@@ -1,15 +1,18 @@
+import { config } from "./config";
 import { activeQuestions, type Content } from "./content";
 import type { CardRow } from "./db/schema";
 import { retrievability } from "./fsrs";
 
 /**
- * Atom の習熟度 = その Atom を扱う全問題の「今思い出せる確率」の平均。
- * 未出題の問題は 0 として数えるので、1 問正解しただけでは高くならない。
+ * Atom の習熟度 = その Atom を扱う全問題の「config.masteryHorizonDays 日後にも思い出せる確率」の平均。
+ * 未出題の問題は 0 として数え、解いた直後でも記憶が定着していなければ低く出るので、
+ * 1 問正解しただけでは高くならない。
  */
 export function atomMastery(content: Content, cards: Map<string, CardRow>, now: Date): Map<string, number> {
+  const horizon = new Date(now.getTime() + config.masteryHorizonDays * 86_400_000);
   const sums = new Map<string, { total: number; count: number }>();
   for (const q of activeQuestions(content)) {
-    const r = retrievability(cards.get(q.id), now);
+    const r = retrievability(cards.get(q.id), horizon);
     for (const atomId of q.atomIds) {
       const s = sums.get(atomId) ?? { total: 0, count: 0 };
       s.total += r;

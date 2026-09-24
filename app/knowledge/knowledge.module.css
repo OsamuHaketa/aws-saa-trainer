@@ -1,0 +1,71 @@
+.jump {
+  margin-left: 12px;
+}
+
+.atom {
+  margin-bottom: 16px;
+  scroll-margin-top: 16px;
+}
+.atom:target {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.head p {
+  margin: 2px 0 0;
+}
+
+.side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.facts {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.relations {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.questions {
+  margin: 8px 0 0;
+  padding-left: 4px;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.ok {
+  color: var(--ok);
+  font-weight: 700;
+}
+.ng {
+  color: var(--ng);
+  font-weight: 700;
+}
+
+.source {
+  margin-right: 12px;
+  word-break: break-all;
+}

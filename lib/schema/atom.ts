@@ -63,4 +63,5 @@ export const KnowledgeFile = z.object({
 
 export type Atom = z.infer<typeof Atom>;
 export type Relation = z.infer<typeof Relation>;
+export type RelationType = z.infer<typeof RelationType>;
 export type KnowledgeFile = z.infer<typeof KnowledgeFile>;
