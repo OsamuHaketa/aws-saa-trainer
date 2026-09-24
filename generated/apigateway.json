@@ -1,0 +1,140 @@
+[
+  {
+    "id": "apigateway-api:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "apigateway-api",
+      "lambda-function"
+    ],
+    "prompt": "クライアント → API Gateway → ? → DynamoDB。サーバーレスの REST API を作るとき、? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Lambda",
+        "correct": true,
+        "atomId": "lambda-function",
+        "why": "API Gateway が Lambda を呼び、Lambda が DynamoDB を読み書きする"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "通知のサービスで、API の応答を返す処理はしない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Kinesis Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "データの配信サービスで、API の処理はしない"
+      },
+      {
+        "id": "d",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "API Gateway の後ろに置く構成要素としては不要で、サーバーレスでもない"
+      }
+    ],
+    "explanation": "企画書の例「API Gateway → ? → DynamoDB」。サーバーレス API の定番構成。",
+    "keywords": [
+      "サーバーレス",
+      "REST API"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-api:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "apigateway-api"
+    ],
+    "prompt": "外部の取引先に API を公開する。取引先ごとに API キーを発行し、1 日のリクエスト数に上限を設けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "API Gateway の使用量プランと API キー",
+        "correct": true,
+        "atomId": "apigateway-api",
+        "why": "キーごとに、スロットリングとリクエスト数の上限を設定できる"
+      },
+      {
+        "id": "b",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "API キーや使用量の管理機能はない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon CloudFront の地域制限",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限で、取引先ごとの上限は設定できない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda の予約同時実行",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "関数全体の同時実行数の制限で、取引先ごとの上限ではない"
+      }
+    ],
+    "explanation": "API キー・使用量プラン・スロットリング = API Gateway。",
+    "keywords": [
+      "API キー",
+      "リクエスト数に上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-api:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "apigateway-api",
+      "sqs-standard"
+    ],
+    "prompt": "API Gateway の後ろの処理が重く、アクセスの急増で失敗することがある。利用者にはすぐ受付完了を返し、処理は後で確実に行いたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS に入れて、処理側が非同期に取り出す",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "キューが急増を吸収し、処理は非同期で確実に行える"
+      },
+      {
+        "id": "b",
+        "text": "API Gateway のタイムアウトを最大にする",
+        "correct": false,
+        "why": "処理の重さや急増による失敗は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "処理を SNS のメール通知に置き換える",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "処理の実行にはならない"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway のキャッシュを有効にする",
+        "correct": false,
+        "why": "書き込みのような処理はキャッシュできない"
+      }
+    ],
+    "explanation": "企画書の例「API Gateway 配下の処理を非同期化 → SQS などのキュー」。",
+    "keywords": [
+      "非同期",
+      "急増"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

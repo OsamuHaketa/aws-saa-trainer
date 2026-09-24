@@ -1,0 +1,226 @@
+[
+  {
+    "id": "kinesis-data-streams:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "kinesis-data-streams"
+    ],
+    "prompt": "Web サイトのクリックストリームをリアルタイムに取り込み、不正検知とレコメンドの 2 つのアプリで同じデータを処理したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Kinesis Data Streams",
+        "correct": true,
+        "atomId": "kinesis-data-streams",
+        "why": "データを保持し、複数のアプリが同じデータをそれぞれ読める"
+      },
+      {
+        "id": "b",
+        "text": "SQS 標準キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "1 つのメッセージは 1 つの処理側が処理すると消える"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "S3 などへの配信が目的で、複数のアプリでリアルタイムに処理する用途には向かない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "メッセージを保持せず、大量のストリーミングデータには向かない"
+      }
+    ],
+    "explanation": "リアルタイム + 複数の処理側 + 保持 = Kinesis Data Streams。",
+    "keywords": [
+      "クリックストリーム",
+      "同じデータ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-data-streams:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "kinesis-data-streams",
+      "sqs-standard"
+    ],
+    "prompt": "Kinesis Data Streams と SQS の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は保持して複数で読み直せ、後者は処理したら消える",
+        "correct": true,
+        "why": "ストリーミングの分析なら Kinesis、タスクの非同期処理なら SQS"
+      },
+      {
+        "id": "b",
+        "text": "前者は 1 つの処理側だけ、後者は複数で同じデータを読める",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者はメッセージの順序を守らず、後者は必ず守る",
+        "correct": false,
+        "why": "Kinesis はシャード内の順序を守る。SQS 標準は順序がベストエフォート"
+      },
+      {
+        "id": "d",
+        "text": "前者はサーバーレス、後者はサーバーが必要",
+        "correct": false,
+        "why": "違いの本質ではない"
+      }
+    ],
+    "explanation": "企画書の比較例「Kinesis vs SQS」。ストリームか、タスクのキューか。",
+    "keywords": [
+      "読み直せる",
+      "消える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-data-streams:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kinesis-data-streams"
+    ],
+    "prompt": "IoT センサーのデータを、同じセンサーごとに順序を保って処理したい。障害時には過去 7 日分を読み直して再処理したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Kinesis Data Streams",
+        "correct": true,
+        "atomId": "kinesis-data-streams",
+        "why": "パーティションキーごとに順序が保たれ、保持期間内なら読み直せる"
+      },
+      {
+        "id": "b",
+        "text": "SQS 標準キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "順序が保証されず、処理したメッセージは読み直せない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "保持と読み直しの機能はない"
+      },
+      {
+        "id": "d",
+        "text": "SNS 標準トピック",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "保持も順序の保証もない"
+      }
+    ],
+    "explanation": "順序 + リプレイ = Kinesis Data Streams。",
+    "keywords": [
+      "順序を保って",
+      "読み直して"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-firehose:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "kinesis-firehose"
+    ],
+    "prompt": "アプリのログを、管理の手間なく S3 に届け、Parquet 形式に変換して保存したい。数分の遅延は許容できる。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Data Firehose",
+        "correct": true,
+        "atomId": "kinesis-firehose",
+        "why": "フルマネージドで S3 に届け、形式の変換もできる"
+      },
+      {
+        "id": "b",
+        "text": "Kinesis Data Streams だけ",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "S3 に書き込む処理側を自分で作る必要がある"
+      },
+      {
+        "id": "c",
+        "text": "SQS 標準キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "S3 に届ける処理を自分で作る必要がある"
+      },
+      {
+        "id": "d",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "S3 へのデータの配信には向かない"
+      }
+    ],
+    "explanation": "ストリーミングデータを管理なしで S3・Redshift・OpenSearch へ = Firehose。",
+    "keywords": [
+      "管理の手間なく",
+      "S3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-firehose:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "kinesis-firehose",
+      "kinesis-data-streams"
+    ],
+    "prompt": "Data Firehose と Kinesis Data Streams の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は自動で届ける配信、後者は保持して自分で処理する",
+        "correct": true,
+        "why": "S3 などへ届けるだけなら Firehose、リアルタイム処理や読み直しなら Data Streams"
+      },
+      {
+        "id": "b",
+        "text": "前者はミリ秒、後者は数分の遅延",
+        "correct": false,
+        "why": "遅延があるのは Firehose（バッファするため）"
+      },
+      {
+        "id": "c",
+        "text": "前者はデータを 365 日保持し、後者は保持しない",
+        "correct": false,
+        "why": "逆。保持するのは Data Streams"
+      },
+      {
+        "id": "d",
+        "text": "前者はシャードの管理が必要、後者は不要",
+        "correct": false,
+        "why": "シャードの考え方があるのは Data Streams"
+      }
+    ],
+    "explanation": "配信（Firehose）か、ストリームの処理（Data Streams）か。",
+    "keywords": [
+      "配信",
+      "保持"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

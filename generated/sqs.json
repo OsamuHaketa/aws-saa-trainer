@@ -1,0 +1,456 @@
+[
+  {
+    "id": "sqs-standard:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "sqs-standard"
+    ],
+    "prompt": "注文の受付と在庫の処理を疎結合にし、在庫システムが止まっても注文を失わないようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SQS",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "注文をキューにためておき、在庫システムが復旧したら処理できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SNS（HTTP で直接プッシュ）",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "メッセージを保持しないので、止まっている間の注文を失うおそれがある"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のフェイルオーバールーティング",
+        "correct": false,
+        "atomId": "route53-failover",
+        "why": "DNS の切り替えで、メッセージは保持できない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツ配信"
+      }
+    ],
+    "explanation": "「疎結合」「止まっても失わない」= SQS。",
+    "keywords": [
+      "疎結合",
+      "失わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-standard:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "sqs-standard",
+      "sns-topic"
+    ],
+    "prompt": "SQS と SNS の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS はキューにためて取りに来させ、SNS は購読者へ同時にプッシュ",
+        "correct": true,
+        "why": "1 対 1 の非同期処理なら SQS、1 対多の通知なら SNS。組み合わせるとファンアウト"
+      },
+      {
+        "id": "b",
+        "text": "SQS は複数の購読者に同時に配信し、SNS はキューにためる",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "SQS は通知専用、SNS はメッセージを 14 日保持する",
+        "correct": false,
+        "why": "メッセージを保持するのは SQS"
+      },
+      {
+        "id": "d",
+        "text": "SQS はメール、SNS は Lambda にしか送れない",
+        "correct": false,
+        "why": "どちらの説明も誤り"
+      }
+    ],
+    "explanation": "企画書の比較例「SQS vs SNS」。プル・保持 = SQS、プッシュ・1 対多 = SNS。",
+    "keywords": [
+      "キュー",
+      "プッシュ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-standard:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "sqs-standard"
+    ],
+    "prompt": "「疎結合」「バッファ」「処理の急増を吸収」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SQS",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "キューにためて、処理側のペースで処理させる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "メッセージをためずにプッシュする"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EventBridge",
+        "correct": false,
+        "atomId": "eventbridge-bus",
+        "why": "イベントのルーティングで、バッファが目的ではない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "ストリーミングデータの配信"
+      }
+    ],
+    "explanation": "企画書のトリガー例「疎結合 → SQS」。",
+    "keywords": [
+      "疎結合"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-fifo:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "sqs-fifo"
+    ],
+    "prompt": "銀行の取引処理で、同じ口座の取引は必ず送った順に 1 回だけ処理したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS FIFO キュー",
+        "correct": true,
+        "atomId": "sqs-fifo",
+        "why": "メッセージグループの中で順序を守り、重複を排除する"
+      },
+      {
+        "id": "b",
+        "text": "SQS 標準キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "順序はベストエフォートで、まれに重複して届く"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SNS（標準トピック）",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "順序や 1 回だけの配信は保証されない"
+      },
+      {
+        "id": "d",
+        "text": "S3 イベント通知",
+        "correct": false,
+        "atomId": "s3-event-notifications",
+        "why": "順序の保証の仕組みではない"
+      }
+    ],
+    "explanation": "「順序」「1 回だけ」「重複不可」= FIFO。",
+    "keywords": [
+      "送った順",
+      "1 回だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-fifo:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "sqs-fifo",
+      "sqs-standard"
+    ],
+    "prompt": "SQS の FIFO キューと標準キューの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FIFO は順序と重複排除を守るが、スループットに制限がある",
+        "correct": true,
+        "atomId": "sqs-fifo",
+        "why": "大量で順序が不要なら標準、順序や重複排除が必要なら FIFO"
+      },
+      {
+        "id": "b",
+        "text": "FIFO はスループットが無制限で、標準は制限がある",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "FIFO はメッセージを保持せず、標準は 14 日保持する",
+        "correct": false,
+        "why": "どちらも保持する"
+      },
+      {
+        "id": "d",
+        "text": "FIFO は Lambda から使えず、標準は使える",
+        "correct": false,
+        "why": "どちらも Lambda から使える"
+      }
+    ],
+    "explanation": "順序・重複排除が必要なときだけ FIFO。",
+    "keywords": [
+      "順序",
+      "スループット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-visibility-timeout:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sqs-visibility-timeout"
+    ],
+    "prompt": "処理に 2 分かかるメッセージを、可視性タイムアウト 30 秒のキューで扱っている。同じ注文が何度も処理されてしまう。原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "処理中に別の処理側へ渡っている",
+        "correct": true,
+        "atomId": "sqs-visibility-timeout",
+        "why": "可視性タイムアウトを処理時間より長くする"
+      },
+      {
+        "id": "b",
+        "text": "メッセージの保持期間が短すぎる",
+        "correct": false,
+        "why": "保持期間は重複の原因ではない"
+      },
+      {
+        "id": "c",
+        "text": "ロングポーリングを使っていない",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "空の応答の話で、重複処理の原因ではない"
+      },
+      {
+        "id": "d",
+        "text": "デッドレターキューがない",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "失敗したメッセージの隔離で、この重複の原因ではない"
+      }
+    ],
+    "explanation": "可視性タイムアウト ＞ 処理時間。",
+    "keywords": [
+      "2 分",
+      "30 秒",
+      "何度も"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-dlq:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "sqs-dlq"
+    ],
+    "prompt": "形式が壊れたメッセージが何度受信しても処理できず、キューの処理を妨げている。自動で隔離して、あとで調べたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "デッドレターキューに移す",
+        "correct": true,
+        "atomId": "sqs-dlq",
+        "why": "処理できないメッセージだけを別のキューに隔離できる"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウトを 0 秒にする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "すぐに再受信されるだけで、隔離されない"
+      },
+      {
+        "id": "c",
+        "text": "キューのメッセージをすべて削除する",
+        "correct": false,
+        "why": "正常なメッセージまで失う"
+      },
+      {
+        "id": "d",
+        "text": "FIFO キューに作り直す",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "処理できないメッセージの問題は解決しない"
+      }
+    ],
+    "explanation": "処理できないメッセージの隔離 = DLQ。",
+    "keywords": [
+      "何度受信しても",
+      "隔離"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-long-polling:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sqs-long-polling"
+    ],
+    "prompt": "メッセージがほとんど来ないキューを、処理側が 1 秒ごとに受信しに行っていて、リクエストの料金がかさむ。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ロングポーリングに変える",
+        "correct": true,
+        "atomId": "sqs-long-polling",
+        "why": "空の応答とリクエストの数を減らせる"
+      },
+      {
+        "id": "b",
+        "text": "FIFO キューに変える",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "料金の問題は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "可視性タイムアウトを長くする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "受信したあとの話で、空の受信は減らない"
+      },
+      {
+        "id": "d",
+        "text": "SNS に置き換える",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "アーキテクチャが変わり、メッセージの保持もできなくなる"
+      }
+    ],
+    "explanation": "空の受信を減らす = ロングポーリング。",
+    "keywords": [
+      "リクエストの料金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-queue-based-scaling:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sqs-queue-based-scaling"
+    ],
+    "prompt": "SQS のメッセージを EC2 の Auto Scaling グループで処理している。夕方にキューがたまって処理が遅れる。台数を適切に増減させるには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キューの滞留数でスケールする",
+        "correct": true,
+        "atomId": "sqs-queue-based-scaling",
+        "why": "キューの長さに合わせて台数を調整でき、処理の遅れを防げる"
+      },
+      {
+        "id": "b",
+        "text": "CPU 使用率だけでスケールする",
+        "correct": false,
+        "atomId": "autoscaling-target-tracking",
+        "why": "処理の性質によっては、キューがたまっても CPU が上がらず台数が増えない"
+      },
+      {
+        "id": "c",
+        "text": "キューを FIFO に変える",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "処理の速さは上がらない"
+      },
+      {
+        "id": "d",
+        "text": "可視性タイムアウトを短くする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "重複処理が増えるだけ"
+      }
+    ],
+    "explanation": "キュー処理のスケール指標 = バックログ（1 台あたりのメッセージ数）。",
+    "keywords": [
+      "キューがたまって",
+      "台数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-standard:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "sqs-standard",
+      "sns-fanout",
+      "lambda-function"
+    ],
+    "prompt": "EC サイトの注文処理を設計する。\n・注文の受付は、後続の処理の状況に関係なくすぐに応答したい\n・1 つの注文を在庫・配送・メール通知の 3 つの処理で使う\n・処理がどれか止まっても注文を失わない\n・処理はサーバーを管理せずに実装したい\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SNS から 3 つの SQS に分配し、各キューを Lambda で処理",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "受付は SNS に送るだけですぐ応答でき、キューが各処理の停止を吸収し、処理はサーバーレス"
+      },
+      {
+        "id": "b",
+        "text": "受付の API から 3 つの処理を同期で順番に呼び出す",
+        "correct": false,
+        "why": "どれかが遅い・止まると受付も遅れ、注文を失うおそれもある"
+      },
+      {
+        "id": "c",
+        "text": "1 つの SQS キューを 3 つの Lambda で取り合う",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "1 つの注文が 1 つの処理にしか届かない"
+      },
+      {
+        "id": "d",
+        "text": "SNS から 3 つの処理の HTTP エンドポイントに直接送る",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "止まっている処理への注文を失うおそれがあり、サーバーも必要"
+      }
+    ],
+    "explanation": "非同期 → キュー、1 対多 → SNS、失わない → SQS、サーバーレス → Lambda。",
+    "keywords": [
+      "すぐに応答",
+      "3 つの処理",
+      "失わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

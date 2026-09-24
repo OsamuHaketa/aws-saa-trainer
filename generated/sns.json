@@ -1,0 +1,181 @@
+[
+  {
+    "id": "sns-topic:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "sns-topic"
+    ],
+    "prompt": "システムの障害を検知したら、運用チームのメールと SMS、さらに Lambda に同時に通知したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SNS",
+        "correct": true,
+        "atomId": "sns-topic",
+        "why": "1 つのトピックの複数の購読者（メール、SMS、Lambda）に同時にプッシュできる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キューにためるだけで、メールや SMS には送れない"
+      },
+      {
+        "id": "c",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "ストリーミングデータの取り込み"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "S3 などへのデータの配信"
+      }
+    ],
+    "explanation": "「複数の購読者に同時に」「メール・SMS」= SNS。",
+    "keywords": [
+      "同時に通知",
+      "メールと SMS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-topic:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "sns-topic"
+    ],
+    "prompt": "「Pub/Sub」「複数の Subscriber」「プッシュ型の通知」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SNS",
+        "correct": true,
+        "atomId": "sns-topic",
+        "why": "トピックを購読する全員にプッシュする"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "1 つの処理側が取りに来るプル型"
+      },
+      {
+        "id": "c",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "ストリーミングデータの取り込み"
+      },
+      {
+        "id": "d",
+        "text": "AWS Step Functions",
+        "correct": false,
+        "why": "ワークフローの制御"
+      }
+    ],
+    "explanation": "企画書のトリガー例「Pub/Sub・複数 Subscriber → SNS」。",
+    "keywords": [
+      "Pub/Sub"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-fanout:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sns-fanout"
+    ],
+    "prompt": "1 つの注文イベントを、在庫・配送・請求の 3 つのシステムで独立に処理したい。どれかが止まっても注文を失わないようにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SNS トピックから 3 つの SQS キューにファンアウト",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "同じメッセージが各キューに届き、各システムが自分のペースで処理できる"
+      },
+      {
+        "id": "b",
+        "text": "1 つの SQS キューを 3 つのシステムで取り合う",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "1 つのメッセージは 1 つのシステムにしか届かない"
+      },
+      {
+        "id": "c",
+        "text": "SNS から 3 つのシステムの HTTP に直接送る",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "止まっているシステムへのメッセージを失うおそれがある"
+      },
+      {
+        "id": "d",
+        "text": "3 つのシステムが DB を毎分ポーリングする",
+        "correct": false,
+        "why": "遅延と DB の負荷が大きい"
+      }
+    ],
+    "explanation": "1 対多 + 確実な処理 = SNS + SQS のファンアウト。",
+    "keywords": [
+      "3 つのシステム",
+      "失わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-message-filtering:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sns-message-filtering"
+    ],
+    "prompt": "1 つの SNS トピックに全商品の注文が流れる。書籍の注文だけを書籍チームの SQS に届けたい。トピックは増やしたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "購読にフィルタポリシーを設定する",
+        "correct": true,
+        "atomId": "sns-message-filtering",
+        "why": "属性が一致したメッセージだけを、その購読に配信できる"
+      },
+      {
+        "id": "b",
+        "text": "書籍用の SNS トピックを新しく作る",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "トピックを増やしたくないという要件に反する"
+      },
+      {
+        "id": "c",
+        "text": "SQS を FIFO キューにする",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "順序の保証で、振り分けはできない"
+      },
+      {
+        "id": "d",
+        "text": "書籍チームが全メッセージを受けて捨てる",
+        "correct": false,
+        "why": "不要な処理とコストが増える"
+      }
+    ],
+    "explanation": "購読者ごとに必要なメッセージだけ = SNS のメッセージフィルタリング。",
+    "keywords": [
+      "書籍の注文だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

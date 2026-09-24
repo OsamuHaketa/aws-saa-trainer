@@ -1,0 +1,91 @@
+# Lambda Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: lambda
+
+atoms:
+  - id: lambda-function
+    category: compute
+    concept: AWS Lambda
+    summary: サーバーを管理せず、イベントに応じてコードを実行する。1 回の実行は最大 15 分
+    facts:
+      - サーバーの管理なしに、イベント（S3、API Gateway、SQS など）をきっかけにコードを実行する
+      - 1 回の実行時間は最大 15 分
+      - メモリを 128 MB〜10 GB で設定でき、CPU はメモリに比例して割り当てられる
+      - リクエスト数と実行時間（ミリ秒単位）で課金され、使わなければ料金はかからない
+    triggers:
+      - サーバーレス
+      - イベント駆動
+      - たまにしか実行しない処理
+      - サーバーを管理したくない
+    pitfalls:
+      - 15 分を超える処理は実行できない。ECS/Fargate、AWS Batch、Step Functions での分割などを使う
+    relations: []
+    examDomains: [performance, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lambda/latest/dg/welcome.html
+
+  - id: lambda-concurrency
+    category: compute
+    concept: 予約同時実行 / プロビジョンド同時実行
+    summary: 予約同時実行で同時実行数を確保・制限し、プロビジョンド同時実行でコールドスタートをなくす
+    facts:
+      - 予約同時実行は、関数の同時実行数を確保し、同時にその上限にもなる
+      - プロビジョンド同時実行は、実行環境を事前に初期化しておき、コールドスタートの遅延をなくす（料金がかかる）
+      - アカウント全体の同時実行数には上限があり、1 つの関数が使い切ると他の関数が実行できなくなる
+    triggers:
+      - コールドスタートの遅延をなくしたい
+      - 重要な関数の同時実行数を必ず確保したい
+      - 1 つの関数が他の関数の実行を妨げないようにしたい
+    pitfalls:
+      - メモリを増やしても、コールドスタートを完全にはなくせない
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html
+
+  - id: lambda-vpc
+    category: compute
+    concept: VPC 内の Lambda
+    summary: VPC に接続した Lambda は、プライベートサブネットのリソースにアクセスできるが、インターネットには NAT が必要
+    facts:
+      - VPC に接続すると、プライベートサブネットの RDS や ElastiCache にアクセスできる
+      - VPC に接続した Lambda はパブリック IP を持たないので、インターネットへは NAT ゲートウェイ経由で出る
+      - S3 や DynamoDB へは、VPC エンドポイントを使って NAT なしでアクセスできる
+    triggers:
+      - Lambda からプライベートサブネットの RDS にアクセスしたい
+    pitfalls:
+      - VPC に接続した Lambda をパブリックサブネットに置いても、インターネットには出られない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html
+
+  - id: lambda-async-failure
+    category: compute
+    concept: 非同期呼び出しの失敗の処理（DLQ / 失敗時の送信先）
+    summary: 非同期で呼ばれた Lambda が失敗し続けたイベントを、SQS や SNS などに退避する
+    facts:
+      - 非同期の呼び出し（S3 イベントや SNS など）は、失敗すると自動で 2 回まで再試行される
+      - 再試行しても失敗したイベントを、デッドレターキュー（SQS/SNS）や失敗時の送信先に送れる
+      - 退避したイベントをあとで調べたり、再処理したりできる
+    triggers:
+      - 失敗したイベントを失いたくない
+      - 失敗したイベントをあとで再処理したい
+    pitfalls:
+      - 失敗時の送信先を設定しないと、再試行が尽きたイベントは捨てられる
+    relations:
+      - type: confused_with
+        target: sqs-dlq
+        distinction: Lambda の DLQ / 失敗時の送信先は、非同期呼び出しで失敗したイベントを退避する。SQS の DLQ は、キューから何度受信しても処理できなかったメッセージを移す
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html

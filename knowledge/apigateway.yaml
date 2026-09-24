@@ -1,0 +1,29 @@
+# API Gateway Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: apigateway
+
+atoms:
+  - id: apigateway-api
+    category: compute
+    concept: Amazon API Gateway
+    summary: REST・HTTP・WebSocket の API を作り、Lambda などのバックエンドの前に置く
+    facts:
+      - REST API、HTTP API、WebSocket API を作れる
+      - Lambda と組み合わせて、サーバーレスの API を作れる
+      - スロットリング、使用量プランと API キー、レスポンスのキャッシュができる
+      - Cognito や Lambda オーソライザーで認証できる
+    triggers:
+      - サーバーレスの REST API
+      - API のリクエスト数を制限したい
+      - API キーで利用者ごとに使用量を管理したい
+    pitfalls:
+      - 大量のリクエストがバックエンドの処理能力を超えるなら、スロットリングやキューで保護する
+    relations:
+      - type: used_with
+        target: lambda-function
+    examDomains: [performance, secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html

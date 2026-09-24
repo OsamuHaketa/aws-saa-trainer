@@ -1,0 +1,306 @@
+[
+  {
+    "id": "lambda-function:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "lambda-function"
+    ],
+    "prompt": "Lambda の 1 回の実行時間の上限は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "15 分",
+        "correct": true,
+        "atomId": "lambda-function",
+        "why": "それを超える処理は Fargate や AWS Batch、Step Functions での分割などを使う"
+      },
+      {
+        "id": "b",
+        "text": "5 分",
+        "correct": false,
+        "why": "上限は 15 分"
+      },
+      {
+        "id": "c",
+        "text": "1 時間",
+        "correct": false,
+        "why": "上限は 15 分"
+      },
+      {
+        "id": "d",
+        "text": "上限はない",
+        "correct": false,
+        "why": "上限は 15 分"
+      }
+    ],
+    "explanation": "Lambda = 最大 15 分。長い処理は別のサービスへ。",
+    "keywords": [
+      "15 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-function:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "lambda-function"
+    ],
+    "prompt": "S3 に CSV がアップロードされたら、数秒で終わる変換処理を実行したい。アップロードは 1 日数回で、サーバーは管理したくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 イベント通知で Lambda を実行する",
+        "correct": true,
+        "atomId": "lambda-function",
+        "why": "イベント駆動でサーバー不要、実行した分だけの料金"
+      },
+      {
+        "id": "b",
+        "text": "常時起動の EC2 でバケットを監視する",
+        "correct": false,
+        "why": "1 日数回の処理のために常時料金がかかり、サーバーの管理も必要"
+      },
+      {
+        "id": "c",
+        "text": "ECS の常時稼働サービスで処理する",
+        "correct": false,
+        "why": "常時稼働のコストがかかる"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis Data Streams で処理する",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "大量のストリーミング向けで、この用途には過剰"
+      }
+    ],
+    "explanation": "たまにしか動かない・短い・イベント駆動 = Lambda。",
+    "keywords": [
+      "1 日数回",
+      "サーバーは管理したくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-function:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "lambda-function"
+    ],
+    "prompt": "毎晩 2 時間かかる動画の一括変換を、1 つの Lambda 関数で実行しようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "15 分の実行時間の上限を超えてしまう",
+        "correct": true,
+        "atomId": "lambda-function",
+        "why": "長時間の処理は AWS Batch や Fargate、または処理を分割して Step Functions で制御する"
+      },
+      {
+        "id": "b",
+        "text": "Lambda は動画ファイルを扱えない",
+        "correct": false,
+        "why": "扱えるが、実行時間の上限が問題"
+      },
+      {
+        "id": "c",
+        "text": "Lambda は夜間に実行できない",
+        "correct": false,
+        "why": "いつでも実行できる"
+      },
+      {
+        "id": "d",
+        "text": "Lambda は 1 日 1 回しか実行できない",
+        "correct": false,
+        "why": "何回でも実行できる"
+      }
+    ],
+    "explanation": "「数時間の処理」に Lambda を選ばない。",
+    "keywords": [
+      "2 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-concurrency:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "lambda-concurrency"
+    ],
+    "prompt": "API のバックエンドの Lambda で、しばらく呼ばれなかったあとの最初のリクエストが遅い（コールドスタート）。常に低いレイテンシにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンド同時実行を設定する",
+        "correct": true,
+        "atomId": "lambda-concurrency",
+        "why": "実行環境を事前に初期化しておき、コールドスタートをなくせる"
+      },
+      {
+        "id": "b",
+        "text": "予約同時実行を設定する",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "同時実行数を確保・制限するだけで、初期化は事前に行われない"
+      },
+      {
+        "id": "c",
+        "text": "タイムアウトを 15 分に延ばす",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "コールドスタートは減らない"
+      },
+      {
+        "id": "d",
+        "text": "失敗時の送信先を設定する",
+        "correct": false,
+        "atomId": "lambda-async-failure",
+        "why": "失敗の処理で、レイテンシとは関係がない"
+      }
+    ],
+    "explanation": "コールドスタート対策 = プロビジョンド同時実行。",
+    "keywords": [
+      "コールドスタート"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-concurrency:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "lambda-concurrency"
+    ],
+    "prompt": "予約同時実行とプロビジョンド同時実行の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は同時実行数の確保と上限、後者は事前の初期化",
+        "correct": true,
+        "atomId": "lambda-concurrency",
+        "why": "プロビジョンド同時実行はコールドスタートをなくすが、料金がかかる"
+      },
+      {
+        "id": "b",
+        "text": "前者はコールドスタートをなくし、後者は上限を決める",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は無料で、後者は Lambda を無料にする",
+        "correct": false,
+        "why": "料金の説明として誤り"
+      },
+      {
+        "id": "d",
+        "text": "前者は VPC 内専用、後者は VPC 外専用",
+        "correct": false,
+        "why": "VPC とは関係がない"
+      }
+    ],
+    "explanation": "予約 = 枠の確保と上限、プロビジョンド = ウォームスタート。",
+    "keywords": [
+      "確保",
+      "初期化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-vpc:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "lambda-vpc"
+    ],
+    "prompt": "RDS にアクセスするため Lambda を VPC に接続したら、外部の API を呼べなくなった。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC 内の Lambda は、NAT がないとインターネットに出られない",
+        "correct": true,
+        "atomId": "lambda-vpc",
+        "why": "プライベートサブネットに置き、NAT ゲートウェイ経由で外に出す"
+      },
+      {
+        "id": "b",
+        "text": "VPC に接続すると Lambda は HTTP を使えなくなる",
+        "correct": false,
+        "why": "使えるが、経路がない"
+      },
+      {
+        "id": "c",
+        "text": "VPC に接続すると実行時間が 1 分に制限される",
+        "correct": false,
+        "why": "実行時間の上限は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "RDS に接続すると外部への通信が禁止される",
+        "correct": false,
+        "why": "そのような仕組みはない"
+      }
+    ],
+    "explanation": "VPC Lambda + インターネット = NAT ゲートウェイ。S3/DynamoDB は VPC エンドポイント。",
+    "keywords": [
+      "外部の API を呼べなくなった"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-async-failure:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "lambda-async-failure"
+    ],
+    "prompt": "S3 イベントで非同期に呼ばれる Lambda が失敗し続けると、イベントが失われる。失敗したイベントを残して、あとで再処理したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "失敗時の送信先に SQS を指定",
+        "correct": true,
+        "atomId": "lambda-async-failure",
+        "why": "再試行しても失敗したイベントを SQS に退避できる"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のメモリを最大にする",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "失敗の原因によっては変わらず、イベントの退避にもならない"
+      },
+      {
+        "id": "c",
+        "text": "予約同時実行を 0 にする",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "関数が実行されなくなる"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway を前に置く",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "S3 イベントの失敗の退避にはならない"
+      }
+    ],
+    "explanation": "非同期呼び出しの失敗の退避 = DLQ / 失敗時の送信先。",
+    "keywords": [
+      "失敗し続ける",
+      "あとで再処理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,137 @@
+# SQS Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: sqs
+
+atoms:
+  - id: sqs-standard
+    category: messaging
+    concept: SQS 標準キュー
+    summary: メッセージをためて、送信側と処理側を疎結合にするキュー。スループットはほぼ無制限
+    facts:
+      - 送信側（プロデューサー）と処理側（コンシューマー）の間にメッセージをためて、疎結合にする
+      - スループットはほぼ無制限
+      - 少なくとも 1 回の配信で、まれに重複して届き、順序はベストエフォート
+      - メッセージはデフォルト 4 日、最大 14 日保持される
+    triggers:
+      - 疎結合
+      - 処理の急増を吸収したい
+      - 非同期で処理したい
+      - バッファ
+    pitfalls:
+      - 厳密な順序や重複の排除が必要なら FIFO キューを使う
+    relations:
+      - type: confused_with
+        target: sns-topic
+        distinction: SQS はメッセージをキューにためて、処理側が取りに来る（プル）。1 つのメッセージは 1 つの処理側が処理する。SNS はトピックに送られたメッセージを、複数の購読者へ同時にプッシュする
+      - type: confused_with
+        target: sqs-fifo
+        distinction: 標準キューはスループットがほぼ無制限だが、順序はベストエフォートで重複もありうる。FIFO キューは順序を守り重複を排除するが、スループットに制限がある
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html
+
+  - id: sqs-fifo
+    category: messaging
+    concept: SQS FIFO キュー
+    summary: 送信した順序を守り、重複を排除して 1 回だけ処理させるキュー
+    facts:
+      - メッセージグループの中で、送信した順序どおりに届く
+      - 重複排除により、1 回だけの処理（Exactly-Once）を実現する
+      - 標準キューよりスループットに制限がある
+      - キューの名前は .fifo で終わる
+    triggers:
+      - 順序を守る必要がある
+      - 注文を二重に処理してはいけない
+      - 重複を排除したい
+    pitfalls:
+      - 順序も重複排除も不要で大量のメッセージを扱うなら、標準キューの方が向く
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html
+
+  - id: sqs-visibility-timeout
+    category: messaging
+    concept: 可視性タイムアウト
+    summary: 受信したメッセージを一定時間ほかの処理側から見えなくし、処理中の重複を防ぐ
+    facts:
+      - 処理側がメッセージを受信すると、可視性タイムアウトの間、ほかの処理側から見えなくなる
+      - 時間内に削除されなければ、再びキューに見えるようになり、別の処理側が受信する
+      - デフォルトは 30 秒で、最大 12 時間
+      - 処理にかかる時間より長く設定する
+    triggers:
+      - 同じメッセージが何度も処理される
+      - 処理に時間がかかるメッセージ
+    pitfalls:
+      - 処理時間より短いと、処理中のメッセージが別の処理側にも渡り、重複して処理される
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html
+
+  - id: sqs-dlq
+    category: messaging
+    concept: SQS デッドレターキュー（DLQ）
+    summary: 何度受信しても処理できなかったメッセージを、別のキューに移して隔離する
+    facts:
+      - 最大受信回数を超えたメッセージを、デッドレターキューに移す
+      - 処理できないメッセージが、キューの処理を妨げ続けるのを防ぐ
+      - 移したメッセージをあとで調べたり、元のキューに戻したりできる
+    triggers:
+      - 処理に失敗し続けるメッセージを隔離したい
+      - 失敗したメッセージの原因を調べたい
+    pitfalls:
+      - DLQ がないと、処理できないメッセージが保持期間いっぱいまで何度も受信され続ける
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html
+
+  - id: sqs-long-polling
+    category: messaging
+    concept: ロングポーリング
+    summary: メッセージが来るまで最大 20 秒待って受信し、空の応答とリクエストの料金を減らす
+    facts:
+      - 受信のリクエストで、メッセージが届くまで最大 20 秒待つ
+      - 空の応答が減り、リクエストの数と料金を減らせる
+    triggers:
+      - 空の受信が多く、SQS のリクエスト料金が高い
+    pitfalls:
+      - ショートポーリングで頻繁に受信し続けると、空の応答にも料金がかかる
+    relations: []
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html
+
+  - id: sqs-queue-based-scaling
+    category: messaging
+    concept: キューの長さに応じたスケーリング
+    summary: キューにたまったメッセージの数に応じて、処理側の EC2 の台数を増減させる
+    facts:
+      - キューのメッセージ数（ApproximateNumberOfMessagesVisible）を CloudWatch で監視する
+      - インスタンス 1 台あたりのメッセージ数（バックログ）を目標にして、Auto Scaling で台数を調整する
+      - 処理が追いつかないときに自動で台数を増やし、キューが空になれば減らせる
+    triggers:
+      - キューにメッセージがたまり、処理が遅れている
+      - 処理側の台数をキューの長さに合わせたい
+    pitfalls:
+      - CPU 使用率だけでスケールすると、キューがたまっていても台数が増えないことがある
+    relations:
+      - type: used_with
+        target: autoscaling-target-tracking
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html

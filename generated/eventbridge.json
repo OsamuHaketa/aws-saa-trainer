@@ -1,0 +1,139 @@
+[
+  {
+    "id": "eventbridge-bus:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-bus"
+    ],
+    "prompt": "本番アカウントで EC2 インスタンスが停止したら、自動で Slack に通知する Lambda を実行したい。ポーリングはしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge のルールで状態変化を検知",
+        "correct": true,
+        "atomId": "eventbridge-bus",
+        "why": "EC2 の状態変化のイベントを受け、パターンに合えば Lambda を実行する"
+      },
+      {
+        "id": "b",
+        "text": "Lambda で毎分 EC2 の状態を確認する",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "ポーリングになり、遅延とコストが増える"
+      },
+      {
+        "id": "c",
+        "text": "SQS のロングポーリング",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "EC2 の状態変化のイベントは受け取れない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 のヘルスチェック",
+        "correct": false,
+        "atomId": "route53-health-checks",
+        "why": "DNS のための監視で、EC2 の停止イベントを扱う仕組みではない"
+      }
+    ],
+    "explanation": "AWS サービスの状態変化で処理 = EventBridge。",
+    "keywords": [
+      "停止したら",
+      "ポーリングはしたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-bus:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-bus",
+      "sns-topic"
+    ],
+    "prompt": "SNS ではなく EventBridge を選ぶべき要件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SaaS や AWS のイベントを、内容のパターンで振り分けたい",
+        "correct": true,
+        "atomId": "eventbridge-bus",
+        "why": "EventBridge はイベントの内容でルールに合うターゲットに送り、SaaS のイベントも受け取れる"
+      },
+      {
+        "id": "b",
+        "text": "運用チームにメールと SMS で通知したい",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "SNS の用途"
+      },
+      {
+        "id": "c",
+        "text": "1 つのメッセージを多数の SQS キューにファンアウトしたい",
+        "correct": false,
+        "atomId": "sns-fanout",
+        "why": "SNS のファンアウトが定番"
+      },
+      {
+        "id": "d",
+        "text": "モバイル端末にプッシュ通知を送りたい",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "SNS の用途"
+      }
+    ],
+    "explanation": "イベントの内容でルーティング・SaaS 連携 → EventBridge、通知・ファンアウト → SNS。",
+    "keywords": [
+      "パターン",
+      "SaaS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-scheduler:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-scheduler"
+    ],
+    "prompt": "毎日 3 時に、古いデータを消す Lambda を実行したい。サーバーは使いたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge のスケジュール（cron 式）",
+        "correct": true,
+        "atomId": "eventbridge-scheduler",
+        "why": "決まった時刻に、サーバーなしで Lambda を実行できる"
+      },
+      {
+        "id": "b",
+        "text": "EC2 の cron で Lambda を呼び出す",
+        "correct": false,
+        "why": "cron のためだけに EC2 を動かすことになる"
+      },
+      {
+        "id": "c",
+        "text": "SQS の可視性タイムアウトを 24 時間にする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "定期実行の仕組みではない"
+      },
+      {
+        "id": "d",
+        "text": "SNS のメッセージフィルタリング",
+        "correct": false,
+        "atomId": "sns-message-filtering",
+        "why": "定期実行の仕組みではない"
+      }
+    ],
+    "explanation": "定期実行 = EventBridge のスケジュール。",
+    "keywords": [
+      "毎日 3 時"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

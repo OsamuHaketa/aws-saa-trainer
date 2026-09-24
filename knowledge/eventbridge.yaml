@@ -1,0 +1,47 @@
+# EventBridge Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: eventbridge
+
+atoms:
+  - id: eventbridge-bus
+    category: messaging
+    concept: Amazon EventBridge
+    summary: AWS サービス・SaaS・自作アプリのイベントを受け、ルールのパターンに合うターゲットへ送るイベントバス
+    facts:
+      - AWS サービスのイベント（EC2 の状態変化、S3 のイベントなど）を受け取れる
+      - SaaS のパートナー（Zendesk など）のイベントも受け取れる
+      - ルールでイベントの内容のパターンを指定し、合ったものだけを Lambda、SQS、Step Functions などに送る
+      - イベントのアーカイブと再実行ができる
+    triggers:
+      - イベント駆動のアーキテクチャ
+      - EC2 が停止したら通知したい
+      - SaaS のイベントで AWS の処理を動かしたい
+      - イベントの内容で振り分けたい
+    pitfalls:
+      - AWS の状態変化を検知するために、定期的に API を呼んでポーリングするのは非効率
+    relations: []
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html
+
+  - id: eventbridge-scheduler
+    category: messaging
+    concept: EventBridge のスケジュール
+    summary: cron やレートの式で、決まった時刻や間隔にターゲットを実行する
+    facts:
+      - cron 式やレート式（5 分ごとなど）で、Lambda などを定期実行できる
+      - サーバーに cron を設定する必要がない
+    triggers:
+      - 毎日決まった時刻に Lambda を実行したい
+      - 定期的なバッチ処理をサーバーなしで動かしたい
+    pitfalls:
+      - 定期実行のためだけに EC2 を動かし続けるのはコストの無駄
+    relations: []
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html

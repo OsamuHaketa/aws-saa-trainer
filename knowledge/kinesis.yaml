@@ -1,0 +1,56 @@
+# Kinesis Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: kinesis
+
+atoms:
+  - id: kinesis-data-streams
+    category: streaming
+    concept: Kinesis Data Streams
+    summary: 大量のストリーミングデータをリアルタイムに取り込み、複数の処理側が順序どおりに読める
+    facts:
+      - クリックストリーム、ログ、IoT などの大量のデータをリアルタイムに取り込む
+      - データはシャードに分かれ、同じパーティションキーのデータは順序が保たれる
+      - データはデフォルト 24 時間、最大 365 日保持され、複数の処理側が同じデータを読んだり、読み直したりできる
+      - 容量はオンデマンドか、シャード数を指定するプロビジョンドで決める
+    triggers:
+      - リアルタイムのストリーミングデータ
+      - 同じデータを複数のアプリで処理したい
+      - データを後から読み直したい（リプレイ）
+      - クリックストリーム
+    pitfalls:
+      - 単に S3 などにデータを届けたいだけなら、Data Firehose の方が管理が少ない
+    relations:
+      - type: confused_with
+        target: sqs-standard
+        distinction: Kinesis Data Streams はデータを保持して、複数の処理側が順序どおりに読み、読み直すこともできる。SQS はメッセージを 1 つの処理側が処理したら削除し、読み直しはしない
+      - type: confused_with
+        target: kinesis-firehose
+        distinction: Data Streams はリアルタイムに取り込み、自分で処理側を作る（保持・リプレイあり）。Firehose は S3 や Redshift などに自動で届ける配信サービスで、処理側の管理が不要だが、保持やリプレイはない
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/streams/latest/dev/introduction.html
+
+  - id: kinesis-firehose
+    category: streaming
+    concept: Amazon Data Firehose
+    summary: ストリーミングデータを、S3・Redshift・OpenSearch などに自動でまとめて届ける
+    facts:
+      - ストリーミングデータを S3、Redshift、OpenSearch、Splunk などに自動で届ける
+      - フルマネージドで、処理側のアプリやシャードの管理が不要
+      - データをバッファしてから届けるので、ほぼリアルタイム（数秒〜数分の遅延）
+      - Lambda での変換や、Parquet 形式への変換ができる
+    triggers:
+      - ストリーミングデータを S3 に保存したい
+      - 管理なしにログを Redshift や OpenSearch に届けたい
+      - ほぼリアルタイム
+    pitfalls:
+      - ミリ秒単位のリアルタイム処理や、データの読み直しが必要なら Data Streams を使う
+    relations: []
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html

@@ -1,0 +1,70 @@
+# SNS Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: sns
+
+atoms:
+  - id: sns-topic
+    category: messaging
+    concept: Amazon SNS
+    summary: トピックに送ったメッセージを、複数の購読者へ同時にプッシュする Pub/Sub サービス
+    facts:
+      - パブリッシャーがトピックに送ったメッセージを、すべての購読者にプッシュする
+      - 購読者に SQS、Lambda、HTTP/HTTPS、メール、SMS などを指定できる
+      - メッセージを保存しておく仕組みはなく、購読者が取りに来るのではなく SNS が送る
+    triggers:
+      - Pub/Sub
+      - 複数の購読者（Subscriber）
+      - 1 つのイベントを複数のシステムに同時に通知したい
+      - メールや SMS で通知したい
+    pitfalls:
+      - 処理側が止まっている間のメッセージをためておきたいなら、SQS を組み合わせる
+    relations:
+      - type: confused_with
+        target: eventbridge-bus
+        distinction: SNS はトピックの購読者全員に配信する（フィルタも可）。EventBridge はイベントの内容のパターンでルールに合ったターゲットにだけ送り、AWS サービスや SaaS のイベントも受け取れる
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/sns/latest/dg/welcome.html
+
+  - id: sns-fanout
+    category: messaging
+    concept: SNS + SQS のファンアウト
+    summary: 1 つの SNS トピックから複数の SQS キューに配信し、それぞれ独立に並列で処理する
+    facts:
+      - SNS トピックに複数の SQS キューを購読させ、同じメッセージを各キューに届ける
+      - 各処理システムは自分のキューから、自分のペースで処理できる
+      - 処理側が止まっていてもメッセージはキューにたまり、失われない
+    triggers:
+      - 1 つの注文を、在庫・配送・請求の各システムで並列に処理したい
+      - 通知を複数のシステムに確実に届けたい
+    pitfalls:
+      - SNS から各システムに直接プッシュすると、止まっているシステムへのメッセージを失うおそれがある
+    relations:
+      - type: used_with
+        target: sqs-standard
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/sns/latest/dg/sns-common-scenarios.html
+
+  - id: sns-message-filtering
+    category: messaging
+    concept: SNS のメッセージフィルタリング
+    summary: 購読ごとにフィルタポリシーを付け、条件に合うメッセージだけを受け取る
+    facts:
+      - 購読にフィルタポリシーを設定し、メッセージの属性や内容が一致したものだけを配信する
+      - 1 つのトピックのまま、購読者ごとに受け取るメッセージを分けられる
+    triggers:
+      - 購読者ごとに必要なメッセージだけを受け取らせたい
+    pitfalls:
+      - 用途ごとにトピックを大量に作ると、管理が複雑になる
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html

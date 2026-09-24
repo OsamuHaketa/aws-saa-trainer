@@ -30,6 +30,7 @@ export const SERVICE_LABEL: Record<string, string> = {
   globalaccelerator: "Global Accelerator",
   route53: "Route 53",
   lambda: "Lambda",
+  apigateway: "API Gateway",
   sqs: "SQS",
   sns: "SNS",
   eventbridge: "EventBridge",
