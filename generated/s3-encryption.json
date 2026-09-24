@@ -1,0 +1,495 @@
+[
+  {
+    "id": "s3-sse-s3:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-sse-s3"
+    ],
+    "prompt": "SSE-S3 の説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 が管理する鍵で、追加料金なしに保存時に暗号化する",
+        "correct": true,
+        "atomId": "s3-sse-s3",
+        "why": "新しいオブジェクトはデフォルトで SSE-S3 で暗号化される"
+      },
+      {
+        "id": "b",
+        "text": "KMS の鍵で暗号化し、鍵の使用を CloudTrail で監査できる",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "SSE-KMS の説明"
+      },
+      {
+        "id": "c",
+        "text": "顧客が用意した鍵を、リクエストのたびに S3 へ渡す",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "SSE-C の説明"
+      },
+      {
+        "id": "d",
+        "text": "アップロード前に、データを利用者側で暗号化しておく",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "クライアント側暗号化の説明"
+      }
+    ],
+    "explanation": "SSE-S3 は「何もしなくても暗号化される」デフォルト。鍵の管理も監査もできないのが SSE-KMS との違い。",
+    "keywords": [
+      "S3 が管理する鍵"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-s3:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-sse-s3"
+    ],
+    "prompt": "S3 のデータを保存時に暗号化したい。鍵の管理や追加の運用はしたくなく、追加料金もかけたくない。どれを使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSE-S3",
+        "correct": true,
+        "atomId": "s3-sse-s3",
+        "why": "S3 が鍵を管理し、追加料金もかからない"
+      },
+      {
+        "id": "b",
+        "text": "SSE-KMS",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "KMS の料金がかかり、鍵ポリシーなどの管理も発生する"
+      },
+      {
+        "id": "c",
+        "text": "SSE-C",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "鍵の保管と受け渡しをすべて自分で管理する必要がある"
+      },
+      {
+        "id": "d",
+        "text": "クライアント側暗号化",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "暗号化の処理と鍵の管理が利用者の責任になる"
+      }
+    ],
+    "explanation": "「管理したくない」「追加料金なし」= SSE-S3。",
+    "keywords": [
+      "鍵を管理したくない",
+      "追加料金なし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-s3:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-sse-s3",
+      "s3-sse-kms"
+    ],
+    "prompt": "SSE-S3 ではなく SSE-KMS を選ぶべきなのはどんな要件のとき？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵の使用を監査し、誰が復号できるかを鍵ポリシーで制御したいとき",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "SSE-KMS なら鍵の使用が CloudTrail に記録され、鍵ポリシーで復号できる人を分けられる"
+      },
+      {
+        "id": "b",
+        "text": "追加料金なしで、何も設定せずに暗号化したいとき",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "それは SSE-S3 で満たせる"
+      },
+      {
+        "id": "c",
+        "text": "AWS に平文のデータを一切渡したくないとき",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "サーバー側暗号化ではなく、クライアント側暗号化が必要"
+      },
+      {
+        "id": "d",
+        "text": "鍵を AWS の外で保管し、リクエストごとに渡したいとき",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "SSE-C の用途"
+      }
+    ],
+    "explanation": "「監査」「鍵のアクセス制御」「職務分離」が出たら SSE-KMS。",
+    "keywords": [
+      "監査",
+      "鍵ポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-kms:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-sse-kms"
+    ],
+    "prompt": "S3 の管理者でも、暗号鍵の権限がなければデータを復号できないようにしたい（職務分離）。どれを使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "カスタマーマネージドキーを使った SSE-KMS",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "S3 の権限とは別に、鍵ポリシーで kms:Decrypt を許可された人だけが復号できる"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "S3 の読み取り権限があれば復号されたデータを読めてしまう"
+      },
+      {
+        "id": "c",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の防止で、社内の職務分離はできない"
+      },
+      {
+        "id": "d",
+        "text": "S3 バージョニング",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "誤削除対策で、復号の制御はできない"
+      }
+    ],
+    "explanation": "SSE-KMS はデータへのアクセスに「S3 の権限」と「鍵の権限」の 2 つを必要にできる。",
+    "keywords": [
+      "職務分離",
+      "復号"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-kms:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-sse-kms",
+      "s3-bucket-key"
+    ],
+    "prompt": "SSE-KMS のバケットに毎秒大量のリクエストが来るようになり、一部が失敗し始めた。原因として考えられるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "KMS のリクエストクォータに達して、スロットリングされている",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "SSE-KMS は読み書きのたびに KMS を呼ぶ。S3 バケットキーでリクエスト数を減らせる"
+      },
+      {
+        "id": "b",
+        "text": "SSE-KMS は 1 つのバケットに 1 万個までしか保存できない",
+        "correct": false,
+        "why": "オブジェクト数の上限はない"
+      },
+      {
+        "id": "c",
+        "text": "KMS の鍵が 1 日ごとに自動で無効になっている",
+        "correct": false,
+        "why": "鍵が自動で無効になることはない"
+      },
+      {
+        "id": "d",
+        "text": "SSE-KMS のバケットはマルチパートアップロードに非対応",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "マルチパートアップロードも使える"
+      }
+    ],
+    "explanation": "SSE-KMS の弱点は KMS の料金とクォータ。対策は S3 バケットキー。",
+    "keywords": [
+      "大量のリクエスト",
+      "失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-kms:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-sse-kms"
+    ],
+    "prompt": "SSE-KMS で暗号化したオブジェクトを、別の AWS アカウントに読ませたい。どの鍵を使う必要がある？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーを編集できるカスタマーマネージドキー",
+        "correct": true,
+        "atomId": "s3-sse-kms",
+        "why": "鍵ポリシーで相手のアカウントに kms:Decrypt を許可できる"
+      },
+      {
+        "id": "b",
+        "text": "AWS マネージドキー（aws/s3 の既定の鍵）",
+        "correct": false,
+        "why": "鍵ポリシーを編集できないので、別アカウントに復号を許可できない"
+      },
+      {
+        "id": "c",
+        "text": "S3 が管理する SSE-S3 の鍵",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "SSE-KMS の鍵ではない"
+      },
+      {
+        "id": "d",
+        "text": "SSE-C で使う顧客提供の鍵",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "SSE-KMS の鍵ではない"
+      }
+    ],
+    "explanation": "クロスアカウントで SSE-KMS のデータを共有するなら、カスタマーマネージドキー + 鍵ポリシー + バケットポリシー。",
+    "keywords": [
+      "別の AWS アカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-key:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-bucket-key"
+    ],
+    "prompt": "SSE-KMS の暗号化は維持したまま、KMS のリクエスト料金を減らしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バケットキーを有効にする",
+        "correct": true,
+        "atomId": "s3-bucket-key",
+        "why": "バケット単位の鍵でデータキーを作り、KMS へのリクエストを大幅に減らす"
+      },
+      {
+        "id": "b",
+        "text": "暗号化方式を SSE-S3 に変更する",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "料金は下がるが、SSE-KMS による監査や鍵の制御ができなくなり、要件を満たさない"
+      },
+      {
+        "id": "c",
+        "text": "KMS の鍵を毎日ローテーションする",
+        "correct": false,
+        "why": "ローテーションしても KMS へのリクエスト数は減らない"
+      },
+      {
+        "id": "d",
+        "text": "オブジェクトを Glacier 系に移す",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "KMS のリクエスト料金を減らす方法ではない"
+      }
+    ],
+    "explanation": "「SSE-KMS のまま」「KMS の料金・スロットリング」= S3 バケットキー。",
+    "keywords": [
+      "KMS のリクエスト料金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-c:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-sse-c"
+    ],
+    "prompt": "SSE-C の説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "顧客が鍵を渡し、S3 が暗号化する。S3 は鍵を保存しない",
+        "correct": true,
+        "atomId": "s3-sse-c",
+        "why": "リクエストごとに鍵を渡す必要があり、HTTPS が必須"
+      },
+      {
+        "id": "b",
+        "text": "S3 が鍵を管理し、デフォルトで自動的に暗号化する",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "SSE-S3 の説明"
+      },
+      {
+        "id": "c",
+        "text": "KMS に鍵を保管し、鍵の使用を CloudTrail で監査する",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "SSE-KMS の説明"
+      },
+      {
+        "id": "d",
+        "text": "送信前に利用者が暗号化し、S3 には暗号文だけが届く",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "クライアント側暗号化の説明"
+      }
+    ],
+    "explanation": "SSE-C の C は Customer-provided keys。暗号化は S3、鍵は顧客。",
+    "keywords": [
+      "顧客が用意した鍵"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-c:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-sse-c"
+    ],
+    "prompt": "SSE-C で暗号化したが、社内で鍵を管理していた担当者が退職し、鍵の所在がわからなくなった。何が起きる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 は鍵を保存しないので、そのデータは復号できなくなる",
+        "correct": true,
+        "atomId": "s3-sse-c",
+        "why": "SSE-C は鍵の管理がすべて顧客の責任"
+      },
+      {
+        "id": "b",
+        "text": "AWS サポートに依頼すれば、鍵を再発行してもらえる",
+        "correct": false,
+        "why": "AWS は SSE-C の鍵を保存していない"
+      },
+      {
+        "id": "c",
+        "text": "S3 が自動で SSE-S3 に切り替えて、読めるようにする",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "そのような仕組みはない"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーなら、鍵がなくてもデータを読める",
+        "correct": false,
+        "why": "鍵がなければ誰も復号できない"
+      }
+    ],
+    "explanation": "SSE-C は鍵を失うとデータを失う。鍵の管理体制が必要。",
+    "keywords": [
+      "鍵の所在がわからない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-client-side-encryption:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-client-side-encryption"
+    ],
+    "prompt": "規制により、AWS に平文のデータを一切渡してはいけない。S3 にデータを保存するにはどうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アップロード前にクライアント側で暗号化する",
+        "correct": true,
+        "atomId": "s3-client-side-encryption",
+        "why": "S3 には暗号化済みのデータしか届かず、AWS は平文を扱わない"
+      },
+      {
+        "id": "b",
+        "text": "SSE-KMS で保存時に暗号化する",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "S3 は平文を受け取ってから暗号化するので、要件を満たさない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-C で顧客の鍵を使って暗号化する",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "鍵は顧客のものでも、暗号化するのは S3 で、平文を受け取る"
+      },
+      {
+        "id": "d",
+        "text": "HTTPS を強制して、通信を暗号化する",
+        "correct": false,
+        "atomId": "s3-enforce-https",
+        "why": "S3 の中では平文として扱われるので、要件を満たさない"
+      }
+    ],
+    "explanation": "「AWS に平文を渡さない」「送信前に暗号化」= クライアント側暗号化。SSE はどれもサーバー側。",
+    "keywords": [
+      "平文を渡さない",
+      "送信前"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-client-side-encryption:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-client-side-encryption",
+      "s3-sse-c"
+    ],
+    "prompt": "SSE-C とクライアント側暗号化の最も大きな違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "暗号化を行うのが S3 か、利用者側か",
+        "correct": true,
+        "why": "SSE-C は鍵を渡して S3 が暗号化する。クライアント側暗号化は送信前に自分で暗号化する"
+      },
+      {
+        "id": "b",
+        "text": "鍵を顧客が管理するか、AWS が管理するか",
+        "correct": false,
+        "why": "どちらも鍵は顧客が管理する"
+      },
+      {
+        "id": "c",
+        "text": "HTTPS が必要かどうか",
+        "correct": false,
+        "why": "SSE-C は HTTPS 必須。違いの本質は暗号化の場所"
+      },
+      {
+        "id": "d",
+        "text": "追加料金がかかるかどうか",
+        "correct": false,
+        "why": "本質的な違いではない"
+      }
+    ],
+    "explanation": "「誰が鍵を持つか」ではなく「どこで暗号化するか」で区別する。",
+    "keywords": [
+      "どこで暗号化するか"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

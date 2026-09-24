@@ -1,0 +1,1235 @@
+[
+  {
+    "id": "s3-intelligent-tiering:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-intelligent-tiering"
+    ],
+    "prompt": "大量のログデータを S3 に保存する。アクセス頻度は予測できず、ストレージクラスを手動で管理したくない。最適なストレージクラスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Intelligent-Tiering",
+        "correct": true,
+        "atomId": "s3-intelligent-tiering",
+        "why": "アクセス状況に応じて自動で階層を移すため、予測も手動管理も不要"
+      },
+      {
+        "id": "b",
+        "text": "S3 Standard-IA",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "低頻度アクセスだと分かっている場合向け。アクセスが多い時期は取り出し料金がかさむ"
+      },
+      {
+        "id": "c",
+        "text": "S3 One Zone-IA",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ で安くなるだけで、アクセスパターンが読めない問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "アクセスが少ない期間も高い保存料金のままで、コストが最適化されない"
+      },
+      {
+        "id": "e",
+        "text": "S3 Standard + Lifecycle ルール",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "日数ベースのルールなので、アクセスパターンが読めないと最適化しきれず、ルールの管理も必要"
+      }
+    ],
+    "explanation": "「アクセスパターンが予測できない」「手動で管理したくない」は Intelligent-Tiering を選ばせる典型的なキーワード。",
+    "keywords": [
+      "アクセスパターンが予測できない",
+      "手動で管理したくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-one-zone-ia:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-one-zone-ia"
+    ],
+    "prompt": "「再作成可能なデータ」「低頻度アクセス」「コスト最優先」→ どのストレージクラス？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 One Zone-IA",
+        "correct": true,
+        "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ で最も安い IA 系。失っても再作成できるデータなら AZ 障害のリスクを許容できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Standard-IA",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "複数 AZ に保存する分、再作成可能なデータには料金が過剰"
+      },
+      {
+        "id": "c",
+        "text": "S3 Intelligent-Tiering",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "アクセスパターンが予測できない場合向け。低頻度と分かっているなら不要"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "頻繁アクセス向けで、低頻度データには保存料金が高い"
+      }
+    ],
+    "explanation": "「再作成可能」「別の場所にコピーがある」は、単一 AZ のリスクを許容できるサイン。One Zone-IA を選ぶ。",
+    "keywords": [
+      "再作成可能なデータ",
+      "コスト最優先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard-ia:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-standard-ia",
+      "s3-one-zone-ia"
+    ],
+    "prompt": "S3 Standard-IA と比べたときの、S3 One Zone-IA の最も重要な違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "単一 AZ に保存するため、AZ 障害でデータを失いうる",
+        "correct": true,
+        "why": "両者の本質的な違いは保存する AZ の数。その分 One Zone-IA は安い"
+      },
+      {
+        "id": "b",
+        "text": "取り出し料金がかからず、頻繁にアクセスしても安い",
+        "correct": false,
+        "why": "どちらも取り出し料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "アーカイブ用のクラスのため、取り出しに数時間かかる",
+        "correct": false,
+        "why": "どちらもミリ秒単位で取り出せる。数時間かかるのは Glacier 系"
+      },
+      {
+        "id": "d",
+        "text": "最低保存期間がなく、短期間の保存にも向く",
+        "correct": false,
+        "why": "どちらも最低保存期間は 30 日"
+      }
+    ],
+    "explanation": "料金体系（取り出し料金、30 日の最低保存期間、128 KB の最小課金サイズ）は共通。違うのは AZ の数と、それに伴う耐障害性と保存料金。",
+    "keywords": [
+      "単一 AZ",
+      "耐障害性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-one-zone-ia:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "s3-one-zone-ia"
+    ],
+    "prompt": "長期保管が必要で、ほかにコピーのない契約書データを S3 One Zone-IA に保存した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "単一 AZ のため、AZ 障害で唯一のデータを失うおそれがある",
+        "correct": true,
+        "why": "再作成できない唯一のデータは、複数 AZ に保存するクラスに置くべき"
+      },
+      {
+        "id": "b",
+        "text": "30 日を超えて保存できないため、長期保管に使えない",
+        "correct": false,
+        "why": "保存期間の上限はない。30 日は最低保存期間"
+      },
+      {
+        "id": "c",
+        "text": "保存したデータを暗号化できず、機密情報を扱えない",
+        "correct": false,
+        "why": "ほかのストレージクラスと同様に暗号化できる"
+      },
+      {
+        "id": "d",
+        "text": "取り出しに数時間かかり、急な参照に対応できない",
+        "correct": false,
+        "why": "ミリ秒単位で取り出せる。数時間かかるのは Glacier 系"
+      }
+    ],
+    "explanation": "One Zone-IA は「失っても困らないデータ」専用と覚える。再作成できない唯一のデータには Standard-IA などを使う。",
+    "keywords": [
+      "ほかにコピーのない",
+      "長期保管"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-intelligent-tiering:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-intelligent-tiering"
+    ],
+    "prompt": "S3 Intelligent-Tiering が最も適しているデータは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アクセスパターンが不明、または変動するデータ",
+        "correct": true,
+        "atomId": "s3-intelligent-tiering",
+        "why": "実際のアクセス状況を見て自動で階層を移すので、予測できなくても最適化される"
+      },
+      {
+        "id": "b",
+        "text": "頻繁にアクセスされることが分かっているデータ",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "S3 Standard の方が監視・自動化料金がかからず適している"
+      },
+      {
+        "id": "c",
+        "text": "低頻度だと分かっていて、すぐ取り出す必要のあるデータ",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "Standard-IA を直接選ぶ方が安くなることがある"
+      },
+      {
+        "id": "d",
+        "text": "再作成が可能で、単一 AZ でも問題ないデータ",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "One Zone-IA の用途"
+      }
+    ],
+    "explanation": "Intelligent-Tiering の価値は「予測しなくていい」こと。アクセス頻度が分かっているなら、ほかのクラスを直接選ぶ方が安いことが多い。",
+    "keywords": [
+      "アクセスパターンが不明"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "s3-lifecycle",
+      "s3-standard-ia"
+    ],
+    "prompt": "レポートは作成後 30 日間よく参照され、その後はほぼ参照されない。1 年後に削除したい。運用負荷とコストを最小にするには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lifecycle で 30 日後に Standard-IA へ移行、365 日後に削除",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "アクセスの変化が日数で予測できるので、日数ベースの Lifecycle で移行と削除を自動化できる"
+      },
+      {
+        "id": "b",
+        "text": "Intelligent-Tiering に保存し、1 年後に手動でまとめて削除する",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "変化が予測できているので監視料金を払う必要がない。手動削除は運用負荷が高い"
+      },
+      {
+        "id": "c",
+        "text": "作成時から Standard-IA に保存し、1 年後に手動で削除する",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "最初の 30 日はよく参照されるので取り出し料金がかさむ。手動削除も必要"
+      },
+      {
+        "id": "d",
+        "text": "One Zone-IA に保存し、Lambda で定期的に古いものを削除する",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "耐障害性が下がるうえ、削除処理の実装と運用が必要になる"
+      },
+      {
+        "id": "e",
+        "text": "S3 Standard に保存し、1 年後にスクリプトで削除する",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "31 日目以降も高い保存料金を払い続け、削除スクリプトの運用も必要"
+      }
+    ],
+    "explanation": "アクセスの変化が「◯日後」と予測できるなら Lifecycle、予測できないなら Intelligent-Tiering。「削除したい」も Lifecycle の有効期限アクションで自動化できる。",
+    "keywords": [
+      "30 日後",
+      "1 年後に削除",
+      "運用負荷を最小"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-standard"
+    ],
+    "prompt": "S3 Standard が最も適しているデータは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "頻繁にアクセスされ、すぐに読み書きするデータ",
+        "correct": true,
+        "atomId": "s3-standard",
+        "why": "取り出し料金も最低保存期間もなく、頻繁なアクセスで最も安くなる"
+      },
+      {
+        "id": "b",
+        "text": "アクセスは月 1 回程度だが、すぐに取り出したいデータ",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "Standard-IA の用途。保存料金が安い代わりに取り出し料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "数年間保管し、取り出しに 12 時間かかってもよいデータ",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "Glacier Deep Archive の用途"
+      },
+      {
+        "id": "d",
+        "text": "アクセスパターンが予測できず、変動するデータ",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "Intelligent-Tiering の用途"
+      }
+    ],
+    "explanation": "S3 Standard はデフォルトの汎用クラス。「頻繁にアクセス」「すぐに使う」なら Standard。",
+    "keywords": [
+      "頻繁にアクセス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "s3-standard"
+    ],
+    "prompt": "作成後ほぼ参照されないログを、何年も S3 Standard に置き続けている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アクセスがないのに、高い保存料金を払い続けている",
+        "correct": true,
+        "atomId": "s3-standard",
+        "why": "低頻度のデータは IA 系や Glacier 系に移せば保存料金を大きく下げられる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Standard は 1 年を超えてデータを保存できない",
+        "correct": false,
+        "why": "保存期間の上限はない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Standard は単一 AZ なので、データを失いやすい",
+        "correct": false,
+        "why": "S3 Standard は 3 つ以上の AZ に冗長保存する"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard は取り出しのたびに高い料金がかかる",
+        "correct": false,
+        "why": "S3 Standard には取り出し料金がない"
+      }
+    ],
+    "explanation": "アクセスされないデータを Standard に置き続けるのはコストの無駄。Lifecycle で IA 系や Glacier 系へ移す。",
+    "keywords": [
+      "ほぼ参照されない",
+      "何年も"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard-ia:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-standard-ia"
+    ],
+    "prompt": "社内の業務データは月に 1 回程度しか参照されないが、参照するときはすぐに必要。可用性も求められる。最適なクラスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Standard-IA",
+        "correct": true,
+        "atomId": "s3-standard-ia",
+        "why": "低頻度アクセスで、ミリ秒で取り出せ、複数 AZ に保存するので可用性も高い"
+      },
+      {
+        "id": "b",
+        "text": "S3 One Zone-IA",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ のため、可用性が求められる要件を満たさない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Glacier Flexible Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "取り出しに数分〜数時間かかり、すぐには使えない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "月 1 回程度のアクセスなら、保存料金の安い Standard-IA の方が安い"
+      },
+      {
+        "id": "e",
+        "text": "S3 Glacier Deep Archive",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "取り出しに 12 時間以上かかる"
+      }
+    ],
+    "explanation": "「低頻度」「すぐに取り出す」「可用性」の 3 つがそろえば Standard-IA。",
+    "keywords": [
+      "月に 1 回程度",
+      "すぐに必要",
+      "可用性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard-ia:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-standard-ia"
+    ],
+    "prompt": "S3 Standard-IA の最低保存期間と最小課金サイズの組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "30 日 / 128 KB",
+        "correct": true,
+        "atomId": "s3-standard-ia",
+        "why": "30 日未満で削除しても 30 日分、128 KB 未満のオブジェクトも 128 KB として課金される"
+      },
+      {
+        "id": "b",
+        "text": "90 日 / 128 KB",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "90 日は Glacier Instant Retrieval や Flexible Retrieval の最低保存期間"
+      },
+      {
+        "id": "c",
+        "text": "180 日 / 40 KB",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "180 日は Glacier Deep Archive の最低保存期間"
+      },
+      {
+        "id": "d",
+        "text": "なし / なし",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "最低保存期間も最小課金サイズもないのは S3 Standard"
+      }
+    ],
+    "explanation": "IA 系（Standard-IA、One Zone-IA）は 30 日 / 128 KB。Glacier の Instant と Flexible は 90 日、Deep Archive は 180 日。",
+    "keywords": [
+      "最低保存期間",
+      "最小課金サイズ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-one-zone-ia:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-one-zone-ia"
+    ],
+    "prompt": "S3 One Zone-IA の最大の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "単一 AZ に保存し、Standard-IA より安い",
+        "correct": true,
+        "atomId": "s3-one-zone-ia",
+        "why": "AZ の障害でデータを失いうる代わりに、保存料金が安い"
+      },
+      {
+        "id": "b",
+        "text": "アクセス状況に応じて、自動で保存階層を移す",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "Intelligent-Tiering の特徴"
+      },
+      {
+        "id": "c",
+        "text": "1 桁ミリ秒の低レイテンシで、頻繁に読み書きできる",
+        "correct": false,
+        "atomId": "s3-express-one-zone",
+        "why": "Express One Zone の特徴。同じ単一 AZ でも用途が違う"
+      },
+      {
+        "id": "d",
+        "text": "取り出しに時間がかかる代わりに、最も安く保管できる",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "Glacier Deep Archive の特徴"
+      }
+    ],
+    "explanation": "One Zone-IA =「単一 AZ」+「低頻度アクセス」。失っても困らないデータ向け。",
+    "keywords": [
+      "単一 AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-intelligent-tiering:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-intelligent-tiering",
+      "s3-lifecycle"
+    ],
+    "prompt": "S3 Intelligent-Tiering と S3 Lifecycle によるクラス移行の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は実際のアクセス状況で、後者は経過日数などのルールで移す",
+        "correct": true,
+        "atomId": "s3-intelligent-tiering",
+        "why": "アクセスが予測できないなら Intelligent-Tiering、日数で予測できるなら Lifecycle"
+      },
+      {
+        "id": "b",
+        "text": "前者は手動で、後者は自動でストレージクラスを移す",
+        "correct": false,
+        "why": "どちらも自動で移す"
+      },
+      {
+        "id": "c",
+        "text": "前者は削除もできるが、後者はクラスの移行しかできない",
+        "correct": false,
+        "why": "逆。Lifecycle は有効期限アクションで削除もできる"
+      },
+      {
+        "id": "d",
+        "text": "前者は単一 AZ に、後者は複数 AZ に保存する",
+        "correct": false,
+        "why": "AZ の数とは関係がない"
+      }
+    ],
+    "explanation": "どちらも自動化の仕組みだが、判断基準が違う。アクセス状況（Intelligent-Tiering）か、経過日数（Lifecycle）か。",
+    "keywords": [
+      "アクセス状況",
+      "経過日数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-intelligent-tiering:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-intelligent-tiering"
+    ],
+    "prompt": "数 KB の小さなファイル数億個を、コスト削減のために Intelligent-Tiering に入れた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "128 KB 未満のオブジェクトは自動階層化の対象外で、効果がない",
+        "correct": true,
+        "atomId": "s3-intelligent-tiering",
+        "why": "小さなオブジェクトは常に高頻度アクセス階層の料金のままになる"
+      },
+      {
+        "id": "b",
+        "text": "Intelligent-Tiering は 1 億個以上のオブジェクトを保存できない",
+        "correct": false,
+        "why": "オブジェクト数の上限はない"
+      },
+      {
+        "id": "c",
+        "text": "Intelligent-Tiering は取り出しのたびに高い料金がかかる",
+        "correct": false,
+        "why": "Intelligent-Tiering には取り出し料金がない"
+      },
+      {
+        "id": "d",
+        "text": "Intelligent-Tiering は単一 AZ で耐久性が低い",
+        "correct": false,
+        "why": "複数 AZ に保存する"
+      }
+    ],
+    "explanation": "Intelligent-Tiering はオブジェクト単位で監視する仕組み。128 KB 未満は自動階層化されないので、小さなファイルが大量にあるデータには効果が薄い。",
+    "keywords": [
+      "小さなファイル",
+      "128 KB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-lifecycle"
+    ],
+    "prompt": "S3 Lifecycle でできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "経過日数に応じたクラスの移行と、オブジェクトの自動削除",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "移行アクションと有効期限アクションの 2 種類がある"
+      },
+      {
+        "id": "b",
+        "text": "アクセス状況を監視して、アクセスのないデータを移す",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "Intelligent-Tiering の機能"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトを別のリージョンのバケットへ自動でコピー",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "クロスリージョンレプリケーションの機能"
+      },
+      {
+        "id": "d",
+        "text": "大量の既存オブジェクトに、1 回限りの操作を一括実行",
+        "correct": false,
+        "atomId": "s3-batch-operations",
+        "why": "バッチオペレーションの機能"
+      }
+    ],
+    "explanation": "Lifecycle =「◯日後に移す」「◯日後に消す」を自動化するルール。",
+    "keywords": [
+      "経過日数",
+      "自動削除"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-lifecycle"
+    ],
+    "prompt": "Lifecycle でオブジェクトを S3 Standard から Standard-IA へ移すとき、作成から最低何日経っている必要がある？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "30 日",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "Standard-IA と One Zone-IA へ移すには、作成から 30 日以上経っている必要がある"
+      },
+      {
+        "id": "b",
+        "text": "1 日",
+        "correct": false,
+        "why": "1 日後に移せるのは Glacier 系などで、IA 系には 30 日の制約がある"
+      },
+      {
+        "id": "c",
+        "text": "90 日",
+        "correct": false,
+        "why": "90 日は Glacier Instant/Flexible Retrieval の最低保存期間で、移行の条件ではない"
+      },
+      {
+        "id": "d",
+        "text": "180 日",
+        "correct": false,
+        "why": "180 日は Glacier Deep Archive の最低保存期間"
+      }
+    ],
+    "explanation": "IA 系への移行は「作成から 30 日以上」。IA 系の最低保存期間（30 日）と一緒に覚える。",
+    "keywords": [
+      "30 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-lifecycle",
+      "s3-versioning"
+    ],
+    "prompt": "バージョニングを有効にしたバケットで、ストレージ料金が毎月増え続けている。まず見直すべきことは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "古いバージョンを Lifecycle で期限切れにしていない",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "上書きや削除のたびに古いバージョンが残り、すべて保存料金がかかる"
+      },
+      {
+        "id": "b",
+        "text": "バケットのリージョンが適切でない",
+        "correct": false,
+        "why": "リージョンを変えても、古いバージョンが増え続ける問題は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-S3 による暗号化の料金がかかっている",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "SSE-S3 には追加料金がかからない"
+      },
+      {
+        "id": "d",
+        "text": "Transfer Acceleration が有効になっている",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の料金で、保存料金が増え続ける原因ではない"
+      }
+    ],
+    "explanation": "バージョニングと Lifecycle（古いバージョンの有効期限）はセットで使う。",
+    "keywords": [
+      "バージョニング",
+      "料金が増え続ける"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-instant-retrieval:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-glacier-instant-retrieval"
+    ],
+    "prompt": "S3 Glacier Instant Retrieval が最も適しているデータは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ほぼ使わないが、使うときはすぐ必要なデータ",
+        "correct": true,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "アーカイブ向けの安い保存料金で、ミリ秒で取り出せる"
+      },
+      {
+        "id": "b",
+        "text": "年に 1〜2 回しか使わず、数時間待ってもよいデータ",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "Glacier Flexible Retrieval の用途"
+      },
+      {
+        "id": "c",
+        "text": "月に 1 回程度使い、すぐに取り出したいデータ",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "Standard-IA の用途。Instant Retrieval だと取り出し料金がかさむ"
+      },
+      {
+        "id": "d",
+        "text": "再作成でき、単一の AZ に置いても問題ないデータ",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "One Zone-IA の用途"
+      }
+    ],
+    "explanation": "Glacier Instant Retrieval =「アーカイブ」だが「ミリ秒」。四半期 1 回程度のアクセスが目安。",
+    "keywords": [
+      "四半期に 1 回",
+      "すぐに必要"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-instant-retrieval:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-glacier-instant-retrieval"
+    ],
+    "prompt": "病院の医療画像を長期保管する。ほとんど参照しないが、診察時にはすぐに表示する必要がある。最もコストを抑えられるクラスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Glacier Instant Retrieval",
+        "correct": true,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "ほとんど参照しないデータを安く保管でき、しかもミリ秒で取り出せる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Glacier Flexible Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "取り出しに数分〜数時間かかり、診察時にすぐ表示できない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Glacier Deep Archive",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "取り出しに 12 時間以上かかる"
+      },
+      {
+        "id": "d",
+        "text": "S3 Standard",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "ほとんど参照しないデータには保存料金が高い"
+      },
+      {
+        "id": "e",
+        "text": "S3 One Zone-IA",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ なので、失うと困る医療データの保管には向かない"
+      }
+    ],
+    "explanation": "「ほとんど使わない」+「すぐに必要」= Glacier Instant Retrieval。数時間待てるなら Flexible Retrieval。",
+    "keywords": [
+      "ほとんど参照しない",
+      "すぐに表示"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-instant-retrieval:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-glacier-instant-retrieval",
+      "s3-standard-ia"
+    ],
+    "prompt": "S3 Standard-IA と比べたときの、S3 Glacier Instant Retrieval の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保存料金は安いが、取り出し料金は高く、最低保存期間は 90 日",
+        "correct": true,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "アクセス頻度がさらに低い（四半期 1 回程度）データ向け"
+      },
+      {
+        "id": "b",
+        "text": "取り出しに数分〜数時間かかり、事前に復元が必要になる",
+        "correct": false,
+        "why": "それは Glacier Flexible Retrieval。Instant Retrieval はミリ秒で取り出せる"
+      },
+      {
+        "id": "c",
+        "text": "単一の AZ に保存するので、AZ 障害でデータを失いうる",
+        "correct": false,
+        "why": "どちらも複数 AZ に保存する"
+      },
+      {
+        "id": "d",
+        "text": "取り出し料金がかからず、頻繁なアクセスでも安く使える",
+        "correct": false,
+        "why": "どちらも取り出し料金がかかり、Instant Retrieval の方が高い"
+      }
+    ],
+    "explanation": "どちらもミリ秒で取り出せる。違いはアクセス頻度の想定（月 1 回か四半期 1 回か）と、料金のバランス。",
+    "keywords": [
+      "四半期",
+      "90 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-flexible-retrieval:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-glacier-flexible-retrieval"
+    ],
+    "prompt": "S3 Glacier Flexible Retrieval のオブジェクトを読むには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "先に復元を依頼し、数分〜数時間待ってから読む",
+        "correct": true,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "迅速・標準・大容量の取り出しオプションから選んで復元する"
+      },
+      {
+        "id": "b",
+        "text": "通常どおり GET すれば、ミリ秒で読める",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "ミリ秒で読めるのは Glacier Instant Retrieval"
+      },
+      {
+        "id": "c",
+        "text": "AWS サポートに依頼して、データを送ってもらう",
+        "correct": false,
+        "why": "復元は自分で API やコンソールから依頼できる"
+      },
+      {
+        "id": "d",
+        "text": "一度 S3 Standard にコピーしないと読めない",
+        "correct": false,
+        "why": "復元すると一時的なコピーが作られ、それを読める。手動でコピーする必要はない"
+      }
+    ],
+    "explanation": "Flexible Retrieval と Deep Archive は「復元（リストア）してから読む」。Instant Retrieval だけは直接読める。",
+    "keywords": [
+      "復元",
+      "数分〜数時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-flexible-retrieval:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-glacier-flexible-retrieval"
+    ],
+    "prompt": "Glacier Flexible Retrieval のデータを、できるだけ早く（数分以内に）取り出したい。どの取り出しオプションを使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "迅速（Expedited）",
+        "correct": true,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "通常 1〜5 分で取り出せる。その分料金は高い"
+      },
+      {
+        "id": "b",
+        "text": "標準（Standard）",
+        "correct": false,
+        "why": "通常 3〜5 時間かかる"
+      },
+      {
+        "id": "c",
+        "text": "大容量（Bulk）",
+        "correct": false,
+        "why": "通常 5〜12 時間かかるが、無料"
+      },
+      {
+        "id": "d",
+        "text": "即時（Instant）",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "そのような取り出しオプションはない。ミリ秒で取り出したいなら Glacier Instant Retrieval に保存する"
+      }
+    ],
+    "explanation": "迅速 1〜5 分 / 標準 3〜5 時間 / 大容量 5〜12 時間（無料）。",
+    "keywords": [
+      "数分以内"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-flexible-retrieval:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-glacier-flexible-retrieval"
+    ],
+    "prompt": "「バックアップ」「年に 1〜2 回」「数時間待てる」「低コスト」→ どのクラス？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Glacier Flexible Retrieval",
+        "correct": true,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "数分〜数時間で取り出せ、Deep Archive ほどは待たずに済む"
+      },
+      {
+        "id": "b",
+        "text": "S3 Glacier Instant Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "数時間待てるなら、ミリ秒の取り出しにお金を払う必要はない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Standard-IA",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "月 1 回程度のアクセス向けで、保存料金が高い"
+      },
+      {
+        "id": "d",
+        "text": "S3 Intelligent-Tiering",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "アクセスパターンが予測できない場合向け"
+      }
+    ],
+    "explanation": "「数時間待てる」がキーワード。12 時間以上待てるなら Deep Archive も候補になる。",
+    "keywords": [
+      "数時間待てる",
+      "年に 1〜2 回"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-deep-archive:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-glacier-deep-archive"
+    ],
+    "prompt": "「規制で 10 年保管」「ほぼ取り出さない」「取り出しは 48 時間以内でよい」→ どのクラス？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Glacier Deep Archive",
+        "correct": true,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "最も安い保存料金で、48 時間以内の取り出しに対応できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Glacier Flexible Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "48 時間待てるなら、より安い Deep Archive で足りる"
+      },
+      {
+        "id": "c",
+        "text": "S3 Glacier Instant Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "ミリ秒で取り出す必要がないのに、保存料金が高い"
+      },
+      {
+        "id": "d",
+        "text": "S3 One Zone-IA",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "長期保管のコストが高く、単一 AZ なので規制対応の保管にも向かない"
+      }
+    ],
+    "explanation": "「最安」「長期」「12〜48 時間待てる」= Deep Archive。テープの置き換えにも出てくる。",
+    "keywords": [
+      "10 年保管",
+      "48 時間以内"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-deep-archive:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-glacier-deep-archive"
+    ],
+    "prompt": "障害時の復旧用バックアップを Glacier Deep Archive に置いた。復旧は 1 時間以内が目標。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "取り出しに最短でも 12 時間ほどかかり、目標に間に合わない",
+        "correct": true,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "Deep Archive の取り出しは標準で 12 時間以内、大容量で 48 時間以内"
+      },
+      {
+        "id": "b",
+        "text": "Deep Archive はバックアップの保存に使うことができない",
+        "correct": false,
+        "why": "バックアップの長期保管には使える。問題は取り出し時間"
+      },
+      {
+        "id": "c",
+        "text": "Deep Archive は単一 AZ に保存するので、データを失いやすい",
+        "correct": false,
+        "why": "複数 AZ に保存する"
+      },
+      {
+        "id": "d",
+        "text": "Deep Archive は 30 日を過ぎると自動で削除される",
+        "correct": false,
+        "why": "自動で削除されることはない。180 日は最低保存期間"
+      }
+    ],
+    "explanation": "取り出しまでの時間が要件に合うかを必ず確認する。1 時間以内なら Deep Archive は不可。",
+    "keywords": [
+      "1 時間以内",
+      "復旧"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-deep-archive:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-glacier-deep-archive"
+    ],
+    "prompt": "S3 Glacier Deep Archive の最低保存期間は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "180 日",
+        "correct": true,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "180 日未満で削除しても 180 日分の料金がかかる"
+      },
+      {
+        "id": "b",
+        "text": "90 日",
+        "correct": false,
+        "why": "Glacier Instant Retrieval と Flexible Retrieval の最低保存期間"
+      },
+      {
+        "id": "c",
+        "text": "30 日",
+        "correct": false,
+        "why": "Standard-IA と One Zone-IA の最低保存期間"
+      },
+      {
+        "id": "d",
+        "text": "365 日",
+        "correct": false,
+        "why": "S3 のストレージクラスに 365 日の最低保存期間はない"
+      }
+    ],
+    "explanation": "最低保存期間: IA 系 30 日、Glacier Instant/Flexible 90 日、Deep Archive 180 日。",
+    "keywords": [
+      "最低保存期間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-express-one-zone:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-express-one-zone"
+    ],
+    "prompt": "機械学習の学習ジョブが、大量の小さなファイルを何度も高速に読み込む。1 桁ミリ秒のレイテンシが必要。最適なクラスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Express One Zone",
+        "correct": true,
+        "atomId": "s3-express-one-zone",
+        "why": "単一 AZ で一貫して 1 桁ミリ秒のレイテンシを出す高性能クラス"
+      },
+      {
+        "id": "b",
+        "text": "S3 One Zone-IA",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "単一 AZ だが低頻度アクセス向けで、頻繁に読むと取り出し料金がかさむ"
+      },
+      {
+        "id": "c",
+        "text": "S3 Standard-IA",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "低頻度アクセス向けで、何度も読む用途には向かない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Glacier Instant Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "アーカイブ向けで、頻繁に読むと取り出し料金が高い"
+      }
+    ],
+    "explanation": "「1 桁ミリ秒」「高頻度」「ML・分析」= Express One Zone。コンピューティングを同じ AZ に置く。",
+    "keywords": [
+      "1 桁ミリ秒",
+      "機械学習"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-express-one-zone:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-express-one-zone",
+      "s3-one-zone-ia"
+    ],
+    "prompt": "S3 Express One Zone と S3 One Zone-IA に共通する点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "どちらも単一の AZ にデータを保存する",
+        "correct": true,
+        "why": "どちらも AZ 障害でデータを失いうる。用途（高性能か低コストか）は違う"
+      },
+      {
+        "id": "b",
+        "text": "どちらも低頻度アクセス向けで、取り出し料金がかかる",
+        "correct": false,
+        "why": "Express One Zone は頻繁なアクセス向けの高性能クラス"
+      },
+      {
+        "id": "c",
+        "text": "どちらも取り出す前に復元（リストア）が必要になる",
+        "correct": false,
+        "why": "どちらも復元は不要。復元が必要なのは Glacier Flexible/Deep Archive"
+      },
+      {
+        "id": "d",
+        "text": "どちらも S3 で最も保存料金が安いストレージクラス",
+        "correct": false,
+        "why": "最も安いのは Glacier Deep Archive"
+      }
+    ],
+    "explanation": "「One Zone」の名前が付くものは単一 AZ。Express は高性能、IA は低頻度・低コスト。",
+    "keywords": [
+      "単一 AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

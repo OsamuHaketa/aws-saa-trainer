@@ -1,0 +1,1309 @@
+[
+  {
+    "id": "s3-block-public-access:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-block-public-access"
+    ],
+    "prompt": "S3 Block Public Access の役割は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ポリシーや ACL の設定に関係なく、パブリックアクセスを禁止する",
+        "correct": true,
+        "atomId": "s3-block-public-access",
+        "why": "パブリックを許可するポリシーや ACL があっても、それより優先してブロックする"
+      },
+      {
+        "id": "b",
+        "text": "特定の VPC エンドポイントからのアクセスだけを許可する",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "バケットポリシーの aws:SourceVpce 条件で行う"
+      },
+      {
+        "id": "c",
+        "text": "非公開のオブジェクトに、期限付きのアクセスを与える",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "署名付き URL の役割"
+      },
+      {
+        "id": "d",
+        "text": "オブジェクトを一定期間、削除も上書きもできなくする",
+        "correct": false,
+        "atomId": "s3-object-lock",
+        "why": "Object Lock の役割"
+      }
+    ],
+    "explanation": "Block Public Access は「誤公開を防ぐ最後の砦」。アカウント単位でも設定できる。",
+    "keywords": [
+      "パブリックアクセス",
+      "誤公開"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-block-public-access:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-block-public-access"
+    ],
+    "prompt": "組織として、アカウント内のどのバケットも誤ってインターネットに公開されないようにしたい。最も確実な方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウント単位で Block Public Access を有効化",
+        "correct": true,
+        "atomId": "s3-block-public-access",
+        "why": "個々のバケットの設定ミスがあっても、アカウント全体でパブリックアクセスをブロックできる"
+      },
+      {
+        "id": "b",
+        "text": "すべてのバケットポリシーを定期的に目視で確認する",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "確認漏れや確認までの間の公開を防げない"
+      },
+      {
+        "id": "c",
+        "text": "すべてのオブジェクトを SSE-KMS で暗号化しておく",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "暗号化はアクセス制御ではない。公開の設定自体は防げない"
+      },
+      {
+        "id": "d",
+        "text": "すべてのバケットでバージョニングを有効にしておく",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "バージョニングは誤削除対策で、公開の防止とは関係がない"
+      }
+    ],
+    "explanation": "「誤公開を防ぎたい」「アカウント全体で」= Block Public Access をアカウント単位で有効化。",
+    "keywords": [
+      "誤って公開",
+      "アカウント内のどのバケットも"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-block-public-access:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-block-public-access",
+      "s3-static-website-hosting"
+    ],
+    "prompt": "S3 の静的ウェブサイトホスティングを設定し、公開用のバケットポリシーも付けたが、サイトが 403 になる。考えられる原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Block Public Access が有効なままになっている",
+        "correct": true,
+        "atomId": "s3-block-public-access",
+        "why": "Block Public Access はバケットポリシーより優先されるので、無効にしないと公開できない"
+      },
+      {
+        "id": "b",
+        "text": "バケットのバージョニングが有効になっていない",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "静的ウェブサイトホスティングにバージョニングは不要"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトが SSE-S3 で暗号化されている",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "SSE-S3 で暗号化されていても公開したオブジェクトは読める"
+      },
+      {
+        "id": "d",
+        "text": "バケットが Standard 以外のストレージクラスにある",
+        "correct": false,
+        "why": "ストレージクラスは公開の可否に関係しない（Glacier 系で復元が必要な場合を除く）"
+      }
+    ],
+    "explanation": "S3 を直接公開するには Block Public Access の無効化が必要。ただし通常は CloudFront + OAC で非公開のまま配信するのが推奨。",
+    "keywords": [
+      "403",
+      "静的ウェブサイトホスティング"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-policy:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-bucket-policy"
+    ],
+    "prompt": "S3 バケットポリシーの説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バケットに付けるリソースベースのポリシーで、他アカウントにも許可できる",
+        "correct": true,
+        "atomId": "s3-bucket-policy",
+        "why": "Principal に別アカウントを指定でき、条件付きの許可・拒否も書ける"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーやロールに付けるアイデンティティベースのポリシー",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "IAM ポリシーの説明"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトごとに付ける、旧来のアクセス制御リスト",
+        "correct": false,
+        "atomId": "s3-object-ownership",
+        "why": "ACL の説明。現在は ACL を無効にしてポリシーで制御するのが推奨"
+      },
+      {
+        "id": "d",
+        "text": "用途ごとにバケットへの入口を作り、それぞれに付けるポリシー",
+        "correct": false,
+        "atomId": "s3-access-points",
+        "why": "アクセスポイントポリシーの説明"
+      }
+    ],
+    "explanation": "バケットポリシー = リソースベース。「別アカウントに許可」「条件で制御」はバケットポリシーの出番。",
+    "keywords": [
+      "リソースベース",
+      "他アカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-policy:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-bucket-policy"
+    ],
+    "prompt": "アカウント A の S3 バケットを、アカウント B のアプリから読み取らせたい。アカウント A で何を設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウント B を Principal に指定したバケットポリシー",
+        "correct": true,
+        "atomId": "s3-bucket-policy",
+        "why": "リソースベースのバケットポリシーで、別アカウントへのアクセスを許可する"
+      },
+      {
+        "id": "b",
+        "text": "アカウント A の IAM ユーザーのアクセスキーを渡す",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "認証情報を共有するのはセキュリティ上不適切"
+      },
+      {
+        "id": "c",
+        "text": "バケットを公開し、URL をアカウント B に伝える",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも読めるようになってしまう"
+      },
+      {
+        "id": "d",
+        "text": "アカウント A 側の IAM ポリシーでアカウント B を許可",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "IAM ポリシーは自アカウントのプリンシパルに付けるもので、他アカウントには許可できない"
+      }
+    ],
+    "explanation": "クロスアカウントは「A のバケットポリシーで B を許可」+「B の IAM ポリシーで操作を許可」。",
+    "keywords": [
+      "別アカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-policy:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "s3-bucket-policy",
+      "s3-gateway-endpoint"
+    ],
+    "prompt": "S3 バケットへのアクセスを、特定の VPC エンドポイント経由のものだけに制限したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "aws:SourceVpce 条件を使ったバケットポリシー",
+        "correct": true,
+        "atomId": "s3-bucket-policy",
+        "why": "指定した VPC エンドポイント以外からのリクエストを Deny できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 Block Public Access をアカウント単位で有効にする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "パブリックアクセスは防げるが、経路を VPC エンドポイントに限定することはできない"
+      },
+      {
+        "id": "c",
+        "text": "VPC のセキュリティグループで S3 への通信を制限する",
+        "correct": false,
+        "why": "セキュリティグループはバケット側でアクセス元を制限する仕組みではない"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーに MFA を必須にする",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "認証の強化で、アクセス経路の制限にはならない"
+      }
+    ],
+    "explanation": "「特定の VPC から」「特定の IP から」「HTTPS のみ」などアクセス条件の制御はバケットポリシーの Condition。",
+    "keywords": [
+      "VPC エンドポイント経由のみ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-iam-policy:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-iam-policy"
+    ],
+    "prompt": "EC2 上のアプリから S3 のバケットに書き込みたい。最も安全な方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "必要な権限を持つ IAM ロールを EC2 にアタッチする",
+        "correct": true,
+        "atomId": "s3-iam-policy",
+        "why": "一時的な認証情報が自動で配布・更新され、アクセスキーを保存する必要がない"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーのアクセスキーを EC2 の設定ファイルに保存する",
+        "correct": false,
+        "why": "長期の認証情報が漏えいするリスクがある"
+      },
+      {
+        "id": "c",
+        "text": "バケットを公開して、誰でも書き込めるようにする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも書き込めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "アプリのソースコードにアクセスキーを埋め込む",
+        "correct": false,
+        "why": "コードの流出がそのまま認証情報の流出になる"
+      }
+    ],
+    "explanation": "AWS のサービスから S3 にアクセスさせるなら IAM ロール。アクセスキーは保存しない。",
+    "keywords": [
+      "EC2",
+      "アクセスキー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-iam-policy:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-iam-policy",
+      "s3-bucket-policy"
+    ],
+    "prompt": "IAM ポリシーとバケットポリシーの違いとして正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM はユーザーやロールに付け、バケットポリシーはバケットに付ける",
+        "correct": true,
+        "why": "アイデンティティベースとリソースベースの違い"
+      },
+      {
+        "id": "b",
+        "text": "IAM ポリシーでしか、条件（Condition）を使った制御はできない",
+        "correct": false,
+        "why": "どちらのポリシーでも Condition を使える"
+      },
+      {
+        "id": "c",
+        "text": "バケットポリシーは同じアカウントのユーザーにしか使えない",
+        "correct": false,
+        "why": "逆。バケットポリシーは他アカウントへの許可も書ける"
+      },
+      {
+        "id": "d",
+        "text": "IAM ポリシーで許可すると、バケットポリシーの拒否より優先される",
+        "correct": false,
+        "why": "明示的な Deny はどのポリシーにあっても最優先される"
+      }
+    ],
+    "explanation": "「誰に付けるか」で区別する。明示的な Deny は常に最優先。",
+    "keywords": [
+      "アイデンティティベース",
+      "リソースベース"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-ownership:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "s3-object-ownership"
+    ],
+    "prompt": "別アカウントが共有バケットにアップロードしたファイルを、バケット所有者が読めない。ACL の管理もやめたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オブジェクト所有権を「バケット所有者の強制」にする",
+        "correct": true,
+        "atomId": "s3-object-ownership",
+        "why": "ACL が無効になり、アップロードしたのが誰でもバケット所有者がすべてのオブジェクトを所有する"
+      },
+      {
+        "id": "b",
+        "text": "アップロードのたびに ACL で所有者に権限を付けさせる",
+        "correct": false,
+        "why": "ACL の管理が続き、付け忘れのリスクも残る"
+      },
+      {
+        "id": "c",
+        "text": "バケットのバージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "所有権やアクセス権の問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Block Public Access を無効にする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の設定で、所有権の問題とは関係がない"
+      }
+    ],
+    "explanation": "ACL の問題は「バケット所有者の強制」で ACL ごと無効にする。新しいバケットではこれがデフォルト。",
+    "keywords": [
+      "別アカウントがアップロード",
+      "ACL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-ownership:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-object-ownership"
+    ],
+    "prompt": "S3 のアクセス制御で、現在 AWS が推奨している方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ACL を無効にし、ポリシーで制御する",
+        "correct": true,
+        "atomId": "s3-object-ownership",
+        "why": "新しいバケットではデフォルトで ACL が無効になっている"
+      },
+      {
+        "id": "b",
+        "text": "オブジェクトごとに ACL を付けて、細かく制御する",
+        "correct": false,
+        "why": "ACL は旧来の方法で、管理が複雑になる"
+      },
+      {
+        "id": "c",
+        "text": "すべてのバケットを公開し、URL を秘密にしておく",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "URL を知られれば誰でもアクセスできる"
+      },
+      {
+        "id": "d",
+        "text": "アクセスキーをチームで共有し、全員同じ権限にする",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "個人を識別できず、最小権限にもならない"
+      }
+    ],
+    "explanation": "ACL はレガシー。ポリシーで制御し、ACL は「バケット所有者の強制」で無効にする。",
+    "keywords": [
+      "ACL の無効化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-enforce-https:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-enforce-https"
+    ],
+    "prompt": "S3 への通信を必ず暗号化（HTTPS）させ、HTTP のリクエストは拒否したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バケットポリシーで aws:SecureTransport=false を拒否",
+        "correct": true,
+        "atomId": "s3-enforce-https",
+        "why": "HTTP で来たリクエストを Deny できる"
+      },
+      {
+        "id": "b",
+        "text": "デフォルト暗号化を SSE-KMS に設定して、すべて暗号化する",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "保存時の暗号化で、転送中の暗号化は強制できない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Block Public Access を有効にする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の防止で、通信の暗号化とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にして専用経路を使う",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化で、HTTP を拒否する機能ではない"
+      }
+    ],
+    "explanation": "転送中の暗号化 = aws:SecureTransport。保存時の暗号化（SSE）と混同しない。",
+    "keywords": [
+      "HTTPS",
+      "転送中の暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-enforce-https:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "s3-enforce-https",
+      "s3-sse-s3"
+    ],
+    "prompt": "「S3 のデータをすべて暗号化せよ」という要件に対し、SSE-S3 を有効にしただけで対応完了とした。何が足りない？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "転送中の暗号化（HTTPS の強制）が対策されていない",
+        "correct": true,
+        "atomId": "s3-enforce-https",
+        "why": "SSE は保存時の暗号化。HTTP での通信は別途バケットポリシーで拒否する必要がある"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3 では保存時にデータが暗号化されない",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "SSE-S3 で保存時には暗号化される"
+      },
+      {
+        "id": "c",
+        "text": "SSE-S3 を使うにはバージョニングの有効化が必要",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "SSE-S3 にバージョニングは不要"
+      },
+      {
+        "id": "d",
+        "text": "SSE-S3 は既存のオブジェクトしか暗号化しない",
+        "correct": false,
+        "why": "逆。デフォルト暗号化は新しく保存するオブジェクトに適用される"
+      }
+    ],
+    "explanation": "暗号化は「保存時」と「転送中」の 2 つ。問題文がどちらを求めているかを読む。",
+    "keywords": [
+      "保存時",
+      "転送中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-presigned-url"
+    ],
+    "prompt": "S3 の署名付き URL でできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "非公開のオブジェクトに、期限付きの一時的なアクセスを与える",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "URL を持つ人は、有効期限まで認証情報なしでアクセスできる"
+      },
+      {
+        "id": "b",
+        "text": "バケット内のすべてのオブジェクトを、恒久的に公開する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "署名付き URL は特定のオブジェクトへの期限付きのアクセス"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront 経由のアクセスだけを許可し、直接アクセスを防ぐ",
+        "correct": false,
+        "atomId": "s3-origin-access-control",
+        "why": "CloudFront の OAC の役割"
+      },
+      {
+        "id": "d",
+        "text": "VPC からインターネットを通らずに S3 に接続する",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "VPC エンドポイントの役割"
+      }
+    ],
+    "explanation": "署名付き URL =「特定のオブジェクト」「期限付き」「認証情報なしで」。",
+    "keywords": [
+      "期限付き",
+      "一時的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-presigned-url"
+    ],
+    "prompt": "会員サイトで、購入したユーザーにだけ動画ファイルを 1 時間ダウンロードさせたい。バケットは非公開のまま。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "有効期限 1 時間の署名付き URL を発行する",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "バケットを非公開のまま、特定のオブジェクトに期限付きでアクセスさせられる"
+      },
+      {
+        "id": "b",
+        "text": "購入者ごとに IAM ユーザーを作り、アクセスキーを渡す",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "一般の会員に AWS の認証情報を配るのは不適切で、管理もできない"
+      },
+      {
+        "id": "c",
+        "text": "購入後 1 時間だけバケットを公開する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "その間は購入していない人も含め誰でもダウンロードできる"
+      },
+      {
+        "id": "d",
+        "text": "動画を SSE-C で暗号化し、鍵を購入者に渡す",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "SSE-C の鍵は S3 へのリクエストに使うもので、購入者に配る仕組みではない"
+      }
+    ],
+    "explanation": "「一部のユーザーに」「期限付きで」「バケットは非公開」= 署名付き URL。",
+    "keywords": [
+      "購入したユーザーにだけ",
+      "1 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "s3-presigned-url"
+    ],
+    "prompt": "ブラウザから大きなファイルを、アプリのサーバーを経由せず S3 に直接アップロードさせたい。認証情報はブラウザに渡したくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サーバーで PUT 用の署名付き URL を発行し、ブラウザに渡す",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "ブラウザは URL を使って直接 S3 にアップロードでき、認証情報は不要"
+      },
+      {
+        "id": "b",
+        "text": "バケットを公開して、誰でも書き込めるようにする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも書き込めてしまう"
+      },
+      {
+        "id": "c",
+        "text": "ブラウザに IAM ユーザーのアクセスキーを埋め込む",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "アクセスキーが誰にでも見えてしまう"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にする",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送を速くするだけで、認証の問題は解決しない"
+      }
+    ],
+    "explanation": "署名付き URL はダウンロード（GET）だけでなく、アップロード（PUT）にも使える。",
+    "keywords": [
+      "直接アップロード",
+      "認証情報を渡したくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-access-points:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-access-points"
+    ],
+    "prompt": "1 つのデータレイク用バケットを 30 以上のチームが使い、バケットポリシーが巨大で管理しきれない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "チームごとにアクセスポイントと専用ポリシーを作る",
+        "correct": true,
+        "atomId": "s3-access-points",
+        "why": "用途ごとに入口とポリシーを分けられるので、変更の影響範囲が小さくなる"
+      },
+      {
+        "id": "b",
+        "text": "チームごとに IAM ユーザーのアクセスキーを共有する",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "認証情報の共有は不適切で、ポリシーの複雑さも解決しない"
+      },
+      {
+        "id": "c",
+        "text": "バケットを公開して、ポリシーを不要にする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でもアクセスできてしまう"
+      },
+      {
+        "id": "d",
+        "text": "バケットのバージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "アクセス管理の問題は解決しない"
+      }
+    ],
+    "explanation": "「共有データセット」「多数のアプリやチーム」「ポリシーが複雑」= アクセスポイント。",
+    "keywords": [
+      "多数のチーム",
+      "バケットポリシーが巨大"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-access-points:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-access-points"
+    ],
+    "prompt": "S3 アクセスポイントの説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バケットへの名前付きの入口で、それぞれに専用のポリシーを付けられる",
+        "correct": true,
+        "atomId": "s3-access-points",
+        "why": "1 つのバケットに複数作れ、VPC からのアクセスだけに制限することもできる"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront のエッジロケーションを使って転送を速くする入口",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "Transfer Acceleration の説明"
+      },
+      {
+        "id": "c",
+        "text": "VPC のルートテーブルに追加する、S3 への無料の経路",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ゲートウェイエンドポイントの説明"
+      },
+      {
+        "id": "d",
+        "text": "別のリージョンへオブジェクトを自動でコピーする設定",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "クロスリージョンレプリケーションの説明"
+      }
+    ],
+    "explanation": "アクセスポイント = バケットの「用途別の入口」。入口ごとにポリシーとネットワーク制限を持つ。",
+    "keywords": [
+      "名前付きの入口"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-mfa-delete:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-mfa-delete"
+    ],
+    "prompt": "S3 MFA Delete を有効にすると、何をするときに MFA が必要になる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バージョンの完全削除と、バージョニングの変更",
+        "correct": true,
+        "atomId": "s3-mfa-delete",
+        "why": "通常の削除（削除マーカーの追加）には MFA は不要"
+      },
+      {
+        "id": "b",
+        "text": "すべてのオブジェクトのアップロードとダウンロード",
+        "correct": false,
+        "why": "読み書きに MFA は求められない"
+      },
+      {
+        "id": "c",
+        "text": "バケットポリシーの変更と、IAM ユーザーの作成",
+        "correct": false,
+        "why": "MFA Delete の対象ではない"
+      },
+      {
+        "id": "d",
+        "text": "コンソールへのログインと、バケットの一覧表示",
+        "correct": false,
+        "why": "MFA Delete の対象ではない"
+      }
+    ],
+    "explanation": "MFA Delete の対象は「バージョンの完全削除」と「バージョニングの変更」の 2 つ。",
+    "keywords": [
+      "完全削除",
+      "バージョニングの変更"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-mfa-delete:selection:1",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "s3-mfa-delete"
+    ],
+    "prompt": "S3 MFA Delete を有効にできるのは誰で、どうやって設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ルートユーザーが、CLI または API で設定する",
+        "correct": true,
+        "atomId": "s3-mfa-delete",
+        "why": "コンソールからは設定できず、ルートユーザーの MFA デバイスが必要"
+      },
+      {
+        "id": "b",
+        "text": "管理者権限を持つ IAM ユーザーが、コンソールで設定する",
+        "correct": false,
+        "why": "IAM ユーザーでは有効にできない"
+      },
+      {
+        "id": "c",
+        "text": "バケットを作成したユーザーが、バケット作成時にだけ設定する",
+        "correct": false,
+        "why": "作成時に限らず、バージョニングが有効なバケットで設定できる"
+      },
+      {
+        "id": "d",
+        "text": "AWS サポートに依頼して、有効にしてもらう",
+        "correct": false,
+        "why": "自分で設定する"
+      }
+    ],
+    "explanation": "MFA Delete は「ルートユーザーのみ」「CLI/API のみ」「バージョニングが前提」。",
+    "keywords": [
+      "ルートユーザー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-mfa-delete:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-mfa-delete",
+      "s3-object-lock"
+    ],
+    "prompt": "MFA Delete と Object Lock の違いとして正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MFA Delete は MFA があれば削除でき、Object Lock は期間中削除できない",
+        "correct": true,
+        "why": "確実に削除させないなら Object Lock、削除の操作を慎重にさせるなら MFA Delete"
+      },
+      {
+        "id": "b",
+        "text": "MFA Delete はバージョニングが不要で、Object Lock は必要",
+        "correct": false,
+        "why": "どちらもバージョニングが必要"
+      },
+      {
+        "id": "c",
+        "text": "Object Lock はルートユーザーしか有効にできない",
+        "correct": false,
+        "why": "ルートユーザーしか有効にできないのは MFA Delete"
+      },
+      {
+        "id": "d",
+        "text": "MFA Delete は保持期間を設定でき、Object Lock は設定できない",
+        "correct": false,
+        "why": "保持期間を設定できるのは Object Lock"
+      }
+    ],
+    "explanation": "MFA Delete は「削除に追加の認証」、Object Lock は「一定期間の削除禁止（WORM）」。",
+    "keywords": [
+      "WORM",
+      "多要素認証"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-object-lock"
+    ],
+    "prompt": "S3 Object Lock の目的は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オブジェクトを WORM で保護し、削除や上書きをできなくする",
+        "correct": true,
+        "atomId": "s3-object-lock",
+        "why": "保持期間中、またはリーガルホールドの間は削除・上書きできない"
+      },
+      {
+        "id": "b",
+        "text": "オブジェクトを暗号化して、第三者に読まれないようにする",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "暗号化は SSE の役割"
+      },
+      {
+        "id": "c",
+        "text": "バケットのパブリックアクセスを一括で禁止する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "Block Public Access の役割"
+      },
+      {
+        "id": "d",
+        "text": "オブジェクトの読み取りに期限付きの URL を必須にする",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "署名付き URL の説明"
+      }
+    ],
+    "explanation": "Object Lock = WORM（Write Once Read Many）。改ざん防止の規制要件で出てくる。",
+    "keywords": [
+      "WORM"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-object-lock"
+    ],
+    "prompt": "監査ログを 7 年間、誰にも削除・改ざんされない状態で保管することが規制で求められている。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Object Lock（コンプライアンスモード）",
+        "correct": true,
+        "atomId": "s3-object-lock-compliance",
+        "why": "保持期間中はルートユーザーを含め誰も削除・上書きできない"
+      },
+      {
+        "id": "b",
+        "text": "S3 MFA Delete",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "MFA があれば削除できるので、「誰にも削除できない」を満たさない"
+      },
+      {
+        "id": "c",
+        "text": "IAM ポリシーで削除操作を拒否する",
+        "correct": false,
+        "atomId": "s3-iam-policy",
+        "why": "管理者がポリシーを変更すれば削除できてしまう"
+      },
+      {
+        "id": "d",
+        "text": "S3 バージョニングのみ",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "過去のバージョンも権限があれば完全削除できる"
+      },
+      {
+        "id": "e",
+        "text": "Object Lock（ガバナンスモード）",
+        "correct": false,
+        "atomId": "s3-object-lock-governance",
+        "why": "特別な権限を持つユーザーは削除できてしまう"
+      }
+    ],
+    "explanation": "「誰にも」「規制」「改ざん防止」= Object Lock のコンプライアンスモード。",
+    "keywords": [
+      "7 年間",
+      "誰にも削除できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-object-lock",
+      "s3-iam-policy"
+    ],
+    "prompt": "改ざん防止の要件に対し、全ユーザーの IAM ポリシーで s3:DeleteObject を拒否した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "権限のある管理者がポリシーを変えれば削除でき、WORM にならない",
+        "correct": true,
+        "atomId": "s3-object-lock",
+        "why": "ポリシーは変更できる。変更できない保護が必要なら Object Lock を使う"
+      },
+      {
+        "id": "b",
+        "text": "IAM ポリシーでは S3 の操作を拒否することができない",
+        "correct": false,
+        "why": "IAM ポリシーで Deny は書ける。問題は、変更できてしまうこと"
+      },
+      {
+        "id": "c",
+        "text": "拒否すると、オブジェクトの読み取りもできなくなる",
+        "correct": false,
+        "why": "s3:DeleteObject の拒否は読み取りには影響しない"
+      },
+      {
+        "id": "d",
+        "text": "IAM ポリシーの変更は、反映までに数日かかる",
+        "correct": false,
+        "why": "数日かかることはない"
+      }
+    ],
+    "explanation": "ポリシーによる拒否は「運用上の制御」。規制の「改ざんできないこと」を満たすのは Object Lock。",
+    "keywords": [
+      "改ざん防止"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "s3-object-lock",
+      "s3-versioning"
+    ],
+    "prompt": "S3 Object Lock を使うための前提条件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バケットでバージョニングが有効になっている",
+        "correct": true,
+        "atomId": "s3-versioning",
+        "why": "Object Lock はオブジェクトのバージョン単位で保護する"
+      },
+      {
+        "id": "b",
+        "text": "オブジェクトが SSE-KMS で暗号化されている",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "暗号化方式は問わない"
+      },
+      {
+        "id": "c",
+        "text": "バケットが Glacier 系のストレージクラスにある",
+        "correct": false,
+        "why": "ストレージクラスは問わない"
+      },
+      {
+        "id": "d",
+        "text": "MFA Delete が有効になっている",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "MFA Delete は不要"
+      }
+    ],
+    "explanation": "Object Lock と MFA Delete は、どちらもバージョニングが前提。",
+    "keywords": [
+      "前提条件"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock-compliance:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "s3-object-lock-compliance",
+      "s3-object-lock-governance"
+    ],
+    "prompt": "Object Lock のコンプライアンスモードとガバナンスモードの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コンプライアンスは誰も解除できず、ガバナンスは権限で解除できる",
+        "correct": true,
+        "why": "ガバナンスモードは s3:BypassGovernanceRetention 権限で解除できる"
+      },
+      {
+        "id": "b",
+        "text": "コンプライアンスは保持期間を持ち、ガバナンスは期限がない",
+        "correct": false,
+        "why": "どちらも保持期間を持つ。期限がないのはリーガルホールド"
+      },
+      {
+        "id": "c",
+        "text": "ガバナンスはルートユーザーでも解除できない",
+        "correct": false,
+        "why": "ルートユーザーでも解除できないのはコンプライアンスモード"
+      },
+      {
+        "id": "d",
+        "text": "コンプライアンスはバージョニングが不要",
+        "correct": false,
+        "why": "どちらもバージョニングが必要"
+      }
+    ],
+    "explanation": "解除できる人がいるか（ガバナンス）、誰もいないか（コンプライアンス）。",
+    "keywords": [
+      "解除",
+      "BypassGovernanceRetention"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock-governance:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-object-lock-governance"
+    ],
+    "prompt": "データを通常のユーザーには削除させたくないが、一部の管理者だけは必要なときに削除できるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Object Lock のガバナンスモード",
+        "correct": true,
+        "atomId": "s3-object-lock-governance",
+        "why": "s3:BypassGovernanceRetention 権限を持つ管理者だけが保護を解除できる"
+      },
+      {
+        "id": "b",
+        "text": "Object Lock のコンプライアンスモード",
+        "correct": false,
+        "atomId": "s3-object-lock-compliance",
+        "why": "管理者を含め誰も削除できなくなる"
+      },
+      {
+        "id": "c",
+        "text": "S3 Block Public Access",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "パブリックアクセスの防止で、削除の制御ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "転送の高速化で、削除の制御とは関係がない"
+      }
+    ],
+    "explanation": "「一部の人は解除できる」がキーワード。コンプライアンスモードとの違いを押さえる。",
+    "keywords": [
+      "一部の管理者だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock-compliance:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-object-lock-compliance"
+    ],
+    "prompt": "テスト用バケットで、よく確認せずにコンプライアンスモードで保持期間 10 年を設定した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "10 年間は誰も削除できず、その間の保存料金もかかり続ける",
+        "correct": true,
+        "atomId": "s3-object-lock-compliance",
+        "why": "コンプライアンスモードは保持期間を短くすることも解除することもできない"
+      },
+      {
+        "id": "b",
+        "text": "コンプライアンスモードは 1 年を超える保持期間を設定できない",
+        "correct": false,
+        "why": "何年でも設定できる"
+      },
+      {
+        "id": "c",
+        "text": "コンプライアンスモードを使うと読み取りもできなくなる",
+        "correct": false,
+        "why": "読み取りはできる。削除と上書きができなくなる"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーなら後から解除できるので問題はない",
+        "correct": false,
+        "why": "ルートユーザーでも解除できない"
+      }
+    ],
+    "explanation": "設定のテストはガバナンスモードで。コンプライアンスモードは取り消せない。",
+    "keywords": [
+      "テスト用",
+      "10 年"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-legal-hold:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "s3-legal-hold"
+    ],
+    "prompt": "訴訟の調査が終わるまで、特定のデータを削除させたくない。調査がいつ終わるかは決まっていない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Object Lock のリーガルホールド",
+        "correct": true,
+        "atomId": "s3-legal-hold",
+        "why": "期限を決めずに設定でき、解除するまで削除・上書きを禁止する"
+      },
+      {
+        "id": "b",
+        "text": "Object Lock のコンプライアンスモード",
+        "correct": false,
+        "atomId": "s3-object-lock-compliance",
+        "why": "保持期限を決める必要があり、期限前には誰も解除できない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Lifecycle の有効期限アクション",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "オブジェクトを削除する機能で、削除の防止ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 MFA Delete",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "MFA があれば削除できてしまう"
+      }
+    ],
+    "explanation": "「期限未定」「解除するまで」= リーガルホールド。期限があるなら保持期間（リテンション）。",
+    "keywords": [
+      "期限は決まっていない",
+      "訴訟"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-legal-hold:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "s3-legal-hold"
+    ],
+    "prompt": "Object Lock のリーガルホールドの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保持期間を持たず、権限を持つユーザーが解除するまで有効",
+        "correct": true,
+        "atomId": "s3-legal-hold",
+        "why": "s3:PutObjectLegalHold 権限で設定・解除する。保持期間と同時にも使える"
+      },
+      {
+        "id": "b",
+        "text": "保持期間中は、ルートユーザーを含め誰も解除できない",
+        "correct": false,
+        "atomId": "s3-object-lock-compliance",
+        "why": "コンプライアンスモードの特徴"
+      },
+      {
+        "id": "c",
+        "text": "オブジェクトの完全削除のたびに MFA を求める",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "MFA Delete の特徴"
+      },
+      {
+        "id": "d",
+        "text": "一定期間が過ぎると、オブジェクトを自動で削除する",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "Lifecycle の有効期限アクションの特徴"
+      }
+    ],
+    "explanation": "リーガルホールドは「期限なし」の保護。保持期間（リテンション）とは独立している。",
+    "keywords": [
+      "期限なし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
