@@ -1,0 +1,26 @@
+# Inspector Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: inspector
+
+atoms:
+  - id: inspector-scan
+    category: threat-detection
+    concept: Amazon Inspector
+    summary: EC2、コンテナイメージ、Lambda のソフトウェアの脆弱性やネットワークの公開を継続的にスキャンする
+    facts:
+      - EC2、ECR のコンテナイメージ、Lambda 関数のソフトウェアの既知の脆弱性（CVE）をスキャンする
+      - EC2 が意図せずネットワークに公開されていないかを評価する
+      - 新しい脆弱性が見つかると、自動で再スキャンする
+    triggers:
+      - EC2 の OS やソフトウェアの脆弱性を見つけたい
+      - コンテナイメージの脆弱性のスキャン
+      - CVE
+    pitfalls:
+      - 実際に起きている攻撃や不審な動きの検出は GuardDuty の役割
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html

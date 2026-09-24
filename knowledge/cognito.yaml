@@ -1,0 +1,49 @@
+# Cognito Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: cognito
+
+atoms:
+  - id: cognito-user-pool
+    category: identity
+    concept: Cognito ユーザープール
+    summary: Web・モバイルアプリの利用者のサインアップ・サインインを提供するユーザーディレクトリ
+    facts:
+      - アプリの利用者の登録、サインイン、パスワードのリセット、MFA を提供する
+      - Google や Facebook、SAML の ID プロバイダーでのサインインにも対応する
+      - サインインするとトークン（JWT）を発行し、API Gateway や ALB の認証に使える
+    triggers:
+      - アプリにサインアップ・サインインの機能を付けたい
+      - ソーシャルログイン
+      - アプリの利用者の管理
+    pitfalls:
+      - アプリの利用者のために IAM ユーザーを作るのは不適切
+    relations:
+      - type: confused_with
+        target: cognito-identity-pool
+        distinction: ユーザープールは利用者の認証（サインイン）を行い、トークンを発行する。ID プール（フェデレーテッドアイデンティティ）は認証された利用者に、AWS のリソースに直接アクセスするための一時的な AWS 認証情報を渡す
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools.html
+
+  - id: cognito-identity-pool
+    category: identity
+    concept: Cognito ID プール
+    summary: アプリの利用者に、S3 や DynamoDB に直接アクセスするための一時的な AWS 認証情報を渡す
+    facts:
+      - 認証された利用者（ユーザープール、ソーシャル ID など）に、IAM ロールの一時的な認証情報を発行する
+      - 未認証のゲストにも、制限した権限を渡せる
+      - モバイルアプリから S3 や DynamoDB に直接アクセスさせるときに使う
+    triggers:
+      - モバイルアプリから S3 に直接アップロードさせたい
+      - アプリの利用者に一時的な AWS 認証情報を渡したい
+    pitfalls:
+      - アプリにアクセスキーを埋め込んで AWS にアクセスさせるのは不適切
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html

@@ -1,0 +1,31 @@
+# AWS WAF Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: waf
+
+atoms:
+  - id: waf-web-acl
+    category: edge-security
+    concept: AWS WAF
+    summary: SQL インジェクションや XSS などの Web の攻撃を、レイヤー 7 でブロックするファイアウォール
+    facts:
+      - SQL インジェクションやクロスサイトスクリプティング（XSS）などの攻撃をブロックする
+      - IP アドレス、国、ヘッダー、リクエストの頻度（レートベース）でルールを作れる
+      - CloudFront、ALB、API Gateway、AppSync などに付けられる
+      - AWS や販売者が提供するマネージドルールを使える
+    triggers:
+      - SQL インジェクション
+      - XSS
+      - 同じ IP からの大量のリクエストを制限したい
+      - レイヤー 7 の攻撃
+    pitfalls:
+      - NLB には付けられない
+    relations:
+      - type: confused_with
+        target: shield-advanced
+        distinction: WAF はリクエストの内容を見て、SQL インジェクションなどのアプリへの攻撃をブロックする。Shield は DDoS 攻撃（大量の通信）からの保護が目的
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html

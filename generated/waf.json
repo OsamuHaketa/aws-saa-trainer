@@ -1,0 +1,94 @@
+[
+  {
+    "id": "waf-web-acl:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "waf-web-acl"
+    ],
+    "prompt": "ALB の後ろの Web アプリが、SQL インジェクションの攻撃を受けている。アプリを直す前に、すぐにブロックしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS WAF のマネージドルールを ALB に付ける",
+        "correct": true,
+        "atomId": "waf-web-acl",
+        "why": "SQL インジェクションのパターンを、アプリに届く前にブロックできる"
+      },
+      {
+        "id": "b",
+        "text": "AWS Shield Standard",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "L3/L4 の DDoS からの保護で、SQL インジェクションは防げない"
+      },
+      {
+        "id": "c",
+        "text": "セキュリティグループで 443 番を閉じる",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "正常な利用者も使えなくなる"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Inspector でスキャンする",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性を見つけるだけで、攻撃はブロックしない"
+      }
+    ],
+    "explanation": "L7 の攻撃（SQLi、XSS）= WAF。",
+    "keywords": [
+      "SQL インジェクション",
+      "ブロック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-web-acl:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "waf-web-acl"
+    ],
+    "prompt": "ログイン API に、同じ IP アドレスから 1 分間に数千回のリクエストが来る。1 つの IP からのリクエスト数を制限したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS WAF のレートベースのルール",
+        "correct": true,
+        "atomId": "waf-web-acl",
+        "why": "一定時間内のリクエスト数が上限を超えた IP をブロックできる"
+      },
+      {
+        "id": "b",
+        "text": "ネットワーク ACL で IP を 1 つずつ拒否する",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "IP が変わるたびに手作業で追加する必要があり、頻度では判定できない"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront の地域制限",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限で、頻度では判定できない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威を検出するだけで、ブロックはしない"
+      }
+    ],
+    "explanation": "リクエストの頻度の制限 = WAF のレートベースのルール。",
+    "keywords": [
+      "同じ IP",
+      "制限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

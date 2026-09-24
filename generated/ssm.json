@@ -1,0 +1,93 @@
+[
+  {
+    "id": "ssm-parameter-store:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ssm-parameter-store"
+    ],
+    "prompt": "複数のアプリの設定値（接続先の URL など）を、環境ごとに階層で一元管理したい。ローテーションは不要で、コストを抑えたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSM Parameter Store",
+        "correct": true,
+        "atomId": "ssm-parameter-store",
+        "why": "階層で管理でき、標準のパラメータは無料"
+      },
+      {
+        "id": "b",
+        "text": "AWS Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "使えるが、ローテーションが不要なら割高"
+      },
+      {
+        "id": "c",
+        "text": "S3 のバケットに設定ファイルを置く",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "使えるが、階層やバージョンの管理・アクセス制御を自前で作ることになる"
+      },
+      {
+        "id": "d",
+        "text": "各サーバーの設定ファイルに書く",
+        "correct": false,
+        "why": "一元管理できず、変更のたびに全サーバーを更新する必要がある"
+      }
+    ],
+    "explanation": "設定値の一元管理を安く = Parameter Store。",
+    "keywords": [
+      "設定値",
+      "コストを抑えたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-session-manager:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ssm-session-manager"
+    ],
+    "prompt": "プライベートサブネットの EC2 に運用で接続したい。SSH のポートを開けず、踏み台も置かず、操作ログも残したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSM Session Manager",
+        "correct": true,
+        "atomId": "ssm-session-manager",
+        "why": "受信ポートを開けずに IAM で制御して接続し、操作ログも残せる"
+      },
+      {
+        "id": "b",
+        "text": "パブリックサブネットの踏み台サーバー",
+        "correct": false,
+        "atomId": "vpc-bastion-host",
+        "why": "踏み台を置くことになり、SSH のポートも開ける"
+      },
+      {
+        "id": "c",
+        "text": "SSH を 0.0.0.0/0 から許可する",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "誰からでも SSH を試行されてしまう"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP を付けて直接 SSH する",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "インスタンスを公開し、SSH のポートも開ける"
+      }
+    ],
+    "explanation": "ポートを開けない安全な接続 = Session Manager。",
+    "keywords": [
+      "SSH のポートを開けず",
+      "踏み台も置かず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

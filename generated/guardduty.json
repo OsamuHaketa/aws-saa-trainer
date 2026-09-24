@@ -1,0 +1,93 @@
+[
+  {
+    "id": "guardduty-detector:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "guardduty-detector"
+    ],
+    "prompt": "アカウント内で、盗まれた認証情報による不審な API 呼び出しや、侵害された EC2 の不審な通信を継続的に検出したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon GuardDuty",
+        "correct": true,
+        "atomId": "guardduty-detector",
+        "why": "CloudTrail や VPC フローログ、DNS のログを分析して脅威を検出する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データの発見が目的"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性のスキャンで、実際の不審な動きは検出しない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の準拠の評価で、脅威の検出ではない"
+      }
+    ],
+    "explanation": "脅威・不審な動きの検出 = GuardDuty。",
+    "keywords": [
+      "不審な API 呼び出し",
+      "継続的に検出"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "guardduty-detector:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "guardduty-detector",
+      "macie-job",
+      "inspector-scan"
+    ],
+    "prompt": "GuardDuty・Macie・Inspector の役割の組み合わせとして正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "脅威の検出 / S3 の機密データ / 脆弱性スキャン",
+        "correct": true,
+        "why": "3 つのセキュリティサービスの定番の使い分け"
+      },
+      {
+        "id": "b",
+        "text": "脆弱性スキャン / 脅威の検出 / S3 の機密データ",
+        "correct": false,
+        "why": "順番が違う"
+      },
+      {
+        "id": "c",
+        "text": "S3 の機密データ / 脆弱性スキャン / 脅威の検出",
+        "correct": false,
+        "why": "順番が違う"
+      },
+      {
+        "id": "d",
+        "text": "DDoS 保護 / SQL インジェクション / 暗号化",
+        "correct": false,
+        "why": "それぞれ Shield、WAF、KMS の役割"
+      }
+    ],
+    "explanation": "GuardDuty = 脅威、Macie = S3 の機密データ、Inspector = 脆弱性。",
+    "keywords": [
+      "脅威",
+      "機密データ",
+      "脆弱性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

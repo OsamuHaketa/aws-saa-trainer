@@ -1,0 +1,137 @@
+[
+  {
+    "id": "cognito-user-pool:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cognito-user-pool"
+    ],
+    "prompt": "モバイルアプリに、メールアドレスでのサインアップ・サインインと、Google アカウントでのログインを付けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cognito ユーザープール",
+        "correct": true,
+        "atomId": "cognito-user-pool",
+        "why": "利用者の登録とサインイン、ソーシャルログインを提供する"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーを利用者ごとに作る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "アプリの利用者の管理には向かない"
+      },
+      {
+        "id": "c",
+        "text": "IAM Identity Center",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "従業員の AWS アカウントへのアクセス管理で、アプリの利用者向けではない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "秘密情報の保管"
+      }
+    ],
+    "explanation": "アプリの利用者の認証 = Cognito ユーザープール。",
+    "keywords": [
+      "サインアップ",
+      "アプリ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-identity-pool:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cognito-identity-pool"
+    ],
+    "prompt": "ログインしたアプリの利用者に、自分用の S3 のフォルダへ直接写真をアップロードさせたい。アプリにアクセスキーは持たせたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cognito ID プールで一時的な認証情報を渡す",
+        "correct": true,
+        "atomId": "cognito-identity-pool",
+        "why": "利用者ごとに IAM ロールの一時的な認証情報を発行し、S3 に直接アクセスさせられる"
+      },
+      {
+        "id": "b",
+        "text": "アプリに IAM ユーザーのアクセスキーを埋め込む",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "アクセスキーが漏えいするリスクがある"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットを公開して書き込みを許可する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも書き込めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "Cognito ユーザープールのトークンで直接 S3 を呼ぶ",
+        "correct": false,
+        "atomId": "cognito-user-pool",
+        "why": "ユーザープールのトークンだけでは S3 の API は呼べない。AWS 認証情報が必要"
+      }
+    ],
+    "explanation": "アプリの利用者に AWS の一時的な認証情報 = Cognito ID プール。",
+    "keywords": [
+      "S3 へ直接",
+      "アクセスキーは持たせたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-user-pool:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "cognito-user-pool",
+      "cognito-identity-pool"
+    ],
+    "prompt": "Cognito のユーザープールと ID プールの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は認証してトークンを発行、後者は AWS 認証情報を渡す",
+        "correct": true,
+        "why": "サインインはユーザープール、AWS リソースへの直接アクセスは ID プール"
+      },
+      {
+        "id": "b",
+        "text": "前者は AWS 認証情報を渡し、後者はサインインを提供",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は従業員用、後者はアプリの利用者用",
+        "correct": false,
+        "why": "どちらもアプリの利用者向け"
+      },
+      {
+        "id": "d",
+        "text": "前者は無料、後者は IAM ユーザーが必要",
+        "correct": false,
+        "why": "違いの本質ではない"
+      }
+    ],
+    "explanation": "ユーザープール = 誰か（認証）、ID プール = 何にアクセスできるか（AWS 認証情報）。",
+    "keywords": [
+      "認証",
+      "AWS 認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -41,6 +41,14 @@ export const SERVICE_LABEL: Record<string, string> = {
   config: "AWS Config",
   organizations: "Organizations",
   kms: "KMS",
+  secretsmanager: "Secrets Manager",
+  ssm: "Systems Manager",
+  waf: "WAF",
+  shield: "Shield",
+  guardduty: "GuardDuty",
+  macie: "Macie",
+  inspector: "Inspector",
+  cognito: "Cognito",
 };
 
 export const serviceLabel = (s: string) => SERVICE_LABEL[s] ?? s.toUpperCase();
@@ -77,6 +85,9 @@ export const CATEGORY_LABEL: Record<string, string> = {
   "file-storage": "ファイルストレージ",
   "block-storage": "ブロックストレージ",
   audit: "監査",
+  "threat-detection": "脅威検出",
+  secrets: "秘密情報",
+  operations: "運用",
 };
 
 export const categoryLabel = (c: string) => CATEGORY_LABEL[c] ?? c;

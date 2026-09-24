@@ -1,0 +1,48 @@
+[
+  {
+    "id": "macie-job:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "macie-job"
+    ],
+    "prompt": "数千の S3 バケットの中に、顧客の個人情報やクレジットカード番号が含まれていないかを自動で調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Macie",
+        "correct": true,
+        "atomId": "macie-job",
+        "why": "機械学習で S3 の中の機密データを検出する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出で、データの中身の分類はしない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "ソフトウェアの脆弱性のスキャン"
+      },
+      {
+        "id": "d",
+        "text": "IAM Access Analyzer",
+        "correct": false,
+        "atomId": "iam-access-analyzer",
+        "why": "外部との共有の検出で、データの中身は見ない"
+      }
+    ],
+    "explanation": "S3 の機密データ・PII = Macie。",
+    "keywords": [
+      "個人情報",
+      "S3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

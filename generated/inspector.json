@@ -1,0 +1,48 @@
+[
+  {
+    "id": "inspector-scan:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "inspector-scan"
+    ],
+    "prompt": "数百台の EC2 と ECR のコンテナイメージに、既知の脆弱性（CVE）のあるソフトウェアがないかを継続的に調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Inspector",
+        "correct": true,
+        "atomId": "inspector-scan",
+        "why": "EC2、コンテナイメージ、Lambda の脆弱性を継続的にスキャンする"
+      },
+      {
+        "id": "b",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "不審な動きの検出で、脆弱性のスキャンはしない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データの発見"
+      },
+      {
+        "id": "d",
+        "text": "AWS Shield Advanced",
+        "correct": false,
+        "atomId": "shield-advanced",
+        "why": "DDoS の保護"
+      }
+    ],
+    "explanation": "脆弱性・CVE = Inspector。",
+    "keywords": [
+      "脆弱性",
+      "CVE"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,48 @@
+# AWS Shield Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: shield
+
+atoms:
+  - id: shield-standard
+    category: edge-security
+    concept: AWS Shield Standard
+    summary: すべての AWS 利用者に無料で自動適用される、一般的な DDoS 攻撃からの保護
+    facts:
+      - 追加料金なしで、すべての AWS の利用者に自動で適用される
+      - ネットワーク層・トランスポート層（L3/L4）の一般的な DDoS 攻撃から保護する
+    triggers:
+      - 追加料金なしの DDoS 対策
+    pitfalls:
+      - 大規模な攻撃への高度な保護や、専門チームの支援が必要なら Shield Advanced を使う
+    relations:
+      - type: confused_with
+        target: shield-advanced
+        distinction: Shield Standard は無料で自動適用される基本の DDoS 保護。Shield Advanced は有料で、より高度な検知と緩和、DDoS 対応チーム（SRT）の支援、攻撃によるスケーリング料金の補償がある
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/waf/latest/developerguide/ddos-standard-summary.html
+
+  - id: shield-advanced
+    category: edge-security
+    concept: AWS Shield Advanced
+    summary: 大規模な DDoS 攻撃への高度な保護、専門チームの支援、攻撃時の料金の補償を提供する有料サービス
+    facts:
+      - CloudFront、Route 53、Global Accelerator、ELB、EC2 などを、高度な DDoS 攻撃から保護する
+      - Shield Response Team（SRT）に 24 時間 365 日支援を依頼できる
+      - DDoS 攻撃によるスケーリングで増えた料金の補償がある
+      - AWS WAF を追加料金なしで使える
+    triggers:
+      - 大規模な DDoS 攻撃への備え
+      - DDoS 攻撃の専門家の支援が必要
+      - 攻撃による料金の急増を補償してほしい
+    pitfalls:
+      - SQL インジェクションなどのアプリの脆弱性を狙う攻撃は、WAF のルールで防ぐ
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary.html

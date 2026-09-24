@@ -1,0 +1,135 @@
+[
+  {
+    "id": "kms-customer-managed-key:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "kms-customer-managed-key"
+    ],
+    "prompt": "暗号鍵を使えるロールを細かく限定し、鍵を毎年自動でローテーションし、必要なら無効化もしたい。どの鍵を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "KMS のカスタマーマネージドキー",
+        "correct": true,
+        "atomId": "kms-customer-managed-key",
+        "why": "鍵ポリシー、自動ローテーション、無効化を自分で制御できる"
+      },
+      {
+        "id": "b",
+        "text": "KMS の AWS マネージドキー",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "鍵ポリシーを変更できず、無効化もできない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-S3 の S3 管理の鍵",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "鍵の制御はできない"
+      },
+      {
+        "id": "d",
+        "text": "アプリのコードに書いた固定の鍵",
+        "correct": false,
+        "why": "漏えいしやすく、ローテーションも難しい"
+      }
+    ],
+    "explanation": "鍵を自分で制御したい = カスタマーマネージドキー。",
+    "keywords": [
+      "細かく限定",
+      "ローテーション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-customer-managed-key:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "kms-customer-managed-key",
+      "kms-aws-managed-key"
+    ],
+    "prompt": "カスタマーマネージドキーと AWS マネージドキーの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は鍵ポリシーを制御でき、後者は変更できない",
+        "correct": true,
+        "why": "別アカウントとの共有や細かい制御が必要ならカスタマーマネージドキー"
+      },
+      {
+        "id": "b",
+        "text": "前者は無料、後者は有料",
+        "correct": false,
+        "why": "カスタマーマネージドキーには鍵ごとの料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "前者は 1 つのリージョン、後者は全リージョンで使える",
+        "correct": false,
+        "why": "どちらも基本はリージョンごと"
+      },
+      {
+        "id": "d",
+        "text": "前者はローテーションできず、後者はできる",
+        "correct": false,
+        "why": "カスタマーマネージドキーも自動ローテーションを有効にできる"
+      }
+    ],
+    "explanation": "制御の自由度 = カスタマーマネージド、手間なし = AWS マネージド。",
+    "keywords": [
+      "鍵ポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-multi-region-keys:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kms-multi-region-keys"
+    ],
+    "prompt": "東京で暗号化したデータを、DR 用の大阪リージョンでそのまま復号したい。リージョンをまたぐたびの再暗号化は避けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "KMS マルチリージョンキー",
+        "correct": true,
+        "atomId": "kms-multi-region-keys",
+        "why": "同じ鍵の素材を持つ鍵が両方のリージョンにあり、そのまま復号できる"
+      },
+      {
+        "id": "b",
+        "text": "KMS の AWS マネージドキー",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "リージョンごとの鍵で、別のリージョンでは復号できない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-S3",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "アプリでの暗号化・復号の用途には使えない"
+      },
+      {
+        "id": "d",
+        "text": "Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "秘密情報の保管で、暗号鍵のリージョン間共有ではない"
+      }
+    ],
+    "explanation": "リージョンをまたいで同じ鍵 = マルチリージョンキー。",
+    "keywords": [
+      "大阪リージョン",
+      "そのまま復号"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

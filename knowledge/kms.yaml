@@ -1,0 +1,69 @@
+# KMS Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: kms
+
+atoms:
+  - id: kms-customer-managed-key
+    category: encryption
+    concept: KMS カスタマーマネージドキー
+    summary: 自分で作成・管理する KMS の鍵。鍵ポリシー、ローテーション、無効化を制御できる
+    facts:
+      - 鍵ポリシーで、誰が鍵を使えるか・管理できるかを細かく決められる
+      - 自動ローテーション（毎年など）を有効にできる
+      - 鍵を無効化・削除（待機期間あり）できる
+      - 別のアカウントに鍵の使用を許可できる
+    triggers:
+      - 暗号鍵へのアクセスを細かく制御したい
+      - 鍵のローテーションを自分で管理したい
+      - 別のアカウントに暗号化データを共有したい
+    pitfalls:
+      - AWS マネージドキー（aws/s3 など）は鍵ポリシーを編集できず、別アカウントへの許可もできない
+    relations:
+      - type: confused_with
+        target: kms-aws-managed-key
+        distinction: カスタマーマネージドキーは自分で作り、鍵ポリシーやローテーションを制御できる。AWS マネージドキーはサービスが自動で作り、管理の手間はないが、鍵ポリシーを変更できない
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html
+
+  - id: kms-aws-managed-key
+    category: encryption
+    concept: KMS AWS マネージドキー
+    summary: S3 や EBS などのサービスが自動で作成・管理する KMS の鍵（aws/サービス名）
+    facts:
+      - aws/s3、aws/ebs のような名前で、サービスが自動で作る
+      - 管理の手間はなく、自動でローテーションされる
+      - 鍵ポリシーは変更できない
+    triggers:
+      - 管理の手間なく KMS で暗号化したい
+    pitfalls:
+      - 別のアカウントに暗号化したデータを復号させることはできない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html
+
+  - id: kms-multi-region-keys
+    category: encryption
+    concept: KMS マルチリージョンキー
+    summary: 同じ鍵 ID と鍵の素材を持つ鍵を、複数のリージョンに作る
+    facts:
+      - 複数のリージョンに、同じ鍵の素材と鍵 ID を持つ関連した鍵を作れる
+      - あるリージョンで暗号化したデータを、別のリージョンでそのまま復号できる
+      - リージョン間でデータを移すたびに、復号・再暗号化をしなくて済む
+    triggers:
+      - 別のリージョンで、暗号化したデータをそのまま復号したい
+      - マルチリージョンのアプリでクライアント側暗号化を使う
+    pitfalls:
+      - 通常の KMS の鍵は 1 つのリージョンの中でしか使えない
+    relations: []
+    examDomains: [secure, resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html

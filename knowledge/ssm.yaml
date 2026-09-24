@@ -1,0 +1,50 @@
+# Systems Manager Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: ssm
+
+atoms:
+  - id: ssm-parameter-store
+    category: secrets
+    concept: Systems Manager Parameter Store
+    summary: 設定値や秘密情報を階層的に保管する。標準のパラメータは無料
+    facts:
+      - 設定値や秘密情報を、/prod/db/url のような階層で保管する
+      - SecureString で、KMS の鍵を使って暗号化して保管できる
+      - 標準のパラメータは無料
+      - 自動ローテーションの仕組みはない
+    triggers:
+      - アプリの設定値を一元管理したい
+      - 安く設定値を保管したい
+    pitfalls:
+      - DB のパスワードの自動ローテーションが必要なら Secrets Manager を使う
+    relations: []
+    examDomains: [secure, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html
+
+  - id: ssm-session-manager
+    category: operations
+    concept: Systems Manager Session Manager
+    summary: SSH のポートを開けず、踏み台も使わずに、インスタンスにシェルで接続する
+    facts:
+      - 受信のポート（22 番など）を開けずに、ブラウザや CLI からインスタンスに接続できる
+      - 踏み台サーバーや SSH キーの管理が不要になる
+      - 接続は IAM で制御し、操作のログを S3 や CloudWatch Logs に残せる
+    triggers:
+      - SSH のポートを開けたくない
+      - 踏み台サーバーをなくしたい
+      - 接続の操作ログを残したい
+    pitfalls:
+      - 踏み台サーバーで SSH を開放し続けると、攻撃を受ける入口が残る
+    relations:
+      - type: confused_with
+        target: vpc-bastion-host
+        distinction: 踏み台サーバーは SSH のポートを開けて、そこを経由して接続する。Session Manager はポートを開けず、IAM で制御して接続し、操作ログも残せる
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html

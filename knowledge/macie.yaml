@@ -1,0 +1,25 @@
+# Macie Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: macie
+
+atoms:
+  - id: macie-job
+    category: threat-detection
+    concept: Amazon Macie
+    summary: 機械学習で S3 の中の個人情報などの機密データを見つけ、保護の状況を評価する
+    facts:
+      - S3 のオブジェクトの中から、個人情報（PII）やクレジットカード番号などの機密データを検出する
+      - S3 バケットが公開・共有されていないか、暗号化されているかも評価する
+    triggers:
+      - S3 に個人情報が含まれていないか調べたい
+      - 機密データの発見
+      - PII
+    pitfalls:
+      - S3 以外のデータや、ネットワークの脅威の検出には使えない
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html

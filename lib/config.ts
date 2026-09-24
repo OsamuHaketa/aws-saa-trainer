@@ -24,6 +24,7 @@ export const config = {
     "s3", "ec2", "vpc", "iam", "organizations", "rds", "dynamodb", "elasticache", "elb", "autoscaling",
     "cloudfront", "globalaccelerator", "route53", "lambda", "apigateway", "sqs", "sns", "eventbridge",
     "kinesis", "ebs", "efs", "fsx", "cloudwatch", "cloudtrail", "config",
+    "kms", "secretsmanager", "ssm", "waf", "shield", "guardduty", "macie", "inspector", "cognito",
   ] as readonly string[],
 } as const;
 

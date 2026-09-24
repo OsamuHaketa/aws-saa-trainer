@@ -1,0 +1,33 @@
+# GuardDuty Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: guardduty
+
+atoms:
+  - id: guardduty-detector
+    category: threat-detection
+    concept: Amazon GuardDuty
+    summary: CloudTrail、VPC フローログ、DNS のログなどを分析し、脅威や不審な動きを継続的に検出する
+    facts:
+      - CloudTrail、VPC フローログ、DNS クエリのログなどを機械学習や脅威情報で分析する
+      - 不正なアクセス、侵害されたインスタンス、暗号通貨のマイニングなどを検出する
+      - 有効にするだけで使え、エージェントやログの設定は不要
+      - 検出結果を EventBridge に送り、自動で対応できる
+    triggers:
+      - アカウントへの脅威を検出したい
+      - 不審な API の呼び出しや通信を見つけたい
+      - 侵害されたインスタンスの検出
+    pitfalls:
+      - S3 の機密データの発見には Macie、脆弱性のスキャンには Inspector を使う
+    relations:
+      - type: confused_with
+        target: macie-job
+        distinction: GuardDuty はログを分析して脅威や不審な動きを検出する。Macie は S3 の中の個人情報などの機密データを見つける
+      - type: confused_with
+        target: inspector-scan
+        distinction: GuardDuty は実際に起きている不審な動き（脅威）を検出する。Inspector は EC2 やコンテナのソフトウェアの脆弱性や、意図しないネットワークの公開をスキャンする
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html

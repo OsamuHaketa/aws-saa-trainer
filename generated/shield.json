@@ -1,0 +1,136 @@
+[
+  {
+    "id": "shield-advanced:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "shield-advanced"
+    ],
+    "prompt": "大規模な DDoS 攻撃を受けるおそれがある。攻撃時は AWS の専門チームの支援を受け、攻撃で増えた料金も補償してほしい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Shield Advanced",
+        "correct": true,
+        "atomId": "shield-advanced",
+        "why": "高度な DDoS 保護、SRT の支援、スケーリング料金の補償がある"
+      },
+      {
+        "id": "b",
+        "text": "AWS Shield Standard",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "無料の基本的な保護で、専門チームの支援や補償はない"
+      },
+      {
+        "id": "c",
+        "text": "AWS WAF のみ",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "L7 の攻撃は防げるが、専門チームの支援や補償はない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出で、DDoS の緩和はしない"
+      }
+    ],
+    "explanation": "専門チーム・補償・高度な DDoS 保護 = Shield Advanced。",
+    "keywords": [
+      "DDoS",
+      "専門チーム",
+      "補償"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "shield-standard:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "shield-standard",
+      "shield-advanced"
+    ],
+    "prompt": "Shield Standard と Shield Advanced の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は無料の基本保護、後者は有料で支援と補償つき",
+        "correct": true,
+        "why": "Standard はすべての利用者に自動で適用される"
+      },
+      {
+        "id": "b",
+        "text": "前者は有料、後者は無料",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は L7、後者は L3/L4 を保護する",
+        "correct": false,
+        "why": "Standard は L3/L4 の一般的な攻撃を保護する"
+      },
+      {
+        "id": "d",
+        "text": "前者は申し込みが必要、後者は自動で適用",
+        "correct": false,
+        "why": "逆。自動で適用されるのは Standard"
+      }
+    ],
+    "explanation": "Shield Standard は何もしなくても有効。",
+    "keywords": [
+      "無料",
+      "有料"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-web-acl:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "waf-web-acl",
+      "shield-advanced"
+    ],
+    "prompt": "WAF と Shield の役割の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "WAF はアプリへの攻撃、Shield は DDoS を防ぐ",
+        "correct": true,
+        "why": "SQLi や XSS は WAF、大量の通信による攻撃は Shield"
+      },
+      {
+        "id": "b",
+        "text": "WAF は DDoS、Shield は SQL インジェクションを防ぐ",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "WAF は EC2 専用、Shield は S3 専用",
+        "correct": false,
+        "why": "どちらの説明も誤り"
+      },
+      {
+        "id": "d",
+        "text": "WAF は脅威を検出するだけで、Shield はブロックする",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出は GuardDuty の役割"
+      }
+    ],
+    "explanation": "内容の攻撃 → WAF、量の攻撃 → Shield。",
+    "keywords": [
+      "アプリへの攻撃",
+      "DDoS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
