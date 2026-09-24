@@ -1,0 +1,457 @@
+# EC2 Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: ec2
+
+atoms:
+  # --- 購入オプション ----------------------------------------------------------
+
+  - id: ec2-on-demand
+    category: purchasing
+    concept: オンデマンドインスタンス
+    summary: 長期契約なしで、使った分だけ秒単位または時間単位で払う
+    facts:
+      - 長期の契約や前払いが不要で、いつでも起動・停止できる
+      - 使った時間に応じて課金される（Linux などは秒単位）
+      - 中断されることはない
+      - 短期間の処理や、使用量が予測できない処理に向く
+    triggers:
+      - 短期間だけ使う
+      - 使用量が予測できない
+      - 中断されては困るが、長期契約はしたくない
+    pitfalls:
+      - 24 時間 365 日動かし続けるなら、Savings Plans やリザーブドインスタンスより割高
+    relations: []
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html
+
+  - id: ec2-reserved-instances
+    category: purchasing
+    concept: リザーブドインスタンス（RI）
+    summary: 1 年または 3 年の利用を約束して、特定のインスタンスを割引価格で使う
+    facts:
+      - 1 年または 3 年の期間で契約し、オンデマンドより大幅に安くなる
+      - 前払いなし・一部前払い・全額前払いを選べ、前払いが多いほど割引が大きい
+      - スタンダード RI は割引が大きいが、インスタンスファミリーを変えられない。コンバーティブル RI は変更できる代わりに割引が小さい
+      - AZ を指定したリザーブドインスタンスは、その AZ のキャパシティも予約する
+    triggers:
+      - 常時稼働する
+      - 1 年以上同じ構成で使い続ける
+      - 定常的なワークロード
+    pitfalls:
+      - 数か月で終わる処理や、構成が大きく変わる予定がある場合は、使わない分も払うことになる
+    relations:
+      - type: confused_with
+        target: ec2-savings-plans
+        distinction: RI は特定のインスタンスの属性（タイプ、リージョンなど）に対する割引。Savings Plans は 1 時間あたりの利用金額を約束し、インスタンスファミリーやリージョンが変わっても割引が適用されやすい
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html
+
+  - id: ec2-savings-plans
+    category: purchasing
+    concept: Savings Plans
+    summary: 1 時間あたりの利用金額を 1 年または 3 年約束して、柔軟に割引を受ける
+    facts:
+      - 1 年または 3 年の期間で、1 時間あたりの利用金額（ドル）を約束する
+      - Compute Savings Plans は、インスタンスファミリー、サイズ、リージョン、OS が変わっても適用され、Fargate と Lambda にも使える
+      - EC2 Instance Savings Plans は、特定のリージョンのインスタンスファミリーに限定される代わりに割引が大きい
+    triggers:
+      - インスタンスの種類やリージョンを今後変える可能性がある
+      - EC2 と Fargate と Lambda をまとめて割引したい
+      - 長期的に一定額以上は使い続ける
+    pitfalls:
+      - 約束した金額より使わなかった分も支払いが発生する
+    relations: []
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html
+
+  - id: ec2-spot-instances
+    category: purchasing
+    concept: スポットインスタンス
+    summary: 余っているキャパシティを大幅な割引で使う。2 分前の通知で中断されることがある
+    facts:
+      - オンデマンドより最大 90% 安い
+      - AWS がキャパシティを必要とすると、2 分前の通知のあとで中断される
+      - バッチ処理、CI、ビッグデータ処理など、中断されても再実行できる処理に向く
+      - 複数のインスタンスタイプや AZ を組み合わせると、中断の影響を減らせる
+    triggers:
+      - 中断されても問題ない
+      - 途中から再開できるバッチ処理
+      - コストを最小にしたい
+    pitfalls:
+      - データベースなど、中断されると困る処理に使うのは不適切
+    relations:
+      - type: confused_with
+        target: ec2-on-demand
+        distinction: オンデマンドは中断されないが割引がない。スポットは最大 90% 安いが、2 分前の通知で中断されることがある
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html
+
+  - id: ec2-dedicated-hosts
+    category: purchasing
+    concept: Dedicated Hosts
+    summary: 物理サーバー 1 台を専有し、ソケットやコアの単位でライセンスを管理できる
+    facts:
+      - 物理サーバーを丸ごと専有する
+      - 物理サーバーのソケット数やコア数が見えるので、それに紐づくソフトウェアライセンス（BYOL）を使える
+      - どの物理サーバーにインスタンスを置くかを制御できる
+    triggers:
+      - ソケット単位・コア単位のライセンスを持ち込みたい
+      - 物理サーバーを専有する必要がある
+      - コンプライアンスで専用の物理サーバーが求められる
+    pitfalls:
+      - ライセンスや規制の要件がないのに使うと、コストが高いだけ
+    relations:
+      - type: confused_with
+        target: ec2-dedicated-instances
+        distinction: Dedicated Hosts は物理サーバーを専有し、ソケットやコアが見えて配置も制御できる。Dedicated Instances は他の顧客とハードウェアを共有しないだけで、物理サーバーの情報は見えない
+    examDomains: [cost, secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html
+
+  - id: ec2-dedicated-instances
+    category: purchasing
+    concept: Dedicated Instances
+    summary: 他の顧客とハードウェアを共有しない専用のハードウェアでインスタンスを動かす
+    facts:
+      - 自分のアカウント専用のハードウェアでインスタンスが動く
+      - 他の AWS アカウントのインスタンスと、同じハードウェアを共有しない
+      - 物理サーバーのソケットやコアは見えず、配置も制御できない
+    triggers:
+      - 他の顧客とハードウェアを共有したくない
+      - 物理サーバーの管理まではしなくてよい
+    pitfalls:
+      - ソケット単位のライセンスを持ち込むには向かない（Dedicated Hosts を使う）
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-instance.html
+
+  - id: ec2-capacity-reservations
+    category: purchasing
+    concept: オンデマンドキャパシティ予約
+    summary: 特定の AZ でインスタンスを起動できるキャパシティを、期間を決めずに確保する
+    facts:
+      - 特定の AZ で、指定したインスタンスタイプのキャパシティを確保する
+      - 長期契約は不要で、いつでも作成・解除できる
+      - 予約した分は、インスタンスを起動していなくても料金がかかる
+      - それ自体に割引はなく、Savings Plans などと組み合わせて割引を受ける
+    triggers:
+      - 特定の AZ でキャパシティを確実に確保したい
+      - 繁忙期のイベント中だけ確実に起動したい
+    pitfalls:
+      - 割引目的で使うのは誤り。割引は Savings Plans やリージョンのリザーブドインスタンスで得る
+    relations:
+      - type: confused_with
+        target: ec2-reserved-instances
+        distinction: キャパシティ予約は割引なしでキャパシティだけを確保し、期間の約束も不要。RI は 1〜3 年の約束で割引を得る
+    examDomains: [resilient, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html
+
+  # --- 配置 -------------------------------------------------------------------
+
+  - id: ec2-cluster-placement-group
+    category: placement
+    concept: クラスタープレイスメントグループ
+    summary: 1 つの AZ 内でインスタンスを近くに配置し、低レイテンシ・高スループットの通信を実現する
+    facts:
+      - 1 つの AZ の中で、インスタンスを物理的に近くに配置する
+      - インスタンス間の通信が低レイテンシ・高スループットになる
+      - 密結合の HPC（ハイパフォーマンスコンピューティング）に向く
+    triggers:
+      - インスタンス間の通信を最も低レイテンシにしたい
+      - HPC
+      - 密結合の並列処理
+    pitfalls:
+      - 1 つの AZ に集まるので、AZ の障害ですべてのインスタンスが影響を受ける
+    relations:
+      - type: confused_with
+        target: ec2-spread-placement-group
+        distinction: クラスターは性能のために近くに集める。スプレッドは障害の影響を減らすために、インスタンスを別々のラックに分散する
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html
+
+  - id: ec2-spread-placement-group
+    category: placement
+    concept: スプレッドプレイスメントグループ
+    summary: 少数の重要なインスタンスを、それぞれ別のラックに分散して配置する
+    facts:
+      - 各インスタンスを、電源とネットワークが別々のラックに配置する
+      - 1 つの AZ あたり、グループ内で実行できるインスタンスは 7 個まで
+      - 複数の AZ にまたがって使える
+    triggers:
+      - 少数の重要なインスタンスを、同時に障害に巻き込まれないようにしたい
+      - ハードウェア障害の影響を最小にしたい
+    pitfalls:
+      - 数百台規模の分散システムには 7 個/AZ の上限で足りない。パーティションを使う
+    relations:
+      - type: confused_with
+        target: ec2-partition-placement-group
+        distinction: スプレッドはインスタンス 1 台ごとに別ラックで、7 個/AZ まで。パーティションはインスタンスのグループ（パーティション）ごとに別ラックで、数百台規模に使える
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html
+
+  - id: ec2-partition-placement-group
+    category: placement
+    concept: パーティションプレイスメントグループ
+    summary: インスタンスをパーティションに分け、パーティションごとに別のラックに配置する
+    facts:
+      - パーティションごとに別々のラックに配置し、1 つのラックの障害が他のパーティションに及ばない
+      - 1 つの AZ あたり最大 7 パーティションで、各パーティションに多数のインスタンスを置ける
+      - どのインスタンスがどのパーティションにあるかをアプリから確認できる
+      - HDFS、HBase、Cassandra、Kafka などの大規模な分散システムに向く
+    triggers:
+      - Hadoop や Cassandra などの大規模分散システム
+      - ラック単位で障害の影響を分けたい
+    pitfalls:
+      - インスタンス間を最も低レイテンシにしたい HPC にはクラスターを使う
+    relations: []
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html
+
+  - id: ec2-efa
+    category: placement
+    concept: Elastic Fabric Adapter（EFA）
+    summary: OS を介さない通信で、HPC や機械学習のノード間通信を高速化するネットワークインターフェイス
+    facts:
+      - OS バイパスにより、ノード間の通信を低レイテンシにする
+      - MPI を使う HPC や、分散機械学習に使う
+      - クラスタープレイスメントグループと組み合わせて使うことが多い
+    triggers:
+      - MPI
+      - 密結合の HPC で、ノード間通信がボトルネック
+    pitfalls:
+      - 通常の Web アプリには不要
+    relations:
+      - type: used_with
+        target: ec2-cluster-placement-group
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+
+  # --- インスタンス -------------------------------------------------------------
+
+  - id: ec2-instance-store
+    category: instance
+    concept: インスタンスストア
+    summary: ホストに物理的に付いた一時的なブロックストレージ。停止するとデータが消える
+    facts:
+      - インスタンスのホストに物理的に接続された、非常に高速なストレージ
+      - インスタンスを停止・終了したり、ハードウェアが故障したりするとデータが消える（再起動では消えない）
+      - バッファ、キャッシュ、一時的な作業領域に向く
+    triggers:
+      - 一時的なデータ
+      - 非常に高い IOPS の一時領域
+      - キャッシュやスクラッチ領域
+    pitfalls:
+      - 永続化が必要なデータを置くと、停止や故障で失う
+    relations:
+      - type: confused_with
+        target: ec2-ebs-volume
+        distinction: インスタンスストアはホストに付いた一時的なストレージで、停止で消える。EBS はネットワーク経由のストレージで、インスタンスを停止しても残る
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html
+
+  - id: ec2-ebs-volume
+    category: instance
+    concept: EBS ボリューム（EC2 のルート・データ領域）
+    summary: EC2 にネットワーク経由で接続する永続的なブロックストレージ
+    facts:
+      - インスタンスを停止・終了してもデータが残る（ルートボリュームは終了時にデフォルトで削除）
+      - 1 つの AZ 内にあり、同じ AZ のインスタンスにだけ接続できる
+      - スナップショットで S3 にバックアップでき、別の AZ やリージョンに復元できる
+    triggers:
+      - インスタンスを停止してもデータを残したい
+      - EC2 のブロックストレージ
+    pitfalls:
+      - 別の AZ のインスタンスに直接付け替えることはできない。スナップショットから作り直す
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes.html
+
+  - id: ec2-user-data
+    category: instance
+    concept: ユーザーデータ
+    summary: インスタンスの初回起動時に実行するスクリプトで、初期設定を自動化する
+    facts:
+      - インスタンスの起動時に、スクリプトを自動で実行できる
+      - デフォルトでは、最初の起動時にだけ実行される
+      - ソフトウェアのインストールや設定の自動化（ブートストラップ）に使う
+    triggers:
+      - 起動時に自動でソフトウェアをインストールしたい
+      - 初期設定を自動化したい
+    pitfalls:
+      - パスワードなどの秘密情報をユーザーデータに直接書くのは不適切（インスタンス内から誰でも読める）
+    relations:
+      - type: confused_with
+        target: ec2-ami
+        distinction: ユーザーデータは起動のたびに設定を実行する（起動に時間がかかる）。AMI はあらかじめ設定済みのイメージから起動する（起動が速い）
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html
+
+  - id: ec2-ami
+    category: instance
+    concept: AMI（Amazon マシンイメージ）
+    summary: OS やソフトウェアを含む、インスタンスを起動するためのテンプレート
+    facts:
+      - OS、アプリケーション、設定を含んだイメージから、インスタンスを起動できる
+      - AMI はリージョンごとのリソースで、別のリージョンにコピーできる
+      - 他のアカウントと共有できる
+      - あらかじめ設定を済ませた AMI（ゴールデンイメージ）を使うと、起動が速くなる
+    triggers:
+      - 設定済みのサーバーを素早く起動したい
+      - 別のリージョンに同じサーバーを作りたい
+      - 起動時間を短くしたい
+    pitfalls:
+      - 別のリージョンで起動するには、先に AMI をそのリージョンへコピーする必要がある
+    relations: []
+    examDomains: [resilient, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html
+
+  - id: ec2-imdsv2
+    category: instance
+    concept: インスタンスメタデータサービス v2（IMDSv2）
+    summary: セッショントークンを必須にして、インスタンスメタデータへの不正なアクセスを防ぐ
+    facts:
+      - インスタンスメタデータは、インスタンス内から 169.254.169.254 で取得できる
+      - IMDSv2 は、事前に取得したセッショントークンをリクエストに必要とする
+      - SSRF などの攻撃で、IAM ロールの認証情報を盗まれるリスクを減らせる
+      - IMDSv2 だけを使うように強制できる
+    triggers:
+      - SSRF 対策
+      - インスタンスメタデータの保護
+    pitfalls:
+      - IMDSv1 を許可したままだと、アプリの脆弱性からメタデータの認証情報が漏れるおそれがある
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
+
+  - id: ec2-hibernate
+    category: instance
+    concept: EC2 休止（Hibernate）
+    summary: メモリの内容を EBS に保存して停止し、再開時にメモリの状態から続けられる
+    facts:
+      - 停止時にメモリ（RAM）の内容を EBS のルートボリュームに保存する
+      - 再開すると、アプリやプロセスがメモリの状態のまま再開する
+      - ルートボリュームは EBS で、暗号化されている必要がある
+      - 起動に時間がかかるアプリを、素早く使える状態に戻したいときに使う
+    triggers:
+      - メモリの状態を保ったまま停止したい
+      - 起動やキャッシュの温めに時間がかかる
+    pitfalls:
+      - 通常の停止では、メモリの内容は失われる
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html
+
+  - id: ec2-elastic-ip
+    category: instance
+    concept: Elastic IP アドレス
+    summary: アカウントに割り当てる固定のパブリック IPv4 アドレス。別のインスタンスに付け替えられる
+    facts:
+      - 停止・起動しても変わらない、固定のパブリック IPv4 アドレス
+      - 別のインスタンスに付け替えて、障害時の切り替えに使える
+      - パブリック IPv4 アドレスには時間単位の料金がかかる
+    triggers:
+      - 固定のパブリック IP アドレスが必要
+      - 取引先のファイアウォールに IP アドレスを登録する
+    pitfalls:
+      - 可用性の設計を Elastic IP の付け替えに頼るより、ロードバランサーや DNS を使う方が一般的
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+
+  - id: ec2-instance-families
+    category: instance
+    concept: インスタンスファミリー
+    summary: 用途に合わせて、汎用・コンピューティング最適化・メモリ最適化・ストレージ最適化などを選ぶ
+    facts:
+      - 汎用（M、T）はバランス型で、Web サーバーなどに使う
+      - コンピューティング最適化（C）は CPU 性能重視で、バッチ処理やゲームサーバー、HPC に使う
+      - メモリ最適化（R、X）は大容量メモリで、インメモリ DB やリアルタイムの大規模データ処理に使う
+      - ストレージ最適化（I、D）はローカルストレージへの高速な読み書きが必要な DB や分散ファイルシステムに使う
+      - 高速コンピューティング（P、G など）は GPU などを持ち、機械学習や画像処理に使う
+    triggers:
+      - CPU を大量に使う
+      - 大量のデータをメモリに載せる
+      - ローカルディスクへの高速な読み書き
+      - GPU が必要
+    pitfalls:
+      - 用途に合わないファミリーを選び、サイズを上げて対応するとコストが無駄になる
+    relations: []
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-type-names.html
+
+  - id: ec2-burstable-instances
+    category: instance
+    concept: バーストパフォーマンスインスタンス（T 系）
+    summary: 普段は低い CPU 使用率で動き、必要なときだけ CPU クレジットを使って性能を上げる
+    facts:
+      - ベースラインの CPU 性能を持ち、CPU クレジットを使ってそれ以上にバーストできる
+      - 平均の CPU 使用率が低く、ときどき負荷が上がるワークロードに向く
+      - Unlimited モードでは、クレジットを使い切ってもバーストを続けられる（追加料金がかかる場合がある）
+    triggers:
+      - 普段は CPU をほとんど使わない
+      - 開発環境や小規模な Web サイト
+    pitfalls:
+      - 常に高い CPU を使う処理では、クレジットが尽きて性能が落ちるか、追加料金がかかる
+    relations: []
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html

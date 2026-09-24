@@ -1,0 +1,1648 @@
+[
+  {
+    "id": "ec2-on-demand:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "ec2-on-demand"
+    ],
+    "prompt": "オンデマンドインスタンスの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "契約なしで使った分だけ払い、中断されない",
+        "correct": true,
+        "atomId": "ec2-on-demand",
+        "why": "短期間や使用量が読めない処理に向く"
+      },
+      {
+        "id": "b",
+        "text": "1〜3 年の契約で大幅に割引される",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "リザーブドインスタンスの特徴"
+      },
+      {
+        "id": "c",
+        "text": "最大 90% 安いが、中断されることがある",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "スポットインスタンスの特徴"
+      },
+      {
+        "id": "d",
+        "text": "物理サーバーを丸ごと専有できる",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "Dedicated Hosts の特徴"
+      }
+    ],
+    "explanation": "オンデマンド = 契約なし・中断なし・割引なし。",
+    "keywords": [
+      "契約なし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-on-demand:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-on-demand"
+    ],
+    "prompt": "新サービスの検証環境を 2 か月だけ動かす。途中で止められると困り、使用量も読めない。最適な購入オプションは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドインスタンス",
+        "correct": true,
+        "atomId": "ec2-on-demand",
+        "why": "長期契約が不要で、中断もされない"
+      },
+      {
+        "id": "b",
+        "text": "リザーブドインスタンス（1 年）",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "2 か月しか使わないのに 1 年分の支払いが発生する"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されることがあり、「止められると困る」に反する"
+      },
+      {
+        "id": "d",
+        "text": "Dedicated Hosts",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "物理サーバーの専有が必要な要件がなく、コストが高い"
+      }
+    ],
+    "explanation": "「短期間」「中断不可」「予測できない」= オンデマンド。",
+    "keywords": [
+      "2 か月だけ",
+      "止められると困る"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-reserved-instances:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-reserved-instances"
+    ],
+    "prompt": "社内の基幹システムの DB サーバーは、今後 3 年間同じインスタンスタイプで 24 時間稼働する。コストを最も下げるには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "3 年のスタンダード RI（全額前払い）",
+        "correct": true,
+        "atomId": "ec2-reserved-instances",
+        "why": "構成が変わらず長期に動くなら、最も割引が大きい"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドインスタンスのまま運用",
+        "correct": false,
+        "atomId": "ec2-on-demand",
+        "why": "長期に動かし続けるには割高"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されると困る DB には向かない"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "キャパシティを確保するだけで、割引はない"
+      }
+    ],
+    "explanation": "長期・定常・構成が固定 → RI（または EC2 Instance Savings Plans）。期間が長く前払いが多いほど安い。",
+    "keywords": [
+      "3 年間",
+      "24 時間稼働"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-reserved-instances:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ec2-reserved-instances",
+      "ec2-savings-plans"
+    ],
+    "prompt": "リザーブドインスタンスと比べた Compute Savings Plans の利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "構成が変わっても割引が効き、Lambda にも使える",
+        "correct": true,
+        "atomId": "ec2-savings-plans",
+        "why": "1 時間あたりの利用金額を約束するので、構成の変更に強い"
+      },
+      {
+        "id": "b",
+        "text": "契約期間の約束がなく、いつでも解約できる",
+        "correct": false,
+        "why": "どちらも 1 年または 3 年の約束が必要"
+      },
+      {
+        "id": "c",
+        "text": "約束した金額より使わなければ、支払いも減る",
+        "correct": false,
+        "why": "約束した金額は使わなくても支払う"
+      },
+      {
+        "id": "d",
+        "text": "特定の AZ のキャパシティを必ず予約できる",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "キャパシティの予約はキャパシティ予約や、AZ 指定の RI の機能"
+      }
+    ],
+    "explanation": "柔軟性なら Compute Savings Plans、割引率を最大にするなら構成を固定した RI / EC2 Instance Savings Plans。",
+    "keywords": [
+      "柔軟"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-reserved-instances:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "ec2-reserved-instances"
+    ],
+    "prompt": "リザーブドインスタンスで、あとからインスタンスファミリーを変えられるようにしたい。どれを選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コンバーティブルリザーブドインスタンス",
+        "correct": true,
+        "atomId": "ec2-reserved-instances",
+        "why": "ファミリーなどを変更できる代わりに、スタンダードより割引が小さい"
+      },
+      {
+        "id": "b",
+        "text": "スタンダードリザーブドインスタンス",
+        "correct": false,
+        "why": "インスタンスファミリーは変更できない"
+      },
+      {
+        "id": "c",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "割引の仕組みではない"
+      },
+      {
+        "id": "d",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "リザーブドインスタンスの種類ではなく、中断される"
+      }
+    ],
+    "explanation": "スタンダード = 割引大・変更不可、コンバーティブル = 割引小・変更可。",
+    "keywords": [
+      "変更"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-savings-plans:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-savings-plans"
+    ],
+    "prompt": "今後 3 年間、EC2 の利用は続くが、インスタンスタイプやリージョンを変えたり、一部を Lambda に移したりする予定がある。どう割引を受ける？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Compute Savings Plans",
+        "correct": true,
+        "atomId": "ec2-savings-plans",
+        "why": "インスタンスファミリーやリージョンが変わっても、Fargate や Lambda にも割引が適用される"
+      },
+      {
+        "id": "b",
+        "text": "スタンダードリザーブドインスタンス",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "インスタンスファミリーの変更や Lambda への移行に対応できない"
+      },
+      {
+        "id": "c",
+        "text": "EC2 Instance Savings Plans",
+        "correct": false,
+        "why": "特定のリージョンとインスタンスファミリーに限定される"
+      },
+      {
+        "id": "d",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されることがあり、定常的な処理全体には向かない"
+      }
+    ],
+    "explanation": "変更の予定がある長期利用 → Compute Savings Plans。",
+    "keywords": [
+      "変える予定",
+      "Lambda"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-savings-plans:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-savings-plans"
+    ],
+    "prompt": "「1 時間あたりの利用金額を約束」「EC2・Fargate・Lambda」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Savings Plans",
+        "correct": true,
+        "atomId": "ec2-savings-plans",
+        "why": "コンピューティング全体に使える柔軟な割引（Compute Savings Plans）"
+      },
+      {
+        "id": "b",
+        "text": "リザーブドインスタンス",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "特定のインスタンスへの割引で、Fargate や Lambda には使えない"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "余剰キャパシティの割引で、約束はない"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "キャパシティの確保で、割引ではない"
+      }
+    ],
+    "explanation": "金額（$/時間）を約束する割引 = Savings Plans。",
+    "keywords": [
+      "1 時間あたりの利用金額"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-instances:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-spot-instances"
+    ],
+    "prompt": "毎晩の画像変換バッチは、途中で止まっても最初から再実行できる。コストを最小にするには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スポットインスタンスで実行する",
+        "correct": true,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されても再実行できる処理なら、最大 90% 安く実行できる"
+      },
+      {
+        "id": "b",
+        "text": "リザーブドインスタンスで実行する",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "夜間だけの処理に 1 年以上の約束は割高"
+      },
+      {
+        "id": "c",
+        "text": "Dedicated Hosts で実行する",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "専有の要件がなく、コストが高い"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドキャパシティ予約で実行する",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "割引がなく、予約分の料金もかかる"
+      }
+    ],
+    "explanation": "「中断されてもよい」「再実行できる」「最安」= スポット。",
+    "keywords": [
+      "途中で止まっても",
+      "最小"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-instances:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "ec2-spot-instances"
+    ],
+    "prompt": "コスト削減のため、本番のリレーショナル DB を 1 台のスポットインスタンスで動かした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "2 分前の通知で中断されることがあり、DB が止まってしまう",
+        "correct": true,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されると困る処理には、オンデマンドや RI、Savings Plans を使う"
+      },
+      {
+        "id": "b",
+        "text": "スポットインスタンスではディスクを使えない",
+        "correct": false,
+        "why": "EBS を使える"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンスは 1 時間ごとに再起動される",
+        "correct": false,
+        "why": "定期的に再起動されることはない"
+      },
+      {
+        "id": "d",
+        "text": "スポットインスタンスはオンデマンドより高い",
+        "correct": false,
+        "why": "最大 90% 安い"
+      }
+    ],
+    "explanation": "スポットは「止まっても困らない」処理専用と覚える。",
+    "keywords": [
+      "本番",
+      "DB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-instances:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "ec2-spot-instances"
+    ],
+    "prompt": "スポットインスタンスが中断されるとき、どうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "2 分前に通知されたあと、中断される",
+        "correct": true,
+        "atomId": "ec2-spot-instances",
+        "why": "通知を受けて処理の保存や切り替えをする"
+      },
+      {
+        "id": "b",
+        "text": "24 時間前に通知されたあと、中断される",
+        "correct": false,
+        "why": "通知は 2 分前"
+      },
+      {
+        "id": "c",
+        "text": "通知なしで、いきなり中断される",
+        "correct": false,
+        "why": "2 分前に中断の通知がある"
+      },
+      {
+        "id": "d",
+        "text": "中断されることはなく、料金が上がるだけ",
+        "correct": false,
+        "why": "キャパシティが必要になると中断される"
+      }
+    ],
+    "explanation": "スポットの中断通知は 2 分前。",
+    "keywords": [
+      "2 分前"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-dedicated-hosts:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-dedicated-hosts"
+    ],
+    "prompt": "オンプレミスで使っている、物理 CPU のソケット数で課金されるソフトウェアライセンスを EC2 に持ち込みたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Dedicated Hosts",
+        "correct": true,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "物理サーバーのソケットやコアが見えるので、ソケット単位のライセンスを適用できる"
+      },
+      {
+        "id": "b",
+        "text": "Dedicated Instances",
+        "correct": false,
+        "atomId": "ec2-dedicated-instances",
+        "why": "専用のハードウェアだが、ソケット数などは見えない"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "物理サーバーの情報は見えず、中断もある"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドインスタンス",
+        "correct": false,
+        "atomId": "ec2-on-demand",
+        "why": "他の顧客とハードウェアを共有し、ソケット数も見えない"
+      }
+    ],
+    "explanation": "「ソケット単位」「コア単位」「BYOL」= Dedicated Hosts。",
+    "keywords": [
+      "ソケット数",
+      "ライセンス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-dedicated-hosts:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ec2-dedicated-hosts",
+      "ec2-dedicated-instances"
+    ],
+    "prompt": "Dedicated Hosts と Dedicated Instances の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は物理サーバーのソケットや配置が見え、後者は見えない",
+        "correct": true,
+        "why": "どちらも他の顧客とハードウェアを共有しない"
+      },
+      {
+        "id": "b",
+        "text": "前者は他の顧客とハードウェアを共有し、後者は共有しない",
+        "correct": false,
+        "why": "どちらも共有しない"
+      },
+      {
+        "id": "c",
+        "text": "前者はスポットでのみ使え、後者はオンデマンドでのみ使える",
+        "correct": false,
+        "why": "そのような区別はない"
+      },
+      {
+        "id": "d",
+        "text": "前者は 1 年契約が必須で、後者は契約不要",
+        "correct": false,
+        "why": "契約の有無の違いではない"
+      }
+    ],
+    "explanation": "ライセンスや物理サーバーの制御が必要なら Dedicated Hosts。単に共有したくないだけなら Dedicated Instances。",
+    "keywords": [
+      "ソケット",
+      "配置の制御"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-capacity-reservations:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-capacity-reservations"
+    ],
+    "prompt": "年末のセール期間の 2 週間だけ、特定の AZ で必ず 50 台のインスタンスを起動できるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": true,
+        "atomId": "ec2-capacity-reservations",
+        "why": "長期契約なしで、特定の AZ のキャパシティを確保できる"
+      },
+      {
+        "id": "b",
+        "text": "3 年のリザーブドインスタンス",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "2 週間のために 3 年の約束は過剰"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "キャパシティは保証されず、中断されることもある"
+      },
+      {
+        "id": "d",
+        "text": "Compute Savings Plans",
+        "correct": false,
+        "atomId": "ec2-savings-plans",
+        "why": "割引の仕組みで、キャパシティは確保されない"
+      }
+    ],
+    "explanation": "「特定の AZ」「必ず起動したい」「短期間」= オンデマンドキャパシティ予約。",
+    "keywords": [
+      "必ず起動できる",
+      "2 週間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-capacity-reservations:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-capacity-reservations"
+    ],
+    "prompt": "コストを下げる目的で、オンデマンドキャパシティ予約を作った。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャパシティ予約自体に割引はなく、未使用分も課金される",
+        "correct": true,
+        "atomId": "ec2-capacity-reservations",
+        "why": "割引は Savings Plans やリージョンの RI と組み合わせて得る"
+      },
+      {
+        "id": "b",
+        "text": "キャパシティ予約は 3 年契約が必須",
+        "correct": false,
+        "why": "長期契約は不要"
+      },
+      {
+        "id": "c",
+        "text": "キャパシティ予約は 1 台までしか作れない",
+        "correct": false,
+        "why": "複数台分を予約できる"
+      },
+      {
+        "id": "d",
+        "text": "キャパシティ予約するとインスタンスが中断されやすくなる",
+        "correct": false,
+        "why": "中断されやすくなることはない"
+      }
+    ],
+    "explanation": "キャパシティ予約 = 確保するだけ。割引は別の仕組み。",
+    "keywords": [
+      "コストを下げる目的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-cluster-placement-group:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-cluster-placement-group"
+    ],
+    "prompt": "気象シミュレーションで、数十台のインスタンスが常に大量のデータをやり取りする。ノード間の通信を最も低レイテンシにしたい。どう配置する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "クラスタープレイスメントグループ",
+        "correct": true,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "1 つの AZ 内で物理的に近くに配置し、低レイテンシ・高スループットにする"
+      },
+      {
+        "id": "b",
+        "text": "スプレッドプレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-spread-placement-group",
+        "why": "別々のラックに分散するので、通信の近さは優先しない"
+      },
+      {
+        "id": "c",
+        "text": "パーティションプレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-partition-placement-group",
+        "why": "ラック単位の障害分離が目的で、最も低レイテンシにはならない"
+      },
+      {
+        "id": "d",
+        "text": "複数の AZ に均等に分散する",
+        "correct": false,
+        "why": "AZ 間の通信は AZ 内より遅い"
+      }
+    ],
+    "explanation": "HPC・密結合・最低レイテンシ = クラスター。",
+    "keywords": [
+      "低レイテンシ",
+      "HPC"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-cluster-placement-group:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-cluster-placement-group"
+    ],
+    "prompt": "高可用性が必要な Web サーバー群を、すべて 1 つのクラスタープレイスメントグループに置いた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "1 つの AZ に集まり、AZ やラックの障害でまとめて止まりうる",
+        "correct": true,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "可用性が目的なら、複数 AZ への分散やスプレッドを使う"
+      },
+      {
+        "id": "b",
+        "text": "クラスタープレイスメントグループは Web サーバーを置けない",
+        "correct": false,
+        "why": "置くことはできる。目的が合わないだけ"
+      },
+      {
+        "id": "c",
+        "text": "クラスタープレイスメントグループは通信が遅い",
+        "correct": false,
+        "why": "通信は最も速い"
+      },
+      {
+        "id": "d",
+        "text": "クラスタープレイスメントグループは 7 台までしか置けない",
+        "correct": false,
+        "why": "7 台/AZ の上限があるのはスプレッド"
+      }
+    ],
+    "explanation": "クラスターは性能のための配置で、可用性とは逆方向。",
+    "keywords": [
+      "高可用性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spread-placement-group:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-spread-placement-group"
+    ],
+    "prompt": "3 台の重要なインスタンスが、同じハードウェア障害で同時に止まらないようにしたい。どう配置する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スプレッドプレイスメントグループ",
+        "correct": true,
+        "atomId": "ec2-spread-placement-group",
+        "why": "インスタンスを 1 台ずつ別のラックに配置する"
+      },
+      {
+        "id": "b",
+        "text": "クラスタープレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "近くに集めるので、同じ障害に巻き込まれやすい"
+      },
+      {
+        "id": "c",
+        "text": "パーティションプレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-partition-placement-group",
+        "why": "大規模な分散システム向けで、少数のインスタンスならスプレッドが適する"
+      },
+      {
+        "id": "d",
+        "text": "同じ Dedicated Host にまとめる",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "同じ物理サーバーなので、同時に止まる"
+      }
+    ],
+    "explanation": "少数・重要・別々のラック = スプレッド。",
+    "keywords": [
+      "同時に止まらない",
+      "少数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spread-placement-group:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "ec2-spread-placement-group"
+    ],
+    "prompt": "スプレッドプレイスメントグループで、1 つの AZ あたりに実行できるインスタンスの上限は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "7 個",
+        "correct": true,
+        "atomId": "ec2-spread-placement-group",
+        "why": "大規模な分散システムにはパーティションを使う"
+      },
+      {
+        "id": "b",
+        "text": "3 個",
+        "correct": false,
+        "why": "上限は 7 個"
+      },
+      {
+        "id": "c",
+        "text": "100 個",
+        "correct": false,
+        "why": "上限は 7 個"
+      },
+      {
+        "id": "d",
+        "text": "上限はない",
+        "correct": false,
+        "why": "1 つの AZ あたり 7 個まで"
+      }
+    ],
+    "explanation": "スプレッド = 7 個/AZ。パーティションも 7 パーティション/AZ（各パーティションに多数）。",
+    "keywords": [
+      "7 個"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-partition-placement-group:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-partition-placement-group"
+    ],
+    "prompt": "数百台の Cassandra クラスターで、ラックの障害の影響をデータの複製単位で分けたい。どう配置する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パーティションプレイスメントグループ",
+        "correct": true,
+        "atomId": "ec2-partition-placement-group",
+        "why": "パーティションごとに別のラックに置き、アプリからパーティションを確認できる"
+      },
+      {
+        "id": "b",
+        "text": "スプレッドプレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-spread-placement-group",
+        "why": "7 個/AZ の上限があり、数百台には使えない"
+      },
+      {
+        "id": "c",
+        "text": "クラスタープレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "近くに集めるので、障害の影響が広がる"
+      },
+      {
+        "id": "d",
+        "text": "すべてを同じ Dedicated Host に置く",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "数百台は載らず、障害の影響も集中する"
+      }
+    ],
+    "explanation": "大規模分散システム（HDFS、HBase、Cassandra、Kafka）= パーティション。",
+    "keywords": [
+      "数百台",
+      "Cassandra"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spread-placement-group:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ec2-spread-placement-group",
+      "ec2-partition-placement-group"
+    ],
+    "prompt": "スプレッドとパーティションのプレイスメントグループの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は 1 台ずつ、後者はグループ単位で別ラックに配置する",
+        "correct": true,
+        "why": "スプレッドは少数の重要なインスタンス、パーティションは大規模な分散システム向け"
+      },
+      {
+        "id": "b",
+        "text": "前者は 1 つの AZ 専用、後者は複数 AZ にまたがれる",
+        "correct": false,
+        "why": "どちらも複数 AZ にまたがって使える"
+      },
+      {
+        "id": "c",
+        "text": "前者は低レイテンシが目的、後者は障害分離が目的",
+        "correct": false,
+        "why": "低レイテンシが目的なのはクラスター"
+      },
+      {
+        "id": "d",
+        "text": "前者は数百台を置け、後者は 7 台まで",
+        "correct": false,
+        "why": "逆。スプレッドは 7 個/AZ まで"
+      }
+    ],
+    "explanation": "スプレッド = 1 台ずつ分散（少数）、パーティション = グループ単位で分散（大規模）。",
+    "keywords": [
+      "1 台ずつ",
+      "グループ単位"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-efa:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-efa",
+      "ec2-cluster-placement-group"
+    ],
+    "prompt": "MPI を使う密結合の HPC ジョブで、ノード間の通信がボトルネックになっている。さらに高速化するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EFA を使い、クラスター配置にする",
+        "correct": true,
+        "atomId": "ec2-efa",
+        "why": "OS をバイパスする通信で、ノード間のレイテンシをさらに下げられる"
+      },
+      {
+        "id": "b",
+        "text": "スポットインスタンスに変更する",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "コストは下がるが、通信は速くならない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを複数のリージョンに分散する",
+        "correct": false,
+        "why": "通信の距離が伸びて遅くなる"
+      },
+      {
+        "id": "d",
+        "text": "バーストパフォーマンスインスタンスに変更する",
+        "correct": false,
+        "atomId": "ec2-burstable-instances",
+        "why": "CPU クレジットの仕組みで、通信の高速化ではない"
+      }
+    ],
+    "explanation": "「MPI」「密結合」「ノード間通信」= EFA + クラスター。",
+    "keywords": [
+      "MPI",
+      "ノード間の通信"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-store:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "ec2-instance-store"
+    ],
+    "prompt": "インスタンスストアのデータが消えるのはどんなとき？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "停止・終了やハードウェア故障のとき",
+        "correct": true,
+        "atomId": "ec2-instance-store",
+        "why": "再起動では消えないが、停止すると消える"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスの再起動時だけ",
+        "correct": false,
+        "why": "再起動では消えない"
+      },
+      {
+        "id": "c",
+        "text": "スナップショットを取得したとき",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "インスタンスストアにはスナップショットの機能がない。スナップショットは EBS の機能"
+      },
+      {
+        "id": "d",
+        "text": "データは消えず、永続的に保存される",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "永続的なのは EBS"
+      }
+    ],
+    "explanation": "インスタンスストア = 一時的。停止で消える。",
+    "keywords": [
+      "停止",
+      "消える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-store:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-instance-store"
+    ],
+    "prompt": "分散処理の中間データを一時的に置く領域が欲しい。消えても再計算でき、とにかく高い IOPS が必要。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスストア",
+        "correct": true,
+        "atomId": "ec2-instance-store",
+        "why": "ホストに直結した非常に高速なストレージで、一時データに向く"
+      },
+      {
+        "id": "b",
+        "text": "EBS ボリューム",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "永続化されるが、一時データにはインスタンスストアの方が速く安い"
+      },
+      {
+        "id": "c",
+        "text": "S3 Standard",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "オブジェクトストレージで、ブロックストレージのような高い IOPS は出ない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Glacier Instant Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-instant-retrieval",
+        "why": "アーカイブ用で、作業領域には向かない"
+      }
+    ],
+    "explanation": "「一時的」「消えてもよい」「超高 IOPS」= インスタンスストア。",
+    "keywords": [
+      "一時的",
+      "IOPS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-store:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ec2-instance-store",
+      "ec2-ebs-volume"
+    ],
+    "prompt": "インスタンスストアと EBS の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は停止でデータが消え、後者は停止しても残る",
+        "correct": true,
+        "why": "永続化が必要なら EBS、一時的な高速領域ならインスタンスストア"
+      },
+      {
+        "id": "b",
+        "text": "前者はネットワーク経由、後者はホストに直結",
+        "correct": false,
+        "why": "逆。インスタンスストアがホストに直結している"
+      },
+      {
+        "id": "c",
+        "text": "前者はスナップショットを取れ、後者は取れない",
+        "correct": false,
+        "why": "スナップショットを取れるのは EBS"
+      },
+      {
+        "id": "d",
+        "text": "前者は別の AZ のインスタンスに付け替えられる",
+        "correct": false,
+        "why": "インスタンスストアは付け替えできない"
+      }
+    ],
+    "explanation": "インスタンスストア = 一時・高速・ホスト直結、EBS = 永続・ネットワーク経由・スナップショット可。",
+    "keywords": [
+      "停止",
+      "永続"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-store:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "ec2-instance-store"
+    ],
+    "prompt": "唯一の顧客データを、コスト削減のためインスタンスストアだけに保存した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "停止や故障でデータが消え、元に戻せない",
+        "correct": true,
+        "atomId": "ec2-instance-store",
+        "why": "永続化が必要なデータは EBS や S3 などに置く"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスストアは暗号化できない",
+        "correct": false,
+        "why": "問題の本質は永続性"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストアは読み取り専用",
+        "correct": false,
+        "why": "読み書きできる"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスストアは EBS より遅い",
+        "correct": false,
+        "why": "むしろ非常に高速"
+      }
+    ],
+    "explanation": "インスタンスストアに「唯一のデータ」を置いてはいけない。",
+    "keywords": [
+      "唯一"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ebs-volume:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-ebs-volume"
+    ],
+    "prompt": "AZ-a の EC2 の EBS ボリュームを、AZ-b の EC2 に直接付け替えようとしたができない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スナップショットを取り、AZ-b でボリュームを作る",
+        "correct": true,
+        "atomId": "ec2-ebs-volume",
+        "why": "EBS は 1 つの AZ 内のリソースなので、スナップショットを経由して別の AZ に作る"
+      },
+      {
+        "id": "b",
+        "text": "ボリュームのタイプを gp3 に変えてから付け替える",
+        "correct": false,
+        "why": "タイプを変えても AZ の制約は変わらない"
+      },
+      {
+        "id": "c",
+        "text": "AZ-b の EC2 を再起動してから付け替える",
+        "correct": false,
+        "why": "再起動しても別の AZ のボリュームは付けられない"
+      },
+      {
+        "id": "d",
+        "text": "ボリュームを暗号化してから付け替える",
+        "correct": false,
+        "why": "暗号化は AZ の制約と関係がない"
+      }
+    ],
+    "explanation": "EBS は AZ に閉じる。AZ やリージョンをまたぐならスナップショット。",
+    "keywords": [
+      "別の AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-user-data:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-user-data"
+    ],
+    "prompt": "EC2 の起動時に、自動で Web サーバーをインストールして設定したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ユーザーデータにスクリプトを書く",
+        "correct": true,
+        "atomId": "ec2-user-data",
+        "why": "初回起動時にスクリプトが自動で実行される"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスメタデータにスクリプトを書く",
+        "correct": false,
+        "atomId": "ec2-imdsv2",
+        "why": "メタデータはインスタンスの情報を取得するもので、スクリプトの実行ではない"
+      },
+      {
+        "id": "c",
+        "text": "Elastic IP アドレスを割り当てる",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "固定の IP アドレスで、設定の自動化とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "休止（Hibernate）を有効にする",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "メモリの状態を保存する機能"
+      }
+    ],
+    "explanation": "起動時の初期設定の自動化 = ユーザーデータ。",
+    "keywords": [
+      "起動時",
+      "自動でインストール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-user-data:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ec2-user-data",
+      "ec2-ami"
+    ],
+    "prompt": "Auto Scaling で起動が遅い原因が、ユーザーデータでの大量のインストールだった。どうすれば速くなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "必要なソフトを入れたカスタム AMI から起動する",
+        "correct": true,
+        "atomId": "ec2-ami",
+        "why": "起動時のインストールが不要になり、すぐに使えるようになる"
+      },
+      {
+        "id": "b",
+        "text": "ユーザーデータのスクリプトを 2 回実行させる",
+        "correct": false,
+        "why": "時間がさらにかかる"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストアにソフトを保存しておく",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "インスタンスストアは停止で消え、新しいインスタンスには引き継がれない"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP アドレスを付ける",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "起動時間には関係がない"
+      }
+    ],
+    "explanation": "起動を速くする = 設定済みの AMI（ゴールデンイメージ）。起動時の処理を減らす。",
+    "keywords": [
+      "起動が遅い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ami:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-ami"
+    ],
+    "prompt": "東京リージョンで動いているサーバーと同じ構成を、大阪リージョンにも素早く作りたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AMI を作成して大阪リージョンにコピーし、起動する",
+        "correct": true,
+        "atomId": "ec2-ami",
+        "why": "AMI はリージョンごとのリソースなので、コピーしてから使う"
+      },
+      {
+        "id": "b",
+        "text": "東京リージョンの AMI をそのまま大阪で指定して起動する",
+        "correct": false,
+        "why": "AMI はリージョンごとのリソースで、コピーしないと使えない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストアをコピーする",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "インスタンスストアはコピーできない"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP アドレスを大阪に移す",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "Elastic IP はリージョンのリソースで、移せず、構成のコピーにもならない"
+      }
+    ],
+    "explanation": "別リージョンで同じサーバー = AMI をコピー。",
+    "keywords": [
+      "大阪リージョン",
+      "同じ構成"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ami:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "ec2-ami"
+    ],
+    "prompt": "AMI に含まれるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OS やアプリ、設定など起動に必要な一式",
+        "correct": true,
+        "atomId": "ec2-ami",
+        "why": "AMI からいくつでも同じ構成のインスタンスを起動できる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスのメモリの内容",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "メモリの内容を保存するのは休止（Hibernate）"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスに割り当てる固定の IP アドレス",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "Elastic IP アドレス"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスの 1 年分の利用料金の割引",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "リザーブドインスタンス"
+      }
+    ],
+    "explanation": "AMI = インスタンスのテンプレート。",
+    "keywords": [
+      "テンプレート"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-imdsv2:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-imdsv2"
+    ],
+    "prompt": "Web アプリの SSRF 脆弱性を悪用され、インスタンスの IAM ロールの認証情報を盗まれるリスクを減らしたい。何をする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IMDSv2 を必須にする",
+        "correct": true,
+        "atomId": "ec2-imdsv2",
+        "why": "セッショントークンが必要になり、単純な SSRF ではメタデータを取得できなくなる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスに Elastic IP アドレスを付ける",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "攻撃のリスクは下がらない"
+      },
+      {
+        "id": "c",
+        "text": "ユーザーデータに認証情報を書いておく",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "むしろ認証情報が漏れやすくなる"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスを休止させる",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "対策にならない"
+      }
+    ],
+    "explanation": "SSRF 対策・メタデータの保護 = IMDSv2 の強制。",
+    "keywords": [
+      "SSRF",
+      "認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-hibernate:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-hibernate"
+    ],
+    "prompt": "起動に 15 分かかり、メモリ上のキャッシュの準備に時間がかかるアプリを、夜間は止めて朝すぐに使いたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EC2 の休止（Hibernate）を使う",
+        "correct": true,
+        "atomId": "ec2-hibernate",
+        "why": "メモリの内容を EBS に保存し、再開時にその状態から続けられる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスストアにキャッシュを置いて停止する",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "停止するとインスタンスストアのデータは消える"
+      },
+      {
+        "id": "c",
+        "text": "通常どおり停止して、朝に起動する",
+        "correct": false,
+        "why": "メモリの内容が失われ、準備に時間がかかる"
+      },
+      {
+        "id": "d",
+        "text": "スポットインスタンスに変更する",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されることがあり、状態の保持にもならない"
+      }
+    ],
+    "explanation": "メモリの状態を保ったまま止める = Hibernate。",
+    "keywords": [
+      "メモリ上のキャッシュ",
+      "すぐに使いたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-elastic-ip:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-elastic-ip"
+    ],
+    "prompt": "取引先が、接続元の IP アドレスをファイアウォールに登録する必要がある。EC2 を停止・起動しても IP を変えたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic IP アドレス",
+        "correct": true,
+        "atomId": "ec2-elastic-ip",
+        "why": "停止・起動しても変わらない固定のパブリック IPv4 アドレス"
+      },
+      {
+        "id": "b",
+        "text": "自動割り当てのパブリック IP アドレス",
+        "correct": false,
+        "why": "停止・起動すると変わる"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスメタデータ",
+        "correct": false,
+        "atomId": "ec2-imdsv2",
+        "why": "IP アドレスを固定する仕組みではない"
+      },
+      {
+        "id": "d",
+        "text": "AMI",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "イメージで、IP アドレスとは関係がない"
+      }
+    ],
+    "explanation": "固定のパブリック IPv4 = Elastic IP。",
+    "keywords": [
+      "固定",
+      "IP アドレス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-families:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-instance-families"
+    ],
+    "prompt": "大量のデータをメモリに載せて処理するインメモリデータベースを EC2 で動かす。どのインスタンスファミリーを選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メモリ最適化（R、X 系）",
+        "correct": true,
+        "atomId": "ec2-instance-families",
+        "why": "大容量のメモリを持ち、インメモリ DB に向く"
+      },
+      {
+        "id": "b",
+        "text": "コンピューティング最適化（C 系）",
+        "correct": false,
+        "why": "CPU 性能重視で、メモリの量は重視していない"
+      },
+      {
+        "id": "c",
+        "text": "バーストパフォーマンス（T 系）",
+        "correct": false,
+        "atomId": "ec2-burstable-instances",
+        "why": "CPU 使用率が低いワークロード向け"
+      },
+      {
+        "id": "d",
+        "text": "高速コンピューティング（P、G 系）",
+        "correct": false,
+        "why": "GPU などを使う処理向け"
+      }
+    ],
+    "explanation": "メモリ → R/X、CPU → C、ローカルストレージ → I/D、GPU → P/G。",
+    "keywords": [
+      "メモリに載せて"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-families:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-instance-families"
+    ],
+    "prompt": "動画のエンコードなど、CPU を長時間使い続けるバッチ処理を EC2 で動かす。どのファミリーを選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コンピューティング最適化（C 系）",
+        "correct": true,
+        "atomId": "ec2-instance-families",
+        "why": "CPU 性能に対して価格が安い"
+      },
+      {
+        "id": "b",
+        "text": "メモリ最適化（R 系）",
+        "correct": false,
+        "why": "メモリ量を重視したファミリー"
+      },
+      {
+        "id": "c",
+        "text": "バーストパフォーマンス（T 系）",
+        "correct": false,
+        "atomId": "ec2-burstable-instances",
+        "why": "CPU を使い続けるとクレジットが尽きる"
+      },
+      {
+        "id": "d",
+        "text": "ストレージ最適化（I 系）",
+        "correct": false,
+        "why": "ローカルストレージへの高速な読み書き向け"
+      }
+    ],
+    "explanation": "CPU を使い続ける = C 系。",
+    "keywords": [
+      "CPU を長時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-burstable-instances:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ec2-burstable-instances"
+    ],
+    "prompt": "社内の小さな Wiki サーバーは、普段は CPU をほとんど使わず、朝だけ少し負荷が上がる。コスト効率の良いインスタンスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バーストパフォーマンス（T 系）",
+        "correct": true,
+        "atomId": "ec2-burstable-instances",
+        "why": "普段は低い CPU で動き、必要なときだけクレジットで性能を上げる"
+      },
+      {
+        "id": "b",
+        "text": "コンピューティング最適化（C 系）",
+        "correct": false,
+        "why": "CPU を使い続ける処理向けで、この用途には過剰"
+      },
+      {
+        "id": "c",
+        "text": "メモリ最適化（X 系）",
+        "correct": false,
+        "why": "大容量メモリ向けで、この用途には過剰"
+      },
+      {
+        "id": "d",
+        "text": "Dedicated Hosts",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "専有の要件がなく、コストが高い"
+      }
+    ],
+    "explanation": "平均の CPU 使用率が低く、ときどき上がる = T 系。",
+    "keywords": [
+      "普段は CPU をほとんど使わず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-instances:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "ec2-spot-instances",
+      "ec2-reserved-instances",
+      "ec2-on-demand"
+    ],
+    "prompt": "EC サイトの Web 層は次のように動く。\n・常に最低 4 台が 24 時間 365 日必要\n・昼のピークには最大 12 台まで増える\n・動画のサムネイル生成バッチは、中断されても再実行できる\n可用性を保ちながらコストを最も下げる組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "常時分は RI、ピークはオンデマンド、バッチはスポット",
+        "correct": true,
+        "atomId": "ec2-reserved-instances",
+        "why": "定常分は長期割引（RI や Savings Plans）、変動分は契約なし、中断してよい処理は最安のスポット"
+      },
+      {
+        "id": "b",
+        "text": "すべてスポットインスタンスで動かす",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されると Web 層の最低台数を保てない"
+      },
+      {
+        "id": "c",
+        "text": "最大の 12 台分を 3 年の RI で購入する",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "ピーク以外は使わない分まで払うことになる"
+      },
+      {
+        "id": "d",
+        "text": "すべてオンデマンドで動かし、バッチもオンデマンドで実行する",
+        "correct": false,
+        "atomId": "ec2-on-demand",
+        "why": "常時稼働分とバッチ分で割引を活かせていない"
+      }
+    ],
+    "explanation": "ワークロードを「定常」「変動」「中断してよい」に分け、それぞれに購入オプションを当てる。",
+    "keywords": [
+      "最低 4 台",
+      "ピーク",
+      "中断されても"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
