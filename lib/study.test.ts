@@ -171,3 +171,33 @@ describe("サービスの順番と絞り込み", () => {
     }
   });
 });
+
+describe("見分け問題の抑制", () => {
+  it("見分け問題を間違えても、新しい見分け問題は作らない", () => {
+    answer("s3-intelligent-tiering:selection:1", "s3-standard-ia", T0);
+    const [f] = db.select().from(followups).all();
+    const q = content.questions.get("s3-standard-ia:compare:1")!;
+    const wrong = q.choices.find((c) => !c.correct)!;
+    const result = recordReview(
+      db,
+      content,
+      { questionId: q.id, selectedChoiceId: wrong.id, shownChoiceIds: q.choices.map((c) => c.id), responseTimeMs: 3000, guessed: false, followupId: f.id },
+      minutes(3),
+    );
+    expect(result.followupCreated).toBe(false);
+  });
+
+  it("未解決の見分け問題は config.maxOpenFollowups 個まで", () => {
+    // 別々の組み合わせで混同を起こす
+    const confusions: [string, string][] = [
+      ["s3-intelligent-tiering:selection:1", "s3-standard-ia"],
+      ["s3-intelligent-tiering:selection:1", "s3-one-zone-ia"],
+      ["s3-intelligent-tiering:selection:1", "s3-standard"],
+      ["s3-intelligent-tiering:selection:1", "s3-lifecycle"],
+      ["s3-one-zone-ia:trigger:1", "s3-standard-ia"],
+    ];
+    confusions.forEach(([qid, atom], i) => answer(qid, atom, minutes(i)));
+    const open = db.select().from(followups).all().filter((f) => !f.resolvedAt);
+    expect(open.length).toBe(config.maxOpenFollowups);
+  });
+});

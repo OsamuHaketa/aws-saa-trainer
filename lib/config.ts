@@ -8,6 +8,8 @@ export const config = {
   dayStartHour: 4,
   /** 混同した問題に誤答してから、何問後に見分け問題を差し込むか */
   followupAfter: 2,
+  /** 未解決の見分け問題の上限（増えすぎて新規や復習が進まなくなるのを防ぐ） */
+  maxOpenFollowups: 3,
   /** 直近 N 問で出た Atom は、ほかに候補があれば避ける */
   recentAtomWindow: 2,
   /** 復習予定まで N 分以内なら、ほかに問題がないとき前倒しで出す */

@@ -200,22 +200,18 @@ export function recordReview(db: DB, content: Content, input: ReviewInput, now: 
         .run();
     }
 
-    // 別の Atom と混同した → 数問後に見分け問題を出す（出せる問題がある場合のみ）
+    // 別の Atom と混同した → 数問後に見分け問題を出す（出せる問題がある場合のみ）。
+    // 見分け問題そのものを間違えた場合は作らない（連鎖を防ぐ。FSRS の再学習で数分後にまた出る）
     let followupCreated = false;
-    if (confused) {
+    if (confused && !input.followupId) {
       const pair = { atomId: correctChoice.atomId!, confusedAtomId: selected.atomId!, sourceQuestionId: q.id };
-      const alreadyOpen = tx
-        .select({ id: followups.id })
-        .from(followups)
-        .where(
-          and(
-            eq(followups.atomId, pair.atomId),
-            eq(followups.confusedAtomId, pair.confusedAtomId),
-            isNull(followups.resolvedAt),
-          ),
-        )
-        .get();
-      if (!alreadyOpen && followupCandidates(content, pair, new Map()).length > 0) {
+      const open = tx.select().from(followups).where(isNull(followups.resolvedAt)).all();
+      const alreadyOpen = open.some((f) => f.atomId === pair.atomId && f.confusedAtomId === pair.confusedAtomId);
+      if (
+        !alreadyOpen &&
+        open.length < config.maxOpenFollowups &&
+        followupCandidates(content, pair, new Map()).length > 0
+      ) {
         tx.insert(followups).values({ ...pair, sourceLogId: log.id, createdAt: now }).run();
         followupCreated = true;
       }
