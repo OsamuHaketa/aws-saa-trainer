@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MistakeType } from "@/lib/db/schema";
-import { categoryLabel, MISTAKE_LABEL, QUESTION_TYPE_LABEL, REASON_LABEL } from "@/lib/labels";
+import { groupLabel, knowledgeHref, MISTAKE_LABEL, QUESTION_TYPE_LABEL, REASON_LABEL } from "@/lib/labels";
 import type { NextQuestion } from "@/lib/study";
 import styles from "./study.module.css";
 
@@ -181,7 +181,7 @@ export function Study() {
         <div className={styles.meta}>
           <span className={data.reason === "followup" ? "tag warn" : "tag"}>{REASON_LABEL[data.reason]}</span>
           <span className="muted small">
-            {question.service.toUpperCase()} / {categoryLabel(question.category)} ・ {QUESTION_TYPE_LABEL[question.type]} ・ Lv
+            {groupLabel(question.service, question.category)} ・ {QUESTION_TYPE_LABEL[question.type]} ・ Lv
             {question.level}
           </span>
         </div>
@@ -238,7 +238,7 @@ export function Study() {
             <ul className={`small ${styles.atoms}`}>
               {question.atoms.map((a) => (
                 <li key={a.id}>
-                  <Link href={`/knowledge#${a.id}`}>{a.concept}</Link>
+                  <Link href={knowledgeHref(a.service, a.id)}>{a.concept}</Link>
                   <span className="muted">: {a.summary}</span>
                 </li>
               ))}

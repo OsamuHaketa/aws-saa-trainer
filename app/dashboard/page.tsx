@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Meter } from "@/app/components/Meter";
 import { getContent } from "@/lib/content";
 import { getDb } from "@/lib/db";
-import { categoryLabel, MISTAKE_LABEL, QUESTION_TYPE_LABEL } from "@/lib/labels";
+import { groupLabel, knowledgeHref, MISTAKE_LABEL, QUESTION_TYPE_LABEL, serviceLabel } from "@/lib/labels";
 import { dashboard } from "@/lib/stats";
 import styles from "./dashboard.module.css";
 
@@ -10,10 +10,46 @@ export const dynamic = "force-dynamic";
 
 const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
 
+type GroupRow = ReturnType<typeof dashboard>["byService"][number];
+
+function GroupTable({ rows, label, heading }: { rows: GroupRow[]; label: (r: GroupRow) => string; heading: string }) {
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{heading}</th>
+            <th>習熟度</th>
+            <th>正答率</th>
+            <th className="num">回答数</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.key}>
+              <td>
+                {label(r)} <span className="muted small">({r.atoms} Atom)</span>
+              </td>
+              <td>
+                <Meter value={r.mastery} />
+              </td>
+              <td>
+                <Meter value={r.accuracy} />
+              </td>
+              <td className="num">{r.answered}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const content = getContent();
   const d = dashboard(getDb(), content, new Date());
   const concept = (id: string) => content.atoms.get(id)?.concept ?? id;
+  const href = (id: string) => knowledgeHref(content.atoms.get(id)?.service ?? "", id);
   const maxDay = Math.max(1, ...d.days.map((x) => x.answered));
   const weak = d.atoms
     .filter((a) => a.answered > 0)
@@ -76,35 +112,11 @@ export default function DashboardPage() {
         })}
       </div>
 
+      <h2>サービス別</h2>
+      <GroupTable rows={d.byService} label={(r) => serviceLabel(r.service)} heading="サービス" />
+
       <h2>カテゴリ別</h2>
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>カテゴリ</th>
-              <th>習熟度</th>
-              <th>正答率</th>
-              <th className="num">回答数</th>
-            </tr>
-          </thead>
-          <tbody>
-            {d.byCategory.map((c) => (
-              <tr key={c.category}>
-                <td>
-                  {categoryLabel(c.category)} <span className="muted small">({c.atoms} Atom)</span>
-                </td>
-                <td>
-                  <Meter value={c.mastery} />
-                </td>
-                <td>
-                  <Meter value={c.accuracy} />
-                </td>
-                <td className="num">{c.answered}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <GroupTable rows={d.byCategory} label={(r) => groupLabel(r.service, r.category)} heading="カテゴリ" />
 
       <h2>問題タイプ別の正答率</h2>
       <div className="table-wrap">
@@ -147,10 +159,10 @@ export default function DashboardPage() {
               {d.confusions.slice(0, 10).map((p) => (
                 <tr key={`${p.atomId}>${p.confusedAtomId}`}>
                   <td>
-                    <Link href={`/knowledge#${p.atomId}`}>{concept(p.atomId)}</Link>
+                    <Link href={href(p.atomId)}>{concept(p.atomId)}</Link>
                   </td>
                   <td>
-                    <Link href={`/knowledge#${p.confusedAtomId}`}>{concept(p.confusedAtomId)}</Link>
+                    <Link href={href(p.confusedAtomId)}>{concept(p.confusedAtomId)}</Link>
                   </td>
                   <td className="num">{p.count}</td>
                 </tr>
@@ -193,7 +205,7 @@ export default function DashboardPage() {
             {weak.map((a) => (
               <tr key={a.atom.id}>
                 <td>
-                  <Link href={`/knowledge#${a.atom.id}`}>{a.atom.concept}</Link>
+                  <Link href={href(a.atom.id)}>{a.atom.concept}</Link>
                 </td>
                 <td>
                   <Meter value={a.mastery} />

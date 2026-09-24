@@ -99,7 +99,12 @@ export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 
       keywords: q.keywords,
       service: primary?.service ?? "",
       category: primary?.category ?? "",
-      atoms: q.atomIds.map((id) => ({ id, concept: atomLabel(id) ?? id, summary: content.atoms.get(id)?.summary ?? "" })),
+      atoms: q.atomIds.map((id) => ({
+        id,
+        service: content.atoms.get(id)?.service ?? "",
+        concept: atomLabel(id) ?? id,
+        summary: content.atoms.get(id)?.summary ?? "",
+      })),
     },
     choices: choices.map((c) => ({
       ...c,

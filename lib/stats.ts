@@ -47,22 +47,30 @@ export function dashboard(db: DB, content: Content, now: Date) {
     questions: questionCount.get(atom.id) ?? 0,
   }));
 
-  // --- カテゴリ別（企画書 10 章の「Service 別」の S3 版） ---
-  const categories = new Map<string, { atoms: AtomEntry[]; masterySum: number }>();
-  for (const { atom, mastery: m } of atoms) {
-    const c = categories.get(atom.category) ?? { atoms: [], masterySum: 0 };
-    c.atoms.push(atom);
-    c.masterySum += m;
-    categories.set(atom.category, c);
+  // --- サービス別・カテゴリ別（企画書 10 章の弱点分析） ---
+  function groupBy(key: (atom: AtomEntry) => string) {
+    const groups = new Map<string, { atom: AtomEntry; masterySum: number; count: number }>();
+    for (const { atom, mastery: m } of atoms) {
+      const g = groups.get(key(atom)) ?? { atom, masterySum: 0, count: 0 };
+      g.masterySum += m;
+      g.count += 1;
+      groups.set(key(atom), g);
+    }
+    const byLog = tally(logs, (l) => [
+      ...new Set(l.atomIds.flatMap((id) => (content.atoms.has(id) ? [key(content.atoms.get(id)!)] : []))),
+    ]);
+    return [...groups.entries()].map(([k, g]) => ({
+      key: k,
+      service: g.atom.service,
+      category: g.atom.category,
+      atoms: g.count,
+      mastery: g.masterySum / g.count,
+      accuracy: rate(byLog.get(k) ?? { answered: 0, correct: 0 }),
+      answered: byLog.get(k)?.answered ?? 0,
+    }));
   }
-  const byCategoryTally = tally(logs, (l) => [...new Set(l.atomIds.map((a) => content.atoms.get(a)?.category))]);
-  const byCategory = [...categories.entries()].map(([category, c]) => ({
-    category,
-    atoms: c.atoms.length,
-    mastery: c.masterySum / c.atoms.length,
-    accuracy: rate(byCategoryTally.get(category) ?? { answered: 0, correct: 0 }),
-    answered: byCategoryTally.get(category)?.answered ?? 0,
-  }));
+  const byService = groupBy((a) => a.service);
+  const byCategory = groupBy((a) => `${a.service}/${a.category}`);
 
   // --- 問題タイプ別 ---
   const byTypeTally = tally(logs, (l) => [l.questionType as QuestionType]);
@@ -113,6 +121,7 @@ export function dashboard(db: DB, content: Content, now: Date) {
     total: { ...total, accuracy: rate(total), medianTimeMs },
     coverage: { seenQuestions, totalQuestions: questions.length, masteredAtoms, totalAtoms: content.atoms.size },
     atoms,
+    byService,
     byCategory,
     byType,
     mistakes: [...mistakes.entries()].sort((a, b) => b[1] - a[1]),

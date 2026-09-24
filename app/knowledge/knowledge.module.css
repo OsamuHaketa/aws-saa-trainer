@@ -69,3 +69,14 @@
   margin-right: 12px;
   word-break: break-all;
 }
+
+.services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-bottom: 8px;
+}
+.current {
+  font-weight: 700;
+  color: var(--text);
+}

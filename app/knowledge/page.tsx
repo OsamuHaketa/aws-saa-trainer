@@ -1,7 +1,8 @@
 import { Meter } from "@/app/components/Meter";
 import { activeQuestions, getContent, type AtomEntry } from "@/lib/content";
 import { getDb } from "@/lib/db";
-import { categoryLabel, QUESTION_TYPE_LABEL } from "@/lib/labels";
+import Link from "next/link";
+import { categoryLabel, knowledgeHref, QUESTION_TYPE_LABEL, serviceLabel } from "@/lib/labels";
 import { atomMastery } from "@/lib/mastery";
 import type { RelationType } from "@/lib/schema/atom";
 import { latestResults } from "@/lib/stats";
@@ -17,8 +18,11 @@ const RELATION_LABEL: Record<RelationType, string> = {
   requires: "前提",
 };
 
-export default function KnowledgePage() {
+export default async function KnowledgePage({ searchParams }: { searchParams: Promise<{ service?: string }> }) {
   const content = getContent();
+  const services = [...new Set([...content.atoms.values()].map((a) => a.service))];
+  const requested = (await searchParams).service;
+  const service = requested && services.includes(requested) ? requested : services[0];
   const db = getDb();
   const now = new Date();
   const mastery = atomMastery(content, loadCards(db), now);
@@ -37,6 +41,7 @@ export default function KnowledgePage() {
 
   const byCategory = new Map<string, AtomEntry[]>();
   for (const atom of content.atoms.values()) {
+    if (atom.service !== service) continue;
     byCategory.set(atom.category, [...(byCategory.get(atom.category) ?? []), atom]);
   }
   const concept = (id: string) => content.atoms.get(id)?.concept ?? id;
@@ -44,8 +49,16 @@ export default function KnowledgePage() {
   return (
     <>
       <h1>知識</h1>
+      <nav className={styles.services}>
+        {services.map((s) => (
+          <Link key={s} href={`/knowledge?service=${s}`} className={s === service ? styles.current : undefined}>
+            {serviceLabel(s)}
+          </Link>
+        ))}
+      </nav>
       <p className="muted small">
-        {content.atoms.size} Atom ・ {questions.length} 問。
+        {[...byCategory.values()].flat().length} Atom ・{" "}
+        {questions.filter((q) => content.atoms.get(q.atomIds[0])?.service === service).length} 問。
         {[...byCategory.keys()].map((c) => (
           <a key={c} href={`#cat-${c}`} className={styles.jump}>
             {categoryLabel(c)}
@@ -108,7 +121,7 @@ export default function KnowledgePage() {
                     {relations.map((r) => (
                       <li key={`${r.type}-${r.id}`}>
                         <span className="muted">{RELATION_LABEL[r.type as RelationType]}: </span>
-                        <a href={`#${r.id}`}>{concept(r.id)}</a>
+                        <Link href={knowledgeHref(content.atoms.get(r.id)?.service ?? "", r.id)}>{concept(r.id)}</Link>
                         {r.distinction && <span className="muted"> — {r.distinction}</span>}
                       </li>
                     ))}
