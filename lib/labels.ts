@@ -65,6 +65,7 @@ export const SERVICE_LABEL: Record<string, string> = {
   emr: "EMR",
   quicksight: "QuickSight",
   opensearch: "OpenSearch",
+  patterns: "設計パターン",
 };
 
 export const serviceLabel = (s: string) => SERVICE_LABEL[s] ?? s.toUpperCase();
@@ -108,6 +109,8 @@ export const CATEGORY_LABEL: Record<string, string> = {
   orchestration: "ワークフロー",
   migration: "移行・ハイブリッド",
   analytics: "分析",
+  dr: "災害対策（DR）",
+  design: "設計の原則",
 };
 
 export const categoryLabel = (c: string) => CATEGORY_LABEL[c] ?? c;

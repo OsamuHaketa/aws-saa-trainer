@@ -1,0 +1,295 @@
+[
+  {
+    "id": "patterns-pilot-light:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "patterns-pilot-light",
+      "rds-read-replica",
+      "ec2-ami"
+    ],
+    "prompt": "Web アプリ（EC2 + RDS for MySQL、東京リージョン）の DR を設計する。\n・RPO は 5 分、RTO は 1 時間\n・DR のための平常時のコストはできるだけ抑える\n・DR 先は大阪リージョン\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "大阪に DB のレプリカと AMI、障害時に EC2 起動",
+        "correct": true,
+        "atomId": "patterns-pilot-light",
+        "why": "DB は常に複製して RPO を満たし、サーバーは障害時に AMI から起動する（パイロットライト）"
+      },
+      {
+        "id": "b",
+        "text": "大阪にも本番と同じ規模の EC2 と DB を常時稼働",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "要件に対してコストが過剰"
+      },
+      {
+        "id": "c",
+        "text": "毎日のスナップショットを大阪にコピーするだけ",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "RPO 5 分を満たせない"
+      },
+      {
+        "id": "d",
+        "text": "東京リージョンで RDS をマルチ AZ にするだけ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "リージョン障害には対応できない"
+      }
+    ],
+    "explanation": "RPO が短い → データは常に複製、RTO 1 時間 + 低コスト → サーバーは障害時に起動。",
+    "keywords": [
+      "RPO は 5 分",
+      "RTO は 1 時間",
+      "コスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-site:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "patterns-multi-site",
+      "dynamodb-global-tables",
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "世界中で使われるゲームの API（Lambda + DynamoDB）を設計する。\n・米国と欧州のリージョンで同時にリクエストを処理する\n・1 つのリージョンが止まっても、数十秒以内に残りのリージョンで処理を続ける\n・クライアントには固定の IP アドレスで接続させる\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB グローバルテーブル + Global Accelerator",
+        "correct": true,
+        "atomId": "patterns-multi-site",
+        "why": "両リージョンで読み書きでき、固定 IP のまま異常なリージョンから数十秒で切り替わる"
+      },
+      {
+        "id": "b",
+        "text": "単一リージョンの DynamoDB + CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "書き込みは 1 リージョンに集中し、API の動的な処理のリージョン障害に対応できない"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB の PITR + Route 53 のシンプルルーティング",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "バックアップからの復元に時間がかかり、シンプルルーティングは異常を検知しない"
+      },
+      {
+        "id": "d",
+        "text": "Aurora グローバルデータベース + NLB",
+        "correct": false,
+        "atomId": "rds-aurora-global-database",
+        "why": "セカンダリは読み取り専用で、両リージョンでの書き込みに対応しない"
+      }
+    ],
+    "explanation": "マルチリージョン・アクティブ/アクティブ + 固定 IP + 高速な切り替え。",
+    "keywords": [
+      "同時に",
+      "数十秒",
+      "固定の IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-origin-access-control:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-origin-access-control",
+      "waf-web-acl",
+      "shield-advanced"
+    ],
+    "prompt": "動画配信サイトを CloudFront + S3 で構築する。\n・S3 のバケットは CloudFront 経由でしか読ませない\n・SQL インジェクションやボットの大量アクセスをエッジでブロックする\n・大規模な DDoS 攻撃に備え、攻撃時は AWS の専門チームの支援を受けたい\n最も適切な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OAC + WAF + Shield Advanced",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "オリジンの保護、L7 の攻撃のブロック、高度な DDoS 保護と専門チームの支援をそれぞれ満たす"
+      },
+      {
+        "id": "b",
+        "text": "バケットを公開 + WAF + Shield Standard",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "バケットに直接アクセスでき、専門チームの支援もない"
+      },
+      {
+        "id": "c",
+        "text": "OAC + GuardDuty + Inspector",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "検出やスキャンのサービスで、攻撃のブロックや DDoS の緩和はしない"
+      },
+      {
+        "id": "d",
+        "text": "S3 の署名付き URL + Shield Advanced のみ",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "CloudFront を経由せず、SQL インジェクションなどもブロックできない"
+      }
+    ],
+    "explanation": "オリジン保護 → OAC、L7 攻撃 → WAF、大規模 DDoS + 支援 → Shield Advanced。",
+    "keywords": [
+      "CloudFront 経由でしか",
+      "SQL インジェクション",
+      "DDoS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-data-streams:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "kinesis-data-streams",
+      "kinesis-firehose",
+      "athena-query"
+    ],
+    "prompt": "EC サイトのクリックストリームを分析する。\n・リアルタイムで不正なクリックを検知するアプリがある\n・同じデータを S3 に保存し、あとで SQL でアドホックに分析する\n・サーバーの管理はできるだけ減らしたい\n最も適切な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Data Streams → 検知アプリと Firehose → Athena",
+        "correct": true,
+        "atomId": "kinesis-data-streams",
+        "why": "リアルタイムの処理と S3 への保存を同じストリームから行い、S3 のデータを Athena で分析する"
+      },
+      {
+        "id": "b",
+        "text": "SQS → 検知アプリ → S3 → Redshift",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "SQS は 1 つの処理側しか受け取れず、同じデータを複数に流せない"
+      },
+      {
+        "id": "c",
+        "text": "Firehose → S3 → 検知アプリが S3 を毎分ポーリング",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "Firehose はバッファするのでリアルタイムの検知に間に合わない"
+      },
+      {
+        "id": "d",
+        "text": "EC2 で自作の収集サーバー → RDS → QuickSight",
+        "correct": false,
+        "why": "サーバーの管理が必要で、大量のストリームの処理にも向かない"
+      }
+    ],
+    "explanation": "リアルタイム + 複数の処理 → Data Streams、S3 への配信 → Firehose、S3 への SQL → Athena。",
+    "keywords": [
+      "リアルタイム",
+      "S3 に保存",
+      "SQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-identity-center:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "iam-identity-center",
+      "organizations-scp",
+      "cloudtrail-trail"
+    ],
+    "prompt": "50 のアカウントを持つ企業のガバナンスを設計する。\n・社員は社内の Active Directory のアカウントで、担当するアカウントにシングルサインオンする\n・どのアカウントでも、CloudTrail の無効化を禁止する\n・全アカウントの API 操作の記録を 1 か所に集める\n最も適切な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Identity Center + SCP で無効化を拒否 + 組織の証跡",
+        "correct": true,
+        "atomId": "iam-identity-center",
+        "why": "SSO、組織全体への禁止の強制、操作記録の集約をそれぞれ満たす"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントの IAM ユーザー + IAM ポリシー + 各アカウントの証跡",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "ユーザーの管理が膨大で、アカウントの管理者が禁止を解除でき、記録も集まらない"
+      },
+      {
+        "id": "c",
+        "text": "Identity Center + AWS Config のルール + CloudWatch Logs",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "Config は無効化を検出するだけで禁止できず、CloudWatch Logs は API 操作の記録の集約ではない"
+      },
+      {
+        "id": "d",
+        "text": "Cognito ユーザープール + SCP + VPC フローログ",
+        "correct": false,
+        "atomId": "cognito-user-pool",
+        "why": "Cognito はアプリの利用者向けで、フローログは API 操作を記録しない"
+      }
+    ],
+    "explanation": "社員の SSO → Identity Center、組織全体の禁止 → SCP、操作記録の集約 → 組織の証跡。",
+    "keywords": [
+      "シングルサインオン",
+      "禁止",
+      "1 か所に集める"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-file:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "storagegateway-file",
+      "datasync-task",
+      "snow-snowball"
+    ],
+    "prompt": "工場のファイルサーバー（NFS、200 TB）を AWS に移行する。\n・回線は 1 Gbps で、他の業務でも使うため移行に使える帯域は限られる\n・移行後も工場の機器は NFS でファイルを書き続ける必要があり、データは S3 に置きたい\n最も適切な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "初回は Snowball で移し、その後は S3 File Gateway で書く",
+        "correct": true,
+        "atomId": "snow-snowball",
+        "why": "大量の初回データは物理デバイスで運び、以後は NFS のまま S3 に保存できる"
+      },
+      {
+        "id": "b",
+        "text": "DataSync だけで 200 TB を転送し、以後も毎回 DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "帯域が限られていて初回の転送に時間がかかり、NFS での継続的な書き込みの仕組みにもならない"
+      },
+      {
+        "id": "c",
+        "text": "Snowball で移し、その後は EFS に NFS でマウントする",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "工場から EFS を直接使うには VPN などが必要で、データも S3 に置かれない"
+      },
+      {
+        "id": "d",
+        "text": "Tape Gateway で移行し、以後もテープで書き込む",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "ファイルサーバーの用途に合わない"
+      }
+    ],
+    "explanation": "初回の大量移行（Snowball）と、継続的なハイブリッドの利用（File Gateway）を分けて考える。",
+    "keywords": [
+      "200 TB",
+      "帯域は限られる",
+      "NFS で書き続ける"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

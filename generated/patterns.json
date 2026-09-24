@@ -1,0 +1,403 @@
+[
+  {
+    "id": "patterns-rpo-rto:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "patterns-rpo-rto"
+    ],
+    "prompt": "「RPO 15 分」が意味するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "障害時に失ってよいデータが直近 15 分までであること",
+        "correct": true,
+        "atomId": "patterns-rpo-rto",
+        "why": "RPO は許容できるデータの損失の範囲（時間）"
+      },
+      {
+        "id": "b",
+        "text": "障害から 15 分以内にサービスを再開すること",
+        "correct": false,
+        "why": "それは RTO（目標復旧時間）"
+      },
+      {
+        "id": "c",
+        "text": "15 分ごとにサーバーを再起動すること",
+        "correct": false,
+        "why": "RPO とは関係がない"
+      },
+      {
+        "id": "d",
+        "text": "バックアップを 15 日間保管すること",
+        "correct": false,
+        "why": "保持期間の話で、RPO ではない"
+      }
+    ],
+    "explanation": "RPO = データ（どこまで戻れるか）、RTO = 時間（いつまでに戻すか）。",
+    "keywords": [
+      "RPO"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-rpo-rto:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "patterns-rpo-rto"
+    ],
+    "prompt": "RPO と RTO の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RPO は失ってよいデータの時間、RTO は復旧までの時間",
+        "correct": true,
+        "atomId": "patterns-rpo-rto",
+        "why": "どちらも短いほど DR のコストが上がる"
+      },
+      {
+        "id": "b",
+        "text": "RPO は復旧までの時間、RTO は失ってよいデータの時間",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "RPO はリージョン、RTO は AZ の障害に関する指標",
+        "correct": false,
+        "why": "障害の範囲の違いではない"
+      },
+      {
+        "id": "d",
+        "text": "RPO はコスト、RTO は性能の指標",
+        "correct": false,
+        "why": "どちらも復旧に関する指標"
+      }
+    ],
+    "explanation": "P = Point（時点、データ）、T = Time（時間）。",
+    "keywords": [
+      "RPO",
+      "RTO"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-backup-restore:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-backup-restore"
+    ],
+    "prompt": "社内の業務システムの DR。RTO は 24 時間、RPO は 1 日でよい。DR のコストはできるだけ抑えたい。どの戦略を選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バックアップと復元",
+        "correct": true,
+        "atomId": "patterns-backup-restore",
+        "why": "バックアップだけを別リージョンに置き、障害時に作り直す。最も安い"
+      },
+      {
+        "id": "b",
+        "text": "パイロットライト",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "DB の複製を常に動かす分、コストが上がる。この要件には過剰"
+      },
+      {
+        "id": "c",
+        "text": "ウォームスタンバイ",
+        "correct": false,
+        "atomId": "patterns-warm-standby",
+        "why": "縮小した環境を常に動かすので、さらにコストが上がる"
+      },
+      {
+        "id": "d",
+        "text": "マルチサイト",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "最もコストが高く、この要件には過剰"
+      }
+    ],
+    "explanation": "要件がゆるい（数時間〜1 日）なら、最も安いバックアップと復元。",
+    "keywords": [
+      "24 時間",
+      "コストはできるだけ抑えたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-pilot-light:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-pilot-light"
+    ],
+    "prompt": "RTO は 1 時間、RPO は数分。平常時のコストは抑えたいが、DB は常に DR リージョンに複製しておきたい。どの戦略を選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パイロットライト",
+        "correct": true,
+        "atomId": "patterns-pilot-light",
+        "why": "DB の複製だけを常に動かし、アプリのサーバーは障害時に起動する"
+      },
+      {
+        "id": "b",
+        "text": "バックアップと復元",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "数分の RPO や 1 時間の RTO には間に合わない"
+      },
+      {
+        "id": "c",
+        "text": "マルチサイト",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "フルの規模で常に動かすので、コストが高すぎる"
+      },
+      {
+        "id": "d",
+        "text": "単一リージョンのマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "リージョン障害には対応できない"
+      }
+    ],
+    "explanation": "データは常に複製 + サーバーは障害時に起動 = パイロットライト。",
+    "keywords": [
+      "DB は常に複製",
+      "コストは抑えたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-warm-standby:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-warm-standby"
+    ],
+    "prompt": "RTO は数分。DR リージョンで、縮小した規模のシステム全体を常に動かしておき、障害時に規模を拡大して切り替えたい。どの戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ウォームスタンバイ",
+        "correct": true,
+        "atomId": "patterns-warm-standby",
+        "why": "縮小した環境を常に動かし、障害時にスケールアップする"
+      },
+      {
+        "id": "b",
+        "text": "パイロットライト",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "中核だけが動いていて、アプリのサーバーは障害時に起動するので時間がかかる"
+      },
+      {
+        "id": "c",
+        "text": "バックアップと復元",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "環境を作り直すので数時間かかる"
+      },
+      {
+        "id": "d",
+        "text": "マルチサイト",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "縮小した規模ではなく、フルの規模で同時に動かす"
+      }
+    ],
+    "explanation": "縮小版を常時稼働 = ウォームスタンバイ。",
+    "keywords": [
+      "縮小した規模",
+      "数分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-site:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-multi-site"
+    ],
+    "prompt": "決済システムで、リージョン障害でもダウンタイムとデータの損失をほぼゼロにしたい。コストより可用性を優先する。どの戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチサイト",
+        "correct": true,
+        "atomId": "patterns-multi-site",
+        "why": "複数のリージョンでフルの規模で同時に動かし、RPO・RTO をほぼゼロにする"
+      },
+      {
+        "id": "b",
+        "text": "ウォームスタンバイ",
+        "correct": false,
+        "atomId": "patterns-warm-standby",
+        "why": "規模の拡大と切り替えに数分かかる"
+      },
+      {
+        "id": "c",
+        "text": "パイロットライト",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "アプリのサーバーを起動するまで時間がかかる"
+      },
+      {
+        "id": "d",
+        "text": "バックアップと復元",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "復旧に数時間かかり、データの損失も大きい"
+      }
+    ],
+    "explanation": "ほぼゼロ = マルチサイト。コストも最大。",
+    "keywords": [
+      "ほぼゼロ",
+      "可用性を優先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-pilot-light:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "patterns-pilot-light",
+      "patterns-warm-standby"
+    ],
+    "prompt": "パイロットライトとウォームスタンバイの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は中核だけ稼働、後者は縮小した全体が稼働",
+        "correct": true,
+        "why": "ウォームスタンバイの方が復旧は速いが、コストは高い"
+      },
+      {
+        "id": "b",
+        "text": "前者は縮小した全体が稼働、後者は中核だけ稼働",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者はバックアップのみ、後者はフルの規模で稼働",
+        "correct": false,
+        "why": "それぞれバックアップと復元、マルチサイトの説明"
+      },
+      {
+        "id": "d",
+        "text": "前者は同じリージョン内、後者は別リージョン",
+        "correct": false,
+        "why": "どちらも別のリージョンに DR 環境を持つ"
+      }
+    ],
+    "explanation": "DR の 4 段階: バックアップと復元 < パイロットライト < ウォームスタンバイ < マルチサイト（速さもコストもこの順に上がる）。",
+    "keywords": [
+      "中核だけ",
+      "全体"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-stateless:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-stateless"
+    ],
+    "prompt": "Auto Scaling で台数を自由に増減させたいが、ユーザーのセッションと、アップロードされたファイルが各サーバーに保存されている。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "セッションとファイルを外部に置く",
+        "correct": true,
+        "atomId": "patterns-stateless",
+        "why": "サーバーをステートレスにすれば、どのサーバーでも処理でき、台数を自由に変えられる"
+      },
+      {
+        "id": "b",
+        "text": "スティッキーセッションで同じサーバーに送る",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "スケールインでそのサーバーが消えると、セッションもファイルも失われる"
+      },
+      {
+        "id": "c",
+        "text": "台数を固定して Auto Scaling をやめる",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "スケーリングも自動の置き換えもできなくなる"
+      },
+      {
+        "id": "d",
+        "text": "各サーバーのディスクを大きくする",
+        "correct": false,
+        "why": "状態がサーバーに残る問題は解決しない"
+      }
+    ],
+    "explanation": "水平スケールの前提 = ステートレス（状態は外に置く）。",
+    "keywords": [
+      "セッション",
+      "ファイル",
+      "台数を自由に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-loose-coupling:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-loose-coupling"
+    ],
+    "prompt": "注文 API が、在庫・配送・ポイントの 3 つのサービスを同期で順番に呼んでいる。ポイントのサービスが遅いと、注文全体が失敗する。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キューを挟んで非同期で処理する",
+        "correct": true,
+        "atomId": "patterns-loose-coupling",
+        "why": "疎結合にすれば、一部のサービスの遅延や障害が注文の受付に影響しなくなる"
+      },
+      {
+        "id": "b",
+        "text": "タイムアウトを長くして待ち続ける",
+        "correct": false,
+        "why": "注文の受付が遅くなり、障害時は失敗し続ける"
+      },
+      {
+        "id": "c",
+        "text": "3 つのサービスを 1 つのサーバーにまとめる",
+        "correct": false,
+        "why": "障害の影響範囲がさらに広がり、独立したスケーリングもできない"
+      },
+      {
+        "id": "d",
+        "text": "ポイントのサービスの台数を固定で増やす",
+        "correct": false,
+        "why": "一時的には改善しても、同期で直接つながる構造の問題は残る"
+      }
+    ],
+    "explanation": "一か所の障害が全体に広がるなら、キューやイベントで疎結合にする。",
+    "keywords": [
+      "同期で順番に",
+      "全体が失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

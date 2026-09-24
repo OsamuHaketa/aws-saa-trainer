@@ -27,7 +27,7 @@ export const config = {
     "kms", "secretsmanager", "ssm", "waf", "shield", "guardduty", "macie", "inspector", "cognito",
     "ecs", "eks", "stepfunctions", "batch", "beanstalk",
     "storagegateway", "datasync", "snow", "dms", "backup",
-    "athena", "redshift", "glue", "emr", "quicksight", "opensearch",
+    "athena", "redshift", "glue", "emr", "quicksight", "opensearch", "patterns",
   ] as readonly string[],
 } as const;
 

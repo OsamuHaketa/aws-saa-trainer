@@ -1,0 +1,159 @@
+# 設計パターン（サービスをまたぐ考え方）の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: patterns
+
+atoms:
+  - id: patterns-rpo-rto
+    category: dr
+    concept: RPO と RTO
+    summary: RPO は失ってよいデータの時間、RTO は復旧までにかかってよい時間
+    facts:
+      - RPO（目標復旧時点）は、障害時にどこまでのデータの損失を許容できるか（例：直近 1 時間分まで）
+      - RTO（目標復旧時間）は、障害からサービスを再開するまでにかけてよい時間（例：4 時間以内）
+      - RPO と RTO が短いほど、DR の構成のコストは高くなる
+    triggers:
+      - データの損失は 15 分まで
+      - 1 時間以内に復旧
+    pitfalls:
+      - RPO（データ）と RTO（時間）を取り違えると、要件に合わない DR 戦略を選んでしまう
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+
+  - id: patterns-backup-restore
+    category: dr
+    concept: バックアップと復元（Backup & Restore）
+    summary: バックアップだけを別リージョンに置き、障害時に環境ごと作り直す。最も安く、復旧に最も時間がかかる
+    facts:
+      - 平常時はバックアップ（スナップショット、AWS Backup など）だけを別のリージョンに置く
+      - 障害時に、インフラを作り直してデータを復元する
+      - 4 つの DR 戦略の中で最もコストが低く、RPO・RTO は数時間程度と最も長い
+    triggers:
+      - DR のコストを最小にしたい
+      - 復旧に数時間〜1 日かかってもよい
+    pitfalls:
+      - RTO が数分〜数十分の要件には間に合わない
+    relations:
+      - type: confused_with
+        target: patterns-pilot-light
+        distinction: バックアップと復元は、DR 側にバックアップしか置かない。パイロットライトは、DB の複製などの中核の部分だけを DR 側で常に動かしておく
+    examDomains: [resilient, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+
+  - id: patterns-pilot-light
+    category: dr
+    concept: パイロットライト
+    summary: DB の複製などの中核だけを DR リージョンで常に動かし、障害時にほかの部分を起動する
+    facts:
+      - データベースの複製など、中核の部分だけを DR リージョンで常に動かしておく
+      - アプリケーションサーバーなどは、障害時に起動・作成する（AMI や IaC を用意しておく）
+      - バックアップと復元より RPO・RTO が短く（数十分程度）、コストは低めに抑えられる
+    triggers:
+      - データは常に複製しておき、サーバーは障害時に起動する
+      - RTO は数十分でよく、コストは抑えたい
+    pitfalls:
+      - 障害時にサーバーを起動するので、すぐにフルの規模では処理できない
+    relations:
+      - type: confused_with
+        target: patterns-warm-standby
+        distinction: パイロットライトはデータの複製など中核だけが動いていて、アプリのサーバーは障害時に起動する。ウォームスタンバイは小さい規模で全体が動いていて、障害時に規模を拡大するだけ
+    examDomains: [resilient, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+
+  - id: patterns-warm-standby
+    category: dr
+    concept: ウォームスタンバイ
+    summary: 縮小した規模で、システム全体を DR リージョンで常に動かしておき、障害時に規模を拡大する
+    facts:
+      - 本番より小さい規模で、システム全体を DR リージョンで常に稼働させておく
+      - 障害時は、トラフィックを切り替えて規模を拡大する
+      - RTO は数分程度で、パイロットライトより速いがコストは高い
+    triggers:
+      - 数分で復旧したい
+      - 小さな規模で DR 環境を常に動かしておく
+    pitfalls:
+      - 規模を拡大するまでは、全量のトラフィックを処理しきれないことがある
+    relations:
+      - type: confused_with
+        target: patterns-multi-site
+        distinction: ウォームスタンバイは DR 側を縮小した規模で動かし、障害時に拡大する。マルチサイト（アクティブ/アクティブ）は複数のリージョンでフルの規模で動かし、常にトラフィックを処理する
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+
+  - id: patterns-multi-site
+    category: dr
+    concept: マルチサイト（アクティブ/アクティブ）
+    summary: 複数のリージョンでフルの規模のシステムを同時に動かし、RPO・RTO をほぼゼロにする
+    facts:
+      - 複数のリージョンで、本番と同じ規模のシステムが同時にトラフィックを処理する
+      - リージョン障害でも、残りのリージョンがすぐに処理を続ける
+      - RPO・RTO はほぼゼロだが、コストは最も高い
+      - DynamoDB グローバルテーブルや Aurora グローバルデータベース、Route 53、Global Accelerator などを組み合わせる
+    triggers:
+      - ダウンタイムをほぼゼロにしたい
+      - 複数のリージョンで同時に処理する
+    pitfalls:
+      - 要件がそこまで厳しくないのに選ぶと、コストが過剰になる
+    relations: []
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+
+  - id: patterns-stateless
+    category: design
+    concept: ステートレスなアプリケーション
+    summary: セッションなどの状態をサーバーの外に置き、どのサーバーでもリクエストを処理できるようにする
+    facts:
+      - セッションやアップロードしたファイルを、ElastiCache、DynamoDB、S3、EFS などサーバーの外に置く
+      - どのサーバーが処理しても同じ結果になるので、自由に台数を増減できる
+      - サーバーが故障しても、ほかのサーバーがそのまま処理を引き継げる
+    triggers:
+      - 水平にスケールさせたい
+      - サーバーが減ってもセッションを失わないようにしたい
+    pitfalls:
+      - サーバーのメモリやローカルディスクに状態を持つと、スケールインや障害で失われる
+    relations:
+      - type: used_with
+        target: elasticache-redis
+    examDomains: [resilient, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_prevent_interaction_failure_stateless.html
+
+  - id: patterns-loose-coupling
+    category: design
+    concept: 疎結合
+    summary: コンポーネントの間にキューやイベントを挟み、互いの障害や負荷の影響を受けにくくする
+    facts:
+      - SQS、SNS、EventBridge、Kinesis などを挟み、送る側と受ける側を直接つながないようにする
+      - 受ける側が止まったり遅くなったりしても、送る側はそのまま動き続けられる
+      - それぞれのコンポーネントを独立してスケール・変更できる
+    triggers:
+      - 一部の障害がシステム全体に広がらないようにしたい
+      - 処理の急増を吸収したい
+    pitfalls:
+      - コンポーネント同士を同期の API 呼び出しで直接つなぐと、一か所の障害や遅延が全体に広がる
+    relations:
+      - type: used_with
+        target: sqs-standard
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_prevent_interaction_failure_loosely_coupled_system.html
