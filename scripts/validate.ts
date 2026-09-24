@@ -5,52 +5,21 @@
  *
  * 使い方: npm run validate
  */
-import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { parse as parseYaml } from "yaml";
-import { z } from "zod";
-import { KnowledgeFile, type Atom } from "../lib/schema/atom";
-import { PROMPT_SOFT_LIMIT, QuestionFile, type Question } from "../lib/schema/question";
+import { parseContent } from "../lib/content";
+import { PROMPT_SOFT_LIMIT } from "../lib/schema/question";
 
 const ROOT = join(import.meta.dirname, "..");
-const errors: string[] = [];
+const { atoms, questions, errors } = parseContent(ROOT);
 const warnings: string[] = [];
-
-function filesIn(dir: string, ext: string): string[] {
-  return readdirSync(join(ROOT, dir))
-    .filter((f) => f.endsWith(ext))
-    .map((f) => join(dir, f));
-}
-
-function report(file: string, error: z.ZodError) {
-  for (const issue of error.issues) {
-    errors.push(`${file} [${issue.path.join(".")}] ${issue.message}`);
-  }
-}
 
 // --- Knowledge Atoms ---------------------------------------------------------
 
-const atoms = new Map<string, Atom>();
-
-for (const file of filesIn("knowledge", ".yaml")) {
-  const result = KnowledgeFile.safeParse(parseYaml(readFileSync(join(ROOT, file), "utf8")));
-  if (!result.success) {
-    report(file, result.error);
-    continue;
-  }
-  const { service } = result.data;
-  for (const atom of result.data.atoms) {
-    if (atoms.has(atom.id)) errors.push(`${file} atom id が重複: ${atom.id}`);
-    if (!atom.id.startsWith(`${service}-`)) errors.push(`${file} atom id は "${service}-" で始める: ${atom.id}`);
-    if (atom.status === "reviewed" && !atom.lastVerified) {
-      warnings.push(`${atom.id} reviewed なのに lastVerified がない`);
-    }
-    atoms.set(atom.id, atom);
-  }
-}
-
 const confusedPairs = new Set<string>();
 for (const atom of atoms.values()) {
+  if (atom.status === "reviewed" && !atom.lastVerified) {
+    warnings.push(`${atom.id} reviewed なのに lastVerified がない`);
+  }
   const seen = new Set<string>();
   for (const rel of atom.relations) {
     const key = `${rel.type}:${rel.target}`;
@@ -67,20 +36,6 @@ for (const atom of atoms.values()) {
 }
 
 // --- Questions ---------------------------------------------------------------
-
-const questions = new Map<string, Question>();
-
-for (const file of filesIn("generated", ".json")) {
-  const result = QuestionFile.safeParse(JSON.parse(readFileSync(join(ROOT, file), "utf8")));
-  if (!result.success) {
-    report(file, result.error);
-    continue;
-  }
-  for (const q of result.data) {
-    if (questions.has(q.id)) errors.push(`${file} question id が重複: ${q.id}`);
-    questions.set(q.id, q);
-  }
-}
 
 for (const q of questions.values()) {
   for (const id of q.atomIds) {
