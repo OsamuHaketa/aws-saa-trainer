@@ -129,3 +129,884 @@ atoms:
     sources:
       - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html
       - https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html
+
+  # --- ストレージクラス（アーカイブ・高性能） ---------------------------------
+
+  - id: s3-glacier-instant-retrieval
+    category: storage-class
+    concept: S3 Glacier Instant Retrieval
+    summary: ほとんどアクセスしないが、必要なときはミリ秒で取り出したいアーカイブ向け
+    facts:
+      - 四半期に 1 回程度しかアクセスしないが、すぐに取り出す必要があるデータ向け
+      - ミリ秒単位で取り出せる（復元の手続きは不要）
+      - 保存料金は Standard-IA より安いが、取り出し料金は高い
+      - 最低保存期間は 90 日、最小課金サイズは 128 KB
+    triggers:
+      - 四半期に 1 回程度しかアクセスしない
+      - アーカイブだがミリ秒で取り出したい
+      - 医療画像やニュース素材などの長期保管
+    pitfalls:
+      - 月に何度もアクセスするデータでは、取り出し料金で Standard-IA より高くつく
+    relations:
+      - type: confused_with
+        target: s3-standard-ia
+        distinction: Standard-IA は月 1 回程度のアクセス向けで最低 30 日。Glacier Instant Retrieval は四半期 1 回程度向けで最低 90 日。保存料金は安いが取り出し料金が高い
+      - type: confused_with
+        target: s3-glacier-flexible-retrieval
+        distinction: Instant Retrieval はミリ秒で取り出せる。Flexible Retrieval は復元が必要で、数分〜数時間かかる代わりに保存料金がさらに安い
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+
+  - id: s3-glacier-flexible-retrieval
+    category: storage-class
+    concept: S3 Glacier Flexible Retrieval
+    summary: 数分〜数時間の取り出し時間を許容できるアーカイブ向け
+    facts:
+      - 取り出す前に復元（リストア）が必要で、すぐには読めない
+      - 取り出しオプションは 迅速（1〜5 分）/ 標準（3〜5 時間）/ 大容量（5〜12 時間）
+      - 大容量取り出しは無料
+      - 最低保存期間は 90 日
+    triggers:
+      - 年に 1〜2 回しかアクセスしない
+      - 取り出しに数時間かかってもよい
+      - バックアップやアーカイブを低コストで保管
+    pitfalls:
+      - すぐに読む必要があるデータには向かない（復元待ちが発生する）
+    relations:
+      - type: confused_with
+        target: s3-glacier-deep-archive
+        distinction: Flexible Retrieval は迅速取り出しなら数分、標準で 3〜5 時間。Deep Archive は標準で 12 時間以内、大容量で 48 時間以内と遅いが最安で、最低保存期間は 180 日
+      - type: used_with
+        target: s3-lifecycle
+    examDomains: [cost, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html
+
+  - id: s3-glacier-deep-archive
+    category: storage-class
+    concept: S3 Glacier Deep Archive
+    summary: S3 で最も安い、ほぼ取り出さない長期保管向けのストレージクラス
+    facts:
+      - S3 のストレージクラスで保存料金が最も安い
+      - 取り出しは 標準（12 時間以内）/ 大容量（48 時間以内）
+      - 最低保存期間は 180 日
+      - 規制対応で 7〜10 年保管するデータや、テープの置き換えに向く
+    triggers:
+      - 規制で 7 年以上保管する
+      - ほぼ取り出さない
+      - 取り出しに 12〜48 時間かかってもよい
+      - テープライブラリを置き換えたい
+    pitfalls:
+      - 数分〜数時間以内に取り出す必要があるなら不適（最短でも 12 時間程度）
+      - 180 日未満で削除しても 180 日分の料金がかかる
+    relations:
+      - type: used_with
+        target: s3-lifecycle
+    examDomains: [cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html
+
+  - id: s3-express-one-zone
+    category: storage-class
+    concept: S3 Express One Zone
+    summary: 単一 AZ で 1 桁ミリ秒の低レイテンシを出す高性能ストレージクラス
+    facts:
+      - 単一の AZ に保存し、一貫して 1 桁ミリ秒のレイテンシで読み書きできる
+      - ディレクトリバケットという専用のバケットタイプを使う
+      - 保存先の AZ を選び、コンピューティングを同じ AZ に置くと効果が高い
+      - 機械学習の学習データや分析など、頻繁で高速なアクセスが必要な処理向け
+    triggers:
+      - 1 桁ミリ秒のレイテンシ
+      - 機械学習の学習ジョブで大量の小さなファイルを高速に読む
+      - コンピューティングと同じ AZ に置きたい
+    pitfalls:
+      - 単一 AZ なので、AZ 障害に耐える必要があるデータの唯一の保存先には向かない
+    relations:
+      - type: confused_with
+        target: s3-one-zone-ia
+        distinction: どちらも単一 AZ だが、Express One Zone は頻繁アクセス向けの高性能クラス。One Zone-IA は低頻度アクセス向けの低コストクラス
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html
+
+  # --- セキュリティ（アクセス制御） --------------------------------------------
+
+  - id: s3-block-public-access
+    category: security
+    concept: S3 Block Public Access
+    summary: バケットポリシーや ACL の設定に関係なく、パブリックアクセスを一括で禁止する
+    facts:
+      - アカウント単位とバケット単位で設定できる
+      - 有効にすると、パブリックアクセスを許可するバケットポリシーや ACL より優先してブロックする
+      - 新しいバケットではデフォルトで有効
+      - アカウント単位で有効にすると、組織的な誤公開の防止に使える
+    triggers:
+      - 誤ってバケットを公開するのを防ぎたい
+      - アカウント内のすべてのバケットでパブリックアクセスを禁止
+    pitfalls:
+      - S3 の静的ウェブサイトホスティングで直接公開したい場合は、無効にしないと公開できない
+    relations:
+      - type: used_with
+        target: s3-bucket-policy
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html
+
+  - id: s3-bucket-policy
+    category: security
+    concept: S3 バケットポリシー
+    summary: バケットに付けるリソースベースのポリシー。他アカウントへの許可や条件付きの制御ができる
+    facts:
+      - バケットに付ける JSON のリソースベースポリシー
+      - 別の AWS アカウントのプリンシパルにアクセスを許可できる
+      - 送信元 IP、VPC エンドポイント、HTTPS かどうか、などの条件で許可・拒否できる
+      - バケット内のすべてのオブジェクトにまとめて適用できる
+    triggers:
+      - 別のアカウントにバケットへのアクセスを許可したい
+      - 特定の VPC エンドポイント経由のアクセスだけ許可したい
+      - 特定の IP アドレスからのアクセスだけ許可したい
+    pitfalls:
+      - Block Public Access が有効だと、パブリックに公開するポリシーは効かない
+    relations:
+      - type: confused_with
+        target: s3-iam-policy
+        distinction: バケットポリシーはバケットに付けるリソースベースで、他アカウントへの許可も書ける。IAM ポリシーはユーザーやロールに付けるアイデンティティベースで、自アカウントのプリンシパルの権限を決める
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html
+
+  - id: s3-iam-policy
+    category: security
+    concept: IAM ポリシー（S3 へのアクセス）
+    summary: IAM ユーザーやロールに付けて、どの S3 操作を許可するかを決める
+    facts:
+      - IAM ユーザー、グループ、ロールに付けるアイデンティティベースのポリシー
+      - 同じアカウント内のプリンシパルに S3 の操作を許可する
+      - EC2 や Lambda からは IAM ロールで S3 にアクセスさせる
+      - 別アカウントのバケットへアクセスするには、相手側のバケットポリシーでの許可も必要
+    triggers:
+      - EC2 上のアプリから S3 にアクセスさせたい
+      - アクセスキーをサーバーに保存したくない
+    pitfalls:
+      - アクセスキーをアプリやインスタンスに埋め込むのは不適切。IAM ロールを使う
+    relations: []
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-iam.html
+
+  - id: s3-object-ownership
+    category: security
+    concept: S3 オブジェクト所有権（ACL の無効化）
+    summary: バケット所有者がすべてのオブジェクトを所有し、ACL を無効にする設定
+    facts:
+      - 「バケット所有者の強制」を選ぶと ACL が無効になり、バケット所有者がすべてのオブジェクトを所有する
+      - 新しいバケットではデフォルトで ACL が無効
+      - アクセス制御はバケットポリシーと IAM ポリシーで行うのが推奨
+      - 他アカウントがアップロードしたオブジェクトにバケット所有者がアクセスできない問題を防げる
+    triggers:
+      - 別アカウントがアップロードしたオブジェクトにバケット所有者がアクセスできない
+      - ACL の管理をやめたい
+    pitfalls:
+      - ACL でアクセス制御を設計するのは旧来の方法。新規の設計ではポリシーを使う
+    relations:
+      - type: used_with
+        target: s3-bucket-policy
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html
+
+  - id: s3-enforce-https
+    category: security
+    concept: HTTPS の強制（aws:SecureTransport）
+    summary: バケットポリシーで HTTP のリクエストを拒否し、通信の暗号化を強制する
+    facts:
+      - バケットポリシーで aws:SecureTransport が false のリクエストを Deny する
+      - 転送中のデータの暗号化（TLS）を必須にできる
+      - 保存時の暗号化（SSE）とは別の対策
+    triggers:
+      - 転送中のデータを暗号化したい
+      - HTTPS 以外のアクセスを拒否したい
+    pitfalls:
+      - SSE を有効にしても、転送中の暗号化は強制されない
+    relations:
+      - type: used_with
+        target: s3-bucket-policy
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html
+
+  - id: s3-presigned-url
+    category: security
+    concept: S3 署名付き URL
+    summary: 非公開のオブジェクトに、期限付きで一時的なアクセスを与える URL
+    facts:
+      - 署名付き URL を知っていれば、AWS の認証情報がなくても特定のオブジェクトにアクセスできる
+      - ダウンロード（GET）にもアップロード（PUT）にも使える
+      - 有効期限を設定でき、期限が過ぎると使えなくなる
+      - URL を作成した人の権限の範囲でしかアクセスできない
+    triggers:
+      - 非公開のファイルを一時的にダウンロードさせたい
+      - ブラウザから S3 に直接アップロードさせたい
+      - 有効期限付きのリンク
+    pitfalls:
+      - バケットを公開してファイルを共有するのは不適切。署名付き URL で期限付きにする
+    relations:
+      - type: confused_with
+        target: s3-bucket-policy
+        distinction: バケットポリシーは特定のプリンシパルや条件に継続的なアクセスを許可する。署名付き URL は特定のオブジェクトへの期限付きのアクセスを、URL を持つ人に与える
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html
+
+  - id: s3-access-points
+    category: security
+    concept: S3 アクセスポイント
+    summary: 共有バケットに、用途ごとの名前付きの入口と専用のポリシーを作る
+    facts:
+      - 1 つのバケットに複数のアクセスポイントを作り、それぞれに専用のポリシーを付けられる
+      - 多くのアプリやチームが使う共有データセットのアクセス管理を簡単にする
+      - アクセスポイントごとに、VPC からのアクセスだけに制限できる
+    triggers:
+      - 1 つのバケットを多数のアプリやチームで共有している
+      - バケットポリシーが複雑になりすぎた
+    pitfalls:
+      - 1 つの巨大なバケットポリシーで全チームの権限を管理すると、変更のたびに影響範囲が広がる
+    relations:
+      - type: confused_with
+        target: s3-bucket-policy
+        distinction: バケットポリシーはバケット全体で 1 つ。アクセスポイントは用途ごとに入口を分け、それぞれに小さなポリシーを持たせる
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html
+
+  - id: s3-mfa-delete
+    category: security
+    concept: S3 MFA Delete
+    summary: オブジェクトのバージョンの完全削除とバージョニングの変更に MFA を必須にする
+    facts:
+      - バージョニングが有効なバケットで使う
+      - オブジェクトのバージョンを完全に削除するときと、バージョニングの状態を変えるときに MFA が必要になる
+      - 有効にできるのはルートユーザーだけで、CLI または API から設定する
+    triggers:
+      - 削除に多要素認証を必須にしたい
+      - 誤削除や悪意ある削除からバージョンを守りたい
+    pitfalls:
+      - 一定期間の削除禁止（WORM）が必要なら Object Lock を使う
+    relations:
+      - type: requires
+        target: s3-versioning
+      - type: confused_with
+        target: s3-object-lock
+        distinction: MFA Delete は削除時に MFA を要求するだけで、MFA があれば削除できる。Object Lock は保持期間中の削除や上書きそのものを禁止する
+    examDomains: [secure, resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html
+
+  - id: s3-object-lock
+    category: security
+    concept: S3 Object Lock
+    summary: オブジェクトを一定期間または無期限に削除・上書きできなくする（WORM）
+    facts:
+      - WORM（Write Once Read Many）モデルでオブジェクトのバージョンを保護する
+      - バージョニングが必須
+      - 保持期間（リテンション）とリーガルホールドの 2 つの仕組みがある
+      - 保持期間にはガバナンスモードとコンプライアンスモードがある
+    triggers:
+      - WORM
+      - 一定期間、削除も上書きもできないようにしたい
+      - 規制で改ざん防止が求められる
+    pitfalls:
+      - IAM ポリシーで削除を禁止するだけでは、権限を持つ管理者が変更できるので WORM にはならない
+    relations:
+      - type: requires
+        target: s3-versioning
+    examDomains: [secure, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html
+
+  - id: s3-object-lock-compliance
+    category: security
+    concept: Object Lock コンプライアンスモード
+    summary: 保持期間中は、ルートユーザーを含め誰も削除・上書きできない
+    facts:
+      - 保持期間中は、ルートユーザーを含むすべてのユーザーがオブジェクトのバージョンを削除・上書きできない
+      - 保持期間を短くすることも、モードを変えることもできない
+      - 金融などの厳格な規制要件に使う
+    triggers:
+      - ルートユーザーでも削除できないようにしたい
+      - 規制で厳格な改ざん防止が求められる
+    pitfalls:
+      - 設定を誤ると保持期間が終わるまで削除できず、その間の保存料金もかかり続ける。先にガバナンスモードで試すとよい
+    relations:
+      - type: part_of
+        target: s3-object-lock
+      - type: confused_with
+        target: s3-object-lock-governance
+        distinction: コンプライアンスモードは誰も解除できない。ガバナンスモードは特別な権限（s3:BypassGovernanceRetention）を持つユーザーなら解除や削除ができる
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html
+
+  - id: s3-object-lock-governance
+    category: security
+    concept: Object Lock ガバナンスモード
+    summary: 保持期間中の削除を防ぐが、特別な権限を持つユーザーは解除できる
+    facts:
+      - ほとんどのユーザーは保持期間中にオブジェクトのバージョンを削除・上書きできない
+      - s3:BypassGovernanceRetention 権限を持つユーザーは保護を解除して削除できる
+      - コンプライアンスモードを使う前に保持期間の設定を試すのにも使える
+    triggers:
+      - 一部の管理者だけは削除できるようにしたい
+      - 保持設定をテストしたい
+    pitfalls:
+      - 誰にも解除させてはいけない規制要件には不十分。コンプライアンスモードを使う
+    relations:
+      - type: part_of
+        target: s3-object-lock
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html
+
+  - id: s3-legal-hold
+    category: security
+    concept: Object Lock リーガルホールド
+    summary: 期限を決めずに、解除するまでオブジェクトの削除・上書きを禁止する
+    facts:
+      - 保持期間を持たず、明示的に解除するまで有効
+      - s3:PutObjectLegalHold 権限を持つユーザーが設定・解除できる
+      - 保持期間とは独立していて、両方を同時に設定することもできる
+    triggers:
+      - 訴訟対応で、期限未定のまま保全したい
+      - 調査が終わるまで削除させたくない
+    pitfalls:
+      - 保持期限が決まっているなら、保持期間（リテンション）を使う
+    relations:
+      - type: part_of
+        target: s3-object-lock
+      - type: confused_with
+        target: s3-object-lock-compliance
+        distinction: コンプライアンスモードは決めた保持期間が終わるまで誰も解除できない。リーガルホールドは期限がなく、権限を持つユーザーが解除するまで続く
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html
+
+  # --- 暗号化 ------------------------------------------------------------------
+
+  - id: s3-sse-s3
+    category: encryption
+    concept: SSE-S3
+    summary: S3 が管理する鍵で保存時に自動で暗号化する。追加の管理も料金も不要
+    facts:
+      - S3 が管理する鍵（AES-256）で保存時に暗号化する
+      - すべての新しいオブジェクトはデフォルトで SSE-S3 で暗号化される
+      - 追加料金がかからず、鍵の管理も不要
+      - 鍵の使用履歴の監査や、鍵へのアクセス制御は自分ではできない
+    triggers:
+      - 追加の運用負荷なしで保存時に暗号化したい
+      - 鍵を管理したくない
+    pitfalls:
+      - 鍵の使用を CloudTrail で監査したい、鍵のアクセスを分離したい、といった要件は満たせない
+    relations:
+      - type: confused_with
+        target: s3-sse-kms
+        distinction: SSE-S3 は鍵の管理も監査も S3 任せ。SSE-KMS は KMS の鍵を使い、鍵ポリシーでアクセスを制御でき、鍵の使用が CloudTrail に記録される
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingServerSideEncryption.html
+
+  - id: s3-sse-kms
+    category: encryption
+    concept: SSE-KMS
+    summary: AWS KMS の鍵で暗号化し、鍵のアクセス制御と使用の監査ができる
+    facts:
+      - AWS KMS の鍵（AWS マネージドキーまたはカスタマーマネージドキー）で暗号化する
+      - 鍵の使用が CloudTrail に記録され、監査できる
+      - 鍵ポリシーで「誰が復号できるか」を S3 の権限とは別に制御できる
+      - 読み書きのたびに KMS へのリクエストが発生し、KMS の料金とリクエストのクォータがかかる
+    triggers:
+      - 鍵の使用状況を監査したい
+      - 鍵のローテーションや無効化を自分で管理したい
+      - 職務分離（S3 の管理者でも復号できない）
+    pitfalls:
+      - 大量のリクエストで KMS のクォータに達してスロットリングされることがある。S3 バケットキーで KMS へのリクエストを減らせる
+      - 別アカウントに復号させるなら、鍵ポリシーを編集できるカスタマーマネージドキーが必要
+    relations:
+      - type: confused_with
+        target: s3-sse-c
+        distinction: SSE-KMS は鍵を KMS に保管して AWS が管理する。SSE-C は顧客が鍵を持ち、リクエストのたびに鍵を渡す。AWS は鍵を保存しない
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html
+
+  - id: s3-bucket-key
+    category: encryption
+    concept: S3 バケットキー
+    summary: SSE-KMS の KMS へのリクエストを減らし、コストとスロットリングを抑える
+    facts:
+      - バケット単位の鍵を使ってデータキーを生成し、KMS へのリクエストを大幅に減らす
+      - SSE-KMS の KMS リクエスト料金を削減できる
+      - KMS のリクエストクォータによるスロットリングも起きにくくなる
+    triggers:
+      - SSE-KMS の KMS 料金が高い
+      - KMS のスロットリングが発生している
+    pitfalls:
+      - 暗号化方式を SSE-S3 に変えるとコストは下がるが、KMS による監査や鍵の制御ができなくなる
+    relations:
+      - type: used_with
+        target: s3-sse-kms
+    examDomains: [cost, secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html
+
+  - id: s3-sse-c
+    category: encryption
+    concept: SSE-C
+    summary: 顧客が用意した鍵をリクエストごとに渡し、S3 側で暗号化する
+    facts:
+      - 顧客が管理する鍵を、リクエストのたびに渡す
+      - S3 が暗号化・復号を行うが、鍵そのものは保存しない
+      - HTTPS が必須
+      - 鍵をなくすとオブジェクトを復号できなくなる
+    triggers:
+      - 鍵を AWS の外で自分で管理したい
+      - 暗号化処理は S3 に任せたい
+    pitfalls:
+      - 鍵の保管と、リクエストごとの受け渡しをすべて自分で管理する必要がある
+    relations:
+      - type: confused_with
+        target: s3-client-side-encryption
+        distinction: SSE-C は鍵を渡して S3 が暗号化する（S3 は一時的に平文を扱う）。クライアント側暗号化はアップロード前に自分で暗号化し、S3 には暗号化済みのデータしか届かない
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html
+
+  - id: s3-client-side-encryption
+    category: encryption
+    concept: クライアント側暗号化
+    summary: アップロード前にデータを自分で暗号化し、S3 には暗号文だけを送る
+    facts:
+      - データを送信前にクライアント側で暗号化する
+      - AWS は平文のデータを一切扱わない
+      - 暗号化の処理と鍵の管理は利用者側の責任
+    triggers:
+      - AWS に平文を渡したくない
+      - 送信前に暗号化する必要がある
+    pitfalls:
+      - サーバー側暗号化（SSE）では、S3 が暗号化する前後で平文を扱うため、この要件を満たせない
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingClientSideEncryption.html
+
+  # --- データ管理 --------------------------------------------------------------
+
+  - id: s3-versioning
+    category: data-management
+    concept: S3 バージョニング
+    summary: オブジェクトの過去のバージョンを残し、誤削除や上書きから復元できる
+    facts:
+      - 同じキーのオブジェクトを上書きしても、過去のバージョンが残る
+      - 削除すると削除マーカーが付くだけで、過去のバージョンから復元できる
+      - 一度有効にすると無効には戻せず、停止（サスペンド）だけできる
+      - すべてのバージョンに保存料金がかかる
+    triggers:
+      - 誤削除や誤った上書きから復元したい
+      - 過去のバージョンに戻したい
+    pitfalls:
+      - 古いバージョンが増え続けてコストが上がる。Lifecycle で古いバージョンを期限切れにする
+    relations:
+      - type: used_with
+        target: s3-lifecycle
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html
+
+  - id: s3-cross-region-replication
+    category: data-management
+    concept: S3 クロスリージョンレプリケーション（CRR）
+    summary: 別のリージョンのバケットへオブジェクトを自動で非同期にコピーする
+    facts:
+      - 別リージョンのバケットへ非同期にコピーする
+      - 送信元と送信先の両方のバケットでバージョニングが必要
+      - ルールを作る前からある既存のオブジェクトは、自動ではコピーされない（S3 バッチレプリケーションを使う）
+      - 災害対策、コンプライアンス、別リージョンのユーザーへの低レイテンシに使う
+    triggers:
+      - 別リージョンにデータのコピーを持ちたい
+      - リージョン障害に備えたい
+      - 地理的に離れた場所にバックアップを置くことが規制で求められる
+    pitfalls:
+      - レプリケーションを設定しても、設定前の既存オブジェクトは自動ではコピーされない
+    relations:
+      - type: requires
+        target: s3-versioning
+      - type: confused_with
+        target: s3-same-region-replication
+        distinction: CRR は別リージョンへコピーし、災害対策や低レイテンシに使う。SRR は同じリージョン内でコピーし、ログの集約やアカウント間のデータ同期、データを国外に出せない要件に使う
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html
+
+  - id: s3-same-region-replication
+    category: data-management
+    concept: S3 同一リージョンレプリケーション（SRR）
+    summary: 同じリージョン内の別のバケットへオブジェクトを自動でコピーする
+    facts:
+      - 同じリージョン内の別のバケットへ非同期にコピーする
+      - 送信元と送信先の両方のバケットでバージョニングが必要
+      - 複数バケットのログを 1 つに集約する、本番と検証のアカウント間で同期する、といった用途に使う
+      - データを同じリージョン内に留める必要がある場合でも、コピーを持てる
+    triggers:
+      - ログを 1 つのバケットに集約したい
+      - 本番アカウントのデータを検証アカウントに同期したい
+      - データを国外に出さずにコピーを持ちたい
+    pitfalls:
+      - リージョン障害への対策にはならない
+    relations:
+      - type: requires
+        target: s3-versioning
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html
+
+  - id: s3-replication-time-control
+    category: data-management
+    concept: S3 Replication Time Control（RTC）
+    summary: レプリケーションの 99.99% を 15 分以内に完了させる SLA 付きの機能
+    facts:
+      - オブジェクトの 99.99% を 15 分以内にレプリケーションする
+      - SLA が付いている
+      - レプリケーションの遅延を監視するメトリクスと通知が使える
+    triggers:
+      - 15 分以内にレプリケーションを完了させる必要がある
+      - レプリケーションの時間を保証したい
+    pitfalls:
+      - 通常のレプリケーションには完了時間の保証がない
+    relations:
+      - type: used_with
+        target: s3-cross-region-replication
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html
+
+  - id: s3-event-notifications
+    category: data-management
+    concept: S3 イベント通知
+    summary: オブジェクトの作成や削除をきっかけに、Lambda・SQS・SNS・EventBridge へ通知する
+    facts:
+      - オブジェクトの作成、削除、復元などのイベントで通知を送る
+      - 送信先は Lambda、SQS、SNS、EventBridge
+      - EventBridge を使うと、高度なフィルタリングや複数の送信先への配信ができる
+      - アップロードをきっかけにした処理（サムネイル生成など）をサーバーなしで作れる
+    triggers:
+      - アップロードされたら自動で処理したい
+      - ファイルが置かれたらサムネイルを作る
+      - ポーリングせずに新しいファイルを検知したい
+    pitfalls:
+      - 定期的にバケットを一覧してポーリングする設計は、遅延もコストも大きい
+    relations: []
+    examDomains: [performance, resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html
+
+  - id: s3-batch-operations
+    category: data-management
+    concept: S3 バッチオペレーション
+    summary: 大量の既存オブジェクトに、コピーやタグ付けなどの操作を一括で実行する
+    facts:
+      - 数十億個のオブジェクトにも、1 つのジョブで同じ操作を実行できる
+      - コピー、タグの置き換え、Glacier からの復元、Lambda の呼び出しなどができる
+      - 対象のリストは S3 インベントリのレポートや CSV で指定する
+      - 進捗管理、再試行、完了レポートを S3 が行う
+    triggers:
+      - 既存の大量のオブジェクトを一括で処理したい
+      - 何百万ものオブジェクトのタグを変えたい
+    pitfalls:
+      - 自前のスクリプトで大量のオブジェクトを処理すると、再試行や進捗管理を作り込む必要がある
+    relations:
+      - type: confused_with
+        target: s3-lifecycle
+        distinction: Lifecycle は経過日数のルールで継続的に移行・削除する。バッチオペレーションは指定したオブジェクトの一覧に、1 回限りの操作をまとめて実行する
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops.html
+
+  # --- パフォーマンス ----------------------------------------------------------
+
+  - id: s3-multipart-upload
+    category: performance
+    concept: S3 マルチパートアップロード
+    summary: 大きなファイルを分割して並列にアップロードする。5 GB を超えるなら必須
+    facts:
+      - 1 回の PUT でアップロードできるのは 5 GB まで。それを超えるならマルチパートアップロードが必須
+      - 100 MB を超えるファイルでは使うことが推奨される
+      - パートを並列にアップロードでき、失敗したパートだけ再送できる
+      - オブジェクトの最大サイズは 5 TB
+    triggers:
+      - 5 GB を超えるファイルをアップロードする
+      - 大きなファイルのアップロードを速くしたい
+      - ネットワークが不安定で、アップロードが途中で失敗する
+    pitfalls:
+      - 未完了のマルチパートアップロードのパートにも保存料金がかかる。Lifecycle で自動的に中止する
+    relations:
+      - type: confused_with
+        target: s3-transfer-acceleration
+        distinction: マルチパートアップロードは大きなファイルを分割して並列に送る。Transfer Acceleration はエッジロケーションを経由して、地理的に遠い場所からの転送を速くする
+      - type: confused_with
+        target: s3-byte-range-fetch
+        distinction: マルチパートアップロードはアップロードの並列化。バイト範囲フェッチはダウンロードの並列化や一部だけの取得
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html
+
+  - id: s3-transfer-acceleration
+    category: performance
+    concept: S3 Transfer Acceleration
+    summary: エッジロケーションを経由して、遠く離れた場所からの S3 への転送を速くする
+    facts:
+      - CloudFront のエッジロケーションで受け取り、AWS のネットワーク経由でバケットへ転送する
+      - 世界中の離れた場所から 1 つのバケットにアップロードする場合に効果が大きい
+      - 専用のエンドポイントを使い、追加料金がかかる
+    triggers:
+      - 世界中のユーザーから 1 つのバケットへアップロードする
+      - 地理的に遠い場所からのアップロードが遅い
+    pitfalls:
+      - バケットと同じリージョン内からの転送では、ほとんど効果がない
+    relations: []
+    examDomains: [performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html
+
+  - id: s3-byte-range-fetch
+    category: performance
+    concept: S3 バイト範囲フェッチ
+    summary: オブジェクトの一部の範囲だけを取得する。並列に取得してダウンロードを速くできる
+    facts:
+      - Range ヘッダーで、オブジェクトの指定した範囲だけを取得する
+      - 複数の範囲を並列に取得すると、大きなオブジェクトのダウンロードが速くなる
+      - ファイルの先頭だけなど、必要な部分だけを読み取れる
+    triggers:
+      - 大きなファイルのダウンロードを速くしたい
+      - ファイルの一部だけを読みたい
+    pitfalls:
+      - 必要なのが一部のデータだけなのに、毎回オブジェクト全体をダウンロードするのは無駄
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-guidelines.html
+
+  - id: s3-prefix-performance
+    category: performance
+    concept: プレフィックスごとのリクエスト性能
+    summary: S3 はプレフィックスごとに毎秒数千リクエストを処理でき、プレフィックスを分けると並列性が上がる
+    facts:
+      - プレフィックスごとに、毎秒 3,500 回以上の PUT/COPY/POST/DELETE と 5,500 回以上の GET/HEAD を処理できる
+      - プレフィックスの数に上限はない
+      - 複数のプレフィックスに分散して並列にアクセスすると、全体の性能を上げられる
+    triggers:
+      - 毎秒数万リクエストを処理したい
+      - 503 Slow Down エラーが出る
+    pitfalls:
+      - 高いリクエスト数が必要なのに、すべてのオブジェクトを 1 つのプレフィックスに置くと性能の上限に当たる
+    relations:
+      - type: used_with
+        target: s3-byte-range-fetch
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html
+
+  # --- アーキテクチャ ----------------------------------------------------------
+
+  - id: s3-gateway-endpoint
+    category: architecture
+    concept: S3 ゲートウェイエンドポイント
+    summary: ルートテーブルに経路を追加し、VPC からインターネットを通らずに S3 へ無料で接続する
+    facts:
+      - VPC のルートテーブルに S3 への経路を追加して使う
+      - 追加料金がかからない
+      - 対応しているのは S3 と DynamoDB だけ
+      - オンプレミスや別リージョン、ピアリング先の VPC からは使えない
+    triggers:
+      - プライベートサブネットから S3 にアクセスしたい
+      - NAT ゲートウェイの料金を減らしたい
+      - インターネットを経由せずに S3 に接続したい
+    pitfalls:
+      - S3 への通信を NAT ゲートウェイ経由にすると、データ処理料金がかかる
+    relations:
+      - type: confused_with
+        target: s3-interface-endpoint
+        distinction: ゲートウェイエンドポイントはルートテーブルで経路を作り、無料だが VPC 内からしか使えない。インターフェイスエンドポイントはサブネットにプライベート IP の ENI を作り、有料だがオンプレミスからも使える
+    examDomains: [secure, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html
+
+  - id: s3-interface-endpoint
+    category: architecture
+    concept: S3 インターフェイスエンドポイント（PrivateLink）
+    summary: サブネットにプライベート IP の ENI を作り、オンプレミスからも S3 へプライベートに接続できる
+    facts:
+      - AWS PrivateLink で、サブネット内にプライベート IP アドレスを持つ ENI を作る
+      - Direct Connect や Site-to-Site VPN 経由で、オンプレミスから使える
+      - 時間単位の料金とデータ処理料金がかかる
+    triggers:
+      - オンプレミスから Direct Connect 経由でプライベートに S3 にアクセスしたい
+      - プライベート IP アドレスで S3 にアクセスしたい
+    pitfalls:
+      - VPC 内からのアクセスだけなら、無料のゲートウェイエンドポイントで足りる
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/privatelink-interface-endpoints.html
+
+  - id: s3-static-website-hosting
+    category: architecture
+    concept: S3 静的ウェブサイトホスティング
+    summary: バケットを HTML などの静的サイトとして公開する。ウェブサイトエンドポイントは HTTP のみ
+    facts:
+      - インデックスドキュメントとエラードキュメントを指定して、静的サイトとして公開できる
+      - ウェブサイトエンドポイントは HTTP のみで、HTTPS に対応していない
+      - 公開するには、パブリックアクセスを許可する設定が必要
+      - HTTPS や独自ドメインの証明書が必要なら、前段に CloudFront を置く
+    triggers:
+      - サーバーを使わずに静的サイトを公開したい
+      - HTML、CSS、画像だけのサイト
+    pitfalls:
+      - HTTPS が必要なのにウェブサイトエンドポイントを直接公開しても対応できない
+      - PHP などサーバー側の処理が必要なサイトは動かない
+    relations:
+      - type: confused_with
+        target: s3-origin-access-control
+        distinction: 静的ウェブサイトホスティングはバケットを公開して HTTP で配信する。CloudFront と OAC を使うと、バケットは非公開のまま CloudFront 経由でだけ HTTPS で配信できる
+    examDomains: [performance, cost]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html
+
+  - id: s3-origin-access-control
+    category: architecture
+    concept: CloudFront オリジンアクセスコントロール（OAC）
+    summary: S3 バケットを非公開のまま、CloudFront からのアクセスだけを許可する
+    facts:
+      - バケットへのアクセスを特定の CloudFront ディストリビューションからだけに制限する
+      - バケットは非公開のままでよく、S3 の URL に直接アクセスされるのを防げる
+      - バケットポリシーで CloudFront のサービスプリンシパルとディストリビューションを指定して許可する
+      - 従来の OAI（オリジンアクセスアイデンティティ）の後継で、SSE-KMS にも対応する
+    triggers:
+      - S3 のコンテンツを CloudFront 経由でだけ配信したい
+      - S3 の URL に直接アクセスさせたくない
+    pitfalls:
+      - バケットを公開して CloudFront のオリジンにすると、S3 に直接アクセスされてしまう
+    relations:
+      - type: used_with
+        target: s3-bucket-policy
+    examDomains: [secure, performance]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+
+  - id: s3-requester-pays
+    category: architecture
+    concept: S3 リクエスタ支払い
+    summary: データのダウンロードとリクエストの料金を、バケット所有者ではなく利用者に払わせる
+    facts:
+      - リクエストとデータ転送の料金を、データを取得した側（リクエスタ）が払う
+      - 保存料金はバケット所有者が払う
+      - リクエスタは AWS で認証されている必要があり、匿名アクセスはできない
+    triggers:
+      - 大きなデータセットを共有したいが、ダウンロードの料金は利用者に払わせたい
+    pitfalls:
+      - 匿名のユーザーに公開したいデータには使えない
+    relations: []
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html
+
+  - id: s3-strong-consistency
+    category: architecture
+    concept: S3 の強い整合性
+    summary: 書き込みや削除の直後の読み取り・一覧で、必ず最新の結果が返る
+    facts:
+      - オブジェクトの PUT や DELETE の直後の GET や LIST で、最新の状態が返る（強い書き込み後の読み取り整合性）
+      - 追加料金も、性能の低下もなく自動で適用される
+    triggers:
+      - 書き込み直後に最新のデータを読めるか
+    pitfalls:
+      - 古い情報をもとに「S3 は結果整合性なので、書き込み直後は古いデータが返ることがある」と考えるのは誤り
+    relations: []
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html
