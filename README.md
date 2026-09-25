@@ -1,6 +1,6 @@
 # AWS Decision Trainer
 
-AWS SAA の知識を **Knowledge Atom**（最小の知識単位）に分解し、そこから作った 4 択問題を FSRS の間隔反復で回す、ローカル専用の学習アプリ。
+AWS SAA の知識を **Knowledge Atom**（最小の知識単位）に分解し、そこから作った 4 択問題を FSRS の間隔反復で回す学習アプリ。Google でログインし、学習記録はユーザーごとに保存する。クラウド化の設計は [docs/design.md](docs/design.md)。
 
 ## 使い方
 
@@ -9,7 +9,9 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-初回アクセス時に `local.db`（学習履歴、Git 管理外）が自動で作られる。
+初回起動時に `local.db`（学習履歴、Git 管理外）が自動で作られる。
+
+ローカルでは、何も設定しなければ**ログインせずに使える**（ローカル専用モード。記録はユーザー `local-owner` に保存される）。開発サーバー・ローカルの DB・`GOOGLE_CLIENT_ID` が未設定、の 3 つがそろったときだけ有効で、本番のビルドでは必ず無効になる。Google ログインを試すときは、`.env.example` を `.env.local` にコピーして値を入れる。
 
 | 画面 | 内容 |
 |---|---|
@@ -37,7 +39,10 @@ lib/scheduler.ts        次に出す問題を決める（純粋関数）
 lib/study.ts            出題・回答の記録（DB）
 lib/fsrs.ts             4 択の結果 → FSRS の評価
 lib/config.ts           学習ルールの設定値
-app/                    画面と API（/api/next, /api/review）
+lib/db/                 DB（libSQL。ローカルは file:local.db、本番は Turso）とスキーマ
+lib/auth/               ログイン（Better Auth + Google）、許可リスト、requireUser()
+proxy.ts                未ログインなら /login へ（Cookie の有無だけを見る簡易チェック）
+app/                    画面と API（/api/next, /api/review, /api/auth/*）
 ```
 
 ## 学習ルール（`lib/config.ts` で変更できる）

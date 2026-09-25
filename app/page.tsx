@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Meter } from "@/app/components/Meter";
 import { activeQuestions, getContent } from "@/lib/content";
+import { requireUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 import { dashboard } from "@/lib/stats";
 import { serviceLabel } from "@/lib/labels";
@@ -9,14 +10,15 @@ import { getQueueSummary, loadCards, todayStats } from "@/lib/study";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const db = await getDb();
+  const user = await requireUser();
+  const db = getDb();
   const content = getContent();
   const now = new Date();
   const [queue, today, { coverage, byService }, cards] = await Promise.all([
-    getQueueSummary(db, content, now),
-    todayStats(db, now),
-    dashboard(db, content, now),
-    loadCards(db),
+    getQueueSummary(db, user.id, content, now),
+    todayStats(db, user.id, now),
+    dashboard(db, user.id, content, now),
+    loadCards(db, user.id),
   ]);
   const seenByService = new Map<string, { seen: number; total: number }>();
   for (const q of activeQuestions(content)) {

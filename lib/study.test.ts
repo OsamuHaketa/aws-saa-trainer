@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { pickChoices } from "./choices";
 import { parseContent, type Content } from "./content";
 import { openDb, type DB } from "./db";
-import { followups, reviewLogs } from "./db/schema";
+import { eq } from "drizzle-orm";
+import { followups, reviewLogs, user } from "./db/schema";
 import { config } from "./config";
 import { toRating } from "./fsrs";
 import { distinction, getNextQuestion, loadCards, recordReview } from "./study";
@@ -11,6 +12,8 @@ import { distinction, getNextQuestion, loadCards, recordReview } from "./study";
 const ROOT = process.cwd();
 const T0 = new Date("2026-09-25T10:00:00");
 const minutes = (n: number) => new Date(T0.getTime() + n * 60_000);
+
+const USER = "user-a";
 
 let content: Content;
 let db: DB;
@@ -20,14 +23,16 @@ beforeEach(async () => {
   expect(parsed.errors).toEqual([]);
   content = parsed;
   db = await openDb(":memory:", { root: ROOT });
+  await db.insert(user).values({ id: USER, name: "A", email: "a@example.com" }).run();
 });
 
-async function answer(questionId: string, pick: "correct" | "wrong" | string, now: Date, extra: Partial<Parameters<typeof recordReview>[2]> = {}) {
+async function answer(questionId: string, pick: "correct" | "wrong" | string, now: Date, extra: Partial<Parameters<typeof recordReview>[3]> = {}) {
   const q = content.questions.get(questionId)!;
   const choice =
     pick === "correct" ? q.choices.find((c) => c.correct)! : pick === "wrong" ? q.choices.find((c) => !c.correct)! : q.choices.find((c) => c.atomId === pick)!;
   return await recordReview(
     db,
+    USER,
     content,
     { questionId, selectedChoiceId: choice.id, shownChoiceIds: q.choices.map((c) => c.id), responseTimeMs: 5000, guessed: false, ...extra },
     now,
@@ -72,7 +77,7 @@ describe("pickChoices", () => {
 
 describe("出題と記録", () => {
   it("最初は Level の低い新規問題から出す", async () => {
-    const next = await getNextQuestion(db, content, T0);
+    const next = await getNextQuestion(db, USER, content, T0);
     expect(next.done).toBe(false);
     if (next.done) return;
     expect(next.reason).toBe("new");
@@ -81,13 +86,13 @@ describe("出題と記録", () => {
   });
 
   it("正解すると Learning になり、次の問題は別の問題になる", async () => {
-    const first = await getNextQuestion(db, content, T0);
+    const first = await getNextQuestion(db, USER, content, T0);
     if (first.done) throw new Error("done");
     const result = await answer(first.question.id, "correct", T0);
     expect(result.correct).toBe(true);
-    expect((await loadCards(db)).get(first.question.id)?.state).toBe(State.Learning);
+    expect((await loadCards(db, USER)).get(first.question.id)?.state).toBe(State.Learning);
 
-    const second = await getNextQuestion(db, content, minutes(1));
+    const second = await getNextQuestion(db, USER, content, minutes(1));
     if (second.done) throw new Error("done");
     expect(second.question.id).not.toBe(first.question.id);
   });
@@ -99,18 +104,18 @@ describe("出題と記録", () => {
     expect(result.followupCreated).toBe(true);
 
     // 1 問目: まだフォローアップは出ない
-    const n1 = await getNextQuestion(db, content, minutes(1));
+    const n1 = await getNextQuestion(db, USER, content, minutes(1));
     if (n1.done) throw new Error("done");
     expect(n1.reason).not.toBe("followup");
     await answer(n1.question.id, "correct", minutes(1));
 
-    const n2 = await getNextQuestion(db, content, minutes(2));
+    const n2 = await getNextQuestion(db, USER, content, minutes(2));
     if (n2.done) throw new Error("done");
     expect(n2.reason).not.toBe("followup");
     await answer(n2.question.id, "correct", minutes(2));
 
     // 2 問たったのでフォローアップ
-    const n3 = await getNextQuestion(db, content, minutes(3));
+    const n3 = await getNextQuestion(db, USER, content, minutes(3));
     if (n3.done) throw new Error("done");
     expect(n3.reason).toBe("followup");
     expect(n3.followup).toBeDefined();
@@ -135,13 +140,13 @@ describe("出題と記録", () => {
     const now = T0;
     let guard = 0;
     for (;;) {
-      const next = await getNextQuestion(db, content, now);
+      const next = await getNextQuestion(db, USER, content, now);
       if (next.done) break;
       await answer(next.question.id, "correct", now);
       if (++guard > 100) throw new Error("終わらない");
     }
     // 同じ時刻のまま正解し続けると、新規の上限まで出したところで終わる
-    expect((await loadCards(db)).size).toBe(Math.min(config.newPerDay, content.questions.size));
+    expect((await loadCards(db, USER)).size).toBe(Math.min(config.newPerDay, content.questions.size));
   });
 });
 
@@ -157,14 +162,14 @@ describe("distinction", () => {
 
 describe("サービスの順番と絞り込み", () => {
   it("新規は config.serviceOrder の先頭のサービスから出す", async () => {
-    const next = await getNextQuestion(db, content, T0);
+    const next = await getNextQuestion(db, USER, content, T0);
     if (next.done) throw new Error("done");
     expect(next.question.service).toBe(config.serviceOrder[0]);
   });
 
   it("サービスを指定すると、そのサービスの問題だけを出す", async () => {
     for (let i = 0; i < 10; i++) {
-      const next = await getNextQuestion(db, content, minutes(i), 0, undefined, "vpc");
+      const next = await getNextQuestion(db, USER, content, minutes(i), 0, undefined, "vpc");
       if (next.done) throw new Error("done");
       expect(next.question.service).toBe("vpc");
       await answer(next.question.id, i % 3 === 0 ? "wrong" : "correct", minutes(i));
@@ -180,6 +185,7 @@ describe("見分け問題の抑制", () => {
     const wrong = q.choices.find((c) => !c.correct)!;
     const result = await recordReview(
       db,
+      USER,
       content,
       { questionId: q.id, selectedChoiceId: wrong.id, shownChoiceIds: q.choices.map((c) => c.id), responseTimeMs: 3000, guessed: false, followupId: f.id },
       minutes(3),
@@ -199,5 +205,52 @@ describe("見分け問題の抑制", () => {
     for (const [i, [qid, atom]] of confusions.entries()) await answer(qid, atom, minutes(i));
     const open = (await db.select().from(followups).all()).filter((f) => !f.resolvedAt);
     expect(open.length).toBe(config.maxOpenFollowups);
+  });
+});
+
+describe("ユーザーごとの記録", () => {
+  const OTHER = "user-b";
+
+  beforeEach(async () => {
+    await db.insert(user).values({ id: OTHER, name: "B", email: "b@example.com" }).run();
+  });
+
+  it("ほかのユーザーの回答は、出題にも記録にも影響しない", async () => {
+    const first = await getNextQuestion(db, USER, content, T0);
+    if (first.done) throw new Error("done");
+    await answer(first.question.id, "correct", T0);
+    await answer("s3-intelligent-tiering:selection:1", "s3-standard-ia", T0);
+
+    expect((await loadCards(db, USER)).size).toBe(2);
+    expect((await loadCards(db, OTHER)).size).toBe(0);
+    // B はまだ何も解いていないので、A と同じ最初の新規問題が出て、フォローアップも出ない
+    const b = await getNextQuestion(db, OTHER, content, minutes(10));
+    if (b.done) throw new Error("done");
+    expect(b.reason).toBe("new");
+    expect(b.question.id).toBe(first.question.id);
+  });
+
+  it("ほかのユーザーの見分け問題は解決できない", async () => {
+    await answer("s3-intelligent-tiering:selection:1", "s3-standard-ia", T0);
+    const [f] = await db.select().from(followups).all();
+    const q = content.questions.get("s3-standard-ia:compare:1")!;
+    const correct = q.choices.find((c) => c.correct)!;
+    await recordReview(
+      db,
+      OTHER,
+      content,
+      { questionId: q.id, selectedChoiceId: correct.id, shownChoiceIds: q.choices.map((c) => c.id), responseTimeMs: 3000, guessed: false, followupId: f.id },
+      minutes(3),
+    );
+    const [after] = await db.select().from(followups).where(eq(followups.id, f.id)).all();
+    expect(after.resolvedAt).toBeNull();
+  });
+
+  it("ユーザーを消すと、そのユーザーの記録も消える", async () => {
+    await answer("s3-intelligent-tiering:selection:1", "s3-standard-ia", T0);
+    await db.delete(user).where(eq(user.id, USER)).run();
+    expect((await loadCards(db, USER)).size).toBe(0);
+    expect(await db.select().from(reviewLogs).all()).toHaveLength(0);
+    expect(await db.select().from(followups).all()).toHaveLength(0);
   });
 });

@@ -1,3 +1,4 @@
+import { requireUser } from "@/lib/auth/session";
 import { activeQuestions, getContent } from "@/lib/content";
 import { serviceLabel } from "@/lib/labels";
 import { Study } from "./Study";
@@ -5,6 +6,7 @@ import { Study } from "./Study";
 export const dynamic = "force-dynamic";
 
 export default async function StudyPage({ searchParams }: { searchParams: Promise<{ service?: string }> }) {
+  await requireUser();
   const content = getContent();
   const counts = new Map<string, number>();
   for (const q of activeQuestions(content)) counts.set(q.service, (counts.get(q.service) ?? 0) + 1);

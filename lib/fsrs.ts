@@ -34,8 +34,9 @@ export function rowToCard(row: CardRow | undefined, now: Date): Card {
   };
 }
 
-export function cardToRow(questionId: string, card: Card, firstSeenAt: Date): CardRow {
+export function cardToRow(userId: string, questionId: string, card: Card, firstSeenAt: Date): CardRow {
   return {
+    userId,
     questionId,
     due: card.due,
     stability: card.stability,

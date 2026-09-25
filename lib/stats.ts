@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { config } from "./config";
 import { activeQuestions, type AtomEntry, type Content } from "./content";
 import type { DB } from "./db";
@@ -22,9 +23,9 @@ function tally<K>(logs: ReviewLogRow[], keys: (log: ReviewLogRow) => K[]): Map<K
   return map;
 }
 
-export async function dashboard(db: DB, content: Content, now: Date) {
-  const logs = await db.select().from(reviewLogs).orderBy(reviewLogs.id).all();
-  const cards = await loadCards(db);
+export async function dashboard(db: DB, userId: string, content: Content, now: Date) {
+  const logs = await db.select().from(reviewLogs).where(eq(reviewLogs.userId, userId)).orderBy(reviewLogs.id).all();
+  const cards = await loadCards(db, userId);
   const mastery = atomMastery(content, cards, now);
   const questions = activeQuestions(content);
 
@@ -131,9 +132,9 @@ export async function dashboard(db: DB, content: Content, now: Date) {
 }
 
 /** 問題ごとの最新の回答結果 */
-export async function latestResults(db: DB): Promise<Map<string, { correct: boolean; answeredAt: Date; count: number }>> {
+export async function latestResults(db: DB, userId: string): Promise<Map<string, { correct: boolean; answeredAt: Date; count: number }>> {
   const result = new Map<string, { correct: boolean; answeredAt: Date; count: number }>();
-  for (const l of await db.select().from(reviewLogs).orderBy(reviewLogs.id).all()) {
+  for (const l of await db.select().from(reviewLogs).where(eq(reviewLogs.userId, userId)).orderBy(reviewLogs.id).all()) {
     result.set(l.questionId, { correct: l.correct, answeredAt: l.answeredAt, count: (result.get(l.questionId)?.count ?? 0) + 1 });
   }
   return result;

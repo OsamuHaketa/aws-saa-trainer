@@ -1,0 +1,11 @@
+.box {
+  max-width: 420px;
+  margin: 48px auto 0;
+}
+
+.error {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--ng-soft);
+  color: var(--ng);
+}

@@ -19,6 +19,13 @@ const MISTAKE_KEYS: [string, MistakeType][] = [
 
 type ServiceOption = { id: string; label: string; count: number };
 
+/** セッションが切れていた（401）・許可されなくなった（403）ときはログイン画面へ */
+function redirectIfSignedOut(res: Response): boolean {
+  if (res.status !== 401 && res.status !== 403) return false;
+  window.location.href = res.status === 403 ? "/login?error=not_allowed" : "/login";
+  return true;
+}
+
 export function Study({ services, initialService }: { services: ServiceOption[]; initialService?: string }) {
   const [service, setService] = useState(initialService ?? "");
   const [data, setData] = useState<NextQuestion | null>(null);
@@ -38,6 +45,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
       const params = new URLSearchParams({ extraNew: String(extra) });
       if (svc) params.set("service", svc);
       const res = await fetch(`/api/next?${params}`, { cache: "no-store" });
+      if (redirectIfSignedOut(res)) return;
       if (!res.ok) throw new Error(await res.text());
       setData(await res.json());
       setSelected(null);
@@ -104,6 +112,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
           followupId: q.followup?.id ?? null,
         }),
       });
+      if (redirectIfSignedOut(res)) return;
       if (!res.ok) throw new Error(await res.text());
       setSession((s) => ({ answered: s.answered + 1, correct: s.correct + (isCorrect ? 1 : 0) }));
       await load(extraNew, service);

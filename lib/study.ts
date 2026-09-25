@@ -17,18 +17,27 @@ export function dayStart(now: Date): Date {
   return start;
 }
 
-export async function loadCards(db: DB): Promise<Map<string, CardRow>> {
-  return new Map((await db.select().from(cards).all()).map((c) => [c.questionId, c]));
+// 学習記録を読み書きする関数は、すべて userId（セッションから取ったもの）を必須にする
+
+export async function loadCards(db: DB, userId: string): Promise<Map<string, CardRow>> {
+  return new Map((await db.select().from(cards).where(eq(cards.userId, userId)).all()).map((c) => [c.questionId, c]));
 }
 
-export async function loadState(db: DB, now: Date, extraNew = 0, service?: string): Promise<SchedulerState> {
-  const cardMap = await loadCards(db);
+export async function loadState(
+  db: DB,
+  userId: string,
+  now: Date,
+  extraNew = 0,
+  service?: string,
+): Promise<SchedulerState> {
+  const cardMap = await loadCards(db, userId);
   const today = dayStart(now);
   const intro = { introducedToday: 0, introducedAtomsToday: new Set<string>() };
 
   const recent = await db
     .select({ questionId: reviewLogs.questionId, atomIds: reviewLogs.atomIds })
     .from(reviewLogs)
+    .where(eq(reviewLogs.userId, userId))
     .orderBy(desc(reviewLogs.id))
     .limit(10)
     .all();
@@ -42,7 +51,7 @@ export async function loadState(db: DB, now: Date, extraNew = 0, service?: strin
     const logs = await db
       .select({ questionId: reviewLogs.questionId, atomIds: reviewLogs.atomIds })
       .from(reviewLogs)
-      .where(gte(reviewLogs.answeredAt, today))
+      .where(and(eq(reviewLogs.userId, userId), gte(reviewLogs.answeredAt, today)))
       .all();
     for (const log of logs) {
       if (introducedIds.has(log.questionId)) log.atomIds.forEach((a) => intro.introducedAtomsToday.add(a));
@@ -53,10 +62,10 @@ export async function loadState(db: DB, now: Date, extraNew = 0, service?: strin
     await db
       .select({
         followup: followups,
-        reviewsSince: sql<number>`(select count(*) from ${reviewLogs} where ${reviewLogs.id} > ${followups.sourceLogId})`,
+        reviewsSince: sql<number>`(select count(*) from ${reviewLogs} where ${reviewLogs.userId} = ${followups.userId} and ${reviewLogs.id} > ${followups.sourceLogId})`,
       })
       .from(followups)
-      .where(isNull(followups.resolvedAt))
+      .where(and(eq(followups.userId, userId), isNull(followups.resolvedAt)))
       .orderBy(followups.id)
       .all()
   ).map((r) => ({ ...r.followup, reviewsSince: r.reviewsSince }));
@@ -74,8 +83,16 @@ export function distinction(content: Content, a: string | undefined, b: string |
   return find(a, b) ?? find(b, a);
 }
 
-export async function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 0, rng?: Rng, service?: string) {
-  const state = await loadState(db, now, extraNew, service);
+export async function getNextQuestion(
+  db: DB,
+  userId: string,
+  content: Content,
+  now: Date,
+  extraNew = 0,
+  rng?: Rng,
+  service?: string,
+) {
+  const state = await loadState(db, userId, now, extraNew, service);
   const mastery = atomMastery(content, state.cards, now);
   const pick = chooseNext(content, state, mastery, config);
   const summary = summarize(content, state);
@@ -123,8 +140,14 @@ export async function getNextQuestion(db: DB, content: Content, now: Date, extra
 
 export type QueueSummary = ReturnType<typeof summarize>;
 
-export async function getQueueSummary(db: DB, content: Content, now: Date, service?: string): Promise<QueueSummary> {
-  return summarize(content, await loadState(db, now, 0, service));
+export async function getQueueSummary(
+  db: DB,
+  userId: string,
+  content: Content,
+  now: Date,
+  service?: string,
+): Promise<QueueSummary> {
+  return summarize(content, await loadState(db, userId, now, 0, service));
 }
 
 function summarize(content: Content, state: SchedulerState) {
@@ -152,7 +175,7 @@ export type ReviewInput = {
   followupId?: number | null;
 };
 
-export async function recordReview(db: DB, content: Content, input: ReviewInput, now: Date) {
+export async function recordReview(db: DB, userId: string, content: Content, input: ReviewInput, now: Date) {
   const q = content.questions.get(input.questionId);
   if (!q) throw new Error(`問題が見つからない: ${input.questionId}`);
   const selected = q.choices.find((c) => c.id === input.selectedChoiceId);
@@ -166,14 +189,23 @@ export async function recordReview(db: DB, content: Content, input: ReviewInput,
   const mistakeType = correct ? null : (input.mistakeType ?? (confused ? "confused" : null));
 
   return db.transaction(async (tx) => {
-    const existing = await tx.select().from(cards).where(eq(cards.questionId, q.id)).get();
+    const existing = await tx
+      .select()
+      .from(cards)
+      .where(and(eq(cards.userId, userId), eq(cards.questionId, q.id)))
+      .get();
     const { card: next } = scheduler.next(rowToCard(existing, now), now, rating);
-    const row = cardToRow(q.id, next, existing?.firstSeenAt ?? now);
-    await tx.insert(cards).values(row).onConflictDoUpdate({ target: cards.questionId, set: row }).run();
+    const row = cardToRow(userId, q.id, next, existing?.firstSeenAt ?? now);
+    await tx
+      .insert(cards)
+      .values(row)
+      .onConflictDoUpdate({ target: [cards.userId, cards.questionId], set: row })
+      .run();
 
     const log = await tx
       .insert(reviewLogs)
       .values({
+        userId,
         questionId: q.id,
         questionType: q.type,
         atomIds: q.atomIds,
@@ -198,7 +230,7 @@ export async function recordReview(db: DB, content: Content, input: ReviewInput,
       await tx
         .update(followups)
         .set({ resolvedAt: now, resolvedByQuestionId: q.id })
-        .where(and(eq(followups.id, input.followupId), isNull(followups.resolvedAt)))
+        .where(and(eq(followups.id, input.followupId), eq(followups.userId, userId), isNull(followups.resolvedAt)))
         .run();
     }
 
@@ -207,14 +239,18 @@ export async function recordReview(db: DB, content: Content, input: ReviewInput,
     let followupCreated = false;
     if (confused && !input.followupId) {
       const pair = { atomId: correctChoice.atomId!, confusedAtomId: selected.atomId!, sourceQuestionId: q.id };
-      const open = await tx.select().from(followups).where(isNull(followups.resolvedAt)).all();
+      const open = await tx
+        .select()
+        .from(followups)
+        .where(and(eq(followups.userId, userId), isNull(followups.resolvedAt)))
+        .all();
       const alreadyOpen = open.some((f) => f.atomId === pair.atomId && f.confusedAtomId === pair.confusedAtomId);
       if (
         !alreadyOpen &&
         open.length < config.maxOpenFollowups &&
         followupCandidates(content, pair, new Map()).length > 0
       ) {
-        await tx.insert(followups).values({ ...pair, sourceLogId: log.id, createdAt: now }).run();
+        await tx.insert(followups).values({ ...pair, userId, sourceLogId: log.id, createdAt: now }).run();
         followupCreated = true;
       }
     }
@@ -224,14 +260,14 @@ export async function recordReview(db: DB, content: Content, input: ReviewInput,
 }
 
 /** 今日の回答数と正答数 */
-export async function todayStats(db: DB, now: Date) {
+export async function todayStats(db: DB, userId: string, now: Date) {
   const row = await db
     .select({
       answered: sql<number>`count(*)`,
       correct: sql<number>`coalesce(sum(${reviewLogs.correct}), 0)`,
     })
     .from(reviewLogs)
-    .where(gte(reviewLogs.answeredAt, dayStart(now)))
+    .where(and(eq(reviewLogs.userId, userId), gte(reviewLogs.answeredAt, dayStart(now))))
     .get();
   return { answered: row?.answered ?? 0, correct: row?.correct ?? 0 };
 }

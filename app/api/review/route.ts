@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { requireApiUser } from "@/lib/auth/session";
 import { getContent } from "@/lib/content";
 import { getDb } from "@/lib/db";
 import { MISTAKE_TYPES } from "@/lib/db/schema";
@@ -15,10 +16,12 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
+  const user = await requireApiUser();
+  if (user instanceof Response) return user;
   const body = Body.safeParse(await req.json());
   if (!body.success) return Response.json({ error: body.error.issues }, { status: 400 });
   try {
-    return Response.json(await recordReview(await getDb(), getContent(), body.data, new Date()));
+    return Response.json(await recordReview(getDb(), user.id, getContent(), body.data, new Date()));
   } catch (e) {
     return Response.json({ error: (e as Error).message }, { status: 400 });
   }

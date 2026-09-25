@@ -71,7 +71,20 @@ a:hover {
 }
 .nav nav {
   display: flex;
+  align-items: center;
   gap: 16px;
+}
+
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.link-button:hover {
+  text-decoration: underline;
 }
 
 main {

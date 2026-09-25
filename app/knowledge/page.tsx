@@ -1,5 +1,6 @@
 import { Meter } from "@/app/components/Meter";
 import { activeQuestions, getContent, type AtomEntry } from "@/lib/content";
+import { requireUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 import Link from "next/link";
 import { categoryLabel, knowledgeHref, QUESTION_TYPE_LABEL, serviceLabel } from "@/lib/labels";
@@ -19,13 +20,14 @@ const RELATION_LABEL: Record<RelationType, string> = {
 };
 
 export default async function KnowledgePage({ searchParams }: { searchParams: Promise<{ service?: string }> }) {
+  const user = await requireUser();
   const content = getContent();
   const services = [...new Set([...content.atoms.values()].map((a) => a.service))];
   const requested = (await searchParams).service;
   const service = requested && services.includes(requested) ? requested : services[0];
-  const db = await getDb();
+  const db = getDb();
   const now = new Date();
-  const [cards, results] = await Promise.all([loadCards(db), latestResults(db)]);
+  const [cards, results] = await Promise.all([loadCards(db, user.id), latestResults(db, user.id)]);
   const mastery = atomMastery(content, cards, now);
   const questions = activeQuestions(content);
 

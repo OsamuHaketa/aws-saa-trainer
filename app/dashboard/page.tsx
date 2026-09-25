@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Meter } from "@/app/components/Meter";
 import { getContent } from "@/lib/content";
+import { requireUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 import { groupLabel, knowledgeHref, MISTAKE_LABEL, QUESTION_TYPE_LABEL, serviceLabel } from "@/lib/labels";
 import { dashboard } from "@/lib/stats";
@@ -46,8 +47,9 @@ function GroupTable({ rows, label, heading }: { rows: GroupRow[]; label: (r: Gro
 }
 
 export default async function DashboardPage() {
+  const user = await requireUser();
   const content = getContent();
-  const d = await dashboard(await getDb(), content, new Date());
+  const d = await dashboard(getDb(), user.id, content, new Date());
   const concept = (id: string) => content.atoms.get(id)?.concept ?? id;
   const href = (id: string) => knowledgeHref(content.atoms.get(id)?.service ?? "", id);
   const maxDay = Math.max(1, ...d.days.map((x) => x.answered));
