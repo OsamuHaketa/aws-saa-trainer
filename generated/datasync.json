@@ -178,5 +178,51 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "datasync-task:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "datasync-task"
+    ],
+    "prompt": "S3 のバケットから別のアカウントの EFS へ、100 TB のファイルを一度だけ移したい。転送の検証も自動で行いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS DataSync",
+        "correct": true,
+        "atomId": "datasync-task",
+        "why": "AWS のストレージ同士の転送にも使え、整合性も検証する"
+      },
+      {
+        "id": "b",
+        "text": "S3 のクロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "S3 同士の複製で、EFS には送れない"
+      },
+      {
+        "id": "c",
+        "text": "Storage Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "オンプレミスから使うハイブリッドのストレージ"
+      },
+      {
+        "id": "d",
+        "text": "AWS Backup",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "バックアップの管理で、移行の転送ではない"
+      }
+    ],
+    "explanation": "DataSync = オンプレ ↔ AWS だけでなく、AWS のストレージ同士（S3・EFS・FSx）の転送にも使える。",
+    "keywords": [
+      "S3 のバケットから",
+      "EFS へ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -1285,5 +1285,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-gp3:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "ebs-gp3"
+    ],
+    "prompt": "gp3 で、ベースラインを超える IOPS やスループットが必要なときはどうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "容量とは別に追加で設定する",
+        "correct": true,
+        "atomId": "ebs-gp3",
+        "why": "IOPS とスループットを別々に追加でき、追加分に料金がかかる"
+      },
+      {
+        "id": "b",
+        "text": "容量を増やすと自動で IOPS も増える",
+        "correct": false,
+        "why": "それは gp2 の仕組み"
+      },
+      {
+        "id": "c",
+        "text": "io2 にしか変えられない",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "gp3 でも上限まで追加できる"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスストアに変える",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "永続化が必要なデータには使えない"
+      }
+    ],
+    "explanation": "gp3 = 3,000 IOPS・125 MB/秒がベースライン。それ以上は別に設定する。",
+    "keywords": [
+      "ベースラインを超える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-io2:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-io2"
+    ],
+    "prompt": "開発用の小さな Web サーバーのボリュームを、念のため最高性能の io2 で 3 万 IOPS にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "必要のない高い性能に料金を払っている",
+        "correct": true,
+        "atomId": "ebs-gp3",
+        "why": "一般的な用途は gp3 で足りる"
+      },
+      {
+        "id": "b",
+        "text": "io2 はブートボリュームに使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "io2 は暗号化できない",
+        "correct": false,
+        "atomId": "ebs-encryption",
+        "why": "できる"
+      },
+      {
+        "id": "d",
+        "text": "io2 はスナップショットを取れない",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "取れる"
+      }
+    ],
+    "explanation": "io2 はプロビジョンドした IOPS に料金がかかる。重要な DB 以外は gp3。",
+    "keywords": [
+      "念のため最高性能"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

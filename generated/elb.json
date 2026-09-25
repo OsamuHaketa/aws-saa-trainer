@@ -1423,5 +1423,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elb-nlb:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "elb-nlb"
+    ],
+    "prompt": "NLB で固定の IP アドレスを使う方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AZ ごとに Elastic IP を割り当てる",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "取引先のファイアウォールなどに登録できる"
+      },
+      {
+        "id": "b",
+        "text": "ALB に Elastic IP を付ける",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB には付けられない"
+      },
+      {
+        "id": "c",
+        "text": "DNS 名を IP の代わりに登録する",
+        "correct": false,
+        "why": "IP の固定にはならない"
+      },
+      {
+        "id": "d",
+        "text": "セキュリティグループで IP を固定する",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "SG は通信の許可の設定"
+      }
+    ],
+    "explanation": "NLB = AZ ごとに固定 IP（Elastic IP も可）。ALB で固定 IP が必要なら前に NLB か Global Accelerator。",
+    "keywords": [
+      "固定の IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

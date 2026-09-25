@@ -176,5 +176,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "backup-plan:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "backup-plan"
+    ],
+    "prompt": "AWS Backup のバックアッププランで設定するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "頻度・保持期間・コピー先",
+        "correct": true,
+        "atomId": "backup-plan",
+        "why": "ライフサイクルも設定でき、対象のリソースはタグなどで割り当てる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスタイプと台数",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "それは Auto Scaling の設定"
+      },
+      {
+        "id": "c",
+        "text": "ルートテーブルとサブネット",
+        "correct": false,
+        "atomId": "vpc-route-table",
+        "why": "それは VPC の設定"
+      },
+      {
+        "id": "d",
+        "text": "鍵のローテーションの周期だけ",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "それは KMS の設定"
+      }
+    ],
+    "explanation": "バックアッププラン = いつ・どれだけ残すか・どこにコピーするか。リソースはタグで割り当てる。",
+    "keywords": [
+      "バックアッププラン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

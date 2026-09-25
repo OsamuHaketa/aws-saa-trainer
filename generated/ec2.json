@@ -3714,5 +3714,403 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-on-demand:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-on-demand"
+    ],
+    "prompt": "「長期の契約なし」「中断されない」「短期間や予測できない使用量」→ どの購入オプション？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドインスタンス",
+        "correct": true,
+        "atomId": "ec2-on-demand",
+        "why": "使った分だけ払い、いつでも止められる"
+      },
+      {
+        "id": "b",
+        "text": "リザーブドインスタンス",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "1〜3 年の約束が必要"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されることがある"
+      },
+      {
+        "id": "d",
+        "text": "Savings Plans",
+        "correct": false,
+        "atomId": "ec2-savings-plans",
+        "why": "1〜3 年の利用金額の約束が必要"
+      }
+    ],
+    "explanation": "契約なし・中断なし = オンデマンド。",
+    "keywords": [
+      "契約なし",
+      "中断されない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-reserved-instances:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-reserved-instances"
+    ],
+    "prompt": "「1 年または 3 年」「特定のインスタンスの属性に対する割引」「AZ を指定するとキャパシティも予約」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リザーブドインスタンス",
+        "correct": true,
+        "atomId": "ec2-reserved-instances",
+        "why": "定常のワークロードを割り引く"
+      },
+      {
+        "id": "b",
+        "text": "Compute Savings Plans",
+        "correct": false,
+        "atomId": "ec2-savings-plans",
+        "why": "利用金額の約束で、インスタンスの属性に縛られない"
+      },
+      {
+        "id": "c",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "期間の約束も割引もない"
+      },
+      {
+        "id": "d",
+        "text": "スポットフリート",
+        "correct": false,
+        "atomId": "ec2-spot-fleet",
+        "why": "スポットのまとまり"
+      }
+    ],
+    "explanation": "属性に対する割引 = RI、金額の約束 = Savings Plans。",
+    "keywords": [
+      "特定のインスタンスの属性"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-savings-plans:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ec2-savings-plans"
+    ],
+    "prompt": "Savings Plans で約束する金額を超えて使った分はどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドの料金で課金される",
+        "correct": true,
+        "atomId": "ec2-savings-plans",
+        "why": "約束した分までが割引される"
+      },
+      {
+        "id": "b",
+        "text": "超えた分は無料になる",
+        "correct": false,
+        "why": "無料にはならない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスが停止される",
+        "correct": false,
+        "why": "停止はされない"
+      },
+      {
+        "id": "d",
+        "text": "自動で 3 年の RI が購入される",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "自動で購入はされない"
+      }
+    ],
+    "explanation": "Savings Plans = 約束した $/時間 までが割引。超過分はオンデマンド料金。",
+    "keywords": [
+      "超えて使った分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-instances:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-spot-instances"
+    ],
+    "prompt": "スポットインスタンスの中断の 2 分前の通知を受けて、処理中のジョブの状態を保存したい。通知はどこで受け取れる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メタデータか EventBridge",
+        "correct": true,
+        "atomId": "ec2-spot-instances",
+        "why": "インスタンスメタデータや EventBridge のイベントで通知を受け、後処理を動かせる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail のデータイベント",
+        "correct": false,
+        "atomId": "cloudtrail-data-events",
+        "why": "API の操作の記録で、中断の予告ではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config のルール",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      },
+      {
+        "id": "d",
+        "text": "S3 のイベント通知",
+        "correct": false,
+        "atomId": "s3-event-notifications",
+        "why": "S3 のオブジェクトのイベント"
+      }
+    ],
+    "explanation": "スポットの中断通知 = メタデータ（spot/instance-action）と EventBridge の中断の警告。",
+    "keywords": [
+      "2 分前の通知"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-dedicated-hosts:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ec2-dedicated-hosts"
+    ],
+    "prompt": "Dedicated Hosts の課金の単位は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ホスト（物理サーバー）単位",
+        "correct": true,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "その上で動かすインスタンスの数には関係ない"
+      },
+      {
+        "id": "b",
+        "text": "インスタンス単位のオンデマンド料金だけ",
+        "correct": false,
+        "why": "それは通常のインスタンス"
+      },
+      {
+        "id": "c",
+        "text": "リクエスト数の単位",
+        "correct": false,
+        "why": "EC2 はリクエストで課金しない"
+      },
+      {
+        "id": "d",
+        "text": "ストレージの容量の単位",
+        "correct": false,
+        "why": "ストレージの料金とは別"
+      }
+    ],
+    "explanation": "Dedicated Hosts = ホスト単位の料金（オンデマンドまたは予約）。",
+    "keywords": [
+      "課金の単位"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spread-placement-group:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-spread-placement-group"
+    ],
+    "prompt": "「少数の重要なインスタンス」「別々のラック」「同時にハードウェア障害に巻き込まれない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スプレッドプレイスメントグループ",
+        "correct": true,
+        "atomId": "ec2-spread-placement-group",
+        "why": "1 台ずつ別のラックに置く（7 台/AZ）"
+      },
+      {
+        "id": "b",
+        "text": "クラスタープレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "近くに置いて低レイテンシにする"
+      },
+      {
+        "id": "c",
+        "text": "パーティションプレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-partition-placement-group",
+        "why": "グループ単位で別のラックに置く"
+      },
+      {
+        "id": "d",
+        "text": "Dedicated Hosts",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "物理サーバーを専有する"
+      }
+    ],
+    "explanation": "少数を 1 台ずつ分散 = スプレッド。",
+    "keywords": [
+      "別々のラック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-instance-store:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-instance-store"
+    ],
+    "prompt": "「ホストに物理的に付いた一時的なストレージ」「停止すると消える」「非常に高い IOPS」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスストア",
+        "correct": true,
+        "atomId": "ec2-instance-store",
+        "why": "キャッシュや一時的な作業領域に向く"
+      },
+      {
+        "id": "b",
+        "text": "EBS の io2",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "永続的なブロックストレージ"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "共有のファイルストレージ"
+      },
+      {
+        "id": "d",
+        "text": "S3 Express One Zone",
+        "correct": false,
+        "atomId": "s3-express-one-zone",
+        "why": "高速なオブジェクトストレージ"
+      }
+    ],
+    "explanation": "一時的・最速・消える = インスタンスストア。",
+    "keywords": [
+      "停止すると消える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ebs-volume:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-ebs-volume"
+    ],
+    "prompt": "東京リージョンの EC2 の EBS のデータを、大阪リージョンの EC2 で使いたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スナップショットを大阪にコピーし、ボリュームを作る",
+        "correct": true,
+        "atomId": "ebs-snapshots",
+        "why": "EBS はリージョンをまたいで直接付けられない"
+      },
+      {
+        "id": "b",
+        "text": "ボリュームを大阪のインスタンスに直接付け替える",
+        "correct": false,
+        "why": "別の AZ やリージョンには付けられない"
+      },
+      {
+        "id": "c",
+        "text": "ボリュームのタイプを io2 に変える",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "リージョンをまたげるようにはならない"
+      },
+      {
+        "id": "d",
+        "text": "マルチアタッチを有効にする",
+        "correct": false,
+        "atomId": "ebs-multi-attach",
+        "why": "同じ AZ の中だけ"
+      }
+    ],
+    "explanation": "EBS のリージョン間の移動 = スナップショットのコピー → 新しいボリューム。",
+    "keywords": [
+      "大阪リージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ami:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-ami"
+    ],
+    "prompt": "自社で作った AMI を、同じ組織の別のアカウントでも使えるようにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "起動許可で相手を指定して共有",
+        "correct": true,
+        "atomId": "ec2-ami",
+        "why": "相手のアカウントや組織を指定する。暗号化されていれば KMS の鍵も共有する"
+      },
+      {
+        "id": "b",
+        "text": "AMI を公開して誰でも使えるようにする",
+        "correct": false,
+        "why": "組織の外にも公開されてしまう"
+      },
+      {
+        "id": "c",
+        "text": "相手のアカウントで同じ手順を最初から行う",
+        "correct": false,
+        "why": "手間がかかり、同じ内容になる保証もない"
+      },
+      {
+        "id": "d",
+        "text": "EBS ボリュームを相手に直接付け替える",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "アカウントをまたいで付け替えられない"
+      }
+    ],
+    "explanation": "AMI は特定のアカウントや組織に共有できる（暗号化された AMI は鍵の共有も必要）。",
+    "keywords": [
+      "別のアカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

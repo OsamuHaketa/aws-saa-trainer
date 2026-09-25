@@ -397,5 +397,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-redis:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "elasticache-redis"
+    ],
+    "prompt": "ElastiCache（Valkey / Redis OSS）でマルチ AZ の自動フェイルオーバーを使うための構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "別の AZ にレプリカを置く",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "プライマリの障害時にレプリカが昇格する"
+      },
+      {
+        "id": "b",
+        "text": "ノードを 1 つだけにする",
+        "correct": false,
+        "why": "切り替え先がない"
+      },
+      {
+        "id": "c",
+        "text": "Memcached に変える",
+        "correct": false,
+        "atomId": "elasticache-memcached",
+        "why": "Memcached には複製がない"
+      },
+      {
+        "id": "d",
+        "text": "DAX を前に置く",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB のキャッシュ"
+      }
+    ],
+    "explanation": "レプリカ + マルチ AZ = 自動フェイルオーバー。",
+    "keywords": [
+      "自動フェイルオーバー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -1323,5 +1323,89 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-group:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-group"
+    ],
+    "prompt": "Auto Scaling グループのインスタンスを AZ-a と AZ-b に均等に置いている。AZ-a が障害になったとき、Auto Scaling はどう動く？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AZ-b で起動して台数を保つ",
+        "correct": true,
+        "atomId": "autoscaling-group",
+        "why": "正常な AZ で希望の台数を満たそうとする"
+      },
+      {
+        "id": "b",
+        "text": "AZ-a の復旧まで何もしない",
+        "correct": false,
+        "why": "正常な AZ で置き換えを起動する"
+      },
+      {
+        "id": "c",
+        "text": "グループ全体を停止する",
+        "correct": false,
+        "why": "停止はしない"
+      },
+      {
+        "id": "d",
+        "text": "別のリージョンでインスタンスを起動する",
+        "correct": false,
+        "why": "グループは 1 つのリージョンの中で動く"
+      }
+    ],
+    "explanation": "複数 AZ の ASG = AZ の障害時は残りの AZ で台数を回復する（復旧後は AZ 間で再び均等にする）。",
+    "keywords": [
+      "AZ-a が障害"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-target-tracking:antipattern:2",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "ターゲット追跡の目標の CPU 使用率を 95% にした。スパイクのたびに応答が遅くなる。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "目標が高すぎ、増える前に処理が追いつかなくなる",
+        "correct": true,
+        "atomId": "autoscaling-target-tracking",
+        "why": "起動にかかる時間を考え、余裕のある目標値にする"
+      },
+      {
+        "id": "b",
+        "text": "ターゲット追跡は CPU を指標にできない",
+        "correct": false,
+        "why": "できる"
+      },
+      {
+        "id": "c",
+        "text": "目標は 100% 以外に設定できない",
+        "correct": false,
+        "why": "自由に設定できる"
+      },
+      {
+        "id": "d",
+        "text": "ターゲット追跡はスケールアウトしない",
+        "correct": false,
+        "why": "スケールアウトする"
+      }
+    ],
+    "explanation": "目標値は、スケールアウトの間に耐えられる余裕を残して決める（例 50〜70%）。",
+    "keywords": [
+      "95%"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

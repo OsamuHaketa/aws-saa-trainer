@@ -978,5 +978,92 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-metrics:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "cloudwatch-metrics"
+    ],
+    "prompt": "1 秒単位の変化を見たいアプリの独自の指標がある。CloudWatch で最も細かい粒度で記録するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "高解像度のカスタムメトリクス（1 秒）",
+        "correct": true,
+        "atomId": "cloudwatch-metrics",
+        "why": "標準の解像度は 1 分"
+      },
+      {
+        "id": "b",
+        "text": "EC2 の詳細モニタリングを有効にする",
+        "correct": false,
+        "why": "EC2 のメトリクスが 1 分間隔になるだけ"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail のデータイベントを有効にする",
+        "correct": false,
+        "atomId": "cloudtrail-data-events",
+        "why": "API の記録で、アプリの指標ではない"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを 1 秒間隔にする",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録で、指標ではない"
+      }
+    ],
+    "explanation": "カスタムメトリクスは高解像度（1 秒）で送れる。EC2 の詳細モニタリングは 1 分。",
+    "keywords": [
+      "1 秒単位"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-alarms:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-alarms"
+    ],
+    "prompt": "CPU 使用率のアラームを「1 データポイントでも 80% を超えたら ALARM」にしたところ、一瞬のスパイクのたびに通知が来る。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "評価期間とデータポイント数を増やす",
+        "correct": true,
+        "atomId": "cloudwatch-alarms",
+        "why": "例 5 回のうち 3 回超えたら ALARM"
+      },
+      {
+        "id": "b",
+        "text": "アラームを削除する",
+        "correct": false,
+        "why": "障害に気付けなくなる"
+      },
+      {
+        "id": "c",
+        "text": "しきい値を 1% にする",
+        "correct": false,
+        "why": "通知がさらに増える"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail で通知する",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、性能の監視ではない"
+      }
+    ],
+    "explanation": "一時的なスパイクを無視 = 評価期間・M out of N のデータポイント（または複合アラーム）。",
+    "keywords": [
+      "一瞬のスパイク"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

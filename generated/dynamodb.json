@@ -2135,5 +2135,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-table:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-table"
+    ],
+    "prompt": "複数のテーブルを JOIN する複雑な集計や、アドホックな SQL の分析が中心のシステムを DynamoDB で作ろうとしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "JOIN や複雑な集計に向かない",
+        "correct": true,
+        "atomId": "dynamodb-table",
+        "why": "リレーショナル DB（Aurora）や分析サービスを使う"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB はデータを保存できない",
+        "correct": false,
+        "why": "保存できる"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB は 1 桁ミリ秒で応答しない",
+        "correct": false,
+        "why": "応答する"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB はサーバーの管理が必要",
+        "correct": false,
+        "why": "サーバーレス"
+      }
+    ],
+    "explanation": "キーでのアクセス・大規模 = DynamoDB、JOIN・複雑なクエリ = RDS / Aurora、分析 = Redshift / Athena。",
+    "keywords": [
+      "JOIN",
+      "アドホック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-on-demand:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-on-demand"
+    ],
+    "prompt": "DynamoDB のキャパシティモードの切り替えについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後から切り替えられる",
+        "correct": true,
+        "atomId": "dynamodb-on-demand",
+        "why": "オンデマンドとプロビジョンドは切り替えられる（回数の制限はある）"
+      },
+      {
+        "id": "b",
+        "text": "テーブルの作成後は変更できない",
+        "correct": false,
+        "why": "変更できる"
+      },
+      {
+        "id": "c",
+        "text": "切り替えるとデータが削除される",
+        "correct": false,
+        "why": "データはそのまま"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドは GSI に使えない",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "GSI も同じモードになる"
+      }
+    ],
+    "explanation": "負荷が予測できるようになったらプロビジョンドに切り替えて安くできる。",
+    "keywords": [
+      "切り替え"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-global-tables:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-global-tables"
+    ],
+    "prompt": "既存の東京の DynamoDB テーブルを、欧州のユーザーにも低レイテンシで読み書きさせたい。アプリは欧州のリージョンにも置く。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "欧州のレプリカを追加する",
+        "correct": true,
+        "atomId": "dynamodb-global-tables",
+        "why": "既存のテーブルにリージョンのレプリカを追加して、グローバルテーブルにできる"
+      },
+      {
+        "id": "b",
+        "text": "欧州から東京のテーブルに直接アクセスする",
+        "correct": false,
+        "why": "距離が遠く、レイテンシが大きい"
+      },
+      {
+        "id": "c",
+        "text": "DAX を欧州に作る",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DAX は同じリージョンの DynamoDB のキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "毎日エクスポートして欧州に取り込む",
+        "correct": false,
+        "atomId": "dynamodb-export-s3",
+        "why": "リアルタイムの読み書きにならない"
+      }
+    ],
+    "explanation": "マルチリージョンの読み書き = グローバルテーブル（既存のテーブルにレプリカを追加）。",
+    "keywords": [
+      "欧州",
+      "読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

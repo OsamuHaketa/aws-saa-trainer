@@ -447,5 +447,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-windows:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "fsx-windows"
+    ],
+    "prompt": "Windows のファイルサーバーの移行先に、SMB の共有と Active Directory の権限が必要なのに、S3 を直接マウントしようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 はオブジェクトストレージで、SMB の共有ではない",
+        "correct": true,
+        "atomId": "fsx-windows",
+        "why": "FSx for Windows File Server を使う"
+      },
+      {
+        "id": "b",
+        "text": "S3 は Windows から一切使えない",
+        "correct": false,
+        "why": "API や File Gateway で使えるが、要件に合わない"
+      },
+      {
+        "id": "c",
+        "text": "S3 は Active Directory と同じもの",
+        "correct": false,
+        "why": "別のもの"
+      },
+      {
+        "id": "d",
+        "text": "S3 は容量が小さすぎる",
+        "correct": false,
+        "why": "容量の問題ではない"
+      }
+    ],
+    "explanation": "SMB + AD の権限 = FSx for Windows File Server。",
+    "keywords": [
+      "SMB",
+      "Active Directory"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

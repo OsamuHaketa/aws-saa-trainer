@@ -1230,5 +1230,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-distribution:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-distribution"
+    ],
+    "prompt": "ユーザーごとに内容が変わり、毎回違うデータを返す API を、キャッシュ目的で CloudFront の後ろに置いた。オリジンの負荷が減らない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "毎回違う応答はキャッシュできない",
+        "correct": true,
+        "atomId": "cloudfront-distribution",
+        "why": "CloudFront はエッジでの TLS 終端や経路の最適化には効く"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront は API を配信できない",
+        "correct": false,
+        "why": "配信できる"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront は HTTPS を使えない",
+        "correct": false,
+        "atomId": "cloudfront-viewer-https",
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront は東京リージョンにない",
+        "correct": false,
+        "why": "世界中のエッジロケーションで動く"
+      }
+    ],
+    "explanation": "キャッシュの効果は、同じ応答を繰り返し返せるコンテンツで出る。",
+    "keywords": [
+      "毎回違うデータ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-signed-urls:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-signed-urls"
+    ],
+    "prompt": "「CloudFront で有料会員だけに配信」「期限付き」「キーグループの公開鍵で検証」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront の署名付き URL",
+        "correct": true,
+        "atomId": "cloudfront-signed-urls",
+        "why": "署名付き Cookie も同じ仕組み。信頼されたキーグループの鍵で署名を検証する"
+      },
+      {
+        "id": "b",
+        "text": "S3 の署名付き URL",
+        "correct": false,
+        "atomId": "s3-presigned-url",
+        "why": "S3 に直接アクセスするためのもので、CloudFront の制限ではない"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront の地域制限（ジオ）",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限"
+      },
+      {
+        "id": "d",
+        "text": "WAF のレートベースのルール（IP）",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "リクエストの量の制限"
+      }
+    ],
+    "explanation": "CloudFront の限定配信 = 署名付き URL / Cookie（キーグループ）。",
+    "keywords": [
+      "有料会員だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

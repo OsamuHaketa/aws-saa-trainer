@@ -354,5 +354,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-user-pool:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cognito-user-pool"
+    ],
+    "prompt": "自社アプリの数十万人の利用者のログインのため、利用者ごとに IAM ユーザーを作ろうとしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アプリの利用者には Cognito を使う",
+        "correct": true,
+        "atomId": "cognito-user-pool",
+        "why": "IAM は AWS を操作する人の ID。ユーザープールでサインアップ・サインインを提供する"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーはパスワードを持てない",
+        "correct": false,
+        "why": "持てるが、用途が違う"
+      },
+      {
+        "id": "c",
+        "text": "IAM ユーザーは MFA を使えない",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "使えるが、用途が違う"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーはアカウントに 1 人しか作れない",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "複数作れるが、上限もあり用途が違う"
+      }
+    ],
+    "explanation": "アプリの利用者 = Cognito、AWS の操作者 = IAM / Identity Center。",
+    "keywords": [
+      "数十万人の利用者"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
