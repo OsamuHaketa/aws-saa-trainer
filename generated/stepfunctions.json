@@ -444,5 +444,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-standard-express:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-standard-express"
+    ],
+    "prompt": "毎秒数千回呼ばれる数秒の処理を、標準ワークフローで実行している。料金が高い。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Express ワークフローに変える",
+        "correct": true,
+        "atomId": "stepfunctions-standard-express",
+        "why": "短時間・大量の実行に向き、料金も安い"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のメモリを最小にする",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "ワークフローの料金は変わらない"
+      },
+      {
+        "id": "c",
+        "text": "状態の数を増やす",
+        "correct": false,
+        "why": "標準は状態の遷移の数で課金され、増える"
+      },
+      {
+        "id": "d",
+        "text": "標準ワークフローのままで、実行を 1 日 1 回にまとめる",
+        "correct": false,
+        "why": "要件を満たさない"
+      }
+    ],
+    "explanation": "標準 = 状態の遷移の数で課金、Express = 実行回数と時間で課金（大量・短時間なら安い）。",
+    "keywords": [
+      "毎秒数千回"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -581,5 +581,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-parameter-store:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ssm-parameter-store"
+    ],
+    "prompt": "「設定値を階層で管理」「標準のパラメータは無料」「SecureString」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Parameter Store",
+        "correct": true,
+        "atomId": "ssm-parameter-store",
+        "why": "設定値や秘密情報を保管する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "自動ローテーションがあり、有料"
+      },
+      {
+        "id": "c",
+        "text": "AWS AppConfig",
+        "correct": false,
+        "why": "アプリの設定の段階的な展開"
+      },
+      {
+        "id": "d",
+        "text": "Amazon S3",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "オブジェクトストレージ"
+      }
+    ],
+    "explanation": "階層・無料・設定値 = Parameter Store。",
+    "keywords": [
+      "階層で管理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-patch-manager:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ssm-patch-manager"
+    ],
+    "prompt": "本番のサーバーすべてに、パッチを同じ時刻に一斉に当てる設定にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "再起動などで全台が同時に止まりうる",
+        "correct": true,
+        "atomId": "ssm-patch-manager",
+        "why": "グループを分け、時間をずらして当てる"
+      },
+      {
+        "id": "b",
+        "text": "Patch Manager は本番に使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "パッチは 1 台ずつ手で当てる必要がある",
+        "correct": false,
+        "why": "自動で当てられる"
+      },
+      {
+        "id": "d",
+        "text": "パッチを当てるとデータが消える",
+        "correct": false,
+        "why": "データは消えない"
+      }
+    ],
+    "explanation": "パッチ = メンテナンスウィンドウやタグで分けて段階的に。",
+    "keywords": [
+      "同じ時刻に一斉に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-run-command:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ssm-run-command"
+    ],
+    "prompt": "Run Command で 500 台に一斉にコマンドを流すと負荷が心配。少しずつ実行し、失敗が多ければ止めたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "同時実行数とエラーのしきい値を設定する",
+        "correct": true,
+        "atomId": "ssm-run-command",
+        "why": "決めた数ずつ実行し、エラーが多ければ止まる"
+      },
+      {
+        "id": "b",
+        "text": "Session Manager で 1 台ずつ接続して実行",
+        "correct": false,
+        "atomId": "ssm-session-manager",
+        "why": "手間がかかりすぎる"
+      },
+      {
+        "id": "c",
+        "text": "EventBridge で 500 回呼ぶ",
+        "correct": false,
+        "atomId": "eventbridge-bus",
+        "why": "制御が難しい"
+      },
+      {
+        "id": "d",
+        "text": "ユーザーデータに書いて再起動",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "全台を止めることになる"
+      }
+    ],
+    "explanation": "Run Command = 同時実行の数（割合）とエラーのしきい値で安全に展開する。",
+    "keywords": [
+      "少しずつ実行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

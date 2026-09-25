@@ -1156,5 +1156,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-visibility-timeout:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "sqs-visibility-timeout"
+    ],
+    "prompt": "「受信したメッセージを一定時間ほかから見えなくする」「処理中の重複を防ぐ」→ SQS の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "可視性タイムアウト",
+        "correct": true,
+        "atomId": "sqs-visibility-timeout",
+        "why": "処理時間より長くし、処理後にメッセージを削除する"
+      },
+      {
+        "id": "b",
+        "text": "遅延キュー",
+        "correct": false,
+        "why": "送信直後のメッセージを見えなくする"
+      },
+      {
+        "id": "c",
+        "text": "メッセージの保持期間",
+        "correct": false,
+        "atomId": "sqs-retention",
+        "why": "削除されるまでの期間"
+      },
+      {
+        "id": "d",
+        "text": "ロングポーリング",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信の待ち方"
+      }
+    ],
+    "explanation": "処理中は隠す = 可視性タイムアウト。",
+    "keywords": [
+      "一定時間ほかから見えなく"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-dlq:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "sqs-dlq"
+    ],
+    "prompt": "「何度受信しても処理できないメッセージを隔離」「リドライブポリシー」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "デッドレターキュー",
+        "correct": true,
+        "atomId": "sqs-dlq",
+        "why": "最大受信数を超えたメッセージを移す"
+      },
+      {
+        "id": "b",
+        "text": "FIFO キュー",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "順序と重複排除"
+      },
+      {
+        "id": "c",
+        "text": "遅延キュー",
+        "correct": false,
+        "why": "配信を遅らせる"
+      },
+      {
+        "id": "d",
+        "text": "一時キュー",
+        "correct": false,
+        "why": "リクエストと応答のための短命なキュー"
+      }
+    ],
+    "explanation": "処理できないメッセージの隔離 = DLQ。",
+    "keywords": [
+      "隔離"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-queue-based-scaling:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "sqs-queue-based-scaling"
+    ],
+    "prompt": "「SQS の滞留数に応じて処理側の EC2 を増減」「インスタンスあたりのバックログ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キューの長さに応じたスケーリング",
+        "correct": true,
+        "atomId": "sqs-queue-based-scaling",
+        "why": "バックログを目標値に保つように台数を変える"
+      },
+      {
+        "id": "b",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "日時で変える"
+      },
+      {
+        "id": "c",
+        "text": "予測スケーリング",
+        "correct": false,
+        "atomId": "autoscaling-predictive",
+        "why": "過去のパターンで先に増やす"
+      },
+      {
+        "id": "d",
+        "text": "ライフサイクルフック",
+        "correct": false,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "起動・終了時の処理"
+      }
+    ],
+    "explanation": "キューの処理のスケール = バックログに基づくターゲット追跡。",
+    "keywords": [
+      "滞留数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-retention:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "sqs-retention"
+    ],
+    "prompt": "「処理されないメッセージが自動で消えるまでの期間」「デフォルト 4 日」→ SQS の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メッセージの保持期間",
+        "correct": true,
+        "atomId": "sqs-retention",
+        "why": "最大 14 日まで延ばせる"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウト",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "処理中に見えなくする時間"
+      },
+      {
+        "id": "c",
+        "text": "受信の待ち時間",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "ロングポーリングの設定"
+      },
+      {
+        "id": "d",
+        "text": "最大受信数",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "DLQ に移すまでの受信回数"
+      }
+    ],
+    "explanation": "自動で消えるまで = 保持期間。",
+    "keywords": [
+      "デフォルト 4 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

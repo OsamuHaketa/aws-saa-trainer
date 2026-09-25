@@ -2002,5 +2002,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-retry-backoff:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-retry-backoff"
+    ],
+    "prompt": "「失敗したら待ち時間を倍々に延ばして再試行」「ランダムなずれを加える」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エクスポネンシャルバックオフとジッター",
+        "correct": true,
+        "atomId": "patterns-retry-backoff",
+        "why": "一時的なエラーからの回復の定番"
+      },
+      {
+        "id": "b",
+        "text": "サーキットブレーカーのパターン",
+        "correct": false,
+        "why": "失敗が続く相手への呼び出しを一時的に止める仕組み"
+      },
+      {
+        "id": "c",
+        "text": "ELB のスティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じサーバーに送り続ける設定"
+      },
+      {
+        "id": "d",
+        "text": "SQS のロングポーリング",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "SQS の受信の待ち方"
+      }
+    ],
+    "explanation": "倍々に待つ + ランダム = バックオフ + ジッター。",
+    "keywords": [
+      "倍々に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-shared-responsibility:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-shared-responsibility"
+    ],
+    "prompt": "「AWS はクラウドの基盤、利用者はクラウドの中のデータや設定」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "責任共有モデル",
+        "correct": true,
+        "atomId": "patterns-shared-responsibility",
+        "why": "サービスの種類で分担の範囲が変わる"
+      },
+      {
+        "id": "b",
+        "text": "最小権限の原則",
+        "correct": false,
+        "atomId": "iam-least-privilege",
+        "why": "必要な権限だけを与える"
+      },
+      {
+        "id": "c",
+        "text": "Well-Architected フレームワーク",
+        "correct": false,
+        "atomId": "patterns-well-architected",
+        "why": "設計の評価の枠組み"
+      },
+      {
+        "id": "d",
+        "text": "疎結合",
+        "correct": false,
+        "atomId": "patterns-loose-coupling",
+        "why": "依存を減らす設計"
+      }
+    ],
+    "explanation": "基盤は AWS、中身は利用者 = 責任共有モデル。",
+    "keywords": [
+      "クラウドの中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

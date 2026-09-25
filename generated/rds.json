@@ -2433,5 +2433,184 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "rds-snapshots:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-snapshots"
+    ],
+    "prompt": "本番の RDS のデータで、別のアカウントの検証環境を作りたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "手動スナップショットを共有する",
+        "correct": true,
+        "atomId": "rds-snapshots",
+        "why": "相手のアカウントで復元する。暗号化されていれば KMS の鍵も共有する"
+      },
+      {
+        "id": "b",
+        "text": "自動バックアップを直接共有する",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "自動バックアップは共有できない。スナップショットにコピーする"
+      },
+      {
+        "id": "c",
+        "text": "リードレプリカを別のアカウントに作る",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "アカウントをまたぐ移行の定番ではない"
+      },
+      {
+        "id": "d",
+        "text": "本番の DB の接続情報を検証チームに渡す",
+        "correct": false,
+        "why": "本番に影響し、危険"
+      }
+    ],
+    "explanation": "アカウント間の DB の複製 = 手動スナップショットの共有（暗号化なら鍵も）。",
+    "keywords": [
+      "別のアカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-encryption:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "rds-encryption"
+    ],
+    "prompt": "「RDS の保存時の暗号化」「作成時にしか選べない」「既存の DB はスナップショット経由」→ 何の特徴？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS の暗号化（KMS）",
+        "correct": true,
+        "atomId": "rds-encryption",
+        "why": "ストレージ、バックアップ、スナップショット、レプリカが暗号化される"
+      },
+      {
+        "id": "b",
+        "text": "RDS の IAM データベース認証",
+        "correct": false,
+        "atomId": "rds-iam-authentication",
+        "why": "接続の認証の仕組み"
+      },
+      {
+        "id": "c",
+        "text": "RDS のマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "可用性の仕組み"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプール"
+      }
+    ],
+    "explanation": "暗号化は作成時に決める。後から = スナップショットを暗号化コピーして復元。",
+    "keywords": [
+      "作成時にしか選べない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az-cluster:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-multi-az-cluster"
+    ],
+    "prompt": "Oracle の RDS で、読み取り可能なスタンバイ 2 台のマルチ AZ DB クラスターを使おうとしたが選べない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MySQL と PostgreSQL だけが対応",
+        "correct": true,
+        "atomId": "rds-multi-az-cluster",
+        "why": "Oracle ではスタンバイ 1 台のマルチ AZ を使う"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ DB クラスターは Aurora と同じもの",
+        "correct": false,
+        "atomId": "rds-aurora",
+        "why": "別のもの"
+      },
+      {
+        "id": "c",
+        "text": "Oracle では高可用性の構成を使えない",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "マルチ AZ DB インスタンスは使える"
+      },
+      {
+        "id": "d",
+        "text": "リードレプリカを先に作る必要がある",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "前提ではない"
+      }
+    ],
+    "explanation": "マルチ AZ DB クラスター = RDS for MySQL / PostgreSQL。",
+    "keywords": [
+      "Oracle"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-iam-authentication:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "rds-iam-authentication"
+    ],
+    "prompt": "「DB のパスワードの代わりに認証トークン」「有効期限 15 分」「IAM のロールで接続」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM データベース認証",
+        "correct": true,
+        "atomId": "rds-iam-authentication",
+        "why": "RDS for MySQL / PostgreSQL や Aurora で使える"
+      },
+      {
+        "id": "b",
+        "text": "Secrets Manager の自動ローテーション",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "パスワードの保管と更新"
+      },
+      {
+        "id": "c",
+        "text": "RDS Proxy の接続プール",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続の共有"
+      },
+      {
+        "id": "d",
+        "text": "KMS の鍵ポリシー",
+        "correct": false,
+        "atomId": "kms-key-policy",
+        "why": "鍵の利用の制御"
+      }
+    ],
+    "explanation": "トークンで DB に接続 = IAM データベース認証。",
+    "keywords": [
+      "認証トークン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

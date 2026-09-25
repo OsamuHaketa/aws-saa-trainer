@@ -404,5 +404,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-tape:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "storagegateway-tape"
+    ],
+    "prompt": "Tape Gateway の仮想テープを長期保管すると、どこに置かれる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Glacier",
+        "correct": true,
+        "atomId": "storagegateway-tape",
+        "why": "Glacier Flexible Retrieval や Deep Archive に置かれ、取り出すときは Tape Gateway から復元する"
+      },
+      {
+        "id": "b",
+        "text": "EBS ボリューム",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "仮想テープの保管先ではない"
+      },
+      {
+        "id": "c",
+        "text": "EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "ファイルストレージ"
+      },
+      {
+        "id": "d",
+        "text": "オンプレミスの物理テープ",
+        "correct": false,
+        "why": "物理テープはなくなる"
+      }
+    ],
+    "explanation": "仮想テープ = S3 → アーカイブすると Glacier / Deep Archive。",
+    "keywords": [
+      "長期保管"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

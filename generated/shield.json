@@ -309,5 +309,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "shield-standard:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "shield-standard"
+    ],
+    "prompt": "「追加料金なし」「すべての AWS の利用者」「一般的なネットワーク層の DDoS」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Shield Standard",
+        "correct": true,
+        "atomId": "shield-standard",
+        "why": "自動で適用される基本の保護"
+      },
+      {
+        "id": "b",
+        "text": "AWS Shield Advanced",
+        "correct": false,
+        "atomId": "shield-advanced",
+        "why": "有料の高度な保護"
+      },
+      {
+        "id": "c",
+        "text": "AWS WAF",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "Web の攻撃のブロック（有料）"
+      },
+      {
+        "id": "d",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出（有料）"
+      }
+    ],
+    "explanation": "無料・自動 = Shield Standard。",
+    "keywords": [
+      "追加料金なし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "shield-advanced:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "shield-advanced"
+    ],
+    "prompt": "Shield Advanced を契約すると追加で使えるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SRT の支援と料金の補償",
+        "correct": true,
+        "atomId": "shield-advanced",
+        "why": "WAF の料金の一部や、詳しい攻撃の可視化も得られる"
+      },
+      {
+        "id": "b",
+        "text": "S3 のバケットの暗号化",
+        "correct": false,
+        "why": "関係ない"
+      },
+      {
+        "id": "c",
+        "text": "EC2 の自動のパッチ適用",
+        "correct": false,
+        "atomId": "ssm-patch-manager",
+        "why": "関係ない"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーの MFA",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "Shield Advanced = SRT、DDoS のコストの保護、WAF 料金の包含、詳しい検知と可視化。",
+    "keywords": [
+      "追加で使える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

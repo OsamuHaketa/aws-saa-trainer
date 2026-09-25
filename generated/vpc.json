@@ -3502,5 +3502,312 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-route-table:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-route-table"
+    ],
+    "prompt": "「サブネットからの通信の行き先を決める」「0.0.0.0/0 → IGW」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ルートテーブル",
+        "correct": true,
+        "atomId": "vpc-route-table",
+        "why": "宛先ごとの経路のルール"
+      },
+      {
+        "id": "b",
+        "text": "ネットワーク ACL",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "通信の許可・拒否"
+      },
+      {
+        "id": "c",
+        "text": "セキュリティグループ",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "インスタンスの許可"
+      },
+      {
+        "id": "d",
+        "text": "DHCP オプションセット",
+        "correct": false,
+        "why": "DNS サーバーなどの設定"
+      }
+    ],
+    "explanation": "行き先 = ルートテーブル、許可・拒否 = NACL / SG。",
+    "keywords": [
+      "行き先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-flow-logs:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-flow-logs"
+    ],
+    "prompt": "VPC フローログを長期に保管し、SQL でアドホックに分析したい。コストを抑えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 に出力し、Athena で問い合わせる",
+        "correct": true,
+        "atomId": "vpc-flow-logs",
+        "why": "安く保管でき、必要なときに SQL で分析できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudWatch Logs に出力して無期限で保管する",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "大量のログの長期保管は S3 より高くなりやすい"
+      },
+      {
+        "id": "c",
+        "text": "RDS に取り込む",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "取り込みの仕組みとコストが大きい"
+      },
+      {
+        "id": "d",
+        "text": "EBS に保存する",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "分析の仕組みがない"
+      }
+    ],
+    "explanation": "大量のログの保管と分析 = S3 + Athena（Parquet 形式で出力もできる）。",
+    "keywords": [
+      "長期に保管",
+      "SQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-privatelink:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-privatelink"
+    ],
+    "prompt": "顧客に自社のサービスを PrivateLink で公開するため、サービスの前に ALB だけを置いた。エンドポイントサービスを作れない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エンドポイントサービスには NLB（または GWLB）が必要",
+        "correct": true,
+        "atomId": "vpc-privatelink",
+        "why": "ALB は NLB のターゲットにして組み合わせられる"
+      },
+      {
+        "id": "b",
+        "text": "PrivateLink は同じアカウントでしか使えない",
+        "correct": false,
+        "why": "別のアカウントに公開できる"
+      },
+      {
+        "id": "c",
+        "text": "ALB は VPC の中に置けない",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "置ける"
+      },
+      {
+        "id": "d",
+        "text": "PrivateLink は CIDR が重複すると使えない",
+        "correct": false,
+        "why": "重複していても使える"
+      }
+    ],
+    "explanation": "PrivateLink の提供側 = NLB / GWLB。",
+    "keywords": [
+      "ALB だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-network-firewall:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-network-firewall"
+    ],
+    "prompt": "20 の VPC のインターネットへの外向きの通信を、1 か所でまとめて検査したい。どう構成する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TGW で集めて Network Firewall で検査",
+        "correct": true,
+        "atomId": "vpc-network-firewall",
+        "why": "Transit Gateway で検査用の VPC に集める集中型の出口で、ルールを一元管理できる"
+      },
+      {
+        "id": "b",
+        "text": "各 VPC のセキュリティグループで個別に制御する",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "ドメイン名の制御や一元管理ができない"
+      },
+      {
+        "id": "c",
+        "text": "各 VPC に NAT ゲートウェイを置くだけ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "検査の機能がない"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリングで全部をつなぐ",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "推移的でなく、集中型の出口にならない"
+      }
+    ],
+    "explanation": "集中型の検査 = TGW + 検査用 VPC + Network Firewall。",
+    "keywords": [
+      "1 か所でまとめて"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-client-vpn:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "vpc-client-vpn"
+    ],
+    "prompt": "Client VPN で、VPC 宛てだけ VPN を通し、インターネットへの通信は直接出したい。何を設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スプリットトンネル",
+        "correct": true,
+        "atomId": "vpc-client-vpn",
+        "why": "VPC 宛ての通信だけを VPN に通す"
+      },
+      {
+        "id": "b",
+        "text": "フルトンネル",
+        "correct": false,
+        "why": "すべての通信が VPN を通る"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "VPC からの外向き通信"
+      },
+      {
+        "id": "d",
+        "text": "Egress-Only IGW",
+        "correct": false,
+        "atomId": "vpc-egress-only-igw",
+        "why": "IPv6 の外向き通信"
+      }
+    ],
+    "explanation": "必要な通信だけ VPN = スプリットトンネル。",
+    "keywords": [
+      "インターネットへの通信は直接"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect-gateway:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "vpc-direct-connect-gateway",
+      "vpc-transit-gateway"
+    ],
+    "prompt": "Direct Connect ゲートウェイと Transit Gateway の役割の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後者は VPC 同士も含むハブ",
+        "correct": true,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "DX ゲートウェイは DX を複数リージョンに延ばす。組み合わせると多数の VPC とオンプレミスをつなげる"
+      },
+      {
+        "id": "b",
+        "text": "前者は VPC 同士をつなぐハブ",
+        "correct": false,
+        "why": "DX ゲートウェイ経由で VPC 同士は通信できない"
+      },
+      {
+        "id": "c",
+        "text": "後者はオンプレミスとつなげない",
+        "correct": false,
+        "why": "VPN や DX でつなげる"
+      },
+      {
+        "id": "d",
+        "text": "どちらも同じもの",
+        "correct": false,
+        "why": "役割が違う"
+      }
+    ],
+    "explanation": "DX ゲートウェイ = DX の接続先を広げる、TGW = リージョンのハブ。",
+    "keywords": [
+      "役割の違い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-sharing:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-sharing"
+    ],
+    "prompt": "VPC 共有で、参加アカウントの担当者が共有されたサブネットのルートテーブルを変更しようとしたができない。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC やルートテーブルは所有者のアカウントが管理する",
+        "correct": true,
+        "atomId": "vpc-sharing",
+        "why": "参加アカウントはリソースを作れるが、ネットワークは変更できない"
+      },
+      {
+        "id": "b",
+        "text": "VPC 共有ではサブネットにリソースを作れない",
+        "correct": false,
+        "why": "作れる"
+      },
+      {
+        "id": "c",
+        "text": "VPC 共有は Organizations がなくても自由に使える",
+        "correct": false,
+        "why": "組織内での共有が前提"
+      },
+      {
+        "id": "d",
+        "text": "ルートテーブルは VPC 共有で自動で削除される",
+        "correct": false,
+        "why": "削除はされない"
+      }
+    ],
+    "explanation": "VPC 共有 = ネットワークは所有者、リソースは参加者。",
+    "keywords": [
+      "ルートテーブルを変更"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

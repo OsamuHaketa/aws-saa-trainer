@@ -1590,5 +1590,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "route53-geolocation:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "route53-geolocation"
+    ],
+    "prompt": "「ユーザーの国や大陸で振り分け」「規制」「言語ごとのサイト」→ Route 53 の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "位置情報ルーティング",
+        "correct": true,
+        "atomId": "route53-geolocation",
+        "why": "国・大陸・州の単位で宛先を決める"
+      },
+      {
+        "id": "b",
+        "text": "レイテンシーベースルーティング",
+        "correct": false,
+        "atomId": "route53-latency",
+        "why": "通信の速さで選ぶ"
+      },
+      {
+        "id": "c",
+        "text": "地理的近接性ルーティング",
+        "correct": false,
+        "atomId": "route53-geoproximity",
+        "why": "距離とバイアスで振り分ける"
+      },
+      {
+        "id": "d",
+        "text": "加重ルーティング",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "割合で振り分ける"
+      }
+    ],
+    "explanation": "場所で決める = 位置情報、速さで決める = レイテンシー。",
+    "keywords": [
+      "国や大陸"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-health-checks:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "route53-health-checks"
+    ],
+    "prompt": "Route 53 のヘルスチェックで ALB を監視しているが、ALB の前のセキュリティグループで Route 53 のヘルスチェッカーからの通信を許可していない。何が起きる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "常に異常と判定される",
+        "correct": true,
+        "atomId": "route53-health-checks",
+        "why": "正常な宛先も外されてしまう。ヘルスチェッカーの IP 範囲からの通信を許可する"
+      },
+      {
+        "id": "b",
+        "text": "常に正常と判定される",
+        "correct": false,
+        "why": "届かないので異常と判定される"
+      },
+      {
+        "id": "c",
+        "text": "ヘルスチェックの料金が無料になる",
+        "correct": false,
+        "why": "料金とは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "ALB が自動で許可する",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "自動では許可されない"
+      }
+    ],
+    "explanation": "Route 53 のヘルスチェックはインターネットから届く。SG や NACL で許可する。",
+    "keywords": [
+      "許可していない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-private-hosted-zone:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "route53-private-hosted-zone"
+    ],
+    "prompt": "同じプライベートホストゾーンの名前を、別のアカウントの VPC からも解決させたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "相手の VPC を関連付ける",
+        "correct": true,
+        "atomId": "route53-private-hosted-zone",
+        "why": "関連付けの承認を使い、関連付けた VPC から名前を解決できる"
+      },
+      {
+        "id": "b",
+        "text": "ゾーンをパブリックに変える",
+        "correct": false,
+        "why": "インターネットに公開される"
+      },
+      {
+        "id": "c",
+        "text": "相手のアカウントに同じゾーンを手で作る",
+        "correct": false,
+        "why": "二重管理になる"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリングだけを作る",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ピアリングだけではゾーンの名前を解決できない"
+      }
+    ],
+    "explanation": "クロスアカウントの PHZ = 関連付けの承認で相手の VPC を関連付ける（Route 53 Profiles もある）。",
+    "keywords": [
+      "別のアカウントの VPC"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

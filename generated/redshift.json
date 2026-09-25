@@ -444,5 +444,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-spectrum:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "redshift-spectrum"
+    ],
+    "prompt": "数年分の古いデータも分析するため、S3 のすべての過去データを毎回 Redshift にロードしている。ストレージの料金とロードの時間がかさむ。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Spectrum で S3 を直接読む",
+        "correct": true,
+        "atomId": "redshift-spectrum",
+        "why": "ロードせずに Redshift の中のデータと結合できる"
+      },
+      {
+        "id": "b",
+        "text": "Redshift のノードを増やし続ける",
+        "correct": false,
+        "why": "コストが増え続ける"
+      },
+      {
+        "id": "c",
+        "text": "古いデータを削除する",
+        "correct": false,
+        "why": "分析の要件を満たせない"
+      },
+      {
+        "id": "d",
+        "text": "古いデータを DynamoDB に移す",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "分析のクエリに向かない"
+      }
+    ],
+    "explanation": "ホットなデータ = Redshift、コールドなデータ = S3 + Spectrum。",
+    "keywords": [
+      "毎回 Redshift にロード"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
