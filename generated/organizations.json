@@ -480,5 +480,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-ou:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "organizations-ou"
+    ],
+    "prompt": "本番と開発のアカウントを OU に分けず、組織のルートの直下にすべて置いている。本番だけに厳しい SCP を付けたい。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウントごとに付けることになる",
+        "correct": true,
+        "atomId": "organizations-ou",
+        "why": "OU に分けると、OU 単位でまとめて適用できる"
+      },
+      {
+        "id": "b",
+        "text": "ルートの直下にはアカウントを置けない",
+        "correct": false,
+        "why": "置ける"
+      },
+      {
+        "id": "c",
+        "text": "SCP はアカウントに付けられない",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "アカウントにも付けられる"
+      },
+      {
+        "id": "d",
+        "text": "OU を作ると一括請求が使えなくなる",
+        "correct": false,
+        "atomId": "organizations-consolidated-billing",
+        "why": "一括請求は使える"
+      }
+    ],
+    "explanation": "役割ごとに OU を分け、OU に SCP を付けて管理する。",
+    "keywords": [
+      "OU に分けず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-consolidated-billing:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "organizations-consolidated-billing"
+    ],
+    "prompt": "「複数のアカウントの請求を 1 つに」「利用量を合算して割引」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一括請求",
+        "correct": true,
+        "atomId": "organizations-consolidated-billing",
+        "why": "管理アカウントに請求をまとめる"
+      },
+      {
+        "id": "b",
+        "text": "AWS Budgets",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "予算の管理"
+      },
+      {
+        "id": "c",
+        "text": "Cost Explorer",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "コストの分析"
+      },
+      {
+        "id": "d",
+        "text": "コスト配分タグ",
+        "correct": false,
+        "atomId": "cost-allocation-tags",
+        "why": "タグ別の集計"
+      }
+    ],
+    "explanation": "請求の集約と割引の合算 = 一括請求。",
+    "keywords": [
+      "請求を 1 つに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

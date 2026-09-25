@@ -88,5 +88,47 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "lakeformation-permissions:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "lakeformation-permissions"
+    ],
+    "prompt": "データレイクの権限を S3 のバケットポリシーではなく Lake Formation で管理する利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "列の単位でまとめて管理できる",
+        "correct": true,
+        "atomId": "lakeformation-permissions",
+        "why": "S3 のポリシーはオブジェクト単位"
+      },
+      {
+        "id": "b",
+        "text": "S3 のデータが自動で暗号化される",
+        "correct": false,
+        "why": "暗号化の機能ではない"
+      },
+      {
+        "id": "c",
+        "text": "データのコピーが不要になる",
+        "correct": false,
+        "why": "権限の管理の話"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバケットポリシーが使えなくなる",
+        "correct": false,
+        "why": "併用する"
+      }
+    ],
+    "explanation": "データレイクの細かい権限 = Lake Formation（データベース・テーブル・列・行）。",
+    "keywords": [
+      "列の単位"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

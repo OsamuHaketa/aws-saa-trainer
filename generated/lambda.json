@@ -740,5 +740,137 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-vpc:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "lambda-vpc"
+    ],
+    "prompt": "「Lambda からプライベートサブネットの RDS に接続」→ Lambda の何を設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC への接続",
+        "correct": true,
+        "atomId": "lambda-vpc",
+        "why": "サブネットと SG を指定し、Lambda が VPC 内に ENI を作ってアクセスする"
+      },
+      {
+        "id": "b",
+        "text": "予約同時実行",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "同時実行の数の設定"
+      },
+      {
+        "id": "c",
+        "text": "失敗時の送信先",
+        "correct": false,
+        "atomId": "lambda-async-failure",
+        "why": "非同期の失敗の退避"
+      },
+      {
+        "id": "d",
+        "text": "Lambda のメモリ",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "性能の設定で、接続の可否とは関係ない"
+      }
+    ],
+    "explanation": "VPC 内のリソースに接続 = VPC の設定（外に出るなら NAT、AWS サービスならエンドポイント）。",
+    "keywords": [
+      "プライベートサブネットの RDS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-async-failure:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "lambda-async-failure",
+      "sqs-dlq"
+    ],
+    "prompt": "Lambda の非同期呼び出しで、DLQ ではなく「失敗時の送信先」を使う利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "失敗の詳細も送られる",
+        "correct": true,
+        "atomId": "lambda-async-failure",
+        "why": "成功時の送信先も設定でき、SQS・SNS・Lambda・EventBridge から選べる"
+      },
+      {
+        "id": "b",
+        "text": "DLQ は Lambda では使えない",
+        "correct": false,
+        "why": "Lambda の非同期でも DLQ を使える"
+      },
+      {
+        "id": "c",
+        "text": "送信先を使うと再試行がなくなる",
+        "correct": false,
+        "why": "再試行はそのまま"
+      },
+      {
+        "id": "d",
+        "text": "送信先を使うと料金が無料になる",
+        "correct": false,
+        "why": "料金は変わらない"
+      }
+    ],
+    "explanation": "失敗時の送信先 = DLQ より多くの情報（エラーの内容など）と、成功時の通知もできる。",
+    "keywords": [
+      "失敗時の送信先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-memory:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "lambda-memory"
+    ],
+    "prompt": "Lambda の料金を下げるため、処理時間が長い CPU の重い関数のメモリを最小の 128 MB にした。料金が逆に上がった。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CPU も減って処理時間が延び、合計が増えた",
+        "correct": true,
+        "atomId": "lambda-memory",
+        "why": "メモリを増やすと速くなり、合計が下がることもある"
+      },
+      {
+        "id": "b",
+        "text": "128 MB は最も高い設定",
+        "correct": false,
+        "why": "設定の単価は低い"
+      },
+      {
+        "id": "c",
+        "text": "メモリを減らすと同時実行が無制限になる",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "関係ない"
+      },
+      {
+        "id": "d",
+        "text": "128 MB では Lambda を実行できない",
+        "correct": false,
+        "why": "実行できる"
+      }
+    ],
+    "explanation": "Lambda の料金 = メモリ × 実行時間。CPU の重い処理はメモリを上げると安くなることがある。",
+    "keywords": [
+      "128 MB",
+      "逆に上がった"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -395,5 +395,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ec2-launch-type:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ecs-ec2-launch-type"
+    ],
+    "prompt": "GPU を使う機械学習の推論のコンテナを ECS で動かし、3 年の Savings Plans で安くしたい。インスタンスタイプも細かく選びたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ECS の EC2 起動タイプで GPU インスタンスを使う",
+        "correct": true,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "ホストのインスタンスを自由に選べる"
+      },
+      {
+        "id": "b",
+        "text": "Fargate だけで動かす",
+        "correct": false,
+        "atomId": "ecs-fargate",
+        "why": "GPU のインスタンスを細かく選べない"
+      },
+      {
+        "id": "c",
+        "text": "Lambda で推論する",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "GPU は使えず、15 分の上限もある"
+      },
+      {
+        "id": "d",
+        "text": "Elastic Beanstalk の単一インスタンス",
+        "correct": false,
+        "atomId": "beanstalk-environment",
+        "why": "ECS の要件の答えにならない"
+      }
+    ],
+    "explanation": "GPU・特定のインスタンス・細かい制御 = EC2 起動タイプ。",
+    "keywords": [
+      "GPU"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ec2-launch-type:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ecs-ec2-launch-type",
+      "ecs-fargate"
+    ],
+    "prompt": "ECS の EC2 起動タイプを使う場合に、利用者が管理するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ホストの EC2 と OS のパッチ",
+        "correct": true,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "台数やスケーリングも含めて管理する。Fargate ならこれらは AWS が管理する"
+      },
+      {
+        "id": "b",
+        "text": "何も管理しない",
+        "correct": false,
+        "why": "それは Fargate に近い"
+      },
+      {
+        "id": "c",
+        "text": "コントロールプレーンの冗長化だけ",
+        "correct": false,
+        "why": "ECS のコントロールプレーンは AWS が管理する"
+      },
+      {
+        "id": "d",
+        "text": "データセンターの物理サーバー",
+        "correct": false,
+        "atomId": "patterns-shared-responsibility",
+        "why": "AWS が管理する"
+      }
+    ],
+    "explanation": "EC2 起動タイプ = ホストの EC2 を自分で管理、Fargate = サーバーの管理が不要。",
+    "keywords": [
+      "利用者が管理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-task-role:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "ecs-task-role"
+    ],
+    "prompt": "「ECS のコンテナのアプリが DynamoDB にアクセス」「タスクごとに権限を分ける」→ 何を設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "タスクロール",
+        "correct": true,
+        "atomId": "ecs-task-role",
+        "why": "タスク定義に付け、アプリがその権限を使う"
+      },
+      {
+        "id": "b",
+        "text": "タスク実行ロール",
+        "correct": false,
+        "why": "イメージの取得やログの送信など、ECS の仕組みが使う権限"
+      },
+      {
+        "id": "c",
+        "text": "EC2 のインスタンスロール",
+        "correct": false,
+        "atomId": "iam-instance-profile",
+        "why": "同じホストの全タスクが同じ権限を持ってしまう"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーのアクセスキー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報をコンテナに持たせることになる"
+      }
+    ],
+    "explanation": "アプリの権限 = タスクロール。",
+    "keywords": [
+      "タスクごとに権限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ecr:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ecs-ecr"
+    ],
+    "prompt": "東京の ECR のイメージを、DR 用の大阪リージョンの ECS でも使いたい。イメージのプッシュのたびに自動で大阪にも置きたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ECR のクロスリージョンレプリケーション",
+        "correct": true,
+        "atomId": "ecs-ecr",
+        "why": "プッシュされたイメージを別のリージョンに自動で複製する"
+      },
+      {
+        "id": "b",
+        "text": "毎回手動で大阪にもプッシュする",
+        "correct": false,
+        "why": "手間がかかり、忘れることもある"
+      },
+      {
+        "id": "c",
+        "text": "S3 のクロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "ECR のイメージは S3 のバケットにない"
+      },
+      {
+        "id": "d",
+        "text": "EBS スナップショットのコピー",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "イメージのレジストリとは関係ない"
+      }
+    ],
+    "explanation": "イメージの DR = ECR のレプリケーション（リージョン・アカウント間）。",
+    "keywords": [
+      "大阪にも"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

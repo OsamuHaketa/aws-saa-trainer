@@ -314,5 +314,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-scheduler:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-scheduler"
+    ],
+    "prompt": "「毎日決まった時刻に Lambda を実行」「cron 式」「サーバー不要」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge Scheduler",
+        "correct": true,
+        "atomId": "eventbridge-scheduler",
+        "why": "決まった時刻や間隔でターゲットを実行する"
+      },
+      {
+        "id": "b",
+        "text": "EventBridge のアーカイブ",
+        "correct": false,
+        "atomId": "eventbridge-archive-replay",
+        "why": "イベントの保存と再送"
+      },
+      {
+        "id": "c",
+        "text": "SQS の遅延キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "メッセージを遅らせて見えるようにするだけ"
+      },
+      {
+        "id": "d",
+        "text": "Step Functions の待機",
+        "correct": false,
+        "atomId": "stepfunctions-state-machine",
+        "why": "ワークフロー内の待機"
+      }
+    ],
+    "explanation": "定期実行 = EventBridge Scheduler。",
+    "keywords": [
+      "cron 式"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

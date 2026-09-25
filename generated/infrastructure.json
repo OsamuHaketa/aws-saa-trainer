@@ -351,5 +351,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-outposts:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "infrastructure-outposts",
+      "infrastructure-local-zones"
+    ],
+    "prompt": "AWS Outposts と Local Zones の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は自社の施設に置く",
+        "correct": true,
+        "atomId": "infrastructure-outposts",
+        "why": "Local Zones は AWS が大都市の近くに置く。Outposts はデータを自社内に置ける"
+      },
+      {
+        "id": "b",
+        "text": "前者は 5G のネットワークの中に置く",
+        "correct": false,
+        "atomId": "infrastructure-wavelength",
+        "why": "それは Wavelength"
+      },
+      {
+        "id": "c",
+        "text": "後者は自社のデータセンターに置く",
+        "correct": false,
+        "why": "Local Zones は AWS の施設"
+      },
+      {
+        "id": "d",
+        "text": "どちらも AWS の API は使えない",
+        "correct": false,
+        "why": "どちらも AWS と同じ API で使う"
+      }
+    ],
+    "explanation": "自社内 = Outposts、AWS の近くの拠点 = Local Zones、5G = Wavelength。",
+    "keywords": [
+      "自社の施設"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

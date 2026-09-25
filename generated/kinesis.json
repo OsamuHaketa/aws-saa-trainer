@@ -571,5 +571,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-flink:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "kinesis-flink",
+      "kinesis-firehose"
+    ],
+    "prompt": "Managed Service for Apache Flink と Data Firehose の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "集計なら前者、配信なら後者",
+        "correct": true,
+        "atomId": "kinesis-flink",
+        "why": "Firehose は簡単な変換をして S3 などに届ける"
+      },
+      {
+        "id": "b",
+        "text": "前者は S3 に配信できない",
+        "correct": false,
+        "why": "結果を S3 などに出力できる"
+      },
+      {
+        "id": "c",
+        "text": "後者は時間の窓での集計が得意",
+        "correct": false,
+        "why": "集計の分析は Flink"
+      },
+      {
+        "id": "d",
+        "text": "どちらもストリームを保持して読み直せる",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "保持するのは Kinesis Data Streams"
+      }
+    ],
+    "explanation": "分析・集計 = Flink、配信 = Firehose、保持・複数の読み手 = Data Streams。",
+    "keywords": [
+      "集計",
+      "配信"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

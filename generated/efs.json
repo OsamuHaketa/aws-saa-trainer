@@ -350,5 +350,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "efs-storage-classes:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "efs-storage-classes"
+    ],
+    "prompt": "大半のファイルが 1 か月後から読まれない EFS を、すべて標準のストレージクラスのまま使っている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "使わないファイルにも標準の料金を払っている",
+        "correct": true,
+        "atomId": "efs-storage-classes",
+        "why": "ライフサイクル管理で IA やアーカイブに移す"
+      },
+      {
+        "id": "b",
+        "text": "標準クラスでは読み取りが遅い",
+        "correct": false,
+        "why": "読み取りは速い"
+      },
+      {
+        "id": "c",
+        "text": "標準クラスには容量の上限がある",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "容量は自動で伸縮する"
+      },
+      {
+        "id": "d",
+        "text": "標準クラスでは Linux からマウントできない",
+        "correct": false,
+        "why": "マウントできる"
+      }
+    ],
+    "explanation": "EFS のコスト削減 = ライフサイクル管理（標準 → IA → アーカイブ）。",
+    "keywords": [
+      "すべて標準"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

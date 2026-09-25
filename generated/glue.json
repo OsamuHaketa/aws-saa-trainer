@@ -176,5 +176,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "glue-etl:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "glue-etl"
+    ],
+    "prompt": "「サーバーレスの ETL」「Spark のジョブを管理せずに実行」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Glue",
+        "correct": true,
+        "atomId": "glue-etl",
+        "why": "ETL のジョブとデータカタログを提供する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon EMR",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "クラスターを作って管理する"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 への SQL の問い合わせ"
+      },
+      {
+        "id": "d",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "汎用のバッチジョブ"
+      }
+    ],
+    "explanation": "サーバーレスの ETL = Glue、クラスターの制御 = EMR。",
+    "keywords": [
+      "サーバーレスの ETL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "glue-crawler:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "glue-crawler"
+    ],
+    "prompt": "S3 の新しい日付のパーティションに毎日データが届くのに、Athena のクエリの結果に新しい日付のデータが出てこない。原因として考えられるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パーティションが未登録",
+        "correct": true,
+        "atomId": "glue-crawler",
+        "why": "新しいパーティションを Data Catalog に登録する（クローラーの定期実行やパーティション射影）"
+      },
+      {
+        "id": "b",
+        "text": "Athena は新しいデータを読めない",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "登録されれば読める"
+      },
+      {
+        "id": "c",
+        "text": "S3 のデータが暗号化されている",
+        "correct": false,
+        "why": "暗号化されていても権限があれば読める"
+      },
+      {
+        "id": "d",
+        "text": "Athena の結果のバケットがいっぱい",
+        "correct": false,
+        "why": "S3 に容量の上限はない"
+      }
+    ],
+    "explanation": "Athena が読むのは Data Catalog に登録されたパーティション。",
+    "keywords": [
+      "新しい日付のデータが出てこない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

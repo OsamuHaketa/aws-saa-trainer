@@ -1108,5 +1108,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-st1:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ebs-st1"
+    ],
+    "prompt": "「大量のデータを順番に読み書き」「ビッグデータ・ログ処理」「低コストの HDD」→ どのボリューム？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "st1",
+        "correct": true,
+        "atomId": "ebs-st1",
+        "why": "スループット最適化 HDD"
+      },
+      {
+        "id": "b",
+        "text": "sc1",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "アクセスの少ないデータ向けの最安の HDD"
+      },
+      {
+        "id": "c",
+        "text": "io2",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "高 IOPS の SSD"
+      },
+      {
+        "id": "d",
+        "text": "gp3",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "汎用 SSD"
+      }
+    ],
+    "explanation": "順次アクセス・スループット重視・安く = st1。",
+    "keywords": [
+      "順番に読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-st1:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-st1"
+    ],
+    "prompt": "小さなランダムな読み書きが多い OLTP の DB を、安いからと st1 のボリュームに置いた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "HDD はランダム I/O に弱い",
+        "correct": true,
+        "atomId": "ebs-st1",
+        "why": "ランダムな I/O が多いなら SSD（gp3 や io2）"
+      },
+      {
+        "id": "b",
+        "text": "st1 は暗号化できない",
+        "correct": false,
+        "atomId": "ebs-encryption",
+        "why": "暗号化できる"
+      },
+      {
+        "id": "c",
+        "text": "st1 はスナップショットを取れない",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "取れる"
+      },
+      {
+        "id": "d",
+        "text": "st1 は 1 GB から作れる",
+        "correct": false,
+        "why": "問題は IOPS の低さ"
+      }
+    ],
+    "explanation": "HDD（st1 / sc1）= 大きな順次アクセス向け。ランダム I/O・DB = SSD。",
+    "keywords": [
+      "ランダムな読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

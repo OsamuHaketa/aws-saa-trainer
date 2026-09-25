@@ -87,5 +87,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "msk-cluster:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "msk-cluster"
+    ],
+    "prompt": "「Apache Kafka」「マネージド」「既存のプロデューサーやコンシューマーをそのまま」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon MSK",
+        "correct": true,
+        "atomId": "msk-cluster",
+        "why": "Kafka 互換のマネージドサービス"
+      },
+      {
+        "id": "b",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "AWS 独自のストリーミング"
+      },
+      {
+        "id": "c",
+        "text": "Amazon MQ",
+        "correct": false,
+        "atomId": "mq-broker",
+        "why": "ActiveMQ / RabbitMQ"
+      },
+      {
+        "id": "d",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キュー"
+      }
+    ],
+    "explanation": "Kafka = MSK。",
+    "keywords": [
+      "Apache Kafka"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

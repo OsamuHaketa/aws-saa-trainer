@@ -88,5 +88,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "mq-broker:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "mq-broker"
+    ],
+    "prompt": "「ActiveMQ / RabbitMQ」「AMQP・MQTT・STOMP」「既存のブローカーの移行」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon MQ",
+        "correct": true,
+        "atomId": "mq-broker",
+        "why": "業界標準のプロトコルのマネージドなブローカー"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "独自の API のキュー"
+      },
+      {
+        "id": "c",
+        "text": "Amazon MSK",
+        "correct": false,
+        "atomId": "msk-cluster",
+        "why": "Kafka のマネージドなクラスター"
+      },
+      {
+        "id": "d",
+        "text": "Amazon EventBridge",
+        "correct": false,
+        "atomId": "eventbridge-bus",
+        "why": "イベントのルーター"
+      }
+    ],
+    "explanation": "標準のプロトコルのブローカー = Amazon MQ。",
+    "keywords": [
+      "RabbitMQ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

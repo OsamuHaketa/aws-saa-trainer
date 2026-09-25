@@ -3626,5 +3626,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-dedicated-instances:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ec2-dedicated-instances",
+      "ec2-dedicated-hosts"
+    ],
+    "prompt": "規制で専用ハードウェアが必要なとき、Dedicated Hosts ではなく Dedicated Instances で足りるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ソケット単位のライセンスや配置の制御が不要なとき",
+        "correct": true,
+        "atomId": "ec2-dedicated-instances",
+        "why": "他の顧客と共有しないことだけが要件なら Instances で足りる"
+      },
+      {
+        "id": "b",
+        "text": "物理サーバーのコア数を確認する必要があるとき",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "それは Dedicated Hosts が必要"
+      },
+      {
+        "id": "c",
+        "text": "BYOL で既存のライセンスを持ち込むとき",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "ソケット単位のライセンスには Dedicated Hosts"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスを置く物理サーバーを指定したいとき",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "配置の制御は Dedicated Hosts"
+      }
+    ],
+    "explanation": "共有しないだけ = Instances、ライセンス・配置の制御 = Hosts。",
+    "keywords": [
+      "足りる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-fleet:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ec2-spot-fleet"
+    ],
+    "prompt": "スポットフリートの配分戦略 price-capacity-optimized の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "空きの多いプールから、価格も考えて選ぶ",
+        "correct": true,
+        "atomId": "ec2-spot-fleet",
+        "why": "中断されにくさと安さのバランスがよく、推奨されている"
+      },
+      {
+        "id": "b",
+        "text": "常に最も安いプールだけを選ぶ",
+        "correct": false,
+        "why": "それは lowest-price で、中断されやすい"
+      },
+      {
+        "id": "c",
+        "text": "1 つのインスタンスタイプにまとめて起動する",
+        "correct": false,
+        "why": "複数のプールから選ぶ"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドだけを起動する",
+        "correct": false,
+        "why": "スポットを中心に起動する"
+      }
+    ],
+    "explanation": "推奨 = price-capacity-optimized（空き + 価格）。lowest-price は中断されやすい。",
+    "keywords": [
+      "price-capacity-optimized"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

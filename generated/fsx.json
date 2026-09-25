@@ -401,5 +401,51 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-ontap:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "fsx-ontap",
+      "fsx-windows"
+    ],
+    "prompt": "FSx for Windows File Server ではなく FSx for NetApp ONTAP を選ぶのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NFS と SMB の両方が必要なとき",
+        "correct": true,
+        "atomId": "fsx-ontap",
+        "why": "ONTAP はマルチプロトコル"
+      },
+      {
+        "id": "b",
+        "text": "Windows の SMB だけで AD と連携したいとき",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "それは FSx for Windows で足りる"
+      },
+      {
+        "id": "c",
+        "text": "HPC の並列ファイルシステムが必要なとき",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "それは FSx for Lustre"
+      },
+      {
+        "id": "d",
+        "text": "Linux だけから NFS で使いたいとき",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "EFS で足りることが多い"
+      }
+    ],
+    "explanation": "マルチプロトコル・NetApp の機能 = ONTAP、Windows 専用 = FSx for Windows。",
+    "keywords": [
+      "両方"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

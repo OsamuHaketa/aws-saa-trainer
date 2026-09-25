@@ -609,5 +609,185 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kms-aws-managed-key:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "kms-aws-managed-key"
+    ],
+    "prompt": "自分のアカウント内の EBS を、鍵の管理の手間なく暗号化したい。鍵ポリシーの細かい制御やクロスアカウントの共有は不要。どの鍵を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS マネージドキー",
+        "correct": true,
+        "atomId": "kms-aws-managed-key",
+        "why": "aws/ebs のように、サービスが自動で作って管理する"
+      },
+      {
+        "id": "b",
+        "text": "カスタマーマネージドキー",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "細かい制御ができるが、管理の手間が増える"
+      },
+      {
+        "id": "c",
+        "text": "CloudHSM の鍵",
+        "correct": false,
+        "atomId": "kms-cloudhsm",
+        "why": "専用の HSM で、運用の手間が大きい"
+      },
+      {
+        "id": "d",
+        "text": "SSE-C の鍵",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "S3 で利用者が鍵を渡す方式で、EBS では使えない"
+      }
+    ],
+    "explanation": "手間なし・制御不要 = AWS マネージドキー。",
+    "keywords": [
+      "管理の手間なく"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-aws-managed-key:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "kms-aws-managed-key"
+    ],
+    "prompt": "「aws/s3」「aws/ebs」「サービスが自動で作る鍵」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS マネージドキー",
+        "correct": true,
+        "atomId": "kms-aws-managed-key",
+        "why": "鍵ポリシーは変更できない"
+      },
+      {
+        "id": "b",
+        "text": "カスタマーマネージドキー",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "利用者が作って管理する鍵"
+      },
+      {
+        "id": "c",
+        "text": "マルチリージョンキー",
+        "correct": false,
+        "atomId": "kms-multi-region-keys",
+        "why": "複数のリージョンで同じ鍵の素材を使う鍵"
+      },
+      {
+        "id": "d",
+        "text": "データキー",
+        "correct": false,
+        "atomId": "kms-envelope-encryption",
+        "why": "エンベロープ暗号化でデータを暗号化する鍵"
+      }
+    ],
+    "explanation": "aws/サービス名 = AWS マネージドキー。",
+    "keywords": [
+      "aws/s3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-envelope-encryption:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "kms-envelope-encryption"
+    ],
+    "prompt": "「GenerateDataKey」「データキーでローカルに暗号化」「データキーを KMS で暗号化」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エンベロープ暗号化",
+        "correct": true,
+        "atomId": "kms-envelope-encryption",
+        "why": "大きなデータも KMS の鍵で守れる"
+      },
+      {
+        "id": "b",
+        "text": "SSE-C",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "利用者が鍵を渡して S3 が暗号化する方式"
+      },
+      {
+        "id": "c",
+        "text": "鍵の自動ローテーション",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "鍵の素材の定期的な更新"
+      },
+      {
+        "id": "d",
+        "text": "マルチリージョンキー",
+        "correct": false,
+        "atomId": "kms-multi-region-keys",
+        "why": "リージョン間で同じ鍵を使う"
+      }
+    ],
+    "explanation": "データキー + マスターキーの二段構え = エンベロープ暗号化。",
+    "keywords": [
+      "GenerateDataKey"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-cloudhsm:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "kms-cloudhsm"
+    ],
+    "prompt": "「シングルテナントの HSM」「鍵は利用者だけが管理」「FIPS 140-3 レベル 3」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS CloudHSM",
+        "correct": true,
+        "atomId": "kms-cloudhsm",
+        "why": "専用の HSM を利用者が運用する"
+      },
+      {
+        "id": "b",
+        "text": "AWS KMS",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "マネージドで、マルチテナントの HSM を使う"
+      },
+      {
+        "id": "c",
+        "text": "AWS Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "秘密情報の保管"
+      },
+      {
+        "id": "d",
+        "text": "AWS Certificate Manager",
+        "correct": false,
+        "atomId": "elb-tls-termination",
+        "why": "証明書の管理"
+      }
+    ],
+    "explanation": "専用の HSM = CloudHSM。",
+    "keywords": [
+      "シングルテナント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

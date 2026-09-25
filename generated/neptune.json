@@ -88,5 +88,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "neptune-graph:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "neptune-graph"
+    ],
+    "prompt": "不正検知で「同じ端末や住所を共有する口座のつながり」を何段もたどる処理を、RDS の JOIN の繰り返しで実装して遅い。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Neptune でつながりをたどる",
+        "correct": true,
+        "atomId": "neptune-graph",
+        "why": "関係をたどる検索が得意"
+      },
+      {
+        "id": "b",
+        "text": "RDS のインスタンスを大きくし続ける",
+        "correct": false,
+        "why": "JOIN の段数が増えるほど遅くなる問題は残る"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB のスキャンで探す",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "つながりの探索には向かない"
+      },
+      {
+        "id": "d",
+        "text": "ElastiCache に全データを載せる",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "キャッシュで、グラフの探索の仕組みではない"
+      }
+    ],
+    "explanation": "何段ものつながりの探索 = グラフ DB（Neptune）。",
+    "keywords": [
+      "何段もたどる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

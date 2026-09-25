@@ -2410,5 +2410,137 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "iam-user:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-user"
+    ],
+    "prompt": "オンプレミスのサーバーのアプリが AWS の API を使う。どうしても長期の認証情報が必要な場合、安全に使うには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "専用の IAM ユーザーで最小権限にし、キーを定期的に更新",
+        "correct": true,
+        "atomId": "iam-user",
+        "why": "IAM Roles Anywhere で一時的な認証情報にする方法もある"
+      },
+      {
+        "id": "b",
+        "text": "ルートユーザーのアクセスキーを使う",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も危険な認証情報"
+      },
+      {
+        "id": "c",
+        "text": "全員で 1 つの管理者ユーザーのキーを共有する",
+        "correct": false,
+        "why": "誰が使ったか分からず、最小権限にも反する"
+      },
+      {
+        "id": "d",
+        "text": "アクセスキーをソースコードに書いて公開リポジトリに置く",
+        "correct": false,
+        "why": "漏えいする"
+      }
+    ],
+    "explanation": "長期のキーはできるだけ避ける。必要なら用途ごとの最小権限・ローテーション（または Roles Anywhere）。",
+    "keywords": [
+      "長期の認証情報が必要"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-mfa:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-mfa"
+    ],
+    "prompt": "「パスワードに加えてワンタイムパスワードやセキュリティキー」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "多要素認証（MFA）",
+        "correct": true,
+        "atomId": "iam-mfa",
+        "why": "2 つ目の要素で本人確認を強くする"
+      },
+      {
+        "id": "b",
+        "text": "アクセス許可の境界",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "権限の上限の設定"
+      },
+      {
+        "id": "c",
+        "text": "IAM Access Analyzer",
+        "correct": false,
+        "atomId": "iam-access-analyzer",
+        "why": "外部への共有の分析"
+      },
+      {
+        "id": "d",
+        "text": "パスワードポリシー",
+        "correct": false,
+        "why": "パスワードの長さや複雑さのルールで、2 つ目の要素ではない"
+      }
+    ],
+    "explanation": "2 つ目の要素 = MFA。",
+    "keywords": [
+      "ワンタイムパスワード"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-access-analyzer:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-access-analyzer"
+    ],
+    "prompt": "新しいバケットポリシーを適用する前に、意図せずアカウントの外部に公開してしまわないかを確認したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Access Analyzer",
+        "correct": true,
+        "atomId": "iam-access-analyzer",
+        "why": "ポリシーの検証とプレビューで、適用前に外部アクセスが生まれないかを確認できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail のイベント履歴",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "適用したあとの操作の記録"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config の変更の記録",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "適用後の設定の記録"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor のチェック",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "定期的なチェックで、適用前の検証ではない"
+      }
+    ],
+    "explanation": "ポリシーの事前検証 = Access Analyzer（ポリシーの検証・外部アクセスのプレビュー）。",
+    "keywords": [
+      "適用する前に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

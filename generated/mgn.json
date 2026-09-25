@@ -88,5 +88,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "mgn-replication:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "mgn-replication"
+    ],
+    "prompt": "「リフト＆シフト」「サーバーをブロックレベルで継続的に複製」「短い停止で EC2 に切り替え」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS MGN",
+        "correct": true,
+        "atomId": "mgn-replication",
+        "why": "Application Migration Service。サーバーをそのまま AWS に移す"
+      },
+      {
+        "id": "b",
+        "text": "AWS DMS",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "データベースの移行"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送"
+      },
+      {
+        "id": "d",
+        "text": "AWS Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでのデータの移行"
+      }
+    ],
+    "explanation": "サーバーのリホスト = MGN。",
+    "keywords": [
+      "リフト＆シフト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
