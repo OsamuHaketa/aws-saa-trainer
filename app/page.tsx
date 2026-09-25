@@ -8,14 +8,16 @@ import { getQueueSummary, loadCards, todayStats } from "@/lib/study";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const db = getDb();
+export default async function Home() {
+  const db = await getDb();
   const content = getContent();
   const now = new Date();
-  const queue = getQueueSummary(db, content, now);
-  const today = todayStats(db, now);
-  const { coverage, byService } = dashboard(db, content, now);
-  const cards = loadCards(db);
+  const [queue, today, { coverage, byService }, cards] = await Promise.all([
+    getQueueSummary(db, content, now),
+    todayStats(db, now),
+    dashboard(db, content, now),
+    loadCards(db),
+  ]);
   const seenByService = new Map<string, { seen: number; total: number }>();
   for (const q of activeQuestions(content)) {
     const s = seenByService.get(q.service) ?? { seen: 0, total: 0 };

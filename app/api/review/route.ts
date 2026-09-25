@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const body = Body.safeParse(await req.json());
   if (!body.success) return Response.json({ error: body.error.issues }, { status: 400 });
   try {
-    return Response.json(recordReview(getDb(), getContent(), body.data, new Date()));
+    return Response.json(await recordReview(await getDb(), getContent(), body.data, new Date()));
   } catch (e) {
     return Response.json({ error: (e as Error).message }, { status: 400 });
   }

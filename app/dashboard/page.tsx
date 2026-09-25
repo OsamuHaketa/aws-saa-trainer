@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 const pct = (v: number | null) => (v === null ? "—" : `${Math.round(v * 100)}%`);
 
-type GroupRow = ReturnType<typeof dashboard>["byService"][number];
+type GroupRow = Awaited<ReturnType<typeof dashboard>>["byService"][number];
 
 function GroupTable({ rows, label, heading }: { rows: GroupRow[]; label: (r: GroupRow) => string; heading: string }) {
   return (
@@ -45,9 +45,9 @@ function GroupTable({ rows, label, heading }: { rows: GroupRow[]; label: (r: Gro
   );
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const content = getContent();
-  const d = dashboard(getDb(), content, new Date());
+  const d = await dashboard(await getDb(), content, new Date());
   const concept = (id: string) => content.atoms.get(id)?.concept ?? id;
   const href = (id: string) => knowledgeHref(content.atoms.get(id)?.service ?? "", id);
   const maxDay = Math.max(1, ...d.days.map((x) => x.answered));

@@ -17,16 +17,16 @@ export function dayStart(now: Date): Date {
   return start;
 }
 
-export function loadCards(db: DB): Map<string, CardRow> {
-  return new Map(db.select().from(cards).all().map((c) => [c.questionId, c]));
+export async function loadCards(db: DB): Promise<Map<string, CardRow>> {
+  return new Map((await db.select().from(cards).all()).map((c) => [c.questionId, c]));
 }
 
-export function loadState(db: DB, now: Date, extraNew = 0, service?: string): SchedulerState {
-  const cardMap = loadCards(db);
+export async function loadState(db: DB, now: Date, extraNew = 0, service?: string): Promise<SchedulerState> {
+  const cardMap = await loadCards(db);
   const today = dayStart(now);
   const intro = { introducedToday: 0, introducedAtomsToday: new Set<string>() };
 
-  const recent = db
+  const recent = await db
     .select({ questionId: reviewLogs.questionId, atomIds: reviewLogs.atomIds })
     .from(reviewLogs)
     .orderBy(desc(reviewLogs.id))
@@ -39,7 +39,7 @@ export function loadState(db: DB, now: Date, extraNew = 0, service?: string): Sc
   );
   intro.introducedToday = introducedIds.size;
   if (introducedIds.size > 0) {
-    const logs = db
+    const logs = await db
       .select({ questionId: reviewLogs.questionId, atomIds: reviewLogs.atomIds })
       .from(reviewLogs)
       .where(gte(reviewLogs.answeredAt, today))
@@ -49,21 +49,22 @@ export function loadState(db: DB, now: Date, extraNew = 0, service?: string): Sc
     }
   }
 
-  const openFollowups = db
-    .select({
-      followup: followups,
-      reviewsSince: sql<number>`(select count(*) from ${reviewLogs} where ${reviewLogs.id} > ${followups.sourceLogId})`,
-    })
-    .from(followups)
-    .where(isNull(followups.resolvedAt))
-    .orderBy(followups.id)
-    .all()
-    .map((r) => ({ ...r.followup, reviewsSince: r.reviewsSince }));
+  const openFollowups = (
+    await db
+      .select({
+        followup: followups,
+        reviewsSince: sql<number>`(select count(*) from ${reviewLogs} where ${reviewLogs.id} > ${followups.sourceLogId})`,
+      })
+      .from(followups)
+      .where(isNull(followups.resolvedAt))
+      .orderBy(followups.id)
+      .all()
+  ).map((r) => ({ ...r.followup, reviewsSince: r.reviewsSince }));
 
   return { now, cards: cardMap, recent, openFollowups, extraNew, service, ...intro };
 }
 
-export type NextQuestion = ReturnType<typeof getNextQuestion>;
+export type NextQuestion = Awaited<ReturnType<typeof getNextQuestion>>;
 
 /** 2 つの Atom の見分け方（confused_with の distinction。どちら側に書いてあってもよい） */
 export function distinction(content: Content, a: string | undefined, b: string | undefined): string | undefined {
@@ -73,8 +74,8 @@ export function distinction(content: Content, a: string | undefined, b: string |
   return find(a, b) ?? find(b, a);
 }
 
-export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 0, rng?: Rng, service?: string) {
-  const state = loadState(db, now, extraNew, service);
+export async function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 0, rng?: Rng, service?: string) {
+  const state = await loadState(db, now, extraNew, service);
   const mastery = atomMastery(content, state.cards, now);
   const pick = chooseNext(content, state, mastery, config);
   const summary = summarize(content, state);
@@ -122,8 +123,8 @@ export function getNextQuestion(db: DB, content: Content, now: Date, extraNew = 
 
 export type QueueSummary = ReturnType<typeof summarize>;
 
-export function getQueueSummary(db: DB, content: Content, now: Date, service?: string): QueueSummary {
-  return summarize(content, loadState(db, now, 0, service));
+export async function getQueueSummary(db: DB, content: Content, now: Date, service?: string): Promise<QueueSummary> {
+  return summarize(content, await loadState(db, now, 0, service));
 }
 
 function summarize(content: Content, state: SchedulerState) {
@@ -151,7 +152,7 @@ export type ReviewInput = {
   followupId?: number | null;
 };
 
-export function recordReview(db: DB, content: Content, input: ReviewInput, now: Date) {
+export async function recordReview(db: DB, content: Content, input: ReviewInput, now: Date) {
   const q = content.questions.get(input.questionId);
   if (!q) throw new Error(`問題が見つからない: ${input.questionId}`);
   const selected = q.choices.find((c) => c.id === input.selectedChoiceId);
@@ -164,13 +165,13 @@ export function recordReview(db: DB, content: Content, input: ReviewInput, now: 
   const confused = !correct && !!selected.atomId && !!correctChoice.atomId && selected.atomId !== correctChoice.atomId;
   const mistakeType = correct ? null : (input.mistakeType ?? (confused ? "confused" : null));
 
-  return db.transaction((tx) => {
-    const existing = tx.select().from(cards).where(eq(cards.questionId, q.id)).get();
+  return db.transaction(async (tx) => {
+    const existing = await tx.select().from(cards).where(eq(cards.questionId, q.id)).get();
     const { card: next } = scheduler.next(rowToCard(existing, now), now, rating);
     const row = cardToRow(q.id, next, existing?.firstSeenAt ?? now);
-    tx.insert(cards).values(row).onConflictDoUpdate({ target: cards.questionId, set: row }).run();
+    await tx.insert(cards).values(row).onConflictDoUpdate({ target: cards.questionId, set: row }).run();
 
-    const log = tx
+    const log = await tx
       .insert(reviewLogs)
       .values({
         questionId: q.id,
@@ -194,7 +195,8 @@ export function recordReview(db: DB, content: Content, input: ReviewInput, now: 
       .get();
 
     if (input.followupId) {
-      tx.update(followups)
+      await tx
+        .update(followups)
         .set({ resolvedAt: now, resolvedByQuestionId: q.id })
         .where(and(eq(followups.id, input.followupId), isNull(followups.resolvedAt)))
         .run();
@@ -205,14 +207,14 @@ export function recordReview(db: DB, content: Content, input: ReviewInput, now: 
     let followupCreated = false;
     if (confused && !input.followupId) {
       const pair = { atomId: correctChoice.atomId!, confusedAtomId: selected.atomId!, sourceQuestionId: q.id };
-      const open = tx.select().from(followups).where(isNull(followups.resolvedAt)).all();
+      const open = await tx.select().from(followups).where(isNull(followups.resolvedAt)).all();
       const alreadyOpen = open.some((f) => f.atomId === pair.atomId && f.confusedAtomId === pair.confusedAtomId);
       if (
         !alreadyOpen &&
         open.length < config.maxOpenFollowups &&
         followupCandidates(content, pair, new Map()).length > 0
       ) {
-        tx.insert(followups).values({ ...pair, sourceLogId: log.id, createdAt: now }).run();
+        await tx.insert(followups).values({ ...pair, sourceLogId: log.id, createdAt: now }).run();
         followupCreated = true;
       }
     }
@@ -222,8 +224,8 @@ export function recordReview(db: DB, content: Content, input: ReviewInput, now: 
 }
 
 /** 今日の回答数と正答数 */
-export function todayStats(db: DB, now: Date) {
-  const row = db
+export async function todayStats(db: DB, now: Date) {
+  const row = await db
     .select({
       answered: sql<number>`count(*)`,
       correct: sql<number>`coalesce(sum(${reviewLogs.correct}), 0)`,

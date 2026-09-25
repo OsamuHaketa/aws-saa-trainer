@@ -23,10 +23,10 @@ export default async function KnowledgePage({ searchParams }: { searchParams: Pr
   const services = [...new Set([...content.atoms.values()].map((a) => a.service))];
   const requested = (await searchParams).service;
   const service = requested && services.includes(requested) ? requested : services[0];
-  const db = getDb();
+  const db = await getDb();
   const now = new Date();
-  const mastery = atomMastery(content, loadCards(db), now);
-  const results = latestResults(db);
+  const [cards, results] = await Promise.all([loadCards(db), latestResults(db)]);
+  const mastery = atomMastery(content, cards, now);
   const questions = activeQuestions(content);
 
   // confused_with は片側にしか書かないので、逆向きも表示できるように集める

@@ -25,7 +25,8 @@ npm run dev        # http://localhost:3000
 | `npm run validate` | Atom と問題の検証（スキーマ、参照切れ、正解だけ長い選択肢、問題文に答えが含まれる など） |
 | `npm test` | 出題ロジックのテスト |
 | `npm run typecheck` | 型チェック |
-| `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（起動時に自動適用） |
+| `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（ローカルの DB には起動時に自動適用） |
+| `npm run db:migrate` | マイグレーションを適用する。Turso に適用するときは `DATABASE_URL` と `DATABASE_AUTH_TOKEN` を指定する |
 
 ## 構成
 
