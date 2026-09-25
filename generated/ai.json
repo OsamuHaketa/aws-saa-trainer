@@ -674,5 +674,231 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ai-rekognition:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ai-rekognition"
+    ],
+    "prompt": "入館ゲートのカメラの画像を、登録済みの社員の顔の写真と照合して本人かどうかを判定したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Rekognition の顔の比較",
+        "correct": true,
+        "atomId": "ai-rekognition",
+        "why": "顔を検出し、登録した顔のコレクションと照合できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Textract のフォーム抽出",
+        "correct": false,
+        "atomId": "ai-textract",
+        "why": "書類の文字や表の読み取りで、顔は照合しない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend の感情分析",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析で、画像は扱わない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Transcribe の話者の識別",
+        "correct": false,
+        "atomId": "ai-transcribe",
+        "why": "音声の話者の区別で、顔は照合しない"
+      }
+    ],
+    "explanation": "顔の検出・照合 = Rekognition。",
+    "keywords": [
+      "顔の写真と照合"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-textract:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-textract"
+    ],
+    "prompt": "「スキャンした書類の OCR」「表やフォームの項目を抽出」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Textract",
+        "correct": true,
+        "atomId": "ai-textract",
+        "why": "書類から文字・表・フォームを抽出する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像の物体や顔の検出"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "音声合成"
+      }
+    ],
+    "explanation": "書類のデータ化 = Textract。",
+    "keywords": [
+      "OCR"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-comprehend:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ai-comprehend"
+    ],
+    "prompt": "問い合わせのメールの本文から、氏名や電話番号などの個人情報を自動で見つけて伏せたうえで保存したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Comprehend",
+        "correct": true,
+        "atomId": "ai-comprehend",
+        "why": "PII の検出で、文章の中の個人情報を見つけて伏せ字にできる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の中の機密データの検出で、文章を伏せ字にする処理ではない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Kendra",
+        "correct": false,
+        "atomId": "ai-kendra",
+        "why": "文書の検索"
+      }
+    ],
+    "explanation": "文章の中の PII の検出・マスキング = Comprehend、S3 のデータの棚卸し = Macie。",
+    "keywords": [
+      "メールの本文",
+      "個人情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-comprehend:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-comprehend"
+    ],
+    "prompt": "「文章の感情分析」「キーフレーズ」「エンティティの抽出」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Comprehend",
+        "correct": true,
+        "atomId": "ai-comprehend",
+        "why": "自然言語処理で文章を分析する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Lex",
+        "correct": false,
+        "atomId": "ai-lex",
+        "why": "チャットボット"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Transcribe",
+        "correct": false,
+        "atomId": "ai-transcribe",
+        "why": "音声の文字起こし"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Textract",
+        "correct": false,
+        "atomId": "ai-textract",
+        "why": "書類の読み取り"
+      }
+    ],
+    "explanation": "文章の意味の分析 = Comprehend。",
+    "keywords": [
+      "感情分析"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-transcribe:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-transcribe"
+    ],
+    "prompt": "「会議の録音を文字起こし」「動画の字幕」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Transcribe",
+        "correct": true,
+        "atomId": "ai-transcribe",
+        "why": "音声をテキストに変換する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "テキストを音声に変換する"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "テキストを翻訳する"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "テキストを分析する"
+      }
+    ],
+    "explanation": "音声 → テキスト = Transcribe。",
+    "keywords": [
+      "文字起こし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

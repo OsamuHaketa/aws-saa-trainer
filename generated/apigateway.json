@@ -664,5 +664,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-throttling:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "apigateway-throttling"
+    ],
+    "prompt": "無料プランと有料プランの利用者で、API の 1 秒あたりのリクエスト数と 1 か月の上限を変えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "使用量プランを 2 つ作り、API キーで利用者を分ける",
+        "correct": true,
+        "atomId": "apigateway-throttling",
+        "why": "プランごとにスロットリングとクォータを設定できる"
+      },
+      {
+        "id": "b",
+        "text": "利用者ごとに API Gateway の API を丸ごと複製する",
+        "correct": false,
+        "why": "管理が増え、上限の設定の仕組みにもならない"
+      },
+      {
+        "id": "c",
+        "text": "Lambda の同時実行数で利用者を分ける",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "利用者ごとの制限にはならない"
+      },
+      {
+        "id": "d",
+        "text": "WAF のレートベースのルールで IP ごとに制限する",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "利用者のプランではなく IP の単位になる"
+      }
+    ],
+    "explanation": "利用者ごとのレートとクォータ = 使用量プラン + API キー。",
+    "keywords": [
+      "無料プランと有料プラン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-caching:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "apigateway-caching"
+    ],
+    "prompt": "ユーザーごとに内容が違う API の応答を、API Gateway のキャッシュでキャッシュキーを分けずにキャッシュした。何が起きる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "別のユーザーの応答が返ってしまう",
+        "correct": true,
+        "atomId": "apigateway-caching",
+        "why": "ユーザーを区別するパラメータをキャッシュキーに含める"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュが有効にならず、毎回バックエンドを呼ぶ",
+        "correct": false,
+        "why": "有効になり、同じ応答を返してしまう"
+      },
+      {
+        "id": "c",
+        "text": "API Gateway が 429 を返す",
+        "correct": false,
+        "atomId": "apigateway-throttling",
+        "why": "スロットリングとは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda のコールドスタートが増える",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "キャッシュとは関係ない"
+      }
+    ],
+    "explanation": "ユーザーごとの応答をキャッシュするなら、キャッシュキーでユーザーを区別する（または個別の応答はキャッシュしない）。",
+    "keywords": [
+      "ユーザーごとに内容が違う"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-endpoint-types:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "apigateway-endpoint-types"
+    ],
+    "prompt": "「VPC 内からだけ呼べる API」「VPC エンドポイント経由」→ どのエンドポイントタイプ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベート API",
+        "correct": true,
+        "atomId": "apigateway-endpoint-types",
+        "why": "VPC エンドポイント経由でだけ呼べる"
+      },
+      {
+        "id": "b",
+        "text": "エッジ最適化 API",
+        "correct": false,
+        "why": "世界中のクライアント向けで、インターネットから呼べる"
+      },
+      {
+        "id": "c",
+        "text": "リージョン API",
+        "correct": false,
+        "why": "同じリージョンのクライアント向けで、インターネットから呼べる"
+      },
+      {
+        "id": "d",
+        "text": "WebSocket API",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "双方向の通信の API の種類で、エンドポイントタイプではない"
+      }
+    ],
+    "explanation": "VPC 内専用 = プライベート API。",
+    "keywords": [
+      "VPC 内からだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

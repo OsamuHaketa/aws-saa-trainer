@@ -224,5 +224,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-stacksets:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudformation-stacksets"
+    ],
+    "prompt": "「1 つのテンプレートを複数のアカウントとリージョンに展開」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFormation StackSets",
+        "correct": true,
+        "atomId": "cloudformation-stacksets",
+        "why": "管理者アカウントからまとめて展開する"
+      },
+      {
+        "id": "b",
+        "text": "CloudFormation の変更セット",
+        "correct": false,
+        "atomId": "cloudformation-stack",
+        "why": "更新の内容の事前確認"
+      },
+      {
+        "id": "c",
+        "text": "CloudFormation のドリフト検出",
+        "correct": false,
+        "atomId": "cloudformation-drift",
+        "why": "手作業の変更の検出"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config の適合パック",
+        "correct": false,
+        "atomId": "config-conformance-packs",
+        "why": "Config ルールの一括展開"
+      }
+    ],
+    "explanation": "複数アカウント・リージョンへの展開 = StackSets。",
+    "keywords": [
+      "複数のアカウントとリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-stacksets:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "cloudformation-stacksets",
+      "config-conformance-packs"
+    ],
+    "prompt": "StackSets と Config の適合パックの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後者は Config ルールを展開する",
+        "correct": true,
+        "atomId": "cloudformation-stacksets",
+        "why": "StackSets は任意のリソースを展開する。どちらも複数のアカウントに展開できる"
+      },
+      {
+        "id": "b",
+        "text": "前者は 1 つのアカウントだけに使える",
+        "correct": false,
+        "why": "複数のアカウントとリージョンに展開できる"
+      },
+      {
+        "id": "c",
+        "text": "後者は IAM ロールや VPC を作れる",
+        "correct": false,
+        "why": "作るのは Config ルールと修復アクション"
+      },
+      {
+        "id": "d",
+        "text": "どちらも違反を自動で直す機能だけを持つ",
+        "correct": false,
+        "why": "StackSets はリソースの展開の仕組み"
+      }
+    ],
+    "explanation": "リソースを配る = StackSets、ルールで評価する = 適合パック。",
+    "keywords": [
+      "StackSets",
+      "適合パック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

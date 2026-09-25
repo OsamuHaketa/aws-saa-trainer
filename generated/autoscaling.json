@@ -1147,5 +1147,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-predictive:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-predictive",
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "予測スケーリングとターゲット追跡スケーリングを組み合わせる理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "周期的な負荷は前もって増やし、予想外の変動は追跡で吸収する",
+        "correct": true,
+        "atomId": "autoscaling-predictive",
+        "why": "両方を使うと、どちらかだけより安定しやすい"
+      },
+      {
+        "id": "b",
+        "text": "予測スケーリングはスケールインしかしないから",
+        "correct": false,
+        "why": "スケールアウトの前倒しが主な役割"
+      },
+      {
+        "id": "c",
+        "text": "ターゲット追跡は過去のデータを使わないと動かないから",
+        "correct": false,
+        "why": "過去のデータは不要"
+      },
+      {
+        "id": "d",
+        "text": "組み合わせると料金が無料になるから",
+        "correct": false,
+        "why": "料金とは関係ない"
+      }
+    ],
+    "explanation": "予測（先回り）+ 追跡（その場の調整）は組み合わせて使える。",
+    "keywords": [
+      "組み合わせる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-elb-health-check:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-elb-health-check"
+    ],
+    "prompt": "Auto Scaling グループのヘルスチェックの種類が「EC2」だけのとき、インスタンスが異常と判定されるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ステータスチェックの失敗時",
+        "correct": true,
+        "atomId": "autoscaling-elb-health-check",
+        "why": "アプリがハングしても、EC2 として動いていれば異常にならない"
+      },
+      {
+        "id": "b",
+        "text": "ALB のヘルスチェックに失敗したとき",
+        "correct": false,
+        "why": "それは ELB のヘルスチェックを有効にした場合"
+      },
+      {
+        "id": "c",
+        "text": "CPU 使用率が 90% を超えたとき",
+        "correct": false,
+        "why": "負荷は異常の判定には使わない"
+      },
+      {
+        "id": "d",
+        "text": "アプリのログに ERROR が出たとき",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログは判定に使わない"
+      }
+    ],
+    "explanation": "EC2 のチェック = インスタンスの状態だけ。アプリの異常も置き換えるなら ELB ヘルスチェックを有効にする。",
+    "keywords": [
+      "EC2 だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-instance-refresh:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-instance-refresh"
+    ],
+    "prompt": "「Auto Scaling グループのインスタンスを新しい AMI に順番に入れ替える」「正常な割合の最低値」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスの更新",
+        "correct": true,
+        "atomId": "autoscaling-instance-refresh",
+        "why": "ローリングで置き換え、失敗時はロールバックもできる"
+      },
+      {
+        "id": "b",
+        "text": "ライフサイクルフック",
+        "correct": false,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "起動・終了のときに処理を挟む仕組み"
+      },
+      {
+        "id": "c",
+        "text": "ウォームプール",
+        "correct": false,
+        "atomId": "autoscaling-warm-pool",
+        "why": "初期化済みのインスタンスを待機させる仕組み"
+      },
+      {
+        "id": "d",
+        "text": "予測スケーリング",
+        "correct": false,
+        "atomId": "autoscaling-predictive",
+        "why": "負荷のパターンから前もって台数を増やす仕組み"
+      }
+    ],
+    "explanation": "設定の変更を既存のインスタンスに反映 = インスタンスの更新。",
+    "keywords": [
+      "順番に入れ替える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

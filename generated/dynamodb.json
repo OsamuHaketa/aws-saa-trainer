@@ -1738,5 +1738,269 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-provisioned:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-provisioned"
+    ],
+    "prompt": "「RCU/WCU を事前に決める」「オートスケーリング」「安定した負荷で安い」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンドキャパシティモード",
+        "correct": true,
+        "atomId": "dynamodb-provisioned",
+        "why": "容量を決めて、予測できる負荷を安く処理する"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドキャパシティモード",
+        "correct": false,
+        "atomId": "dynamodb-on-demand",
+        "why": "容量を決めずにリクエスト単位で払う"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Accelerator",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "読み取りのキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "マルチリージョンの複製"
+      }
+    ],
+    "explanation": "予測できる負荷 = プロビジョンド（+ オートスケーリング）。",
+    "keywords": [
+      "RCU/WCU"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-pitr:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-pitr"
+    ],
+    "prompt": "規制で DynamoDB のバックアップを 5 年間保管する必要がある。PITR を有効にしたので十分だと考えた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "PITR は最大 35 日までしか戻れない",
+        "correct": true,
+        "atomId": "dynamodb-pitr",
+        "why": "長期はオンデマンドバックアップか AWS Backup（削除するまで残る）"
+      },
+      {
+        "id": "b",
+        "text": "PITR はバックアップを取らない",
+        "correct": false,
+        "why": "継続的にバックアップする"
+      },
+      {
+        "id": "c",
+        "text": "PITR は DynamoDB では使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "PITR を有効にするとテーブルが読み取り専用になる",
+        "correct": false,
+        "why": "読み書きは変わらない"
+      }
+    ],
+    "explanation": "短期の任意の時点 = PITR（35 日）、長期保管 = オンデマンドバックアップ / AWS Backup。",
+    "keywords": [
+      "5 年間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-consistency:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-consistency"
+    ],
+    "prompt": "「DynamoDB のデフォルトの読み込み」「書き込み直後は古い値のことがある」「RCU は半分」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "結果整合性の読み込み",
+        "correct": true,
+        "atomId": "dynamodb-consistency",
+        "why": "少し時間がたつと最新の値に揃う"
+      },
+      {
+        "id": "b",
+        "text": "強い整合性の読み込み",
+        "correct": false,
+        "why": "最新の値を返し、RCU は 2 倍"
+      },
+      {
+        "id": "c",
+        "text": "トランザクションの読み込み",
+        "correct": false,
+        "atomId": "dynamodb-transactions",
+        "why": "複数の項目をまとめて一貫して読む"
+      },
+      {
+        "id": "d",
+        "text": "DAX のキャッシュの読み込み",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュからの読み込み"
+      }
+    ],
+    "explanation": "デフォルト = 結果整合性（安い）、最新が必要 = 強い整合性。",
+    "keywords": [
+      "デフォルトの読み込み"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-export-s3:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-export-s3"
+    ],
+    "prompt": "「DynamoDB のデータを分析」「読み込み容量を使わない」「PITR が必要」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 へのエクスポート",
+        "correct": true,
+        "atomId": "dynamodb-export-s3",
+        "why": "PITR のデータから S3 に出力する"
+      },
+      {
+        "id": "b",
+        "text": "テーブルのスキャン",
+        "correct": false,
+        "why": "読み込み容量を大量に使う"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録で、テーブル全体の出力ではない"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "別リージョンへの複製"
+      }
+    ],
+    "explanation": "本番に影響させない分析用の出力 = S3 へのエクスポート。",
+    "keywords": [
+      "読み込み容量を使わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-partition-key-design:selection:2",
+    "type": "selection",
+    "level": 4,
+    "atomIds": [
+      "dynamodb-partition-key-design"
+    ],
+    "prompt": "人気の商品 ID に書き込みが集中して、1 つのパーティションがスロットリングされる。商品 ID のままでアクセスを分散するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キーの末尾に乱数を付ける",
+        "correct": true,
+        "atomId": "dynamodb-partition-key-design",
+        "why": "読むときは複数のキーをまとめて集計する（書き込みシャーディング）"
+      },
+      {
+        "id": "b",
+        "text": "テーブルの RCU だけを増やす",
+        "correct": false,
+        "why": "書き込みの偏りは解決しない"
+      },
+      {
+        "id": "c",
+        "text": "TTL を有効にする",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "古い項目の削除で、偏りは直らない"
+      },
+      {
+        "id": "d",
+        "text": "強い整合性の読み込みに変える",
+        "correct": false,
+        "atomId": "dynamodb-consistency",
+        "why": "読み込みの設定で、書き込みの偏りは直らない"
+      }
+    ],
+    "explanation": "ホットキーの書き込み = 書き込みシャーディング（サフィックスで分散）。",
+    "keywords": [
+      "人気の商品 ID",
+      "集中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-item-size:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-item-size"
+    ],
+    "prompt": "1 人のユーザーの全行動履歴を、1 つの項目のリスト属性に追加し続けている。やがて書き込みが失敗するようになった。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "項目のサイズが 400 KB の上限を超えた",
+        "correct": true,
+        "atomId": "dynamodb-item-size",
+        "why": "履歴は別の項目（ソートキーで時刻など）に分ける"
+      },
+      {
+        "id": "b",
+        "text": "リスト属性は 10 個までしか要素を持てない",
+        "correct": false,
+        "why": "要素数ではなくサイズの上限"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB は同じ項目を 1 日 1 回しか更新できない",
+        "correct": false,
+        "why": "何度でも更新できる"
+      },
+      {
+        "id": "d",
+        "text": "リスト属性は GSI にしないと使えない",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "GSI とは関係ない"
+      }
+    ],
+    "explanation": "増え続けるデータは 1 項目に入れず、ソートキーで複数の項目に分ける。",
+    "keywords": [
+      "追加し続け",
+      "失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

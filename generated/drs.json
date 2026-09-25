@@ -90,5 +90,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "drs-recovery:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "drs-recovery",
+      "mgn-replication"
+    ],
+    "prompt": "Elastic Disaster Recovery と Application Migration Service の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は DR、後者は移行のため",
+        "correct": true,
+        "atomId": "drs-recovery",
+        "why": "仕組みは似ているが、目的が違う"
+      },
+      {
+        "id": "b",
+        "text": "前者は DB 専用、後者はファイル専用",
+        "correct": false,
+        "why": "どちらもサーバー全体を複製する"
+      },
+      {
+        "id": "c",
+        "text": "後者は障害時の復旧のために待機する",
+        "correct": false,
+        "why": "後者は移行が終われば使い終わる"
+      },
+      {
+        "id": "d",
+        "text": "前者はオンプレミスのサーバーに使えない",
+        "correct": false,
+        "why": "オンプレミスのサーバーにも使える"
+      }
+    ],
+    "explanation": "継続的な DR = DRS、一度きりの移行 = MGN。",
+    "keywords": [
+      "DR",
+      "移行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

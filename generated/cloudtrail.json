@@ -307,5 +307,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-data-events:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-data-events"
+    ],
+    "prompt": "特定の機密バケットのオブジェクトの読み書きだけを CloudTrail に記録し、料金を抑えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "そのバケットだけデータイベントを記録",
+        "correct": true,
+        "atomId": "cloudtrail-data-events",
+        "why": "高度なイベントセレクターで対象を絞れる"
+      },
+      {
+        "id": "b",
+        "text": "すべてのバケットのデータイベントを有効にする",
+        "correct": false,
+        "why": "記録が増えて料金も増える"
+      },
+      {
+        "id": "c",
+        "text": "管理イベントだけを有効にする",
+        "correct": false,
+        "why": "オブジェクトの読み書きは記録されない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "操作の記録にはならない"
+      }
+    ],
+    "explanation": "データイベントは対象を絞って有効にし、量と料金を抑える。",
+    "keywords": [
+      "特定の機密バケット",
+      "料金を抑えたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

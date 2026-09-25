@@ -267,5 +267,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cost-explorer:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "cost-explorer"
+    ],
+    "prompt": "Cost Explorer でできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コストの分析と予測",
+        "correct": true,
+        "atomId": "cost-explorer",
+        "why": "RI や Savings Plans の購入の推奨も出す"
+      },
+      {
+        "id": "b",
+        "text": "予算を超えたときに EC2 を自動で停止する",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "それは Budgets のアクション"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスのサイズを自動で変更する",
+        "correct": false,
+        "atomId": "ec2-compute-optimizer",
+        "why": "変更はしない。サイズの推奨は Compute Optimizer"
+      },
+      {
+        "id": "d",
+        "text": "請求書を自動で支払う",
+        "correct": false,
+        "why": "支払いの機能ではない"
+      }
+    ],
+    "explanation": "分析・予測・購入の推奨 = Cost Explorer。",
+    "keywords": [
+      "Cost Explorer"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-explorer:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cost-explorer"
+    ],
+    "prompt": "「過去 12 か月のコストの推移をグラフで分析」「来月のコストの予測」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Cost Explorer",
+        "correct": true,
+        "atomId": "cost-explorer",
+        "why": "コストと使用量の分析と予測"
+      },
+      {
+        "id": "b",
+        "text": "AWS Budgets",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "予算の通知"
+      },
+      {
+        "id": "c",
+        "text": "AWS Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "ベストプラクティスのチェック"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      }
+    ],
+    "explanation": "コストの分析 = Cost Explorer。",
+    "keywords": [
+      "推移をグラフで分析"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-budgets:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cost-budgets"
+    ],
+    "prompt": "「予算のしきい値」「超えそうなら通知」「予算アクション」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Budgets",
+        "correct": true,
+        "atomId": "cost-budgets",
+        "why": "コストや使用量の予算を管理する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Cost Explorer",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "分析と予測"
+      },
+      {
+        "id": "c",
+        "text": "Cost Anomaly Detection",
+        "correct": false,
+        "atomId": "cost-anomaly-detection",
+        "why": "しきい値なしで異常を検出する"
+      },
+      {
+        "id": "d",
+        "text": "CloudWatch アラーム",
+        "correct": false,
+        "atomId": "cloudwatch-alarms",
+        "why": "メトリクスのしきい値の監視で、予算の管理ではない"
+      }
+    ],
+    "explanation": "予算の管理 = Budgets。",
+    "keywords": [
+      "予算のしきい値"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-allocation-tags:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cost-allocation-tags"
+    ],
+    "prompt": "「部署やプロジェクトごとにコストを分ける」「タグで集計」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コスト配分タグ",
+        "correct": true,
+        "atomId": "cost-allocation-tags",
+        "why": "タグを有効にすると、請求のデータでタグごとに集計できる"
+      },
+      {
+        "id": "b",
+        "text": "IAM のタグベースの権限（ABAC）",
+        "correct": false,
+        "atomId": "iam-abac",
+        "why": "アクセス制御のためのタグの使い方"
+      },
+      {
+        "id": "c",
+        "text": "S3 のオブジェクトのタグ",
+        "correct": false,
+        "why": "オブジェクトの分類で、請求の集計の設定ではない"
+      },
+      {
+        "id": "d",
+        "text": "リソースグループのタグエディタ",
+        "correct": false,
+        "why": "タグの一括編集で、集計には有効化が必要"
+      }
+    ],
+    "explanation": "タグ別のコスト = コスト配分タグ（有効化が必要）。",
+    "keywords": [
+      "タグで集計"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

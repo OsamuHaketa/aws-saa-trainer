@@ -88,5 +88,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "documentdb-cluster:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "documentdb-cluster",
+      "dynamodb-table"
+    ],
+    "prompt": "既存の MongoDB のアプリを移すとき、DynamoDB ではなく DocumentDB を選ぶ理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MongoDB の API と互換で、アプリの改修が少ない",
+        "correct": true,
+        "atomId": "documentdb-cluster",
+        "why": "DynamoDB は API が違うので改修が必要"
+      },
+      {
+        "id": "b",
+        "text": "DocumentDB はサーバーレスで、容量の管理が一切不要",
+        "correct": false,
+        "why": "インスタンスのサイズや台数を選ぶ（Elastic Clusters もある）"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB は JSON を保存できない",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "JSON のドキュメントも保存できる"
+      },
+      {
+        "id": "d",
+        "text": "DocumentDB は複数 AZ に保存しない",
+        "correct": false,
+        "why": "3 つの AZ に 6 つのコピーを持つ"
+      }
+    ],
+    "explanation": "MongoDB の互換 = DocumentDB、AWS ネイティブのサーバーレス = DynamoDB。",
+    "keywords": [
+      "既存の MongoDB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

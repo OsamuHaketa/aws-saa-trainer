@@ -623,5 +623,138 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-agent:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-agent"
+    ],
+    "prompt": "「EC2 のメモリ使用率」「ディスクの空き容量」「OS のログを収集」→ 何を入れる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch エージェント",
+        "correct": true,
+        "atomId": "cloudwatch-agent",
+        "why": "OS の中のメトリクスとログを CloudWatch に送る"
+      },
+      {
+        "id": "b",
+        "text": "SSM Agent だけ",
+        "correct": false,
+        "atomId": "ssm-session-manager",
+        "why": "Systems Manager の操作のためのエージェント"
+      },
+      {
+        "id": "c",
+        "text": "X-Ray デーモン",
+        "correct": false,
+        "atomId": "xray-tracing",
+        "why": "トレースの送信"
+      },
+      {
+        "id": "d",
+        "text": "Inspector のスキャン",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      }
+    ],
+    "explanation": "メモリ・ディスク・OS のログ = CloudWatch エージェント。",
+    "keywords": [
+      "メモリ使用率"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-agent:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-agent"
+    ],
+    "prompt": "数百台の EC2 に CloudWatch エージェントを入れ、同じ設定を配りたい。手作業は避けたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Systems Manager で配布する",
+        "correct": true,
+        "atomId": "cloudwatch-agent",
+        "why": "Run Command などでまとめて入れ、共通の設定は Parameter Store から読み込ませる"
+      },
+      {
+        "id": "b",
+        "text": "各サーバーに SSH して手でインストールする",
+        "correct": false,
+        "why": "手間がかかり、設定の違いも出る"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail でエージェントを配る",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、ソフトウェアは配らない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config で自動インストールする",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価で、インストールはしない"
+      }
+    ],
+    "explanation": "多数のサーバーへの配布 = Systems Manager（Run Command / State Manager）+ Parameter Store の設定。",
+    "keywords": [
+      "数百台",
+      "同じ設定"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-logs"
+    ],
+    "prompt": "数年前からのアプリのログが CloudWatch Logs に残り続け、保存の料金が毎月増えている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ロググループに保持期間を設定する",
+        "correct": true,
+        "atomId": "cloudwatch-logs",
+        "why": "デフォルトは無期限なので、必要な期間を決める"
+      },
+      {
+        "id": "b",
+        "text": "ログの出力をすべて止める",
+        "correct": false,
+        "why": "障害の調査ができなくなる"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail に切り替える",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "アプリのログの保存先ではない"
+      },
+      {
+        "id": "d",
+        "text": "メトリクスフィルターを削除する",
+        "correct": false,
+        "why": "保存の料金は減らない"
+      }
+    ],
+    "explanation": "CloudWatch Logs = 保持期間を設定（長期は S3 にエクスポートして安く保管）。",
+    "keywords": [
+      "残り続け"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

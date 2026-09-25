@@ -1056,5 +1056,135 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-origin-failover:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-origin-failover"
+    ],
+    "prompt": "CloudFront のオリジングループで、書き込み（POST）のリクエストもセカンダリに切り替わると考えて、書き込みの冗長化の設計に使った。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "フェイルオーバーは GET などの読み取りのリクエストが対象",
+        "correct": true,
+        "atomId": "cloudfront-origin-failover",
+        "why": "書き込みの冗長化は、オリジン側の仕組みで行う"
+      },
+      {
+        "id": "b",
+        "text": "オリジングループは S3 にしか使えない",
+        "correct": false,
+        "why": "カスタムオリジンにも使える"
+      },
+      {
+        "id": "c",
+        "text": "オリジングループはヘルスチェックを 1 日に 1 回しか行わない",
+        "correct": false,
+        "why": "リクエストのエラーで切り替える"
+      },
+      {
+        "id": "d",
+        "text": "セカンダリのオリジンは同じリージョンに置く必要がある",
+        "correct": false,
+        "why": "別のリージョンに置ける"
+      }
+    ],
+    "explanation": "オリジンフェイルオーバー = GET / HEAD / OPTIONS のリクエストで働く。",
+    "keywords": [
+      "書き込み（POST）"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-cache-key:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-cache-key"
+    ],
+    "prompt": "CloudFront で、オリジンには送りたいがキャッシュキーには含めたくないヘッダーがある。どこで設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オリジンリクエストポリシー",
+        "correct": true,
+        "atomId": "cloudfront-cache-key",
+        "why": "キャッシュキーとは別に、オリジンへ送る値を決める"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュポリシー",
+        "correct": false,
+        "why": "キャッシュキーに含めると、キャッシュが細かく分かれてしまう"
+      },
+      {
+        "id": "c",
+        "text": "ビューワープロトコルポリシー",
+        "correct": false,
+        "atomId": "cloudfront-viewer-https",
+        "why": "HTTP / HTTPS の扱いの設定"
+      },
+      {
+        "id": "d",
+        "text": "オリジングループ",
+        "correct": false,
+        "atomId": "cloudfront-origin-failover",
+        "why": "オリジンのフェイルオーバーの設定"
+      }
+    ],
+    "explanation": "キャッシュキー = キャッシュポリシー、オリジンに送るだけ = オリジンリクエストポリシー。",
+    "keywords": [
+      "キャッシュキーには含めたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-viewer-https:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-viewer-https"
+    ],
+    "prompt": "CloudFront とオリジンの ALB の間の通信も暗号化したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オリジンプロトコルポリシーを HTTPS のみにする",
+        "correct": true,
+        "atomId": "cloudfront-viewer-https",
+        "why": "ALB に正しい証明書を付け、CloudFront から HTTPS で接続する"
+      },
+      {
+        "id": "b",
+        "text": "ビューワープロトコルポリシーだけを HTTPS にする",
+        "correct": false,
+        "why": "利用者と CloudFront の間だけが暗号化される"
+      },
+      {
+        "id": "c",
+        "text": "オリジンを S3 に変える",
+        "correct": false,
+        "atomId": "s3-origin-access-control",
+        "why": "ALB のオリジンの暗号化にはならない"
+      },
+      {
+        "id": "d",
+        "text": "WAF をオリジンに付ける",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "暗号化の機能ではない"
+      }
+    ],
+    "explanation": "利用者 ↔ CloudFront = ビューワープロトコルポリシー、CloudFront ↔ オリジン = オリジンプロトコルポリシー。",
+    "keywords": [
+      "オリジンの ALB の間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

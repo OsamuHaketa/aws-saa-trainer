@@ -264,5 +264,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dms-schema-conversion:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dms-schema-conversion"
+    ],
+    "prompt": "「異なる DB エンジンへの移行」「ストアドプロシージャの変換」→ 何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スキーマ変換ツール",
+        "correct": true,
+        "atomId": "dms-schema-conversion",
+        "why": "移行先のエンジンの形式にスキーマとコードを変換する"
+      },
+      {
+        "id": "b",
+        "text": "DMS の変更データキャプチャ",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "データの変更の複製で、スキーマは変換しない"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync のタスク",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送"
+      },
+      {
+        "id": "d",
+        "text": "RDS のリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "同じエンジンの複製"
+      }
+    ],
+    "explanation": "異種間の移行 = スキーマ変換 + DMS。",
+    "keywords": [
+      "異なる DB エンジン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
