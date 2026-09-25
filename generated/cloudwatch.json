@@ -1065,5 +1065,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-logs"
+    ],
+    "prompt": "「アプリのログを集中管理」「メトリクスフィルター」「保持期間の設定」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch Logs",
+        "correct": true,
+        "atomId": "cloudwatch-logs",
+        "why": "ログを集めて保管・検索・監視する"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail の証跡",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      }
+    ],
+    "explanation": "アプリのログ = CloudWatch Logs。",
+    "keywords": [
+      "アプリのログ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

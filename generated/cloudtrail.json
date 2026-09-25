@@ -351,5 +351,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-data-events:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-data-events"
+    ],
+    "prompt": "「S3 の GetObject」「Lambda の Invoke」「別途有効化」→ CloudTrail の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "データイベント",
+        "correct": true,
+        "atomId": "cloudtrail-data-events",
+        "why": "リソースの中のデータの操作を記録する"
+      },
+      {
+        "id": "b",
+        "text": "管理イベント",
+        "correct": false,
+        "why": "作成・削除・設定変更の記録で、デフォルトで記録される"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail Insights",
+        "correct": false,
+        "why": "API の呼び出しの異常な増加を検出する"
+      },
+      {
+        "id": "d",
+        "text": "イベント履歴",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "直近 90 日の管理イベントの一覧"
+      }
+    ],
+    "explanation": "オブジェクトの読み書きなど = データイベント。",
+    "keywords": [
+      "GetObject"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

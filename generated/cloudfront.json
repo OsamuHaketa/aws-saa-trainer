@@ -1318,5 +1318,181 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-invalidation:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-invalidation"
+    ],
+    "prompt": "「TTL の期限前にエッジのキャッシュを消す」「/images/*」→ CloudFront の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャッシュの無効化",
+        "correct": true,
+        "atomId": "cloudfront-invalidation",
+        "why": "指定したパスのキャッシュを削除させる"
+      },
+      {
+        "id": "b",
+        "text": "オリジンフェイルオーバー",
+        "correct": false,
+        "atomId": "cloudfront-origin-failover",
+        "why": "オリジンの切り替え"
+      },
+      {
+        "id": "c",
+        "text": "地域制限",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の許可・拒否"
+      },
+      {
+        "id": "d",
+        "text": "署名付き URL",
+        "correct": false,
+        "atomId": "cloudfront-signed-urls",
+        "why": "限定配信"
+      }
+    ],
+    "explanation": "キャッシュを消す = 無効化（Invalidation）。",
+    "keywords": [
+      "キャッシュを消す"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-cache-key:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-cache-key"
+    ],
+    "prompt": "同じ画像の URL に、広告のトラッキング用のクエリ文字列（?utm_source=...）が付いてリクエストされる。キャッシュが効かない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャッシュキーから外す",
+        "correct": true,
+        "atomId": "cloudfront-cache-key",
+        "why": "クエリ文字列をキャッシュキーに含めない。画像の内容は変わらないので同じキャッシュを使える"
+      },
+      {
+        "id": "b",
+        "text": "TTL を 0 にする",
+        "correct": false,
+        "why": "キャッシュしなくなる"
+      },
+      {
+        "id": "c",
+        "text": "オリジンを 2 つにする",
+        "correct": false,
+        "atomId": "cloudfront-origin-failover",
+        "why": "キャッシュの問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "価格クラスを All にする",
+        "correct": false,
+        "atomId": "cloudfront-price-class",
+        "why": "キャッシュキーの問題は解決しない"
+      }
+    ],
+    "explanation": "内容に影響しないパラメータはキャッシュキーから外す。",
+    "keywords": [
+      "クエリ文字列"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-viewer-https:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-viewer-https"
+    ],
+    "prompt": "「CloudFront の独自ドメインの証明書」「バージニア北部」→ どこで証明書を用意する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "us-east-1 の ACM",
+        "correct": true,
+        "atomId": "cloudfront-viewer-https",
+        "why": "CloudFront はこのリージョンの証明書を使う"
+      },
+      {
+        "id": "b",
+        "text": "ALB と同じリージョンの ACM",
+        "correct": false,
+        "atomId": "elb-tls-termination",
+        "why": "ALB 用の証明書はそのリージョン、CloudFront は us-east-1"
+      },
+      {
+        "id": "c",
+        "text": "東京リージョンの IAM",
+        "correct": false,
+        "why": "IAM の証明書ストアは推奨されない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバケット",
+        "correct": false,
+        "why": "証明書の保存先ではない"
+      }
+    ],
+    "explanation": "CloudFront の証明書 = us-east-1 の ACM。",
+    "keywords": [
+      "バージニア北部"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-alb-origin:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-alb-origin"
+    ],
+    "prompt": "CloudFront の VPC オリジンを使うと何ができる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベートサブネットの ALB や EC2 をオリジンにできる",
+        "correct": true,
+        "atomId": "cloudfront-alb-origin",
+        "why": "オリジンをインターネットに公開しなくてよい"
+      },
+      {
+        "id": "b",
+        "text": "VPC 内の DNS 名を公開できる",
+        "correct": false,
+        "atomId": "route53-private-hosted-zone",
+        "why": "DNS の機能ではない"
+      },
+      {
+        "id": "c",
+        "text": "VPC のフローログを CloudFront で見られる",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "ログの機能ではない"
+      },
+      {
+        "id": "d",
+        "text": "VPC を別のリージョンに複製できる",
+        "correct": false,
+        "why": "複製の機能ではない"
+      }
+    ],
+    "explanation": "VPC オリジン = プライベートなオリジンを CloudFront だけに公開する。",
+    "keywords": [
+      "VPC オリジン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -2266,5 +2266,262 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-ttl:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-ttl"
+    ],
+    "prompt": "DynamoDB の TTL に使う属性の値の形式は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エポック秒（UNIX 時間）の数値",
+        "correct": true,
+        "atomId": "dynamodb-ttl",
+        "why": "その時刻を過ぎた項目が削除の対象になる"
+      },
+      {
+        "id": "b",
+        "text": "「2026-09-26」のような日付の文字列",
+        "correct": false,
+        "why": "文字列の日付は使えない"
+      },
+      {
+        "id": "c",
+        "text": "残り日数の数値",
+        "correct": false,
+        "why": "期限の時刻を入れる"
+      },
+      {
+        "id": "d",
+        "text": "true / false のフラグ",
+        "correct": false,
+        "why": "時刻を入れる"
+      }
+    ],
+    "explanation": "TTL の属性 = エポック秒の Number 型。",
+    "keywords": [
+      "値の形式"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-pitr:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-pitr"
+    ],
+    "prompt": "「DynamoDB を過去 35 日の任意の秒に戻す」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ポイントインタイムリカバリ（PITR）",
+        "correct": true,
+        "atomId": "dynamodb-pitr",
+        "why": "継続的なバックアップから新しいテーブルに復元する"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドバックアップ",
+        "correct": false,
+        "why": "取得した時点にだけ戻せる"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録（24 時間）"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "リージョン間の複製"
+      }
+    ],
+    "explanation": "任意の時点 = PITR。",
+    "keywords": [
+      "任意の秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-consistency:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-consistency"
+    ],
+    "prompt": "読み込みのコストを下げたいのに、すべての読み込みを強い整合性にしている。古い値でも問題ない画面も多い。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "古い値でよい読み込みは結果整合性にする",
+        "correct": true,
+        "atomId": "dynamodb-consistency",
+        "why": "結果整合性は RCU が半分"
+      },
+      {
+        "id": "b",
+        "text": "すべてをトランザクションの読み込みにする",
+        "correct": false,
+        "atomId": "dynamodb-transactions",
+        "why": "さらにコストが上がる"
+      },
+      {
+        "id": "c",
+        "text": "テーブルを削除して作り直す",
+        "correct": false,
+        "why": "コストの問題の解決にならない"
+      },
+      {
+        "id": "d",
+        "text": "GSI からの読み込みで強い整合性を使う",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "GSI は強い整合性を使えない"
+      }
+    ],
+    "explanation": "必要な所だけ強い整合性、それ以外は結果整合性で安く。",
+    "keywords": [
+      "古い値でも問題ない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-export-s3:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-export-s3",
+      "dynamodb-streams"
+    ],
+    "prompt": "DynamoDB の S3 へのエクスポートと、Streams を使った変更の取得の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "分析なら前者、即時の処理なら後者",
+        "correct": true,
+        "atomId": "dynamodb-export-s3",
+        "why": "エクスポートはある時点の全体、Streams は変更ごと"
+      },
+      {
+        "id": "b",
+        "text": "前者はリアルタイム、後者は一括",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "後者はテーブルの全体を出力する",
+        "correct": false,
+        "why": "変更だけを流す"
+      },
+      {
+        "id": "d",
+        "text": "前者は読み込み容量を大量に使う",
+        "correct": false,
+        "why": "読み込み容量は使わない"
+      }
+    ],
+    "explanation": "分析用の全体 = エクスポート、イベント駆動の処理 = Streams。",
+    "keywords": [
+      "使い分け"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-partition-key-design:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-partition-key-design"
+    ],
+    "prompt": "DynamoDB のパーティションキーとして最も適切なのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ユーザー ID",
+        "correct": true,
+        "atomId": "dynamodb-partition-key-design",
+        "why": "値の種類が多く均等に使われ、アクセスが分散する"
+      },
+      {
+        "id": "b",
+        "text": "性別（2〜3 種類）",
+        "correct": false,
+        "why": "値の種類が少なく、偏る"
+      },
+      {
+        "id": "c",
+        "text": "今日の日付",
+        "correct": false,
+        "why": "その日のデータに書き込みが集中する"
+      },
+      {
+        "id": "d",
+        "text": "固定の文字列（すべて同じ値）",
+        "correct": false,
+        "why": "1 つのパーティションに集中する"
+      }
+    ],
+    "explanation": "カーディナリティが高く、アクセスが均等なキーを選ぶ。",
+    "keywords": [
+      "パーティションキー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-item-size:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-item-size"
+    ],
+    "prompt": "「DynamoDB の 1 項目の上限」「大きなデータは S3 に置いてキーを保存」→ 上限はいくつ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "400 KB",
+        "correct": true,
+        "atomId": "dynamodb-item-size",
+        "why": "属性名と値の合計"
+      },
+      {
+        "id": "b",
+        "text": "4 KB",
+        "correct": false,
+        "why": "RCU の計算単位"
+      },
+      {
+        "id": "c",
+        "text": "1 KB",
+        "correct": false,
+        "why": "WCU の計算単位"
+      },
+      {
+        "id": "d",
+        "text": "16 MB",
+        "correct": false,
+        "why": "BatchGetItem の 1 回の上限の目安で、項目の上限ではない"
+      }
+    ],
+    "explanation": "項目の上限 = 400 KB。",
+    "keywords": [
+      "1 項目の上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

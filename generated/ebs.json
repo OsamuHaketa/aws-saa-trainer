@@ -1373,5 +1373,135 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-st1:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ebs-st1",
+      "ebs-gp3"
+    ],
+    "prompt": "大量のログを順番に読む処理で、gp3 ではなく st1 を選ぶ理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "大きな順次アクセスのスループットを安く得られる",
+        "correct": true,
+        "atomId": "ebs-st1",
+        "why": "HDD は容量あたりの料金が安い"
+      },
+      {
+        "id": "b",
+        "text": "ランダムな I/O の IOPS が高い",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "それは SSD の特徴"
+      },
+      {
+        "id": "c",
+        "text": "ブートボリュームに使える",
+        "correct": false,
+        "why": "st1 はブートに使えない"
+      },
+      {
+        "id": "d",
+        "text": "レイテンシが最も低い",
+        "correct": false,
+        "why": "レイテンシは SSD の方が低い"
+      }
+    ],
+    "explanation": "順次・大量・安く = st1、汎用・ランダム = gp3。",
+    "keywords": [
+      "順番に読む"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-encryption:definition:2",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ebs-encryption"
+    ],
+    "prompt": "暗号化されていない EBS スナップショットから作るボリュームを暗号化するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ボリュームの作成時（またはコピー時）に暗号化を指定する",
+        "correct": true,
+        "atomId": "ebs-encryption",
+        "why": "暗号化されたボリュームとして作れる"
+      },
+      {
+        "id": "b",
+        "text": "作成後に設定画面で暗号化を有効にする",
+        "correct": false,
+        "why": "作成後には暗号化できない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを再起動する",
+        "correct": false,
+        "why": "再起動では暗号化されない"
+      },
+      {
+        "id": "d",
+        "text": "暗号化されていないスナップショットからは作れない",
+        "correct": false,
+        "why": "作れる。作成時に暗号化を選ぶ"
+      }
+    ],
+    "explanation": "暗号化は作成時・コピー時に指定する（デフォルトで暗号化を有効にしておけば自動）。",
+    "keywords": [
+      "暗号化されていない EBS スナップショット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-elastic-volumes:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "ebs-elastic-volumes"
+    ],
+    "prompt": "「EBS の容量・タイプ・IOPS を接続したまま変更」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic Volumes",
+        "correct": true,
+        "atomId": "ebs-elastic-volumes",
+        "why": "止めずにボリュームを変更する"
+      },
+      {
+        "id": "b",
+        "text": "EBS のマルチアタッチ",
+        "correct": false,
+        "atomId": "ebs-multi-attach",
+        "why": "複数のインスタンスに接続する"
+      },
+      {
+        "id": "c",
+        "text": "EBS のスナップショット",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "ボリュームのバックアップ"
+      },
+      {
+        "id": "d",
+        "text": "高速スナップショット復元",
+        "correct": false,
+        "why": "スナップショットからの初期化を不要にする"
+      }
+    ],
+    "explanation": "稼働中の変更 = Elastic Volumes。",
+    "keywords": [
+      "接続したまま変更"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

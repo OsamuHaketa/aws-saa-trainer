@@ -354,5 +354,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dms-schema-conversion:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "dms-schema-conversion"
+    ],
+    "prompt": "スキーマ変換ツールで自動変換できなかった部分はどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "レポートで示され、手で書き直す",
+        "correct": true,
+        "atomId": "dms-schema-conversion",
+        "why": "変換の難しさの見積もりにも使える"
+      },
+      {
+        "id": "b",
+        "text": "自動で削除される",
+        "correct": false,
+        "why": "削除はされない"
+      },
+      {
+        "id": "c",
+        "text": "移行先で自動的に動くように補正される",
+        "correct": false,
+        "why": "自動では直らない"
+      },
+      {
+        "id": "d",
+        "text": "DMS が代わりにデータを変換する",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "DMS はデータの移行で、コードは変換しない"
+      }
+    ],
+    "explanation": "スキーマ変換 = 自動変換 + 手作業が必要な部分のレポート。",
+    "keywords": [
+      "変換できなかった部分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

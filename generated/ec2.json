@@ -4112,5 +4112,312 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-dedicated-instances:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-dedicated-instances"
+    ],
+    "prompt": "「他の顧客とハードウェアを共有しない」「物理サーバーの管理は不要」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Dedicated Instances",
+        "correct": true,
+        "atomId": "ec2-dedicated-instances",
+        "why": "専用ハードウェアで動く"
+      },
+      {
+        "id": "b",
+        "text": "Dedicated Hosts（ホストの専有）",
+        "correct": false,
+        "atomId": "ec2-dedicated-hosts",
+        "why": "物理サーバーを専有し、配置も制御する"
+      },
+      {
+        "id": "c",
+        "text": "スポットインスタンス",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "余っているキャパシティ"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": false,
+        "atomId": "ec2-capacity-reservations",
+        "why": "特定の AZ の容量の確保"
+      }
+    ],
+    "explanation": "共有しないだけ = Dedicated Instances。",
+    "keywords": [
+      "共有しない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-capacity-reservations:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "ec2-capacity-reservations"
+    ],
+    "prompt": "「特定の AZ で必ず起動できるように容量を確保」「期間の約束なし」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドキャパシティ予約",
+        "correct": true,
+        "atomId": "ec2-capacity-reservations",
+        "why": "予約した分は使わなくても課金される"
+      },
+      {
+        "id": "b",
+        "text": "Savings Plans",
+        "correct": false,
+        "atomId": "ec2-savings-plans",
+        "why": "割引で、容量は確保しない"
+      },
+      {
+        "id": "c",
+        "text": "スポットフリート",
+        "correct": false,
+        "atomId": "ec2-spot-fleet",
+        "why": "スポットの組み合わせ"
+      },
+      {
+        "id": "d",
+        "text": "スプレッドプレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-spread-placement-group",
+        "why": "配置の分散"
+      }
+    ],
+    "explanation": "容量の確保（割引なし）= キャパシティ予約。",
+    "keywords": [
+      "容量を確保"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-partition-placement-group:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "ec2-partition-placement-group"
+    ],
+    "prompt": "「HDFS / Cassandra」「数百台をグループ単位で別のラックに」→ どのプレイスメントグループ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パーティション",
+        "correct": true,
+        "atomId": "ec2-partition-placement-group",
+        "why": "大規模な分散システムのラック障害を分ける"
+      },
+      {
+        "id": "b",
+        "text": "クラスター",
+        "correct": false,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "低レイテンシのために近くに置く"
+      },
+      {
+        "id": "c",
+        "text": "スプレッド",
+        "correct": false,
+        "atomId": "ec2-spread-placement-group",
+        "why": "少数を 1 台ずつ分ける"
+      },
+      {
+        "id": "d",
+        "text": "配置しない",
+        "correct": false,
+        "why": "ラックを意識した配置にならない"
+      }
+    ],
+    "explanation": "大規模分散 = パーティション。",
+    "keywords": [
+      "HDFS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-user-data:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ec2-user-data"
+    ],
+    "prompt": "EC2 のユーザーデータのスクリプトが、デフォルトで実行されるタイミングは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "最初の起動時だけ",
+        "correct": true,
+        "atomId": "ec2-user-data",
+        "why": "毎回実行したいなら設定を変える"
+      },
+      {
+        "id": "b",
+        "text": "起動するたびに毎回",
+        "correct": false,
+        "why": "デフォルトは最初の起動時だけ"
+      },
+      {
+        "id": "c",
+        "text": "停止するとき",
+        "correct": false,
+        "why": "停止時には実行されない"
+      },
+      {
+        "id": "d",
+        "text": "1 時間ごと",
+        "correct": false,
+        "why": "定期的には実行されない"
+      }
+    ],
+    "explanation": "ユーザーデータ = デフォルトで初回起動時に実行（cloud-init）。",
+    "keywords": [
+      "タイミング"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-imdsv2:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-imdsv2"
+    ],
+    "prompt": "IMDSv2 を必須にしたところ、古いバージョンの SDK を使うアプリがメタデータを読めなくなった。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SDK を IMDSv2 に対応したバージョンに上げる",
+        "correct": true,
+        "atomId": "ec2-imdsv2",
+        "why": "新しい SDK はトークンを自動で扱う"
+      },
+      {
+        "id": "b",
+        "text": "IMDS を完全に無効にする",
+        "correct": false,
+        "why": "ロールの認証情報も取れなくなる"
+      },
+      {
+        "id": "c",
+        "text": "アクセスキーをアプリに書く",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報を置くことになる"
+      },
+      {
+        "id": "d",
+        "text": "セキュリティグループで 169.254.169.254 を許可する",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "SG の問題ではない"
+      }
+    ],
+    "explanation": "IMDSv2 の強制 = アプリや SDK の対応を確認してから。",
+    "keywords": [
+      "古いバージョンの SDK"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-auto-recovery:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "ec2-auto-recovery"
+    ],
+    "prompt": "「システムステータスチェックの失敗」「同じインスタンス ID と IP のまま別のホストへ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EC2 の自動復旧",
+        "correct": true,
+        "atomId": "ec2-auto-recovery",
+        "why": "CloudWatch アラームの recover か簡易自動復旧で動く"
+      },
+      {
+        "id": "b",
+        "text": "Auto Scaling の置き換え",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "新しいインスタンスになる"
+      },
+      {
+        "id": "c",
+        "text": "EC2 の休止",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "メモリを保存して止める"
+      },
+      {
+        "id": "d",
+        "text": "AMI からの再作成",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "新しいインスタンスになる"
+      }
+    ],
+    "explanation": "同じインスタンスのまま復旧 = 自動復旧。",
+    "keywords": [
+      "同じインスタンス ID"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spot-fleet:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-spot-fleet"
+    ],
+    "prompt": "スポットフリートの候補を、最も安い 1 つのインスタンスタイプと 1 つの AZ だけにした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "そのプールの空きがないと全滅する",
+        "correct": true,
+        "atomId": "ec2-spot-fleet",
+        "why": "空きがなくなるとまとめて中断され、起動もできない。複数のタイプと AZ を候補にする"
+      },
+      {
+        "id": "b",
+        "text": "スポットフリートは 1 つのタイプしか使えない",
+        "correct": false,
+        "why": "複数使える"
+      },
+      {
+        "id": "c",
+        "text": "スポットフリートはオンデマンドを使えない",
+        "correct": false,
+        "why": "組み合わせられる"
+      },
+      {
+        "id": "d",
+        "text": "1 つの AZ にするとスポットの料金が上がる",
+        "correct": false,
+        "why": "料金ではなく中断のリスクの問題"
+      }
+    ],
+    "explanation": "スポットの鉄則 = 分散（タイプ・サイズ・AZ）。",
+    "keywords": [
+      "1 つのインスタンスタイプ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

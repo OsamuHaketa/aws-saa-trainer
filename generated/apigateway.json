@@ -795,5 +795,135 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-throttling:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "apigateway-throttling"
+    ],
+    "prompt": "API Gateway から 429 が返るようになったので、バックエンドの Lambda の障害だと考えて Lambda のログを調べている。まず確認すべきは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スロットリングの上限",
+        "correct": true,
+        "atomId": "apigateway-throttling",
+        "why": "スロットリングや使用量プランの上限に達していないか。429 は上限の超過を表す"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のメモリの設定",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "429 は API Gateway の上限の超過が多い"
+      },
+      {
+        "id": "c",
+        "text": "S3 のバケットポリシー",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "関係ない"
+      },
+      {
+        "id": "d",
+        "text": "VPC のルートテーブル",
+        "correct": false,
+        "atomId": "vpc-route-table",
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "429 = Too Many Requests（上限）。5xx はバックエンドの問題のことが多い。",
+    "keywords": [
+      "429"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-caching:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "apigateway-caching"
+    ],
+    "prompt": "API Gateway のキャッシュの TTL のデフォルトと上限は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "デフォルト 300 秒、最大 3,600 秒",
+        "correct": true,
+        "atomId": "apigateway-caching",
+        "why": "0 にするとキャッシュしない"
+      },
+      {
+        "id": "b",
+        "text": "デフォルト 60 秒、最大 600 秒",
+        "correct": false,
+        "why": "デフォルトは 300 秒"
+      },
+      {
+        "id": "c",
+        "text": "デフォルト 1 日、最大 1 年",
+        "correct": false,
+        "why": "API Gateway のキャッシュの TTL は 1 時間まで"
+      },
+      {
+        "id": "d",
+        "text": "TTL は設定できない",
+        "correct": false,
+        "why": "設定できる"
+      }
+    ],
+    "explanation": "API Gateway のキャッシュ = デフォルト 300 秒、最大 3,600 秒。",
+    "keywords": [
+      "TTL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-endpoint-types:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "apigateway-endpoint-types"
+    ],
+    "prompt": "同じリージョンにいる社内のアプリからだけ呼ばれる公開 API がある。自社の CloudFront と WAF を前に置き、細かく制御したい。どのエンドポイントタイプ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リージョン API",
+        "correct": true,
+        "atomId": "apigateway-endpoint-types",
+        "why": "自分で CloudFront を前に置く構成に向く"
+      },
+      {
+        "id": "b",
+        "text": "エッジ最適化 API",
+        "correct": false,
+        "why": "AWS 管理の CloudFront を経由し、自分では細かく制御できない"
+      },
+      {
+        "id": "c",
+        "text": "プライベート API",
+        "correct": false,
+        "why": "VPC 内からだけ呼べ、公開 API にならない"
+      },
+      {
+        "id": "d",
+        "text": "WebSocket API",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "双方向の API の種類で、エンドポイントタイプではない"
+      }
+    ],
+    "explanation": "自前の CloudFront と組み合わせる = リージョン API。",
+    "keywords": [
+      "自社の CloudFront"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

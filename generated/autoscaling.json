@@ -1407,5 +1407,174 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-scheduled:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-scheduled"
+    ],
+    "prompt": "スケジュールされたスケーリングで変えられるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "最小・最大・希望の台数",
+        "correct": true,
+        "atomId": "autoscaling-scheduled",
+        "why": "決めた日時にこれらの値を変える"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスタイプ",
+        "correct": false,
+        "why": "それは起動テンプレートの変更"
+      },
+      {
+        "id": "c",
+        "text": "AMI の ID",
+        "correct": false,
+        "why": "それは起動テンプレートの変更"
+      },
+      {
+        "id": "d",
+        "text": "ロードバランサーの種類",
+        "correct": false,
+        "why": "スケーリングとは関係ない"
+      }
+    ],
+    "explanation": "スケジュール = 日時で最小・最大・希望の台数を変える（cron 式も使える）。",
+    "keywords": [
+      "変えられるもの"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-predictive:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-predictive"
+    ],
+    "prompt": "新しく公開した翌日のアプリに、予測スケーリングを設定した。すぐには予測に基づいて台数が変わらない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "過去の負荷のデータが足りない",
+        "correct": true,
+        "atomId": "autoscaling-predictive",
+        "why": "予測には最低 1 日以上の履歴が必要。たまるまではターゲット追跡などで対応する"
+      },
+      {
+        "id": "b",
+        "text": "予測スケーリングは EC2 では使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "予測スケーリングは最大台数を無視する",
+        "correct": false,
+        "why": "最大台数の範囲で動く"
+      },
+      {
+        "id": "d",
+        "text": "予測スケーリングは週末にしか動かない",
+        "correct": false,
+        "why": "曜日の制限はない"
+      }
+    ],
+    "explanation": "予測スケーリング = 過去のデータから学習する（14 日分あると精度が上がる）。",
+    "keywords": [
+      "公開した翌日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-elb-health-check:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-elb-health-check",
+      "elb-health-checks"
+    ],
+    "prompt": "ELB のヘルスチェックと、Auto Scaling の ELB ヘルスチェックの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は振り分けから外し、後者は置き換える",
+        "correct": true,
+        "atomId": "autoscaling-elb-health-check",
+        "why": "Auto Scaling で ELB ヘルスチェックを有効にすると、異常なインスタンスを終了して新しくする"
+      },
+      {
+        "id": "b",
+        "text": "前者はインスタンスを置き換え、後者は振り分けから外す",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "どちらもインスタンスを再起動するだけ",
+        "correct": false,
+        "why": "再起動ではない"
+      },
+      {
+        "id": "d",
+        "text": "後者を有効にすると、前者は使われなくなる",
+        "correct": false,
+        "why": "後者は前者の結果を使う"
+      }
+    ],
+    "explanation": "ELB = 異常なターゲットに送らない、ASG の ELB ヘルスチェック = 異常なインスタンスを置き換える。",
+    "keywords": [
+      "違い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-instance-refresh:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-instance-refresh"
+    ],
+    "prompt": "インスタンスの更新で「正常なインスタンスの最小割合」を 90% にすると、どうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一度に置き換えるのは 10% 程度ずつになる",
+        "correct": true,
+        "atomId": "autoscaling-instance-refresh",
+        "why": "処理能力を保ちながら少しずつ入れ替える"
+      },
+      {
+        "id": "b",
+        "text": "90% のインスタンスを一度に置き換える",
+        "correct": false,
+        "why": "最小割合は残す割合"
+      },
+      {
+        "id": "c",
+        "text": "90% の確率で更新が失敗する",
+        "correct": false,
+        "why": "確率ではない"
+      },
+      {
+        "id": "d",
+        "text": "90 日ごとに自動で更新される",
+        "correct": false,
+        "why": "期間の設定ではない"
+      }
+    ],
+    "explanation": "最小の正常割合が高いほど、ゆっくり安全に入れ替わる。",
+    "keywords": [
+      "最小割合"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
