@@ -23,3 +23,47 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html
+
+  - id: stepfunctions-standard-express
+    category: orchestration
+    concept: Step Functions の標準ワークフローと Express ワークフロー
+    summary: 長時間で 1 回だけ実行する処理は標準、短時間で大量に実行する処理は Express
+    facts:
+      - 標準ワークフローは最長 1 年実行でき、各ステップは 1 回だけ実行される（exactly-once）
+      - Express ワークフローは最長 5 分で、大量・高頻度の実行に向き、料金も安い
+      - Express は少なくとも 1 回（at-least-once）の実行で、実行履歴は CloudWatch Logs に出す
+    triggers:
+      - 数日かかる承認フローを含むワークフロー
+      - 毎秒数千回実行される短いデータ変換
+    pitfalls:
+      - 人の承認を待つなど 5 分を超える処理を Express で作ると、途中で終了する
+    relations:
+      - type: part_of
+        target: stepfunctions-state-machine
+    examDomains: [cost, resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html
+
+  - id: stepfunctions-callback
+    category: orchestration
+    concept: タスクトークンによるコールバック待ち（人の承認など）
+    summary: タスクトークンを外部に渡し、承認などの結果が返ってくるまでワークフローを一時停止する
+    facts:
+      - タスクの .waitForTaskToken で、トークンを SQS や Lambda などに渡して待機する
+      - 外部の処理や人が SendTaskSuccess / SendTaskFailure でトークンを返すと、続きが実行される
+      - 待機中にサーバーを動かし続ける必要はない（標準ワークフローなら最長 1 年）
+    triggers:
+      - 上司の承認を待ってから次に進みたい
+      - 外部システムの処理完了を待ちたい
+    pitfalls:
+      - 承認を待つためにループでポーリングすると、無駄な実行と料金が増える
+    relations:
+      - type: part_of
+        target: stepfunctions-state-machine
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html

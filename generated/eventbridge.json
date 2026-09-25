@@ -135,5 +135,184 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-archive-replay:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "eventbridge-archive-replay"
+    ],
+    "prompt": "注文イベントを処理する Lambda のバグで、昨日の 3 時間分の処理が誤っていた。バグを直したあと、その時間帯のイベントを再処理したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge のアーカイブからリプレイする",
+        "correct": true,
+        "atomId": "eventbridge-archive-replay",
+        "why": "保存したイベントを指定した期間だけ再送できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail の履歴を Lambda に送る",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の記録で、アプリのイベントではない"
+      },
+      {
+        "id": "c",
+        "text": "SQS のデッドレターキューから戻す",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "失敗したものだけが対象で、誤って成功した処理は含まれない"
+      },
+      {
+        "id": "d",
+        "text": "EventBridge のスケジュールで再実行する",
+        "correct": false,
+        "atomId": "eventbridge-scheduler",
+        "why": "定期実行で、過去のイベントは流れない"
+      }
+    ],
+    "explanation": "過去のイベントの流し直し = アーカイブとリプレイ（事前にアーカイブが必要）。",
+    "keywords": [
+      "再処理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-bus:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "eventbridge-bus"
+    ],
+    "prompt": "組織内の 20 のアカウントで起きた GuardDuty の検出結果を、セキュリティアカウントの 1 つのイベントバスに集めて処理したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "各アカウントのルールで、セキュリティアカウントのバスに送る",
+        "correct": true,
+        "atomId": "eventbridge-bus",
+        "why": "別のアカウントのイベントバスをターゲットにできる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントで SQS を作り、手動で集める",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "手間が大きく、リアルタイムでない"
+      },
+      {
+        "id": "c",
+        "text": "CloudWatch Logs を各アカウントで確認する",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "集約にならない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のイベント通知を使う",
+        "correct": false,
+        "atomId": "s3-event-notifications",
+        "why": "GuardDuty の検出結果とは関係ない"
+      }
+    ],
+    "explanation": "クロスアカウントのイベント集約 = EventBridge のイベントバスをターゲットにする。",
+    "keywords": [
+      "20 のアカウント",
+      "1 つのイベントバス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-bus:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-bus"
+    ],
+    "prompt": "「SaaS のイベント」「ルールのイベントパターン」「サーバーレスなイベントルーター」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EventBridge",
+        "correct": true,
+        "atomId": "eventbridge-bus",
+        "why": "イベントを内容で振り分けてターゲットに送る"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "トピックの Pub/Sub で、SaaS の連携は EventBridge の方が得意"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キュー"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "大量のストリームの取り込み"
+      }
+    ],
+    "explanation": "SaaS・AWS のイベントをパターンで振り分け = EventBridge。",
+    "keywords": [
+      "イベントパターン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-scheduler:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-scheduler"
+    ],
+    "prompt": "1 日 1 回の Lambda の実行のためだけに、EC2 を 24 時間動かして cron を設定している。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge のスケジュールで足りる",
+        "correct": true,
+        "atomId": "eventbridge-scheduler",
+        "why": "サーバーなしで決まった時刻に実行できる"
+      },
+      {
+        "id": "b",
+        "text": "cron は Linux で使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "EC2 からは Lambda を呼べない",
+        "correct": false,
+        "why": "呼べるが、構成が過剰"
+      },
+      {
+        "id": "d",
+        "text": "Lambda は 1 日 1 回しか実行できない",
+        "correct": false,
+        "why": "何回でも実行できる"
+      }
+    ],
+    "explanation": "定期実行 = EventBridge Scheduler（またはスケジュールのルール）。",
+    "keywords": [
+      "cron",
+      "EC2 を 24 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

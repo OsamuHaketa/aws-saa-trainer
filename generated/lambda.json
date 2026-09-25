@@ -302,5 +302,443 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-memory:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "lambda-memory"
+    ],
+    "prompt": "画像を処理する Lambda の CPU が足りず、処理が遅い。Lambda で CPU を増やすにはどうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メモリの設定を増やす",
+        "correct": true,
+        "atomId": "lambda-memory",
+        "why": "CPU はメモリに比例して割り当てられる"
+      },
+      {
+        "id": "b",
+        "text": "CPU のコア数を直接指定する",
+        "correct": false,
+        "why": "Lambda では CPU を直接指定できない"
+      },
+      {
+        "id": "c",
+        "text": "プロビジョンド同時実行を設定する",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "コールドスタート対策で、1 回の処理は速くならない"
+      },
+      {
+        "id": "d",
+        "text": "タイムアウトを 15 分に延ばす",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "遅いまま待つだけで、CPU は増えない"
+      }
+    ],
+    "explanation": "Lambda の CPU = メモリで決まる。メモリを上げると実行時間が短くなり、料金が下がることもある。",
+    "keywords": [
+      "CPU を増やす"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-memory:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "lambda-memory"
+    ],
+    "prompt": "Lambda に設定できるメモリの範囲は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "128 MB〜10,240 MB",
+        "correct": true,
+        "atomId": "lambda-memory",
+        "why": "CPU もメモリに比例して増える"
+      },
+      {
+        "id": "b",
+        "text": "64 MB〜1,024 MB",
+        "correct": false,
+        "why": "上限は約 10 GB"
+      },
+      {
+        "id": "c",
+        "text": "1 GB〜64 GB",
+        "correct": false,
+        "why": "下限は 128 MB、上限は約 10 GB"
+      },
+      {
+        "id": "d",
+        "text": "512 MB 固定",
+        "correct": false,
+        "why": "範囲内で自由に設定できる"
+      }
+    ],
+    "explanation": "Lambda のメモリ = 128 MB〜10 GB、実行時間 = 最大 15 分。",
+    "keywords": [
+      "メモリの範囲"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-event-source-mapping:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "lambda-event-source-mapping"
+    ],
+    "prompt": "SQS から 10 件ずつ受け取る Lambda で、1 件だけ処理に失敗すると、成功した 9 件も再処理される。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "部分バッチレスポンスで失敗した分だけ返す",
+        "correct": true,
+        "atomId": "lambda-event-source-mapping",
+        "why": "失敗したメッセージだけがキューに戻る"
+      },
+      {
+        "id": "b",
+        "text": "バッチサイズを 10,000 に増やす",
+        "correct": false,
+        "why": "再処理される件数がさらに増える"
+      },
+      {
+        "id": "c",
+        "text": "可視性タイムアウトを 0 秒にする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "処理中に他の処理側へ渡ってしまう"
+      },
+      {
+        "id": "d",
+        "text": "SQS を SNS に置き換える",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "SNS はプッシュ型で、バッチの再処理の問題の解決にならない"
+      }
+    ],
+    "explanation": "SQS + Lambda のバッチの一部失敗 = 部分バッチレスポンス（ReportBatchItemFailures）。",
+    "keywords": [
+      "1 件だけ失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-event-source-mapping:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "lambda-event-source-mapping"
+    ],
+    "prompt": "SQS のキューの可視性タイムアウトを 30 秒、そのキューを処理する Lambda のタイムアウトを 5 分にした。何が起きうる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "処理中のメッセージが再び見え、二重に処理される",
+        "correct": true,
+        "atomId": "lambda-event-source-mapping",
+        "why": "可視性タイムアウトは関数のタイムアウトより長くする"
+      },
+      {
+        "id": "b",
+        "text": "Lambda が SQS から読み取れなくなる",
+        "correct": false,
+        "why": "読み取りはできる"
+      },
+      {
+        "id": "c",
+        "text": "メッセージが即座に削除される",
+        "correct": false,
+        "why": "処理が成功するまで削除されない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda のタイムアウトが 30 秒に短縮される",
+        "correct": false,
+        "why": "関数のタイムアウトは変わらない"
+      }
+    ],
+    "explanation": "SQS の可視性タイムアウト > Lambda のタイムアウト（目安は 6 倍）にする。",
+    "keywords": [
+      "30 秒",
+      "5 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-event-source-mapping:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "lambda-event-source-mapping"
+    ],
+    "prompt": "「Lambda がキューやストリームをポーリング」「バッチサイズ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "イベントソースマッピング",
+        "correct": true,
+        "atomId": "lambda-event-source-mapping",
+        "why": "SQS や Kinesis から Lambda がまとめて読み取る"
+      },
+      {
+        "id": "b",
+        "text": "非同期呼び出しの失敗時の送信先",
+        "correct": false,
+        "atomId": "lambda-async-failure",
+        "why": "失敗したイベントの退避"
+      },
+      {
+        "id": "c",
+        "text": "プロビジョンド同時実行",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "事前に初期化した実行環境"
+      },
+      {
+        "id": "d",
+        "text": "Lambda@Edge",
+        "correct": false,
+        "atomId": "cloudfront-functions",
+        "why": "CloudFront のエッジで実行する Lambda"
+      }
+    ],
+    "explanation": "ポーリング型の連携 = イベントソースマッピング。",
+    "keywords": [
+      "ポーリング",
+      "バッチサイズ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-concurrency:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "lambda-concurrency"
+    ],
+    "prompt": "「コールドスタートをなくす」「事前に初期化した実行環境」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンド同時実行",
+        "correct": true,
+        "atomId": "lambda-concurrency",
+        "why": "指定した数の実行環境を常に準備しておく"
+      },
+      {
+        "id": "b",
+        "text": "予約同時実行",
+        "correct": false,
+        "why": "同時実行数の確保と上限で、初期化はしない"
+      },
+      {
+        "id": "c",
+        "text": "メモリの増加",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "処理は速くなるが、コールドスタートはなくならない"
+      },
+      {
+        "id": "d",
+        "text": "VPC への接続",
+        "correct": false,
+        "atomId": "lambda-vpc",
+        "why": "ネットワークの設定で、起動を速くしない"
+      }
+    ],
+    "explanation": "コールドスタート対策 = プロビジョンド同時実行。",
+    "keywords": [
+      "コールドスタート"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-concurrency:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "lambda-concurrency"
+    ],
+    "prompt": "バッチ用の Lambda が大量に同時実行され、アカウントの同時実行の上限を使い切り、重要な API の Lambda が動かなくなった。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "重要な関数に予約同時実行を設定する",
+        "correct": true,
+        "atomId": "lambda-concurrency",
+        "why": "その関数用の同時実行数を確保し、他に使われないようにする"
+      },
+      {
+        "id": "b",
+        "text": "すべての関数のメモリを減らす",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "同時実行数の問題は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "API の Lambda を VPC から外す",
+        "correct": false,
+        "atomId": "lambda-vpc",
+        "why": "同時実行の上限とは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "バッチ用の Lambda のタイムアウトを延ばす",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "同時に動く時間が長くなり悪化する"
+      }
+    ],
+    "explanation": "予約同時実行 = 関数ごとの枠の確保（と上限）。バッチ側に上限を付けるのも有効。",
+    "keywords": [
+      "同時実行の上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-vpc:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "lambda-vpc"
+    ],
+    "prompt": "VPC に接続した Lambda から、RDS と外部の決済 API の両方を使いたい。どう構成する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベートサブネットに置き、NAT ゲートウェイ経由で外に出す",
+        "correct": true,
+        "atomId": "lambda-vpc",
+        "why": "VPC 内の Lambda はパブリック IP を持たない"
+      },
+      {
+        "id": "b",
+        "text": "パブリックサブネットに置き、IGW から直接外に出す",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "Lambda の ENI にはパブリック IP が付かず、外に出られない"
+      },
+      {
+        "id": "c",
+        "text": "VPC から外して RDS をインターネットに公開する",
+        "correct": false,
+        "why": "DB を公開するのは危険"
+      },
+      {
+        "id": "d",
+        "text": "決済 API をインターフェイスエンドポイントで呼ぶ",
+        "correct": false,
+        "atomId": "vpc-interface-endpoint",
+        "why": "外部の API にはエンドポイントを作れない"
+      }
+    ],
+    "explanation": "VPC 内の Lambda がインターネットに出る = プライベートサブネット + NAT ゲートウェイ。",
+    "keywords": [
+      "RDS と外部の決済 API"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-async-failure:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "lambda-async-failure"
+    ],
+    "prompt": "非同期で呼ばれた Lambda が失敗したとき、デフォルトではどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "2 回まで自動で再試行し、それでも失敗したら捨てる",
+        "correct": true,
+        "atomId": "lambda-async-failure",
+        "why": "失敗時の送信先や DLQ を設定すれば退避できる"
+      },
+      {
+        "id": "b",
+        "text": "成功するまで無限に再試行する",
+        "correct": false,
+        "why": "再試行はデフォルトで 2 回"
+      },
+      {
+        "id": "c",
+        "text": "呼び出し元にエラーが返り、呼び出し元が再試行する",
+        "correct": false,
+        "why": "それは同期呼び出しの場合"
+      },
+      {
+        "id": "d",
+        "text": "自動で SQS に保存される",
+        "correct": false,
+        "why": "送信先を設定しないと保存されない"
+      }
+    ],
+    "explanation": "非同期呼び出し = 最大 2 回の再試行 → 失敗時の送信先（SQS・SNS・Lambda・EventBridge）か DLQ へ。",
+    "keywords": [
+      "非同期",
+      "デフォルト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-function:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "lambda-function",
+      "ecs-fargate"
+    ],
+    "prompt": "処理時間が 1 回 40 分かかるコンテナのバッチを、サーバー管理なしで動かしたい。Lambda ではなく Fargate を選ぶ理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lambda は 15 分までしか動かせない",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "Fargate には実行時間の上限がない"
+      },
+      {
+        "id": "b",
+        "text": "Lambda はコンテナイメージを使えない",
+        "correct": false,
+        "why": "Lambda もコンテナイメージから作れる"
+      },
+      {
+        "id": "c",
+        "text": "Fargate の方が常に安い",
+        "correct": false,
+        "why": "短い処理なら Lambda の方が安いことが多い"
+      },
+      {
+        "id": "d",
+        "text": "Lambda はサーバーの管理が必要",
+        "correct": false,
+        "why": "Lambda もサーバーレス"
+      }
+    ],
+    "explanation": "15 分を超える処理 = Fargate や AWS Batch。",
+    "keywords": [
+      "40 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

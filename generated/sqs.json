@@ -452,5 +452,403 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-retention:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sqs-retention"
+    ],
+    "prompt": "処理側のシステムが 1 週間のメンテナンスで止まった。再開したら、キューの古いメッセージが消えていた。原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保持期間が 4 日のままだった",
+        "correct": true,
+        "atomId": "sqs-retention",
+        "why": "最大 14 日まで延ばせる"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウトが短かった",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "消える原因ではない"
+      },
+      {
+        "id": "c",
+        "text": "ロングポーリングを使っていなかった",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信の方法で、消える原因ではない"
+      },
+      {
+        "id": "d",
+        "text": "FIFO キューではなかった",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "標準キューでも保持期間の間は残る"
+      }
+    ],
+    "explanation": "SQS の保持期間 = デフォルト 4 日、最大 14 日。",
+    "keywords": [
+      "1 週間",
+      "消えていた"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-retention:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "sqs-retention"
+    ],
+    "prompt": "SQS のメッセージ保持期間の最大値は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "14 日",
+        "correct": true,
+        "atomId": "sqs-retention",
+        "why": "デフォルトは 4 日"
+      },
+      {
+        "id": "b",
+        "text": "4 日",
+        "correct": false,
+        "why": "4 日はデフォルト"
+      },
+      {
+        "id": "c",
+        "text": "7 日",
+        "correct": false,
+        "why": "最大は 14 日"
+      },
+      {
+        "id": "d",
+        "text": "365 日",
+        "correct": false,
+        "atomId": "kinesis-shards",
+        "why": "それは Kinesis Data Streams の最大の保持期間"
+      }
+    ],
+    "explanation": "SQS 最大 14 日、Kinesis 最大 365 日。",
+    "keywords": [
+      "最大"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-large-messages:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sqs-large-messages"
+    ],
+    "prompt": "SQS のメッセージで、上限を超える数 MB の JSON を処理側に渡したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "本体は S3 に置き、キーだけ送る",
+        "correct": true,
+        "atomId": "sqs-large-messages",
+        "why": "拡張クライアントライブラリで自動化できる"
+      },
+      {
+        "id": "b",
+        "text": "FIFO キューにすれば上限がなくなる",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "FIFO でも上限は同じ"
+      },
+      {
+        "id": "c",
+        "text": "JSON を分割して複数のメッセージで送る",
+        "correct": false,
+        "why": "順序や欠落の管理が複雑になる"
+      },
+      {
+        "id": "d",
+        "text": "ロングポーリングを使う",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信の方法で、サイズの上限は変わらない"
+      }
+    ],
+    "explanation": "大きなデータ = S3 に置き、キューには参照を流す。",
+    "keywords": [
+      "上限を超える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-visibility-timeout:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "sqs-visibility-timeout"
+    ],
+    "prompt": "SQS の可視性タイムアウトの間、受信されたメッセージはどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一時的に他から見えなくなる",
+        "correct": true,
+        "atomId": "sqs-visibility-timeout",
+        "why": "処理が終わったら処理側が削除する"
+      },
+      {
+        "id": "b",
+        "text": "自動で削除される",
+        "correct": false,
+        "why": "処理側が削除するまで残る"
+      },
+      {
+        "id": "c",
+        "text": "デッドレターキューに移される",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "DLQ に移るのは受信回数が上限を超えたとき"
+      },
+      {
+        "id": "d",
+        "text": "送信側に返送される",
+        "correct": false,
+        "why": "返送はされない"
+      }
+    ],
+    "explanation": "可視性タイムアウト = 処理中は隠す。処理時間より長くする。",
+    "keywords": [
+      "見えず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-dlq:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "sqs-dlq"
+    ],
+    "prompt": "SQS のデッドレターキューにメッセージが移される条件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "受信回数が上限を超えたとき",
+        "correct": true,
+        "atomId": "sqs-dlq",
+        "why": "処理に失敗し続けるメッセージを隔離する"
+      },
+      {
+        "id": "b",
+        "text": "保持期間を過ぎたとき",
+        "correct": false,
+        "atomId": "sqs-retention",
+        "why": "保持期間を過ぎると削除される"
+      },
+      {
+        "id": "c",
+        "text": "可視性タイムアウトが 0 のとき",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "条件ではない"
+      },
+      {
+        "id": "d",
+        "text": "メッセージのサイズが大きいとき",
+        "correct": false,
+        "atomId": "sqs-large-messages",
+        "why": "サイズは条件ではない"
+      }
+    ],
+    "explanation": "DLQ = 受信回数の上限を超えたメッセージの行き先（リドライブポリシー）。",
+    "keywords": [
+      "maxReceiveCount"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-long-polling:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "sqs-long-polling"
+    ],
+    "prompt": "「空の応答を減らす」「最大 20 秒待って受信」→ SQS の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ロングポーリング",
+        "correct": true,
+        "atomId": "sqs-long-polling",
+        "why": "ReceiveMessageWaitTimeSeconds を 1〜20 秒にする"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウト",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "処理中のメッセージを隠す時間"
+      },
+      {
+        "id": "c",
+        "text": "遅延キュー",
+        "correct": false,
+        "why": "送信したメッセージを見えるまで遅らせる"
+      },
+      {
+        "id": "d",
+        "text": "デッドレターキュー",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "処理できないメッセージの隔離"
+      }
+    ],
+    "explanation": "空の受信を減らしてコスト削減 = ロングポーリング。",
+    "keywords": [
+      "20 秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-queue-based-scaling:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sqs-queue-based-scaling"
+    ],
+    "prompt": "SQS を処理する EC2 の Auto Scaling を、CPU 使用率のターゲット追跡だけで設定した。キューが大量にたまっても台数が増えない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "処理待ちが多くても CPU が上がるとは限らない",
+        "correct": true,
+        "atomId": "sqs-queue-based-scaling",
+        "why": "インスタンスあたりの滞留数を指標にする"
+      },
+      {
+        "id": "b",
+        "text": "SQS は Auto Scaling と組み合わせられない",
+        "correct": false,
+        "why": "組み合わせられる"
+      },
+      {
+        "id": "c",
+        "text": "キューは CloudWatch に指標を出さない",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "ApproximateNumberOfMessagesVisible などを出す"
+      },
+      {
+        "id": "d",
+        "text": "EC2 は SQS からメッセージを受信できない",
+        "correct": false,
+        "why": "受信できる"
+      }
+    ],
+    "explanation": "キューの処理 = 滞留数（インスタンスあたりのバックログ）でスケールする。",
+    "keywords": [
+      "CPU 使用率だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-fifo:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sqs-fifo"
+    ],
+    "prompt": "注文ごとの順序は守りたいが、別々の注文は並列に処理してスループットを上げたい。SQS FIFO でどうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "注文 ID をメッセージグループ ID にする",
+        "correct": true,
+        "atomId": "sqs-fifo",
+        "why": "グループ内は順序を守り、グループ間は並列に処理される"
+      },
+      {
+        "id": "b",
+        "text": "すべて同じメッセージグループ ID にする",
+        "correct": false,
+        "why": "全体が 1 列になり、並列に処理できない"
+      },
+      {
+        "id": "c",
+        "text": "標準キューにして順序はアプリで直す",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "標準キューは順序を保証しない"
+      },
+      {
+        "id": "d",
+        "text": "可視性タイムアウトを長くする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "並列性は上がらない"
+      }
+    ],
+    "explanation": "FIFO のメッセージグループ ID = 順序を守る単位。グループを分けるほど並列化できる。",
+    "keywords": [
+      "注文ごとの順序",
+      "並列"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-standard:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "sqs-standard"
+    ],
+    "prompt": "SQS 標準キューの配信の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "少なくとも 1 回届き、順序は保証されない",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "まれに重複するので、処理は冪等にする"
+      },
+      {
+        "id": "b",
+        "text": "必ず 1 回だけ、送った順に届く",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "それは FIFO キュー"
+      },
+      {
+        "id": "c",
+        "text": "購読者全員に同時にプッシュされる",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "それは SNS"
+      },
+      {
+        "id": "d",
+        "text": "一度読んだメッセージを何度でも読み直せる",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "それは Kinesis Data Streams"
+      }
+    ],
+    "explanation": "標準 = at-least-once・順序なし・ほぼ無制限のスループット。",
+    "keywords": [
+      "少なくとも 1 回"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

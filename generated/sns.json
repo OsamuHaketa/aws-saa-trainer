@@ -177,5 +177,178 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sns-topic:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "sns-topic"
+    ],
+    "prompt": "SNS トピックの購読先（サブスクライバー）として使えないものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EBS ボリューム",
+        "correct": true,
+        "why": "ストレージで、メッセージを受け取れない"
+      },
+      {
+        "id": "b",
+        "text": "SQS キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "購読先にできる"
+      },
+      {
+        "id": "c",
+        "text": "Lambda 関数",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "購読先にできる"
+      },
+      {
+        "id": "d",
+        "text": "HTTPS エンドポイント",
+        "correct": false,
+        "why": "購読先にできる"
+      }
+    ],
+    "explanation": "SNS の購読先 = SQS、Lambda、HTTP/S、メール、SMS、Data Firehose など。",
+    "keywords": [
+      "購読先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-topic:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sns-topic"
+    ],
+    "prompt": "注文イベントを SNS から処理側の HTTPS エンドポイントに直接送っている。処理側が長時間止まると注文が失われる。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SNS と処理側の間に SQS を置く",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "キューにたまるので、処理側が止まっても失われない"
+      },
+      {
+        "id": "b",
+        "text": "SNS の配信を停止する",
+        "correct": false,
+        "why": "注文が届かなくなる"
+      },
+      {
+        "id": "c",
+        "text": "SNS のメッセージフィルタリングを使う",
+        "correct": false,
+        "atomId": "sns-message-filtering",
+        "why": "届ける条件の設定で、失われる問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "メールでも通知する",
+        "correct": false,
+        "why": "処理の失敗への対策にならない"
+      }
+    ],
+    "explanation": "プッシュ型の SNS の後ろに SQS を置いて、処理側の停止を吸収する。",
+    "keywords": [
+      "長時間止まる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-fanout:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "sns-fanout"
+    ],
+    "prompt": "「1 つのイベントを複数のキューで独立に処理」→ 何のパターン？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SNS + SQS のファンアウト",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "SNS から複数の SQS に同時に配信する"
+      },
+      {
+        "id": "b",
+        "text": "SQS のデッドレターキュー",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "処理できないメッセージの隔離"
+      },
+      {
+        "id": "c",
+        "text": "Step Functions の順次実行",
+        "correct": false,
+        "atomId": "stepfunctions-state-machine",
+        "why": "ステップを順番に実行する"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis のシャード分割",
+        "correct": false,
+        "atomId": "kinesis-shards",
+        "why": "スループットの拡張"
+      }
+    ],
+    "explanation": "1 対多で、それぞれ独立に確実に処理 = ファンアウト。",
+    "keywords": [
+      "複数のキュー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-message-filtering:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "sns-message-filtering"
+    ],
+    "prompt": "SNS のメッセージフィルタリングで、フィルタポリシーを付ける場所は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "購読（サブスクリプション）ごと",
+        "correct": true,
+        "atomId": "sns-message-filtering",
+        "why": "購読ごとに受け取るメッセージの条件を決める"
+      },
+      {
+        "id": "b",
+        "text": "トピック全体に 1 つだけ",
+        "correct": false,
+        "why": "購読ごとに付ける"
+      },
+      {
+        "id": "c",
+        "text": "送信側のアプリ",
+        "correct": false,
+        "why": "送信側ではなく購読の設定"
+      },
+      {
+        "id": "d",
+        "text": "SQS キューのアクセスポリシー",
+        "correct": false,
+        "why": "権限の設定で、フィルタではない"
+      }
+    ],
+    "explanation": "フィルタポリシー = 購読ごと。1 つのトピックを購読者ごとに振り分けられる。",
+    "keywords": [
+      "フィルタポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

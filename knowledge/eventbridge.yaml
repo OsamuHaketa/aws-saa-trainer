@@ -45,3 +45,25 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html
+
+  - id: eventbridge-archive-replay
+    category: messaging
+    concept: EventBridge のアーカイブとリプレイ
+    summary: イベントバスに届いたイベントを保存し、あとで同じイベントを流し直す
+    facts:
+      - イベントパターンに合うイベントを、期間を決めてアーカイブに保存できる
+      - アーカイブしたイベントを、指定した期間の分だけ再送（リプレイ）できる
+      - 障害からの復旧や、新しい処理の検証に使える
+    triggers:
+      - 過去のイベントを流し直したい
+      - 処理のバグを直したあとで、イベントを再処理したい
+    pitfalls:
+      - アーカイブを作る前のイベントはリプレイできない
+    relations:
+      - type: part_of
+        target: eventbridge-bus
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html

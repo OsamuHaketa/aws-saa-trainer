@@ -89,3 +89,51 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: lambda-memory
+    category: compute
+    concept: Lambda のメモリ設定と CPU
+    summary: メモリ（128 MB〜10 GB）を増やすと、CPU の性能もそれに比例して上がる
+    facts:
+      - メモリは 128 MB〜10,240 MB の範囲で設定する
+      - CPU は直接指定できず、メモリに比例して割り当てられる
+      - メモリを増やすと実行時間が短くなり、合計の料金が下がることもある
+    triggers:
+      - Lambda の処理が CPU の不足で遅い
+      - Lambda の CPU を増やしたい
+    pitfalls:
+      - CPU を増やす設定を探しても見つからない。メモリを増やす
+    relations:
+      - type: part_of
+        target: lambda-function
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html
+
+  - id: lambda-event-source-mapping
+    category: compute
+    concept: イベントソースマッピング（SQS / Kinesis / DynamoDB Streams）
+    summary: Lambda がキューやストリームをポーリングし、メッセージをまとめて（バッチで）関数に渡す
+    facts:
+      - SQS、Kinesis、DynamoDB Streams、MSK などは、Lambda 側がポーリングして読み取る
+      - バッチサイズやバッチウィンドウで、一度に処理する件数を調整できる
+      - SQS では、失敗したメッセージだけを返す部分バッチレスポンスを使える
+      - SQS の可視性タイムアウトは、関数のタイムアウトより長くする
+    triggers:
+      - SQS のメッセージを Lambda で処理したい
+      - ストリームのレコードをまとめて処理したい
+    pitfalls:
+      - バッチの一部だけ失敗したのにバッチ全体を失敗にすると、成功したメッセージまで再処理される
+    relations:
+      - type: used_with
+        target: sqs-standard
+    examDomains: [resilient, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html

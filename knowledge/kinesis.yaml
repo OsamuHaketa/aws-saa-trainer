@@ -54,3 +54,51 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: kinesis-shards
+    category: streaming
+    concept: Kinesis Data Streams のシャードとキャパシティモード
+    summary: シャード 1 つで書き込み 1 MB/秒または 1,000 レコード/秒。オンデマンドモードならシャードの管理が不要
+    facts:
+      - 1 シャードあたり、書き込みは 1 MB/秒または 1,000 レコード/秒、読み取りは 2 MB/秒
+      - パーティションキーで、レコードがどのシャードに入るかが決まり、シャード内で順序が保たれる
+      - プロビジョンドモードではシャード数を自分で決め、オンデマンドモードでは自動で調整される
+      - データの保持期間はデフォルト 24 時間で、最大 365 日まで延ばせる
+    triggers:
+      - 書き込みが ProvisionedThroughputExceeded で失敗する
+      - ストリームのスループットを上げたい
+    pitfalls:
+      - 特定のパーティションキーに書き込みが集中すると、1 つのシャードだけが上限に達する
+    relations:
+      - type: part_of
+        target: kinesis-data-streams
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html
+      - https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html
+
+  - id: kinesis-flink
+    category: streaming
+    concept: Amazon Managed Service for Apache Flink
+    summary: ストリーミングデータを Apache Flink（SQL・Java など）でリアルタイムに集計・分析する
+    facts:
+      - Kinesis Data Streams や MSK のデータを、リアルタイムに集計・変換・分析する
+      - サーバーの管理は不要で、Apache Flink のアプリを動かす
+      - 時間の窓（直近 5 分など）での集計や、異常の検出に使う
+    triggers:
+      - ストリームのデータを直近 1 分ごとにリアルタイムに集計したい
+      - ストリーミングデータに SQL で分析をかけたい
+    pitfalls:
+      - S3 に保存したデータをあとから分析するだけなら、Athena などで足りる
+    relations:
+      - type: used_with
+        target: kinesis-data-streams
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html

@@ -136,5 +136,490 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-authorizers:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "apigateway-authorizers"
+    ],
+    "prompt": "モバイルアプリのユーザーは Cognito ユーザープールでログインしている。ログインしたユーザーだけが API Gateway の API を呼べるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cognito オーソライザー",
+        "correct": true,
+        "atomId": "apigateway-authorizers",
+        "why": "ユーザープールが発行したトークンを API Gateway が検証する"
+      },
+      {
+        "id": "b",
+        "text": "API キーと使用量プラン",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "利用量の管理のためのもので、ユーザーの認証ではない"
+      },
+      {
+        "id": "c",
+        "text": "WAF の IP 制限",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "ユーザーのログインとは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "リソースポリシーで全員を許可する",
+        "correct": false,
+        "atomId": "iam-resource-based-policy",
+        "why": "誰でも呼べてしまう"
+      }
+    ],
+    "explanation": "Cognito のユーザー → API = Cognito オーソライザー。API キーは認証に使わない。",
+    "keywords": [
+      "Cognito",
+      "ログインしたユーザーだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-authorizers:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "apigateway-authorizers"
+    ],
+    "prompt": "自社の独自の認証サーバーが発行したトークンで、API Gateway の API を守りたい。検証のロジックは自分で書く。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lambda オーソライザー",
+        "correct": true,
+        "atomId": "apigateway-authorizers",
+        "why": "独自のトークンを Lambda のコードで検証する"
+      },
+      {
+        "id": "b",
+        "text": "Cognito ユーザープールのオーソライザー",
+        "correct": false,
+        "why": "Cognito のトークン専用"
+      },
+      {
+        "id": "c",
+        "text": "IAM 認可",
+        "correct": false,
+        "why": "SigV4 の署名が必要で、独自のトークンは検証できない"
+      },
+      {
+        "id": "d",
+        "text": "使用量プラン",
+        "correct": false,
+        "atomId": "apigateway-throttling",
+        "why": "リクエスト数の管理"
+      }
+    ],
+    "explanation": "独自のトークン = Lambda オーソライザー、Cognito = Cognito オーソライザー、AWS 内部 = IAM 認可。",
+    "keywords": [
+      "独自の認証サーバー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-authorizers:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "apigateway-authorizers"
+    ],
+    "prompt": "外部の利用者の認証のために、API キーだけを発行して API を守っている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "API キーは利用量の管理用で、認証には使わない",
+        "correct": true,
+        "atomId": "apigateway-authorizers",
+        "why": "認証にはオーソライザーや IAM を使う"
+      },
+      {
+        "id": "b",
+        "text": "API キーは 1 つしか発行できない",
+        "correct": false,
+        "why": "複数発行できる"
+      },
+      {
+        "id": "c",
+        "text": "API キーを使うと API が遅くなる",
+        "correct": false,
+        "why": "性能の問題ではない"
+      },
+      {
+        "id": "d",
+        "text": "API キーは HTTPS で送れない",
+        "correct": false,
+        "why": "HTTPS のヘッダーで送る"
+      }
+    ],
+    "explanation": "API キー = 使用量プランの識別用。認証・認可の仕組みとしては使わない。",
+    "keywords": [
+      "API キーだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-throttling:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "apigateway-throttling"
+    ],
+    "prompt": "API Gateway の後ろの DB は毎秒 500 リクエストまでしか処理できない。アクセスの急増から DB を守りたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ステージやメソッドにスロットリングを設定する",
+        "correct": true,
+        "atomId": "apigateway-throttling",
+        "why": "上限を超えたリクエストに 429 を返してバックエンドを守る"
+      },
+      {
+        "id": "b",
+        "text": "API Gateway のキャッシュを無効にする",
+        "correct": false,
+        "atomId": "apigateway-caching",
+        "why": "負荷が増えるだけ"
+      },
+      {
+        "id": "c",
+        "text": "エッジ最適化エンドポイントにする",
+        "correct": false,
+        "atomId": "apigateway-endpoint-types",
+        "why": "接続は速くなるが、リクエスト数は制限されない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda のメモリを増やす",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "DB の処理能力は増えない"
+      }
+    ],
+    "explanation": "API のリクエスト数を制限してバックエンドを守る = スロットリング（非同期にするなら SQS）。",
+    "keywords": [
+      "毎秒 500 リクエスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-throttling:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "apigateway-throttling"
+    ],
+    "prompt": "API Gateway がスロットリングの上限を超えたリクエストに返すのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "429 Too Many Requests",
+        "correct": true,
+        "atomId": "apigateway-throttling",
+        "why": "クライアントは間隔をあけて再試行する"
+      },
+      {
+        "id": "b",
+        "text": "500 Internal Server Error",
+        "correct": false,
+        "why": "バックエンドのエラー"
+      },
+      {
+        "id": "c",
+        "text": "403 Forbidden",
+        "correct": false,
+        "why": "認可の失敗など"
+      },
+      {
+        "id": "d",
+        "text": "504 Gateway Timeout",
+        "correct": false,
+        "why": "バックエンドの応答がタイムアウトしたとき"
+      }
+    ],
+    "explanation": "スロットリング = 429。",
+    "keywords": [
+      "429"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-caching:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "apigateway-caching"
+    ],
+    "prompt": "商品の一覧を返す API に同じリクエストが大量に来る。内容は 5 分ごとにしか変わらない。バックエンドの Lambda の呼び出しを減らすには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "REST API のステージでキャッシュを有効にする",
+        "correct": true,
+        "atomId": "apigateway-caching",
+        "why": "TTL の間は同じ応答をキャッシュから返す"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のプロビジョンド同時実行を増やす",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "呼び出しの回数は減らない"
+      },
+      {
+        "id": "c",
+        "text": "スロットリングの上限を上げる",
+        "correct": false,
+        "atomId": "apigateway-throttling",
+        "why": "呼び出しが増える"
+      },
+      {
+        "id": "d",
+        "text": "API キーを必須にする",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "呼び出しの回数は減らない"
+      }
+    ],
+    "explanation": "同じ応答の繰り返し = API Gateway のキャッシュ（または CloudFront）。",
+    "keywords": [
+      "同じリクエスト",
+      "5 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-caching:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "apigateway-caching",
+      "apigateway-api"
+    ],
+    "prompt": "API Gateway の HTTP API ではなく REST API を選ぶべき要件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャッシュや使用量プランが必要",
+        "correct": true,
+        "atomId": "apigateway-caching",
+        "why": "HTTP API は安くて速いが、機能が少ない"
+      },
+      {
+        "id": "b",
+        "text": "とにかく料金を最も安くしたい",
+        "correct": false,
+        "why": "安いのは HTTP API"
+      },
+      {
+        "id": "c",
+        "text": "Lambda をバックエンドにしたい",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "どちらも Lambda を使える"
+      },
+      {
+        "id": "d",
+        "text": "JWT で認可したい",
+        "correct": false,
+        "why": "HTTP API も JWT オーソライザーを使える"
+      }
+    ],
+    "explanation": "機能が必要（キャッシュ・使用量プラン・WAF など）= REST API、安さ・シンプルさ = HTTP API。",
+    "keywords": [
+      "REST API",
+      "HTTP API"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-endpoint-types:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "apigateway-endpoint-types"
+    ],
+    "prompt": "社内システム用の API を、VPC 内のアプリからだけ呼べるようにし、インターネットには公開したくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベート API にし、VPC エンドポイント経由で呼ぶ",
+        "correct": true,
+        "atomId": "apigateway-endpoint-types",
+        "why": "インターフェイス VPC エンドポイント経由でだけ呼べる"
+      },
+      {
+        "id": "b",
+        "text": "エッジ最適化 API にして IP で制限する",
+        "correct": false,
+        "why": "インターネット向けのエンドポイントになる"
+      },
+      {
+        "id": "c",
+        "text": "リージョン API にして API キーを必須にする",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "インターネットから呼べてしまう"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway をやめて EC2 に Elastic IP を付ける",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "インターネットに公開される"
+      }
+    ],
+    "explanation": "VPC 内専用の API = プライベート API + インターフェイス VPC エンドポイント。",
+    "keywords": [
+      "VPC 内のアプリからだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-endpoint-types:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "apigateway-endpoint-types"
+    ],
+    "prompt": "エッジ最適化 API とリージョン API の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "世界中なら前者、同じリージョンなら後者",
+        "correct": true,
+        "atomId": "apigateway-endpoint-types",
+        "why": "エッジ最適化は CloudFront のエッジを経由する"
+      },
+      {
+        "id": "b",
+        "text": "前者は VPC 内からだけ呼べる",
+        "correct": false,
+        "why": "それはプライベート API"
+      },
+      {
+        "id": "c",
+        "text": "後者はキャッシュを使えない",
+        "correct": false,
+        "atomId": "apigateway-caching",
+        "why": "リージョン API でもキャッシュを使える"
+      },
+      {
+        "id": "d",
+        "text": "前者は WebSocket 専用",
+        "correct": false,
+        "why": "WebSocket は API の種類の話"
+      }
+    ],
+    "explanation": "世界中 = エッジ最適化、同一リージョン（や自前の CloudFront）= リージョン、VPC 内 = プライベート。",
+    "keywords": [
+      "世界中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-api:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "apigateway-api"
+    ],
+    "prompt": "Amazon API Gateway でできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "API を作り、バックエンドの前に置く",
+        "correct": true,
+        "atomId": "apigateway-api",
+        "why": "認可、スロットリング、キャッシュなども提供する"
+      },
+      {
+        "id": "b",
+        "text": "コンテンツをエッジでキャッシュして配信する",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "CloudFront の役割"
+      },
+      {
+        "id": "c",
+        "text": "TCP の通信をインスタンスに振り分ける",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB の役割"
+      },
+      {
+        "id": "d",
+        "text": "メッセージをキューにためる",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "SQS の役割"
+      }
+    ],
+    "explanation": "API Gateway = API の入口（認可・スロットリング・キャッシュ）。",
+    "keywords": [
+      "API"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-api:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "apigateway-api"
+    ],
+    "prompt": "「チャットアプリ」「サーバーからクライアントへリアルタイムにプッシュ」「サーバーレス」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "WebSocket API",
+        "correct": true,
+        "atomId": "apigateway-api",
+        "why": "双方向の通信を保ち、サーバーからメッセージを送れる"
+      },
+      {
+        "id": "b",
+        "text": "REST API",
+        "correct": false,
+        "why": "リクエストに応答するだけで、サーバーからプッシュできない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SQS のキュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キューで、クライアントへのプッシュはしない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信"
+      }
+    ],
+    "explanation": "双方向・リアルタイム = WebSocket API。",
+    "keywords": [
+      "リアルタイムにプッシュ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

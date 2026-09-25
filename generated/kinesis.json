@@ -222,5 +222,354 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-shards:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kinesis-shards"
+    ],
+    "prompt": "Kinesis Data Streams のシャードは 10 個あるのに、1 つのシャードだけ書き込みが上限に達して失敗する。原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パーティションキーが偏っている",
+        "correct": true,
+        "atomId": "kinesis-shards",
+        "why": "キーを分散させるか、偏ったシャードを分割する"
+      },
+      {
+        "id": "b",
+        "text": "保持期間が 24 時間しかない",
+        "correct": false,
+        "why": "書き込みの失敗の原因ではない"
+      },
+      {
+        "id": "c",
+        "text": "Firehose を使っていない",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "取り込みの上限とは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "コンシューマーが 1 つしかない",
+        "correct": false,
+        "why": "読み取り側の数で、書き込みの失敗の原因ではない"
+      }
+    ],
+    "explanation": "特定のシャードだけ詰まる = パーティションキーの偏り（ホットシャード）。",
+    "keywords": [
+      "1 つのシャードだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-shards:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "kinesis-shards"
+    ],
+    "prompt": "Kinesis Data Streams の 1 シャードあたりの書き込みの上限は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "1 MB/秒 または 1,000 レコード/秒",
+        "correct": true,
+        "atomId": "kinesis-shards",
+        "why": "読み取りは 2 MB/秒"
+      },
+      {
+        "id": "b",
+        "text": "10 MB/秒 または 10,000 レコード/秒",
+        "correct": false,
+        "why": "1 MB/秒・1,000 レコード/秒"
+      },
+      {
+        "id": "c",
+        "text": "2 MB/秒 または 2,000 レコード/秒",
+        "correct": false,
+        "why": "2 MB/秒は読み取りの上限"
+      },
+      {
+        "id": "d",
+        "text": "上限はない",
+        "correct": false,
+        "why": "シャードごとに上限がある"
+      }
+    ],
+    "explanation": "書き込み 1 MB/秒・1,000 件/秒、読み取り 2 MB/秒（シャードごと）。",
+    "keywords": [
+      "1 シャードあたり"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-shards:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kinesis-shards"
+    ],
+    "prompt": "Kinesis Data Streams の書き込み量が日によって大きく変わり、シャード数の調整が手間になっている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドキャパシティモードにする",
+        "correct": true,
+        "atomId": "kinesis-shards",
+        "why": "スループットに応じて自動で調整される"
+      },
+      {
+        "id": "b",
+        "text": "シャードを最大数まで増やしておく",
+        "correct": false,
+        "why": "使わない分まで払うことになる"
+      },
+      {
+        "id": "c",
+        "text": "SQS FIFO に置き換える",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "複数のアプリで読み直せなくなる"
+      },
+      {
+        "id": "d",
+        "text": "保持期間を 365 日にする",
+        "correct": false,
+        "why": "スループットは変わらない"
+      }
+    ],
+    "explanation": "シャード管理をなくす = オンデマンドモード。",
+    "keywords": [
+      "シャード数の調整が手間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-flink:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kinesis-flink"
+    ],
+    "prompt": "クレジットカードの決済のストリームを、直近 5 分の件数でリアルタイムに集計し、異常を検知したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Apache Flink のマネージドサービス",
+        "correct": true,
+        "atomId": "kinesis-flink",
+        "why": "ストリームを時間の窓でリアルタイムに集計できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 に保存したデータへの問い合わせで、リアルタイムの集計ではない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Redshift の夜間バッチ",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "リアルタイムではない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Glue のクローラー",
+        "correct": false,
+        "atomId": "glue-etl",
+        "why": "データカタログの作成"
+      }
+    ],
+    "explanation": "ストリームのリアルタイム分析 = Managed Service for Apache Flink。",
+    "keywords": [
+      "直近 5 分",
+      "リアルタイム"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-flink:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "kinesis-flink"
+    ],
+    "prompt": "「ストリーミングデータ」「時間の窓で集計」「Apache Flink」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Apache Flink のマネージドサービス",
+        "correct": true,
+        "atomId": "kinesis-flink",
+        "why": "Flink のアプリをサーバー管理なしで動かす"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "配信のサービスで、集計の処理は限られる"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EMR",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "Spark などのクラスターを動かすが、この問いの定番ではない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチ処理"
+      }
+    ],
+    "explanation": "Flink = Managed Service for Apache Flink。",
+    "keywords": [
+      "Apache Flink"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-firehose:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "kinesis-firehose"
+    ],
+    "prompt": "Amazon Data Firehose の配信先として使えるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 や Redshift、OpenSearch",
+        "correct": true,
+        "atomId": "kinesis-firehose",
+        "why": "HTTP エンドポイントなどにも、バッファしてまとめて届ける"
+      },
+      {
+        "id": "b",
+        "text": "EBS ボリュームとインスタンスストアだけ",
+        "correct": false,
+        "why": "ブロックストレージには配信しない"
+      },
+      {
+        "id": "c",
+        "text": "EC2 のメモリと RDS のテーブルだけ",
+        "correct": false,
+        "why": "EC2 や RDS には直接配信しない"
+      },
+      {
+        "id": "d",
+        "text": "SQS キューと SNS トピックだけ",
+        "correct": false,
+        "why": "SQS や SNS は配信先ではない"
+      }
+    ],
+    "explanation": "Firehose = S3・Redshift・OpenSearch・Splunk・HTTP など。",
+    "keywords": [
+      "配信先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-firehose:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kinesis-firehose"
+    ],
+    "prompt": "1 秒以内に処理が必要な不正検知のデータを、Firehose で S3 に配信してから分析している。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バッファするのでリアルタイムに向かない",
+        "correct": true,
+        "atomId": "kinesis-firehose",
+        "why": "リアルタイムなら Data Streams と Flink や Lambda"
+      },
+      {
+        "id": "b",
+        "text": "Firehose は S3 に配信できない",
+        "correct": false,
+        "why": "S3 に配信できる"
+      },
+      {
+        "id": "c",
+        "text": "Firehose はデータを暗号化できない",
+        "correct": false,
+        "why": "暗号化できる"
+      },
+      {
+        "id": "d",
+        "text": "Firehose は 1 日 1 回しか配信しない",
+        "correct": false,
+        "why": "バッファのサイズや時間で配信する"
+      }
+    ],
+    "explanation": "Firehose = ニアリアルタイム（バッファの間の遅延）。1 秒以内の処理は Data Streams。",
+    "keywords": [
+      "1 秒以内"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-data-streams:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kinesis-data-streams"
+    ],
+    "prompt": "注文の処理ごとに 1 件ずつ確実に処理して削除したいだけなのに、Kinesis Data Streams を使って複雑になっている。より適切なのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "1 件ずつ処理して削除するキューの用途に合う"
+      },
+      {
+        "id": "b",
+        "text": "Kinesis のシャードを増やす",
+        "correct": false,
+        "atomId": "kinesis-shards",
+        "why": "複雑さは変わらない"
+      },
+      {
+        "id": "c",
+        "text": "Firehose で S3 に保存する",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "注文の処理の仕組みにならない"
+      },
+      {
+        "id": "d",
+        "text": "CloudWatch Logs",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログの保存"
+      }
+    ],
+    "explanation": "読み直し・複数の読み手・順序が不要な単純な処理 = SQS。",
+    "keywords": [
+      "1 件ずつ",
+      "削除したい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

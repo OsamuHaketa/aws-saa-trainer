@@ -135,3 +135,49 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: sqs-retention
+    category: messaging
+    concept: SQS のメッセージ保持期間
+    summary: 処理されないメッセージは保持期間（デフォルト 4 日、最大 14 日）を過ぎると削除される
+    facts:
+      - 保持期間は 1 分〜14 日で設定でき、デフォルトは 4 日
+      - 保持期間を過ぎたメッセージは、処理されていなくても削除される
+      - 処理側の長い停止に備えるなら、保持期間を長くする
+    triggers:
+      - 処理側が数日止まってもメッセージを失いたくない
+      - メッセージを最大どれくらい保持できるか
+    pitfalls:
+      - デフォルトの 4 日のまま処理側が 1 週間止まると、メッセージが消える
+    relations:
+      - type: part_of
+        target: sqs-standard
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html
+
+  - id: sqs-large-messages
+    category: messaging
+    concept: 大きなメッセージの扱い（S3 に本体を置く）
+    summary: SQS のメッセージサイズの上限を超えるデータは S3 に置き、メッセージには S3 の参照だけを入れる
+    facts:
+      - 1 つのメッセージのサイズには上限がある
+      - 上限を超えるデータは S3 に保存し、メッセージにはそのキーを入れる
+      - 拡張クライアントライブラリを使うと、S3 への保存と取得を自動で行える
+    triggers:
+      - SQS で大きなファイルやデータを渡したい
+      - メッセージサイズの上限を超える
+    pitfalls:
+      - 大きなデータを分割して複数のメッセージで送ると、順序や欠落の管理が複雑になる
+    relations:
+      - type: used_with
+        target: s3-standard
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html

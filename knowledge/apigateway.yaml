@@ -27,3 +27,93 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html
+
+  - id: apigateway-authorizers
+    category: compute
+    concept: API Gateway の認可（Cognito オーソライザー / Lambda オーソライザー / IAM）
+    summary: API の呼び出し元を、Cognito のトークン、独自の Lambda、IAM の署名のどれかで確認する
+    facts:
+      - Cognito ユーザープールのオーソライザーは、ユーザープールが発行したトークン（JWT）を検証する
+      - Lambda オーソライザーは、独自のトークンやヘッダーを自分のコードで検証する
+      - IAM 認可は、SigV4 で署名されたリクエストを IAM の権限で確認する（AWS 内のサービスや IAM ロール向け）
+    triggers:
+      - Cognito でログインしたユーザーだけに API を使わせたい
+      - 独自の認証サーバーのトークンで API を守りたい
+      - AWS 内の別のサービスからだけ API を呼ばせたい
+    pitfalls:
+      - 認証の処理をバックエンドの Lambda ごとに実装すると、重複して漏れも起きやすい
+    relations:
+      - type: used_with
+        target: cognito-user-pool
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html
+
+  - id: apigateway-throttling
+    category: compute
+    concept: API Gateway のスロットリング
+    summary: 1 秒あたりのリクエスト数（レート）と瞬間的な上限（バースト）を決め、超えたら 429 を返す
+    facts:
+      - アカウント、ステージ、メソッド、使用量プラン（API キー）の単位で上限を設定できる
+      - 上限を超えたリクエストには 429 Too Many Requests を返す
+      - バックエンドを急激な負荷から守れる
+    triggers:
+      - バックエンドを過負荷から守りたい
+      - 利用者ごとにリクエスト数を制限したい
+      - 429 エラー
+    pitfalls:
+      - 429 が返るのはバックエンドの故障ではなく、上限に達したため。上限の引き上げかクライアントの再試行で対応する
+    relations:
+      - type: part_of
+        target: apigateway-api
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
+
+  - id: apigateway-caching
+    category: caching
+    concept: API Gateway のキャッシュ
+    summary: ステージにキャッシュを有効にし、同じリクエストへの応答をバックエンドを呼ばずに返す
+    facts:
+      - REST API のステージ単位で有効にし、TTL（デフォルト 300 秒）を設定する
+      - バックエンドの Lambda や DB の呼び出しを減らし、レイテンシを下げる
+      - キャッシュの容量に応じて時間単位の料金がかかる
+    triggers:
+      - 同じ API の同じリクエストが大量に来る
+      - バックエンドの呼び出しを減らしたい
+    pitfalls:
+      - HTTP API ではキャッシュの機能を使えない（REST API の機能）
+    relations:
+      - type: part_of
+        target: apigateway-api
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html
+
+  - id: apigateway-endpoint-types
+    category: compute
+    concept: API のエンドポイントタイプ（エッジ最適化 / リージョン / プライベート）
+    summary: 世界中の利用者向けはエッジ最適化、同じリージョンの利用者はリージョン、VPC 内だけならプライベート
+    facts:
+      - エッジ最適化は、CloudFront のエッジを経由して世界中のクライアントからの接続を速くする
+      - リージョンは、同じリージョンのクライアント向けで、自分の CloudFront と組み合わせることもできる
+      - プライベートは、インターフェイス VPC エンドポイント経由で VPC 内からだけ呼べる
+    triggers:
+      - 世界中から API を呼ばれる
+      - VPC 内からだけ API を呼ばせたい
+    pitfalls:
+      - 社内専用の API をパブリックなエンドポイントで公開すると、インターネットから呼ばれうる
+    relations:
+      - type: used_with
+        target: vpc-interface-endpoint
+    examDomains: [performance, secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html

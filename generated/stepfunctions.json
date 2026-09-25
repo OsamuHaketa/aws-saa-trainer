@@ -44,5 +44,226 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-standard-express:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-standard-express"
+    ],
+    "prompt": "IoT のデータを毎秒数千件、数秒で終わる 3 つの変換処理に通したい。コストを抑えたい。Step Functions のどのワークフロー？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Express ワークフロー",
+        "correct": true,
+        "atomId": "stepfunctions-standard-express",
+        "why": "短時間・大量の実行に向き、料金も安い"
+      },
+      {
+        "id": "b",
+        "text": "標準ワークフロー",
+        "correct": false,
+        "why": "長時間の処理向けで、大量の実行ではコストが高い"
+      },
+      {
+        "id": "c",
+        "text": "AWS Batch のジョブキュー",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "Step Functions のワークフローではない"
+      },
+      {
+        "id": "d",
+        "text": "EC2 で自作のワークフロー",
+        "correct": false,
+        "why": "管理が増える"
+      }
+    ],
+    "explanation": "短時間・大量 = Express、長時間・exactly-once = 標準。",
+    "keywords": [
+      "毎秒数千件",
+      "数秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-standard-express:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-standard-express"
+    ],
+    "prompt": "Step Functions の標準ワークフローと Express ワークフローの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は最長 1 年、後者は最長 5 分",
+        "correct": true,
+        "atomId": "stepfunctions-standard-express",
+        "why": "標準は exactly-once、Express は大量実行向けで at-least-once"
+      },
+      {
+        "id": "b",
+        "text": "前者は最長 5 分、後者は最長 1 年",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "後者は Lambda を呼べない",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "どちらも呼べる"
+      },
+      {
+        "id": "d",
+        "text": "前者は分岐や並列を使えない",
+        "correct": false,
+        "why": "どちらも使える"
+      }
+    ],
+    "explanation": "標準 = 長時間・exactly-once、Express = 5 分以内・大量・安い。",
+    "keywords": [
+      "1 年",
+      "5 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-callback:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-callback"
+    ],
+    "prompt": "経費精算のワークフローで、上司がメールのリンクから承認するまで、次の処理を止めて待ちたい。承認まで数日かかることもある。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "タスクトークンを渡して、承認時に返してもらう",
+        "correct": true,
+        "atomId": "stepfunctions-callback",
+        "why": "待機中は料金のかかる処理を動かさずに止めておける"
+      },
+      {
+        "id": "b",
+        "text": "Lambda で承認の状態を 1 分ごとに確認し続ける",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "無駄な実行が増え、Lambda の 15 分の上限もある"
+      },
+      {
+        "id": "c",
+        "text": "Express ワークフローで待つ",
+        "correct": false,
+        "atomId": "stepfunctions-standard-express",
+        "why": "最長 5 分なので数日は待てない"
+      },
+      {
+        "id": "d",
+        "text": "EC2 で待機用のプロセスを動かし続ける",
+        "correct": false,
+        "why": "サーバーの管理と料金が無駄"
+      }
+    ],
+    "explanation": "人の承認待ち = 標準ワークフロー + タスクトークン（.waitForTaskToken）。",
+    "keywords": [
+      "承認するまで",
+      "数日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-state-machine:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "stepfunctions-state-machine"
+    ],
+    "prompt": "「複数の Lambda を順番・分岐・並列で実行」「失敗時の再試行とエラー処理」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Step Functions",
+        "correct": true,
+        "atomId": "stepfunctions-state-machine",
+        "why": "ワークフローをステートマシンとして定義する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キューで、ワークフローの制御はしない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "通知の配信"
+      },
+      {
+        "id": "d",
+        "text": "EventBridge のスケジュール",
+        "correct": false,
+        "atomId": "eventbridge-scheduler",
+        "why": "定期実行"
+      }
+    ],
+    "explanation": "処理の順序・分岐・再試行の制御 = Step Functions。",
+    "keywords": [
+      "順番・分岐・並列"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-state-machine:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-state-machine"
+    ],
+    "prompt": "3 つの Lambda を、1 つ目が 2 つ目を、2 つ目が 3 つ目を直接呼び出すようにつないだ。エラー処理と再試行が複雑になっている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Step Functions でつなぐ",
+        "correct": true,
+        "atomId": "stepfunctions-state-machine",
+        "why": "各 Lambda は自分の処理だけに集中できる"
+      },
+      {
+        "id": "b",
+        "text": "3 つを 1 つの Lambda にまとめる",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "15 分の上限や再試行の粒度の問題が残る"
+      },
+      {
+        "id": "c",
+        "text": "Lambda のタイムアウトを延ばす",
+        "correct": false,
+        "why": "構造の問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda を EC2 に移す",
+        "correct": false,
+        "why": "管理が増えるだけ"
+      }
+    ],
+    "explanation": "Lambda から Lambda を直接呼ぶ連鎖より、Step Functions でオーケストレーションする。",
+    "keywords": [
+      "直接呼び出す"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
