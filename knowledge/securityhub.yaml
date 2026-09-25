@@ -1,0 +1,30 @@
+# Security Hub の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: securityhub
+
+atoms:
+  - id: securityhub-findings
+    category: threat-detection
+    concept: AWS Security Hub
+    summary: GuardDuty や Inspector、Macie などの検出結果を集約し、セキュリティ基準への準拠を継続的にチェックする
+    facts:
+      - GuardDuty、Inspector、Macie、IAM Access Analyzer などの検出結果を 1 か所に集める
+      - AWS の基礎的なセキュリティのベストプラクティスや CIS などの基準で、設定を自動でチェックする
+      - Organizations と連携し、組織全体の状況を管理者アカウントで確認できる
+      - EventBridge と組み合わせて、検出結果への対応を自動化できる
+    triggers:
+      - 複数のセキュリティサービスの検出結果をまとめて見たい
+      - セキュリティ基準への準拠状況を一覧したい
+    pitfalls:
+      - Security Hub 自体は脅威を検出するサービスではない。GuardDuty などを有効にして結果を集める
+    relations:
+      - type: used_with
+        target: guardduty-detector
+      - type: used_with
+        target: config-rules
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html

@@ -1,0 +1,71 @@
+# CloudFormation の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: cloudformation
+
+atoms:
+  - id: cloudformation-stack
+    category: operations
+    concept: AWS CloudFormation（テンプレートとスタック）
+    summary: テンプレートでインフラをコードとして定義し、スタックとしてまとめて作成・更新・削除する
+    facts:
+      - JSON や YAML のテンプレートに、作るリソースと設定を書く
+      - 同じテンプレートから、同じ構成の環境を何度でも作れる（開発・本番・DR 用のリージョンなど）
+      - 変更セットで、更新したときに何が変わるかを事前に確認できる
+      - 作成や更新に失敗すると、自動でロールバックする
+    triggers:
+      - 同じ構成の環境を繰り返し作りたい
+      - インフラをコードで管理したい
+      - DR 用のリージョンに環境をすぐ作りたい
+    pitfalls:
+      - コンソールで手作業で作ると、環境ごとの設定の違いや作業の漏れが起きる
+    relations:
+      - type: used_with
+        target: patterns-pilot-light
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html
+
+  - id: cloudformation-stacksets
+    category: operations
+    concept: CloudFormation StackSets
+    summary: 1 つのテンプレートから、複数のアカウントとリージョンにスタックをまとめて展開する
+    facts:
+      - 管理者アカウントから、指定したアカウントとリージョンにスタックを作成・更新する
+      - Organizations と連携すると、新しく組織に入ったアカウントにも自動で展開できる
+    triggers:
+      - 全アカウントに同じ IAM ロールや設定を展開したい
+      - 複数のリージョンに同じリソースを作りたい
+    pitfalls:
+      - アカウントごとに手でスタックを作ると、漏れや違いが出る
+    relations:
+      - type: part_of
+        target: cloudformation-stack
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html
+
+  - id: cloudformation-drift
+    category: operations
+    concept: ドリフト検出
+    summary: スタックのリソースが、テンプレートの定義から手作業などで変更されていないかを検出する
+    facts:
+      - スタックのリソースの実際の設定と、テンプレートの設定の違い（ドリフト）を検出する
+      - コンソールなどで直接変更されたリソースを見つけられる
+    triggers:
+      - 手作業で設定が変えられていないか確認したい
+      - テンプレートと実際の環境の違い
+    pitfalls:
+      - スタックで作ったリソースを手で変更すると、次のスタック更新で想定外の動きになる
+    relations:
+      - type: part_of
+        target: cloudformation-stack
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html

@@ -1,0 +1,271 @@
+[
+  {
+    "id": "infrastructure-region-az:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "infrastructure-region-az"
+    ],
+    "prompt": "規制で、顧客の個人データを日本国内に保存する必要がある。リージョンを選ぶときに最優先するのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "データの所在地の要件（日本のリージョン）",
+        "correct": true,
+        "atomId": "infrastructure-region-az",
+        "why": "規制は料金や性能より優先する"
+      },
+      {
+        "id": "b",
+        "text": "最も料金が安いリージョン",
+        "correct": false,
+        "why": "規制に違反するおそれがある"
+      },
+      {
+        "id": "c",
+        "text": "最も新しいサービスが使えるリージョン",
+        "correct": false,
+        "why": "規制が先"
+      },
+      {
+        "id": "d",
+        "text": "開発者の住所に近いリージョン",
+        "correct": false,
+        "why": "要件ではない"
+      }
+    ],
+    "explanation": "リージョンの選び方 = 規制（データの所在地）→ レイテンシ → サービスの有無 → 料金。",
+    "keywords": [
+      "日本国内"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-region-az:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "infrastructure-region-az"
+    ],
+    "prompt": "アベイラビリティーゾーン（AZ）の説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リージョン内の、独立した電源・ネットワークを持つデータセンター群",
+        "correct": true,
+        "atomId": "infrastructure-region-az",
+        "why": "AZ 同士は低レイテンシのネットワークでつながる"
+      },
+      {
+        "id": "b",
+        "text": "世界中に数百ある、CloudFront のキャッシュの拠点",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "それはエッジロケーション"
+      },
+      {
+        "id": "c",
+        "text": "通信事業者の 5G ネットワーク内の拠点",
+        "correct": false,
+        "atomId": "infrastructure-wavelength",
+        "why": "それは Wavelength"
+      },
+      {
+        "id": "d",
+        "text": "自社のデータセンターに置く AWS のラック",
+        "correct": false,
+        "atomId": "infrastructure-outposts",
+        "why": "それは Outposts"
+      }
+    ],
+    "explanation": "リージョン > AZ（独立したデータセンター群）。エッジロケーションは CDN などの拠点。",
+    "keywords": [
+      "AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-local-zones:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "infrastructure-local-zones"
+    ],
+    "prompt": "映像制作の会社が、近くにリージョンのない大都市で、編集作業のために 1 桁ミリ秒のレイテンシで EC2 を使いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Local Zones",
+        "correct": true,
+        "atomId": "infrastructure-local-zones",
+        "why": "大都市の近くにリージョンを拡張し、超低レイテンシを提供する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Wavelength",
+        "correct": false,
+        "atomId": "infrastructure-wavelength",
+        "why": "5G のモバイル端末向け"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信で、EC2 の実行場所ではない"
+      },
+      {
+        "id": "d",
+        "text": "Global Accelerator",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "経路の最適化で、処理の場所は遠いまま"
+      }
+    ],
+    "explanation": "特定の都市で超低レイテンシの計算 = Local Zones。",
+    "keywords": [
+      "大都市",
+      "1 桁ミリ秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-wavelength:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "infrastructure-wavelength"
+    ],
+    "prompt": "「5G」「モバイル端末に超低レイテンシ」「通信事業者のネットワーク内」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Wavelength",
+        "correct": true,
+        "atomId": "infrastructure-wavelength",
+        "why": "5G ネットワークの中で AWS のサービスを動かす"
+      },
+      {
+        "id": "b",
+        "text": "AWS Local Zones",
+        "correct": false,
+        "atomId": "infrastructure-local-zones",
+        "why": "大都市の近くのリージョンの拡張"
+      },
+      {
+        "id": "c",
+        "text": "AWS Outposts",
+        "correct": false,
+        "atomId": "infrastructure-outposts",
+        "why": "自社のデータセンターに置く"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "専用線"
+      }
+    ],
+    "explanation": "5G = Wavelength。",
+    "keywords": [
+      "5G"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-outposts:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "infrastructure-outposts"
+    ],
+    "prompt": "工場の設備と数ミリ秒で連携し、データも工場の外に出せない。それでも AWS と同じ API とツールで EC2 や RDS を運用したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Outposts",
+        "correct": true,
+        "atomId": "infrastructure-outposts",
+        "why": "AWS のハードウェアを自社に置き、AWS と同じ仕組みで使う"
+      },
+      {
+        "id": "b",
+        "text": "AWS Local Zones",
+        "correct": false,
+        "atomId": "infrastructure-local-zones",
+        "why": "AWS の拠点で、自社の施設内ではない"
+      },
+      {
+        "id": "c",
+        "text": "Storage Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ストレージの連携で、EC2 や RDS は動かせない"
+      },
+      {
+        "id": "d",
+        "text": "Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "データの移行やエッジでの一時的な処理向け"
+      }
+    ],
+    "explanation": "自社のデータセンターで AWS のサービス = Outposts。",
+    "keywords": [
+      "工場の外に出せない",
+      "同じ API"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-outposts:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "infrastructure-outposts"
+    ],
+    "prompt": "「オンプレミスに AWS のラック」「AWS が保守」「同じ API で EC2 を使う」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Outposts",
+        "correct": true,
+        "atomId": "infrastructure-outposts",
+        "why": "AWS のインフラを自社のデータセンターに延ばす"
+      },
+      {
+        "id": "b",
+        "text": "AWS Wavelength",
+        "correct": false,
+        "atomId": "infrastructure-wavelength",
+        "why": "5G のネットワーク内"
+      },
+      {
+        "id": "c",
+        "text": "VPN CloudHub",
+        "correct": false,
+        "atomId": "vpc-vpn-cloudhub",
+        "why": "拠点同士の VPN"
+      },
+      {
+        "id": "d",
+        "text": "Storage Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ストレージの連携"
+      }
+    ],
+    "explanation": "オンプレミスに AWS = Outposts。",
+    "keywords": [
+      "AWS のラック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

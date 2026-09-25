@@ -1,0 +1,89 @@
+[
+  {
+    "id": "securityhub-findings:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "securityhub-findings"
+    ],
+    "prompt": "組織の全アカウントの GuardDuty・Inspector・Macie の検出結果を 1 か所にまとめ、セキュリティ基準への準拠状況も見たい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Security Hub",
+        "correct": true,
+        "atomId": "securityhub-findings",
+        "why": "検出結果を集約し、基準に沿ったチェックも行う"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Detective",
+        "correct": false,
+        "atomId": "detective-investigation",
+        "why": "個別の問題の調査"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config アグリゲーター",
+        "correct": false,
+        "atomId": "config-aggregator",
+        "why": "設定の準拠状況の集約で、各サービスの検出結果は集めない"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail の組織の証跡",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の記録"
+      }
+    ],
+    "explanation": "セキュリティの検出結果の集約 + 基準のチェック = Security Hub。",
+    "keywords": [
+      "1 か所にまとめ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "securityhub-findings:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "securityhub-findings"
+    ],
+    "prompt": "不審な API 呼び出しを検出するため、Security Hub だけを有効にし、GuardDuty は有効にしていない。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "脅威を検出するのは GuardDuty",
+        "correct": true,
+        "atomId": "securityhub-findings",
+        "why": "Security Hub は集約役。検出するサービスを有効にして結果を集める"
+      },
+      {
+        "id": "b",
+        "text": "Security Hub は 1 つのリージョンでしか使えない",
+        "correct": false,
+        "why": "各リージョンで有効にし、集約もできる"
+      },
+      {
+        "id": "c",
+        "text": "Security Hub は料金がかからない",
+        "correct": false,
+        "why": "料金はかかる"
+      },
+      {
+        "id": "d",
+        "text": "Security Hub は検出結果を削除する",
+        "correct": false,
+        "why": "削除はしない"
+      }
+    ],
+    "explanation": "見つける = GuardDuty / Inspector / Macie、集める・評価する = Security Hub、調べる = Detective。",
+    "keywords": [
+      "Security Hub だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

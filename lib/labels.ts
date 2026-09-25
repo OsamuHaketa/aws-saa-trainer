@@ -66,6 +66,26 @@ export const SERVICE_LABEL: Record<string, string> = {
   quicksight: "QuickSight",
   opensearch: "OpenSearch",
   patterns: "設計パターン",
+  infrastructure: "グローバルインフラ",
+  cloudformation: "CloudFormation",
+  cost: "コスト管理",
+  trustedadvisor: "Trusted Advisor",
+  xray: "X-Ray",
+  securityhub: "Security Hub",
+  detective: "Detective",
+  memorydb: "MemoryDB",
+  documentdb: "DocumentDB",
+  neptune: "Neptune",
+  keyspaces: "Keyspaces",
+  timestream: "Timestream",
+  appsync: "AppSync",
+  mq: "Amazon MQ",
+  msk: "MSK",
+  transfer: "Transfer Family",
+  mgn: "Application Migration Service",
+  drs: "Elastic Disaster Recovery",
+  lakeformation: "Lake Formation",
+  ai: "AI / ML サービス",
 };
 
 export const serviceLabel = (s: string) => SERVICE_LABEL[s] ?? s.toUpperCase();
@@ -111,6 +131,9 @@ export const CATEGORY_LABEL: Record<string, string> = {
   analytics: "分析",
   dr: "災害対策（DR）",
   design: "設計の原則",
+  infrastructure: "インフラ",
+  cost: "コスト管理",
+  ai: "AI / 機械学習",
 };
 
 export const categoryLabel = (c: string) => CATEGORY_LABEL[c] ?? c;

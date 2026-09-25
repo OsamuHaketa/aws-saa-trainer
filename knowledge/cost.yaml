@@ -1,0 +1,93 @@
+# コスト管理の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: cost
+
+atoms:
+  - id: cost-explorer
+    category: cost
+    concept: AWS Cost Explorer
+    summary: 過去のコストと使用量をグラフで分析し、将来のコストを予測する。RI や Savings Plans の推奨も出す
+    facts:
+      - サービス、アカウント、タグなどでコストを分けて分析できる
+      - 過去のデータから将来のコストを予測する
+      - RI や Savings Plans の購入の推奨と、使用率・カバー率を確認できる
+    triggers:
+      - どのサービスでコストが増えたか調べたい
+      - 来月のコストを予測したい
+    pitfalls:
+      - 予算を超えたときの通知には AWS Budgets を使う
+    relations:
+      - type: used_with
+        target: ec2-savings-plans
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html
+
+  - id: cost-budgets
+    category: cost
+    concept: AWS Budgets
+    summary: コストや使用量の予算を決め、超えそう・超えたときに通知し、必要ならアクションを実行する
+    facts:
+      - 月などの期間で、コスト・使用量・RI や Savings Plans の使用率の予算を作れる
+      - 実績や予測がしきい値を超えると、メールや SNS で通知する
+      - 予算アクションで、IAM ポリシーや SCP を適用したり、EC2 や RDS を停止したりできる
+    triggers:
+      - 月の予算を超えそうになったら通知してほしい
+      - 予算を超えたら自動で権限を制限したい
+    pitfalls:
+      - Cost Explorer はコストの分析のためのもので、予算の超過を通知する機能ではない
+    relations:
+      - type: confused_with
+        target: cost-explorer
+        distinction: Cost Explorer は過去のコストの分析と予測。Budgets は予算を決め、超えそうなときに通知やアクションを実行する
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html
+
+  - id: cost-allocation-tags
+    category: cost
+    concept: コスト配分タグ
+    summary: リソースに付けたタグを有効にし、部署やプロジェクトごとにコストを集計する
+    facts:
+      - リソースのタグ（例 Project、CostCenter）を、請求の画面でコスト配分タグとして有効にする
+      - 有効にしたあとのコストが、タグごとに Cost Explorer やレポートで集計される
+      - AWS が付けるタグ（aws:createdBy など）と、利用者が付けるタグがある
+    triggers:
+      - 部署ごとにコストを分けたい
+      - プロジェクト別の請求を出したい
+    pitfalls:
+      - タグを付けても、コスト配分タグとして有効にしないと請求の集計に使えない
+    relations:
+      - type: used_with
+        target: cost-explorer
+    examDomains: [cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html
+
+  - id: cost-anomaly-detection
+    category: cost
+    concept: AWS Cost Anomaly Detection
+    summary: 機械学習でいつものコストのパターンを学び、異常な増加を検出して通知する
+    facts:
+      - しきい値を決めなくても、過去のパターンから外れたコストの増加を見つける
+      - サービスやアカウントなどの単位で監視し、根本原因の候補も示す
+    triggers:
+      - 設定ミスによる急なコストの増加に早く気付きたい
+      - しきい値を決めずに異常を検出したい
+    pitfalls:
+      - 決まった金額を超えたかどうかの通知だけなら Budgets で足りる
+    relations:
+      - type: used_with
+        target: cost-budgets
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html

@@ -1,0 +1,28 @@
+# Trusted Advisor の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: trustedadvisor
+
+atoms:
+  - id: trustedadvisor-checks
+    category: operations
+    concept: AWS Trusted Advisor
+    summary: アカウントのリソースをベストプラクティスと照らし、コスト・セキュリティ・耐障害性・性能・上限の改善点を示す
+    facts:
+      - コスト最適化、パフォーマンス、セキュリティ、耐障害性、サービスクォータ、運用上の優秀性の観点でチェックする
+      - 使われていない EC2 や Elastic IP、公開されている S3 バケット、MFA のないルートユーザーなどを見つける
+      - すべてのチェックを使うには、ビジネス以上のサポートプランが必要
+    triggers:
+      - アカウント全体の改善点をまとめて知りたい
+      - サービスの上限に近づいていないか確認したい
+    pitfalls:
+      - Trusted Advisor は推奨を示すだけで、自動では直さない
+    relations:
+      - type: confused_with
+        target: ec2-compute-optimizer
+        distinction: Trusted Advisor はコスト・セキュリティ・上限などアカウント全体を幅広くチェックする。Compute Optimizer は使用状況を機械学習で分析し、EC2 などの最適なサイズを詳しく推奨する
+    examDomains: [cost, secure, resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html

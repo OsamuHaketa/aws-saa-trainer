@@ -1,0 +1,91 @@
+[
+  {
+    "id": "detective-investigation:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "detective-investigation"
+    ],
+    "prompt": "GuardDuty が「不審な IP からの API 呼び出し」を検出した。関係するユーザーや IP、リソースの動きを時系列でたどり、根本原因を調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Detective",
+        "correct": true,
+        "atomId": "detective-investigation",
+        "why": "行動のつながりを分析して調査を助ける"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データの検出"
+      },
+      {
+        "id": "d",
+        "text": "AWS Budgets",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "予算の管理"
+      }
+    ],
+    "explanation": "検出（GuardDuty）→ 調査（Detective）。",
+    "keywords": [
+      "根本原因を調べたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "detective-investigation:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "detective-investigation",
+      "guardduty-detector"
+    ],
+    "prompt": "GuardDuty と Detective の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は脅威を見つけ、後者は原因を調べる",
+        "correct": true,
+        "atomId": "detective-investigation",
+        "why": "Detective は行動のグラフで調査を助ける"
+      },
+      {
+        "id": "b",
+        "text": "前者は S3 の機密データ、後者は脆弱性",
+        "correct": false,
+        "why": "それは Macie と Inspector"
+      },
+      {
+        "id": "c",
+        "text": "後者は通信を自動で遮断する",
+        "correct": false,
+        "why": "どちらも遮断はしない"
+      },
+      {
+        "id": "d",
+        "text": "どちらも同じ機能",
+        "correct": false,
+        "why": "役割が違う"
+      }
+    ],
+    "explanation": "検出 = GuardDuty、調査 = Detective。",
+    "keywords": [
+      "見つけ",
+      "調べる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

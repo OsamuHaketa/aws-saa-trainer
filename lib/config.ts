@@ -30,6 +30,10 @@ export const config = {
     "ecs", "eks", "stepfunctions", "batch", "beanstalk",
     "storagegateway", "datasync", "snow", "dms", "backup",
     "athena", "redshift", "glue", "emr", "quicksight", "opensearch", "patterns",
+    // 2 回目に追加したサービス
+    "infrastructure", "cloudformation", "cost", "trustedadvisor", "xray", "securityhub", "detective",
+    "memorydb", "documentdb", "neptune", "keyspaces", "timestream",
+    "appsync", "mq", "msk", "transfer", "mgn", "drs", "lakeformation", "ai",
   ] as readonly string[],
 } as const;
 

@@ -1,0 +1,271 @@
+[
+  {
+    "id": "cost-budgets:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cost-budgets"
+    ],
+    "prompt": "開発アカウントの月額が 1,000 ドルを超えそうになったら、チームにメールで知らせたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Budgets",
+        "correct": true,
+        "atomId": "cost-budgets",
+        "why": "予算を決め、予測や実績がしきい値を超えると通知する"
+      },
+      {
+        "id": "b",
+        "text": "Cost Explorer",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "分析と予測で、予算の通知は Budgets"
+      },
+      {
+        "id": "c",
+        "text": "Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "改善点の推奨"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録"
+      }
+    ],
+    "explanation": "予算の超過の通知 = Budgets。",
+    "keywords": [
+      "超えそうになったら"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-budgets:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cost-budgets"
+    ],
+    "prompt": "サンドボックスのアカウントで予算を超えたら、自動で新しいリソースを作れないように権限を制限したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Budgets の予算アクション",
+        "correct": true,
+        "atomId": "cost-budgets",
+        "why": "予算の超過をきっかけに、IAM ポリシーや SCP の適用などを自動で行う"
+      },
+      {
+        "id": "b",
+        "text": "Cost Explorer の予測",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "予測を見るだけ"
+      },
+      {
+        "id": "c",
+        "text": "Cost Anomaly Detection",
+        "correct": false,
+        "atomId": "cost-anomaly-detection",
+        "why": "異常を検出して通知するだけ"
+      },
+      {
+        "id": "d",
+        "text": "Compute Optimizer",
+        "correct": false,
+        "atomId": "ec2-compute-optimizer",
+        "why": "サイズの推奨"
+      }
+    ],
+    "explanation": "予算の超過 → 自動で対応 = Budgets のアクション。",
+    "keywords": [
+      "予算を超えたら",
+      "自動で"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-explorer:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cost-explorer"
+    ],
+    "prompt": "先月から急に請求額が増えた。どのサービス・どのアカウントで増えたのかをグラフで調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cost Explorer",
+        "correct": true,
+        "atomId": "cost-explorer",
+        "why": "サービスやアカウントごとにコストを分けて分析できる"
+      },
+      {
+        "id": "b",
+        "text": "AWS Budgets",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "予算の通知で、原因の分析には Cost Explorer"
+      },
+      {
+        "id": "c",
+        "text": "CloudWatch Logs",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログの保存"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      }
+    ],
+    "explanation": "コストの内訳の分析 = Cost Explorer。",
+    "keywords": [
+      "どのサービス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-allocation-tags:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cost-allocation-tags"
+    ],
+    "prompt": "1 つのアカウントで 5 つのプロジェクトのリソースを動かしている。プロジェクトごとのコストを毎月集計したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "コスト配分タグで集計する",
+        "correct": true,
+        "atomId": "cost-allocation-tags",
+        "why": "Project タグを付けてコスト配分タグとして有効にすると、タグごとに集計できる"
+      },
+      {
+        "id": "b",
+        "text": "プロジェクトごとに請求書を手で分ける",
+        "correct": false,
+        "why": "手間がかかり不正確"
+      },
+      {
+        "id": "c",
+        "text": "AWS Budgets だけを作る",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "予算の通知で、タグがないと分けられない"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor を見る",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "プロジェクト別の集計はしない"
+      }
+    ],
+    "explanation": "プロジェクト別のコスト = タグ + コスト配分タグの有効化（またはアカウントを分ける）。",
+    "keywords": [
+      "プロジェクトごとのコスト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-allocation-tags:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cost-allocation-tags"
+    ],
+    "prompt": "全リソースに CostCenter タグを付けたのに、Cost Explorer でタグごとのコストが出ない。何が足りない？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "請求の設定でコスト配分タグとして有効にしていない",
+        "correct": true,
+        "atomId": "cost-allocation-tags",
+        "why": "有効にしたあとのコストから集計される"
+      },
+      {
+        "id": "b",
+        "text": "タグの名前が短すぎる",
+        "correct": false,
+        "why": "長さは関係ない"
+      },
+      {
+        "id": "c",
+        "text": "Budgets を作っていない",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "Budgets は関係ない"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail を有効にしていない",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "タグを付ける + コスト配分タグとして有効にする、の 2 段階。",
+    "keywords": [
+      "タグごとのコストが出ない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cost-anomaly-detection:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cost-anomaly-detection"
+    ],
+    "prompt": "しきい値を細かく決めずに、設定ミスなどによる普段と違うコストの急増を早く検出して通知したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cost Anomaly Detection",
+        "correct": true,
+        "atomId": "cost-anomaly-detection",
+        "why": "機械学習でいつものパターンから外れた増加を見つける"
+      },
+      {
+        "id": "b",
+        "text": "AWS Budgets の固定の予算",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "しきい値を決める必要がある"
+      },
+      {
+        "id": "c",
+        "text": "Cost Explorer を毎日手で見る",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "手間がかかり、見逃しやすい"
+      },
+      {
+        "id": "d",
+        "text": "Compute Optimizer",
+        "correct": false,
+        "atomId": "ec2-compute-optimizer",
+        "why": "サイズの推奨"
+      }
+    ],
+    "explanation": "しきい値なしで異常を検出 = Cost Anomaly Detection。",
+    "keywords": [
+      "しきい値を細かく決めずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

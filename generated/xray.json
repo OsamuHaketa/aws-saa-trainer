@@ -1,0 +1,93 @@
+[
+  {
+    "id": "xray-tracing:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "xray-tracing"
+    ],
+    "prompt": "API Gateway → Lambda → DynamoDB → 外部 API のどこで応答が遅くなっているのかを、リクエスト単位で調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS X-Ray",
+        "correct": true,
+        "atomId": "xray-tracing",
+        "why": "リクエストの経路を追跡し、各区間の時間を可視化する"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録で、処理時間の内訳は分からない"
+      },
+      {
+        "id": "c",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      }
+    ],
+    "explanation": "分散したサービスのボトルネックの特定 = X-Ray（分散トレーシング）。",
+    "keywords": [
+      "どこで",
+      "リクエスト単位"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "xray-tracing:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "xray-tracing"
+    ],
+    "prompt": "「分散トレーシング」「サービスマップ」「マイクロサービスのボトルネック」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS X-Ray",
+        "correct": true,
+        "atomId": "xray-tracing",
+        "why": "リクエストのトレースを記録する"
+      },
+      {
+        "id": "b",
+        "text": "CloudWatch Logs Insights",
+        "correct": false,
+        "atomId": "cloudwatch-logs-insights",
+        "why": "ログの分析"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Detective",
+        "correct": false,
+        "atomId": "detective-investigation",
+        "why": "セキュリティの調査"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "ベストプラクティスのチェック"
+      }
+    ],
+    "explanation": "トレース = X-Ray。",
+    "keywords": [
+      "分散トレーシング"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

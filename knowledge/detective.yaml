@@ -1,0 +1,27 @@
+# Detective の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: detective
+
+atoms:
+  - id: detective-investigation
+    category: threat-detection
+    concept: Amazon Detective
+    summary: ログからリソースやユーザーの行動のつながりを分析し、セキュリティの問題の根本原因の調査を助ける
+    facts:
+      - CloudTrail、VPC フローログ、GuardDuty の検出結果などから、行動のグラフを自動で作る
+      - GuardDuty が検出した問題について、関係する IP、ユーザー、リソースの動きを時系列で調べられる
+    triggers:
+      - GuardDuty の検出結果の根本原因を調べたい
+      - 不審な動きの影響範囲を調査したい
+    pitfalls:
+      - 脅威を見つけるのは GuardDuty。Detective は見つかった問題を調べるために使う
+    relations:
+      - type: confused_with
+        target: guardduty-detector
+        distinction: GuardDuty は脅威を継続的に検出する。Detective は検出された問題の原因や影響範囲を、行動のつながりから調査する
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html

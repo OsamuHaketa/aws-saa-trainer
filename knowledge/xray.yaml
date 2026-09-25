@@ -1,0 +1,27 @@
+# X-Ray の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: xray
+
+atoms:
+  - id: xray-tracing
+    category: monitoring
+    concept: AWS X-Ray
+    summary: リクエストが複数のサービスを通る経路（トレース）を記録し、どこで遅延やエラーが起きたかを可視化する
+    facts:
+      - API Gateway、Lambda、ECS、EC2 などをまたぐリクエストの流れを追跡する
+      - サービスマップで、各サービスの間のレイテンシやエラーの割合を確認できる
+      - マイクロサービスのボトルネックの特定に使う
+    triggers:
+      - マイクロサービスのどこで遅くなっているか調べたい
+      - リクエストの経路を追跡したい
+    pitfalls:
+      - CloudWatch のメトリクスだけでは、どのサービスの呼び出しが遅いのかまでは分かりにくい
+    relations:
+      - type: used_with
+        target: lambda-function
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html

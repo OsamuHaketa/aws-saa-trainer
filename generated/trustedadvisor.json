@@ -1,0 +1,134 @@
+[
+  {
+    "id": "trustedadvisor-checks:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "trustedadvisor-checks"
+    ],
+    "prompt": "アカウント全体で、使われていない Elastic IP、公開されている S3 バケット、上限に近いサービスなどをまとめて確認したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Trusted Advisor",
+        "correct": true,
+        "atomId": "trustedadvisor-checks",
+        "why": "コスト・セキュリティ・上限などを幅広くチェックする"
+      },
+      {
+        "id": "b",
+        "text": "Compute Optimizer",
+        "correct": false,
+        "atomId": "ec2-compute-optimizer",
+        "why": "サイズの推奨に特化"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "ソフトウェアの脆弱性の検査"
+      },
+      {
+        "id": "d",
+        "text": "Cost Explorer",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "コストの分析"
+      }
+    ],
+    "explanation": "アカウント全体のベストプラクティスのチェック = Trusted Advisor。",
+    "keywords": [
+      "まとめて確認"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "trustedadvisor-checks:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "trustedadvisor-checks",
+      "ec2-compute-optimizer"
+    ],
+    "prompt": "Trusted Advisor と Compute Optimizer の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は幅広い観点のチェック、後者はサイズの詳しい推奨",
+        "correct": true,
+        "atomId": "trustedadvisor-checks",
+        "why": "Compute Optimizer は使用状況を機械学習で分析する"
+      },
+      {
+        "id": "b",
+        "text": "前者は自動で設定を直し、後者は推奨だけ",
+        "correct": false,
+        "why": "どちらも推奨を示すだけ"
+      },
+      {
+        "id": "c",
+        "text": "後者はセキュリティのチェックが中心",
+        "correct": false,
+        "why": "サイズの推奨が中心"
+      },
+      {
+        "id": "d",
+        "text": "どちらも Organizations がないと使えない",
+        "correct": false,
+        "why": "単一アカウントでも使える"
+      }
+    ],
+    "explanation": "幅広い改善点 = Trusted Advisor、ライトサイジングの詳細 = Compute Optimizer。",
+    "keywords": [
+      "幅広い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "trustedadvisor-checks:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "trustedadvisor-checks"
+    ],
+    "prompt": "Trusted Advisor のすべてのチェックを使うための条件は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ビジネス以上のサポートプラン",
+        "correct": true,
+        "atomId": "trustedadvisor-checks",
+        "why": "ベーシックなどでは一部のチェックだけ"
+      },
+      {
+        "id": "b",
+        "text": "Organizations の管理アカウント",
+        "correct": false,
+        "why": "条件はサポートプラン"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config の有効化",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "関係ない"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーでのサインイン",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "Trusted Advisor の全チェック = ビジネス / Enterprise On-Ramp / エンタープライズのサポート。",
+    "keywords": [
+      "すべてのチェック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

@@ -1,0 +1,91 @@
+# グローバルインフラの Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: infrastructure
+
+atoms:
+  - id: infrastructure-region-az
+    category: infrastructure
+    concept: リージョンとアベイラビリティーゾーン（AZ）
+    summary: リージョンは地理的に離れた独立した地域、AZ はリージョン内の独立した電源・ネットワークを持つデータセンター群
+    facts:
+      - 1 つのリージョンには、通常 3 つ以上の AZ がある
+      - AZ 同士は低レイテンシのネットワークでつながり、同期レプリケーションができる距離にある
+      - リージョンを選ぶときは、データの所在地の規制、ユーザーとの距離（レイテンシ）、使えるサービス、料金を考える
+      - AZ の障害にはマルチ AZ、リージョンの障害にはマルチリージョンで備える
+    triggers:
+      - データを国外に出してはいけない
+      - どのリージョンを選ぶか
+    pitfalls:
+      - 規制でデータの所在地が決まっているのに、料金だけでリージョンを選ぶと違反になる
+    relations:
+      - type: used_with
+        target: patterns-multi-az
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions-availability-zones.html
+
+  - id: infrastructure-local-zones
+    category: infrastructure
+    concept: AWS Local Zones
+    summary: 大都市の近くに置かれたリージョンの拡張で、その地域のユーザーに 1 桁ミリ秒のレイテンシを提供する
+    facts:
+      - 親のリージョンから、特定の大都市の近くに計算・ストレージなどを延ばす
+      - 映像の編集、ゲーム、リアルタイムの処理など、特定の地域で超低レイテンシが必要な用途に使う
+      - VPC のサブネットを Local Zone に作って使う
+    triggers:
+      - 特定の都市のユーザーに 1 桁ミリ秒のレイテンシ
+      - 近くにリージョンがない地域で低レイテンシが必要
+    pitfalls:
+      - 5G のモバイル端末向けの超低レイテンシなら Wavelength を使う
+    relations:
+      - type: confused_with
+        target: infrastructure-wavelength
+        distinction: Local Zones は大都市の近くに置かれたリージョンの拡張。Wavelength は通信事業者の 5G ネットワークの中に置かれ、モバイル端末からの通信がインターネットを通らずに届く
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/local-zones/latest/ug/what-is-aws-local-zones.html
+
+  - id: infrastructure-wavelength
+    category: infrastructure
+    concept: AWS Wavelength
+    summary: 通信事業者の 5G ネットワークの中で EC2 などを動かし、モバイル端末に超低レイテンシで応答する
+    facts:
+      - 通信事業者のデータセンターの中に、AWS のコンピューティングとストレージを置く
+      - 5G の端末からの通信が、インターネットに出ずにアプリに届く
+      - AR/VR、コネクテッドカー、ライブ映像の処理などに使う
+    triggers:
+      - 5G
+      - モバイル端末に超低レイテンシ
+    pitfalls:
+      - 5G と関係のない一般の低レイテンシの要件なら、Local Zones や CloudFront を検討する
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html
+
+  - id: infrastructure-outposts
+    category: infrastructure
+    concept: AWS Outposts
+    summary: AWS が管理するラックやサーバーを自社のデータセンターに置き、同じ AWS の API で EC2 などを使う
+    facts:
+      - AWS のハードウェアを自社のデータセンターに設置し、AWS が保守する
+      - EC2、EBS、ECS、RDS などを、オンプレミスで AWS と同じ API・ツールで使える
+      - データをオンプレミスに置く必要がある場合や、工場の設備など低レイテンシが必要な場合に使う
+    triggers:
+      - データを自社のデータセンターに置く必要があるが、AWS と同じ仕組みで運用したい
+      - オンプレミスの設備と超低レイテンシで連携したい
+    pitfalls:
+      - オンプレミスでファイルを S3 に置くだけなら、Storage Gateway で足りる
+    relations: []
+    examDomains: [performance, secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html

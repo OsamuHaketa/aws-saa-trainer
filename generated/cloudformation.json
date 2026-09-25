@@ -1,0 +1,228 @@
+[
+  {
+    "id": "cloudformation-stack:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudformation-stack"
+    ],
+    "prompt": "開発・検証・本番の 3 つの環境を、同じ構成で繰り返し作りたい。手作業の設定ミスもなくしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFormation",
+        "correct": true,
+        "atomId": "cloudformation-stack",
+        "why": "コードで定義し、同じ環境を何度でも作れる"
+      },
+      {
+        "id": "b",
+        "text": "コンソールで手順書に沿って作る",
+        "correct": false,
+        "why": "手作業で違いや漏れが出る"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価で、環境は作らない"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "改善点の推奨"
+      }
+    ],
+    "explanation": "同じ環境を繰り返し作る = IaC（CloudFormation）。",
+    "keywords": [
+      "同じ構成で繰り返し"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-stack:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "cloudformation-stack"
+    ],
+    "prompt": "CloudFormation の変更セットでできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "更新の内容を事前に確認する",
+        "correct": true,
+        "atomId": "cloudformation-stack",
+        "why": "確認してから実行できる"
+      },
+      {
+        "id": "b",
+        "text": "スタックを別のアカウントに展開する",
+        "correct": false,
+        "atomId": "cloudformation-stacksets",
+        "why": "それは StackSets"
+      },
+      {
+        "id": "c",
+        "text": "手作業の変更を検出する",
+        "correct": false,
+        "atomId": "cloudformation-drift",
+        "why": "それはドリフト検出"
+      },
+      {
+        "id": "d",
+        "text": "リソースのコストを予測する",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "コストの予測の機能ではない"
+      }
+    ],
+    "explanation": "変更セット = 更新の事前確認、StackSets = 複数アカウント・リージョン、ドリフト = 手作業の変更の検出。",
+    "keywords": [
+      "変更セット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-stack:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudformation-stack"
+    ],
+    "prompt": "パイロットライトの DR で、障害時に大阪リージョンにアプリの環境を素早く正確に作りたい。何を用意しておく？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "環境を定義した CloudFormation テンプレート",
+        "correct": true,
+        "atomId": "cloudformation-stack",
+        "why": "障害時にすぐ同じ構成を作れる"
+      },
+      {
+        "id": "b",
+        "text": "大阪リージョンの手順書",
+        "correct": false,
+        "why": "手作業で時間がかかり、ミスも起きる"
+      },
+      {
+        "id": "c",
+        "text": "東京リージョンの CloudWatch ダッシュボード",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "環境の作成には使えない"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor のレポート",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "環境の作成には使えない"
+      }
+    ],
+    "explanation": "DR で環境をすぐ作る = IaC（CloudFormation）+ AMI + データの複製。",
+    "keywords": [
+      "パイロットライト",
+      "素早く正確に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-stacksets:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudformation-stacksets"
+    ],
+    "prompt": "組織内の全アカウントと 3 つのリージョンに、監査用の IAM ロールと Config の設定を展開したい。新しいアカウントにも自動で入れたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "StackSets",
+        "correct": true,
+        "atomId": "cloudformation-stacksets",
+        "why": "複数のアカウント・リージョンにまとめて展開できる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントで個別にスタックを作る",
+        "correct": false,
+        "atomId": "cloudformation-stack",
+        "why": "手間がかかり、新しいアカウントへの展開を忘れやすい"
+      },
+      {
+        "id": "c",
+        "text": "SCP で IAM ロールを作る",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP は権限の上限を決めるだけ"
+      },
+      {
+        "id": "d",
+        "text": "Config アグリゲーター",
+        "correct": false,
+        "atomId": "config-aggregator",
+        "why": "状況を集めて見るもので、リソースは作らない"
+      }
+    ],
+    "explanation": "複数アカウント・リージョンへの展開 = StackSets。",
+    "keywords": [
+      "全アカウント",
+      "3 つのリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-drift:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudformation-drift"
+    ],
+    "prompt": "CloudFormation で作ったセキュリティグループのルールが、誰かにコンソールで変更された疑いがある。テンプレートとの違いを見つけたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ドリフト検出",
+        "correct": true,
+        "atomId": "cloudformation-drift",
+        "why": "テンプレートと実際の設定の違いを見つける"
+      },
+      {
+        "id": "b",
+        "text": "変更セット",
+        "correct": false,
+        "atomId": "cloudformation-stack",
+        "why": "これから行う更新の確認"
+      },
+      {
+        "id": "c",
+        "text": "StackSets",
+        "correct": false,
+        "atomId": "cloudformation-stacksets",
+        "why": "複数アカウントへの展開"
+      },
+      {
+        "id": "d",
+        "text": "Cost Explorer",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "コストの分析"
+      }
+    ],
+    "explanation": "手作業の変更の検出 = ドリフト検出（誰が変えたかは CloudTrail）。",
+    "keywords": [
+      "コンソールで変更",
+      "違い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
