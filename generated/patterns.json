@@ -1137,5 +1137,355 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-rpo-rto:definition:2",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "patterns-rpo-rto"
+    ],
+    "prompt": "「RTO 2 時間」が意味するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "障害から 2 時間以内にサービスを再開すること",
+        "correct": true,
+        "atomId": "patterns-rpo-rto",
+        "why": "復旧までにかけてよい時間"
+      },
+      {
+        "id": "b",
+        "text": "直近 2 時間分までのデータを失ってよいこと",
+        "correct": false,
+        "why": "それは RPO"
+      },
+      {
+        "id": "c",
+        "text": "2 時間ごとにバックアップを取ること",
+        "correct": false,
+        "why": "バックアップの頻度は RPO に関係する"
+      },
+      {
+        "id": "d",
+        "text": "2 時間ごとに DR の訓練をすること",
+        "correct": false,
+        "why": "訓練の頻度ではない"
+      }
+    ],
+    "explanation": "RTO = 時間（いつまでに戻すか）、RPO = データ（どこまで戻るか）。",
+    "keywords": [
+      "RTO 2 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-backup-restore:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-backup-restore"
+    ],
+    "prompt": "「DR のコストを最小に」「RTO・RPO は数時間でよい」→ どの DR 戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バックアップと復元",
+        "correct": true,
+        "atomId": "patterns-backup-restore",
+        "why": "バックアップだけを別リージョンに置き、障害時に作り直す"
+      },
+      {
+        "id": "b",
+        "text": "パイロットライト",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "中核の部分を常に動かすので、バックアップと復元より高い"
+      },
+      {
+        "id": "c",
+        "text": "ウォームスタンバイ",
+        "correct": false,
+        "atomId": "patterns-warm-standby",
+        "why": "縮小した全体を常に動かすので、さらに高い"
+      },
+      {
+        "id": "d",
+        "text": "マルチサイト",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "フル規模で同時に動かすので、最も高い"
+      }
+    ],
+    "explanation": "最安・数時間 = バックアップと復元。",
+    "keywords": [
+      "コストを最小"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-backup-restore:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "patterns-backup-restore"
+    ],
+    "prompt": "バックアップと復元の DR で、東京の EC2・EBS・RDS のバックアップを毎日取り、大阪リージョンにもコピーしたい。まとめて自動化するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Backup のプランでリージョン間のコピーを設定",
+        "correct": true,
+        "atomId": "backup-plan",
+        "why": "複数のサービスのバックアップとコピーを 1 つのプランで管理できる"
+      },
+      {
+        "id": "b",
+        "text": "サービスごとに手動でスナップショットを取り、毎日コピーする",
+        "correct": false,
+        "why": "手間がかかり、漏れも起きる"
+      },
+      {
+        "id": "c",
+        "text": "東京リージョンに保存したバックアップだけにする",
+        "correct": false,
+        "why": "リージョンの障害で使えなくなる"
+      },
+      {
+        "id": "d",
+        "text": "大阪リージョンに同じ規模の環境を常に動かしておく",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "それはマルチサイトで、コストが高い"
+      }
+    ],
+    "explanation": "バックアップと復元の自動化 = AWS Backup（+ IaC で環境を作り直す）。",
+    "keywords": [
+      "まとめて自動化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-pilot-light:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-pilot-light"
+    ],
+    "prompt": "「DR リージョンでは DB の複製だけを常に動かす」「障害時にサーバーを起動」→ どの DR 戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パイロットライト",
+        "correct": true,
+        "atomId": "patterns-pilot-light",
+        "why": "中核だけに火を灯しておき、障害時に残りを起動する"
+      },
+      {
+        "id": "b",
+        "text": "ウォームスタンバイ",
+        "correct": false,
+        "atomId": "patterns-warm-standby",
+        "why": "縮小した全体を常に動かしておく戦略"
+      },
+      {
+        "id": "c",
+        "text": "バックアップと復元",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "DR 側にはバックアップしか置かない戦略"
+      },
+      {
+        "id": "d",
+        "text": "マルチサイト",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "フル規模の環境を同時に動かす戦略"
+      }
+    ],
+    "explanation": "中核（データ）だけ稼働 = パイロットライト。",
+    "keywords": [
+      "DB の複製だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-warm-standby:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-warm-standby"
+    ],
+    "prompt": "ウォームスタンバイの DR で、DR リージョンの Auto Scaling の最大台数を本番より小さい値に固定したままにしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "障害時に規模を拡大できず、本番の負荷を処理できない",
+        "correct": true,
+        "atomId": "patterns-warm-standby",
+        "why": "切り替え時に最大・希望の台数を本番並みに上げられるようにする"
+      },
+      {
+        "id": "b",
+        "text": "ウォームスタンバイでは Auto Scaling を使えない",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "DR リージョンでは台数の上限を設定できない",
+        "correct": false,
+        "why": "設定できる"
+      },
+      {
+        "id": "d",
+        "text": "ウォームスタンバイでは DB を複製しない",
+        "correct": false,
+        "why": "データは常に複製する"
+      }
+    ],
+    "explanation": "ウォームスタンバイ = 縮小して待機し、障害時にスケールアップする。拡大できる設定にしておく。",
+    "keywords": [
+      "最大台数を本番より小さい値に固定"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-site:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-multi-site"
+    ],
+    "prompt": "社内の経費精算システム（RTO 1 日で可）の DR に、2 つのリージョンでのアクティブ/アクティブ構成を採用した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "要件に対してコストが大きすぎる",
+        "correct": true,
+        "atomId": "patterns-multi-site",
+        "why": "RTO が長くてよいなら、バックアップと復元などで十分"
+      },
+      {
+        "id": "b",
+        "text": "アクティブ/アクティブは DR に使えない",
+        "correct": false,
+        "why": "最も高い可用性の DR 戦略"
+      },
+      {
+        "id": "c",
+        "text": "アクティブ/アクティブではデータを複製できない",
+        "correct": false,
+        "why": "複製する"
+      },
+      {
+        "id": "d",
+        "text": "2 つのリージョンは同時に使えない",
+        "correct": false,
+        "why": "使える"
+      }
+    ],
+    "explanation": "DR 戦略は RTO / RPO とコストのバランスで選ぶ。",
+    "keywords": [
+      "RTO 1 日で可"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-az:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-multi-az"
+    ],
+    "prompt": "「1 つの AZ が止まっても動き続ける」「同じ役割のリソースを 2 つ以上の AZ に」→ 何の設計？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチ AZ による冗長化",
+        "correct": true,
+        "atomId": "patterns-multi-az",
+        "why": "AZ の障害に備える基本の設計"
+      },
+      {
+        "id": "b",
+        "text": "マルチリージョンの DR",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "リージョンの障害に備える設計"
+      },
+      {
+        "id": "c",
+        "text": "クラスタープレイスメントグループ",
+        "correct": false,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "1 つの AZ に集めて低レイテンシにする配置"
+      },
+      {
+        "id": "d",
+        "text": "スティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じクライアントを同じサーバーに送る設定"
+      }
+    ],
+    "explanation": "AZ 障害への備え = マルチ AZ。",
+    "keywords": [
+      "2 つ以上の AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-az:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "patterns-multi-az"
+    ],
+    "prompt": "次のうち、自分で複数の AZ に分けなくても、リージョン内の複数の AZ にデータが保存されるサービスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 標準と DynamoDB",
+        "correct": true,
+        "atomId": "patterns-multi-az",
+        "why": "リージョンのサービスで、自動で複数の AZ に保存される"
+      },
+      {
+        "id": "b",
+        "text": "EBS ボリューム",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "1 つの AZ の中にだけ保存される"
+      },
+      {
+        "id": "c",
+        "text": "EC2 のインスタンスストア",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "ホストに付いた一時的なストレージ"
+      },
+      {
+        "id": "d",
+        "text": "シングル AZ の RDS",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "1 つの AZ だけで動く"
+      }
+    ],
+    "explanation": "S3（One Zone 以外）・DynamoDB・SQS などは自動でマルチ AZ。EC2・EBS・RDS は自分で冗長化する。",
+    "keywords": [
+      "自分で分けなくても"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

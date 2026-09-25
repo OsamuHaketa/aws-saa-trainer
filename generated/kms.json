@@ -521,5 +521,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kms-key-policy:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "kms-key-policy"
+    ],
+    "prompt": "KMS の鍵へのアクセスについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーで許可されていないと、IAM ポリシーだけでは使えない",
+        "correct": true,
+        "atomId": "kms-key-policy",
+        "why": "鍵ポリシーがアクセスの基本になる"
+      },
+      {
+        "id": "b",
+        "text": "IAM ポリシーで許可すれば、鍵ポリシーは関係ない",
+        "correct": false,
+        "why": "鍵ポリシーで IAM に委ねる設定がないと使えない"
+      },
+      {
+        "id": "c",
+        "text": "鍵ポリシーはなくてもよい",
+        "correct": false,
+        "why": "すべての鍵は鍵ポリシーを持つ"
+      },
+      {
+        "id": "d",
+        "text": "鍵ポリシーは AWS マネージドキーでも自由に変えられる",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "AWS マネージドキーの鍵ポリシーは変更できない"
+      }
+    ],
+    "explanation": "KMS = 鍵ポリシーが主。デフォルトの鍵ポリシーはアカウントの IAM に許可を委ねる。",
+    "keywords": [
+      "鍵ポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-key-policy:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kms-key-policy"
+    ],
+    "prompt": "鍵の管理者（ポリシーの変更や削除の予定）と、鍵で暗号化・復号する利用者を分けたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーで管理の操作と利用の操作を別の人に許可",
+        "correct": true,
+        "atomId": "kms-key-policy",
+        "why": "職務の分離で、管理者が勝手にデータを復号できないようにできる"
+      },
+      {
+        "id": "b",
+        "text": "全員に kms:* を許可して、運用のルールで分ける",
+        "correct": false,
+        "atomId": "iam-least-privilege",
+        "why": "技術的に分離できず、最小権限に反する"
+      },
+      {
+        "id": "c",
+        "text": "AWS マネージドキーを使って、権限の設定を省く",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "鍵ポリシーを変えられず、分離できない"
+      },
+      {
+        "id": "d",
+        "text": "鍵を 2 つ作り、管理者と利用者で別々の鍵を使う",
+        "correct": false,
+        "why": "同じデータを扱えず、分離の目的を満たさない"
+      }
+    ],
+    "explanation": "鍵の管理と利用の分離 = 鍵ポリシーで別々の Principal に許可する。",
+    "keywords": [
+      "管理者",
+      "利用者を分けたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

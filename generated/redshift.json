@@ -220,5 +220,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-cluster:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "redshift-cluster"
+    ],
+    "prompt": "「データウェアハウス」「列指向」「ペタバイト規模の分析」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Redshift",
+        "correct": true,
+        "atomId": "redshift-cluster",
+        "why": "大規模な構造化データの分析向け"
+      },
+      {
+        "id": "b",
+        "text": "Amazon RDS",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "業務処理（OLTP）向けのリレーショナル DB"
+      },
+      {
+        "id": "c",
+        "text": "Amazon DynamoDB",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "キー・値の NoSQL"
+      },
+      {
+        "id": "d",
+        "text": "Amazon ElastiCache",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "インメモリのキャッシュ"
+      }
+    ],
+    "explanation": "分析（OLAP）= Redshift、業務処理（OLTP）= RDS / Aurora。",
+    "keywords": [
+      "データウェアハウス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-cluster:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "redshift-cluster"
+    ],
+    "prompt": "本番の業務システムの RDS に、毎日数十 TB を集計する重い分析クエリを直接流している。業務の処理が遅くなる。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "分析用のデータを Redshift に集めて、そこで集計する",
+        "correct": true,
+        "atomId": "redshift-cluster",
+        "why": "業務（OLTP）と分析（OLAP）を分ける"
+      },
+      {
+        "id": "b",
+        "text": "RDS のインスタンスを最大にして、そのまま流し続ける",
+        "correct": false,
+        "why": "コストが高く、業務への影響も残る"
+      },
+      {
+        "id": "c",
+        "text": "分析のクエリを DynamoDB に流す",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "集計の分析には向かない"
+      },
+      {
+        "id": "d",
+        "text": "RDS のバックアップの保持期間を延ばす",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "性能とは関係ない"
+      }
+    ],
+    "explanation": "大規模な分析 = Redshift（小さめならリードレプリカで分離）。",
+    "keywords": [
+      "数十 TB",
+      "業務の処理が遅く"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

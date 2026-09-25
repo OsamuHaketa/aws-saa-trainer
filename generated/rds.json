@@ -1907,5 +1907,138 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "rds-proxy:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-proxy"
+    ],
+    "prompt": "Lambda から RDS への接続数の問題を解決するため、DB のインスタンスを大きくして最大接続数を増やした。より良い方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS Proxy で接続をプールして共有する",
+        "correct": true,
+        "atomId": "rds-proxy",
+        "why": "インスタンスを大きくせずに、多数の接続を少ない DB 接続にまとめられる"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のタイムアウトを延ばして、接続を長く保つ",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "接続がさらにたまり、悪化する"
+      },
+      {
+        "id": "c",
+        "text": "リードレプリカを追加して、書き込みも分散する",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "レプリカは書き込みを分散しない"
+      },
+      {
+        "id": "d",
+        "text": "マルチ AZ を有効にして、スタンバイにも接続させる",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイには接続できない"
+      }
+    ],
+    "explanation": "大量の短い接続 = RDS Proxy で接続を再利用する。",
+    "keywords": [
+      "最大接続数を増やした"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora",
+      "rds-multi-az"
+    ],
+    "prompt": "Aurora と、マルチ AZ の RDS for MySQL の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora のレプリカは切り替え先にもなる",
+        "correct": true,
+        "atomId": "rds-aurora",
+        "why": "レプリカは最大 15 台。RDS のスタンバイは読み取りに使えない"
+      },
+      {
+        "id": "b",
+        "text": "Aurora は 1 つの AZ にしかデータを保存しない",
+        "correct": false,
+        "why": "3 つの AZ に 6 つのコピーを持つ"
+      },
+      {
+        "id": "c",
+        "text": "RDS for MySQL の方がフェイルオーバーが速い",
+        "correct": false,
+        "why": "一般に Aurora の方が速い"
+      },
+      {
+        "id": "d",
+        "text": "Aurora は MySQL と互換性がない",
+        "correct": false,
+        "why": "MySQL と PostgreSQL の互換"
+      }
+    ],
+    "explanation": "Aurora = 共有ストレージ（3 AZ・6 コピー）+ 最大 15 のレプリカが読み取りとフェイルオーバーを兼ねる。",
+    "keywords": [
+      "レプリカ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-global-database:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora-global-database"
+    ],
+    "prompt": "「リージョン間のレプリケーションの遅延が通常 1 秒未満」「別リージョンを 1 分程度で昇格」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora グローバルデータベース",
+        "correct": true,
+        "atomId": "rds-aurora-global-database",
+        "why": "ストレージのレベルでリージョン間に複製する"
+      },
+      {
+        "id": "b",
+        "text": "RDS のクロスリージョンリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "エンジンのレプリケーションで、遅延や切り替え時間が大きくなりやすい"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "NoSQL のマルチリージョンのテーブル"
+      },
+      {
+        "id": "d",
+        "text": "RDS のマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "同じリージョンの AZ 間の冗長化"
+      }
+    ],
+    "explanation": "リレーショナル DB のリージョン間 DR（秒単位の RPO）= Aurora グローバルデータベース。",
+    "keywords": [
+      "1 秒未満"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

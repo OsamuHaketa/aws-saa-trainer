@@ -131,5 +131,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "macie-job:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "macie-job"
+    ],
+    "prompt": "Amazon Macie が S3 について評価するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "機密データの有無と、バケットの公開や暗号化の状況",
+        "correct": true,
+        "atomId": "macie-job",
+        "why": "S3 のデータのセキュリティの状況を把握できる"
+      },
+      {
+        "id": "b",
+        "text": "EC2 の OS の脆弱性の有無と、パッチの適用状況",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "それは Inspector"
+      },
+      {
+        "id": "c",
+        "text": "不審な API 呼び出しや、侵害されたインスタンスの通信",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "それは GuardDuty"
+      },
+      {
+        "id": "d",
+        "text": "リソースの設定がルールに準拠しているかどうか",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "それは AWS Config"
+      }
+    ],
+    "explanation": "Macie = S3 の機密データの検出 + バケットのセキュリティの状況。",
+    "keywords": [
+      "S3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

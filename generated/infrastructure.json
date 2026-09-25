@@ -267,5 +267,89 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-region-az:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "infrastructure-region-az"
+    ],
+    "prompt": "日本のユーザー向けのサービスで、データの所在地の規制はない。新しいサービスで使いたい機能が、東京リージョンではまだ提供されていない。どう考える？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "機能とレイテンシのバランスで、提供されているリージョンも検討",
+        "correct": true,
+        "atomId": "infrastructure-region-az",
+        "why": "規制がなければ、サービスの有無も選ぶ基準になる"
+      },
+      {
+        "id": "b",
+        "text": "必ず東京リージョンだけを使い、機能は諦める",
+        "correct": false,
+        "why": "規制がないなら、他のリージョンも選べる"
+      },
+      {
+        "id": "c",
+        "text": "リージョンを選ばず、自動で決めてもらう",
+        "correct": false,
+        "why": "リージョンは利用者が選ぶ"
+      },
+      {
+        "id": "d",
+        "text": "AZ を増やせば、東京リージョンでも使えるようになる",
+        "correct": false,
+        "why": "AZ を増やしても、提供されていない機能は使えない"
+      }
+    ],
+    "explanation": "リージョンの選定 = 規制 → レイテンシ → サービスの有無 → 料金。",
+    "keywords": [
+      "まだ提供されていない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-region-az:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "infrastructure-region-az"
+    ],
+    "prompt": "「東京リージョンに置いたので、リージョン全体の障害にも耐えられる」と考えている。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リージョンの障害には別のリージョンが必要",
+        "correct": true,
+        "atomId": "infrastructure-region-az",
+        "why": "リージョンの障害に備えるなら DR リージョンを用意する"
+      },
+      {
+        "id": "b",
+        "text": "東京リージョンには AZ が 1 つしかない",
+        "correct": false,
+        "why": "複数の AZ がある"
+      },
+      {
+        "id": "c",
+        "text": "リージョンの障害は起きないので対策は不要",
+        "correct": false,
+        "why": "可能性は低いが、要件次第で備える"
+      },
+      {
+        "id": "d",
+        "text": "リージョンの中のデータは自動で他のリージョンに複製される",
+        "correct": false,
+        "why": "自動では複製されない。レプリケーションを設定する"
+      }
+    ],
+    "explanation": "AZ 障害 = マルチ AZ、リージョン障害 = マルチリージョン（DR 戦略）。",
+    "keywords": [
+      "リージョン全体の障害"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

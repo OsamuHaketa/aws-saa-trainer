@@ -2057,5 +2057,358 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "iam-root-user:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-root-user"
+    ],
+    "prompt": "次のうち、ルートユーザーでしか行えない作業は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS アカウントの解約",
+        "correct": true,
+        "atomId": "iam-root-user",
+        "why": "アカウントの設定の一部はルートユーザーだけが変更できる"
+      },
+      {
+        "id": "b",
+        "text": "EC2 インスタンスの起動と停止",
+        "correct": false,
+        "why": "権限のある IAM ユーザーやロールで行える"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットの作成と削除",
+        "correct": false,
+        "why": "権限のある IAM ユーザーやロールで行える"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーの作成と権限の付与",
+        "correct": false,
+        "why": "IAM の管理者権限を持つ ID で行える"
+      }
+    ],
+    "explanation": "ルートでしかできない作業（アカウントの解約、サポートプランの変更など）以外は IAM で行う。",
+    "keywords": [
+      "ルートユーザーでしか"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-role:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-role"
+    ],
+    "prompt": "EC2 上のアプリが使う IAM ロールの信頼ポリシーに、Principal として \"*\"（全員）を指定した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "誰でもロールを引き受けられてしまう",
+        "correct": true,
+        "atomId": "iam-role",
+        "why": "信頼ポリシーは ec2.amazonaws.com など必要な相手だけにする"
+      },
+      {
+        "id": "b",
+        "text": "信頼ポリシーには Principal を書けない",
+        "correct": false,
+        "why": "信頼ポリシーには Principal を書く"
+      },
+      {
+        "id": "c",
+        "text": "ロールは EC2 には付けられない",
+        "correct": false,
+        "atomId": "iam-instance-profile",
+        "why": "インスタンスプロファイルで EC2 に付けられる"
+      },
+      {
+        "id": "d",
+        "text": "Principal を全員にするとロールが自動で削除される",
+        "correct": false,
+        "why": "削除はされないが、誰でも引き受けられる危険がある"
+      }
+    ],
+    "explanation": "信頼ポリシー = 誰が引き受けられるか。最小限の相手だけを指定する。",
+    "keywords": [
+      "信頼ポリシー",
+      "全員"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-cross-account-role:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "iam-cross-account-role"
+    ],
+    "prompt": "アカウント A のユーザーが、アカウント B のロールを引き受けるために必要な設定は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "B の信頼ポリシーと A の IAM の両方で許可",
+        "correct": true,
+        "atomId": "iam-cross-account-role",
+        "why": "両方のアカウントでの許可が必要"
+      },
+      {
+        "id": "b",
+        "text": "B のロールの信頼ポリシーで A を許可するだけでよい",
+        "correct": false,
+        "why": "A 側でも sts:AssumeRole の許可が必要"
+      },
+      {
+        "id": "c",
+        "text": "A のユーザーを B の IAM グループに追加する",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "別のアカウントのユーザーはグループに入れられない"
+      },
+      {
+        "id": "d",
+        "text": "A と B の VPC をピアリングで接続する",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "IAM の権限とネットワークの接続は関係ない"
+      }
+    ],
+    "explanation": "クロスアカウントロール = 信頼ポリシー（B 側）+ AssumeRole の許可（A 側）。",
+    "keywords": [
+      "アカウント B のロール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-least-privilege:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-least-privilege"
+    ],
+    "prompt": "「必要な操作とリソースだけを許可」「被害の範囲を小さくする」→ 何の原則？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "最小権限の原則",
+        "correct": true,
+        "atomId": "iam-least-privilege",
+        "why": "必要なものだけを与える"
+      },
+      {
+        "id": "b",
+        "text": "責任共有モデル",
+        "correct": false,
+        "atomId": "patterns-shared-responsibility",
+        "why": "AWS と利用者の責任の分担"
+      },
+      {
+        "id": "c",
+        "text": "疎結合",
+        "correct": false,
+        "atomId": "patterns-loose-coupling",
+        "why": "コンポーネントの依存を減らす設計"
+      },
+      {
+        "id": "d",
+        "text": "冪等性",
+        "correct": false,
+        "atomId": "patterns-idempotency",
+        "why": "何度実行しても同じ結果になる性質"
+      }
+    ],
+    "explanation": "必要最小限の権限 = 最小権限の原則。",
+    "keywords": [
+      "必要な操作とリソースだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-identity-center:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-identity-center"
+    ],
+    "prompt": "30 のアカウントを使う企業で、社員ごとに各アカウントへ IAM ユーザーを作って管理している。退職者の削除漏れが多い。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Identity Center で一元管理する",
+        "correct": true,
+        "atomId": "iam-identity-center",
+        "why": "社内の ID を止めれば全アカウントのアクセスが止まる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントの IAM ユーザーのパスワードを毎月変える",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "削除漏れの根本的な対策にならず、手間が増える"
+      },
+      {
+        "id": "c",
+        "text": "全社員で 1 つの IAM ユーザーを共有する",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "誰が操作したか分からず、さらに危険になる"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーで全員の作業をまとめて行う",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も危険な認証情報を日常的に使うことになる"
+      }
+    ],
+    "explanation": "多数のアカウント × 従業員 = IAM Identity Center（社内の IdP と連携）。",
+    "keywords": [
+      "30 のアカウント",
+      "削除漏れ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-instance-profile:antipattern:2",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "iam-instance-profile"
+    ],
+    "prompt": "稼働中の EC2 に S3 の権限が必要になった。ロールを付けるにはインスタンスを作り直す必要があると考え、停止の計画を立てた。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "稼働中のインスタンスにもロールを付けられる",
+        "correct": true,
+        "atomId": "iam-instance-profile",
+        "why": "インスタンスプロファイルは後から付けたり差し替えたりできる"
+      },
+      {
+        "id": "b",
+        "text": "EC2 にはロールを付けられず、アクセスキーを使う必要がある",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "ロールを付けるのが推奨の方法"
+      },
+      {
+        "id": "c",
+        "text": "ロールを付けるには AMI を作り直す必要がある",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "AMI の作り直しは不要"
+      },
+      {
+        "id": "d",
+        "text": "ロールを付けるには新しい VPC が必要",
+        "correct": false,
+        "why": "ネットワークとは関係ない"
+      }
+    ],
+    "explanation": "EC2 のロールは稼働中でも付け替えられる（インスタンスプロファイル）。",
+    "keywords": [
+      "作り直す必要がある"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-resource-based-policy:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "iam-resource-based-policy"
+    ],
+    "prompt": "「S3 バケットポリシー」「SQS のアクセスポリシー」「KMS のキーポリシー」→ これらをまとめて何と呼ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リソースベースのポリシー",
+        "correct": true,
+        "atomId": "iam-resource-based-policy",
+        "why": "リソース側に付けて、誰がアクセスできるかを決める"
+      },
+      {
+        "id": "b",
+        "text": "アイデンティティベースのポリシー",
+        "correct": false,
+        "why": "ユーザーやロールに付けるポリシー"
+      },
+      {
+        "id": "c",
+        "text": "サービスコントロールポリシー",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "組織のアカウントの権限の上限"
+      },
+      {
+        "id": "d",
+        "text": "アクセス許可の境界",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "ユーザーやロールの権限の上限"
+      }
+    ],
+    "explanation": "リソースに付けるポリシー = リソースベースのポリシー（Principal を書く）。",
+    "keywords": [
+      "バケットポリシー",
+      "キーポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-conditions:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-conditions"
+    ],
+    "prompt": "S3 バケットへのアクセスを、特定の VPC エンドポイント経由のものだけに制限したい。バケットポリシーの条件キーは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "aws:SourceVpce",
+        "correct": true,
+        "atomId": "iam-policy-conditions",
+        "why": "指定した VPC エンドポイントからのリクエストだけを許可する"
+      },
+      {
+        "id": "b",
+        "text": "aws:SourceIp",
+        "correct": false,
+        "why": "パブリック IP の条件で、VPC エンドポイント経由の通信には使えない"
+      },
+      {
+        "id": "c",
+        "text": "aws:RequestedRegion",
+        "correct": false,
+        "why": "操作の対象のリージョンの条件"
+      },
+      {
+        "id": "d",
+        "text": "aws:MultiFactorAuthPresent",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "MFA の有無の条件"
+      }
+    ],
+    "explanation": "VPC エンドポイント経由だけ = aws:SourceVpce（VPC 単位なら aws:SourceVpc）。",
+    "keywords": [
+      "VPC エンドポイント経由"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
