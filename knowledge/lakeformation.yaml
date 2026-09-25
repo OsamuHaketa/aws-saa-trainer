@@ -1,0 +1,29 @@
+# Lake Formation の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: lakeformation
+
+atoms:
+  - id: lakeformation-permissions
+    category: analytics
+    concept: AWS Lake Formation
+    summary: S3 のデータレイクを作り、データベース・テーブル・列・行の単位でアクセス権限を一元管理する
+    facts:
+      - Glue Data Catalog のテーブルに対して、列や行のレベルでアクセスを許可できる
+      - Athena、Redshift Spectrum、EMR などから使うときに、同じ権限が適用される
+      - アカウントをまたいでデータを安全に共有できる
+    triggers:
+      - データレイクの特定の列（個人情報など）だけを隠したい
+      - 分析のツールをまたいで権限を一元管理したい
+    pitfalls:
+      - S3 のバケットポリシーや IAM だけで列単位の制御はできない
+    relations:
+      - type: used_with
+        target: glue-crawler
+      - type: used_with
+        target: athena-query
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html

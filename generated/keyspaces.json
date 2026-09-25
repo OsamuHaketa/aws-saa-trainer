@@ -1,0 +1,47 @@
+[
+  {
+    "id": "keyspaces-table:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "keyspaces-table"
+    ],
+    "prompt": "オンプレミスの Apache Cassandra のクラスターの運用をやめ、CQL のアプリをそのまま AWS で動かしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Keyspaces",
+        "correct": true,
+        "atomId": "keyspaces-table",
+        "why": "Cassandra 互換のサーバーレスな DB"
+      },
+      {
+        "id": "b",
+        "text": "Amazon DocumentDB",
+        "correct": false,
+        "atomId": "documentdb-cluster",
+        "why": "MongoDB 互換"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Neptune",
+        "correct": false,
+        "atomId": "neptune-graph",
+        "why": "グラフ DB"
+      },
+      {
+        "id": "d",
+        "text": "EC2 に Cassandra を自分で入れる",
+        "correct": false,
+        "why": "運用をやめたい要件に反する"
+      }
+    ],
+    "explanation": "Cassandra = Keyspaces。",
+    "keywords": [
+      "Cassandra",
+      "CQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

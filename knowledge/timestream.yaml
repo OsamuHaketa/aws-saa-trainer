@@ -1,0 +1,25 @@
+# Timestream の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: timestream
+
+atoms:
+  - id: timestream-db
+    category: database
+    concept: Amazon Timestream
+    summary: IoT のセンサー値やアプリのメトリクスなど、時刻付きのデータを保存・分析する時系列データベース
+    facts:
+      - 時刻ごとの大量のデータの保存と、時間の範囲での集計に向く
+      - 新しいデータはメモリ、古いデータは低コストのストレージに自動で移す
+      - InfluxDB 互換のマネージドサービスも提供している
+    triggers:
+      - IoT のセンサーのデータを時系列で分析したい
+      - 時系列データベース
+    pitfalls:
+      - 時系列の集計をリレーショナル DB で行うと、データが増えるにつれて遅くなる
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html

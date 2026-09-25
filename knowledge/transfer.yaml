@@ -1,0 +1,27 @@
+# Transfer Family の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: transfer
+
+atoms:
+  - id: transfer-sftp
+    category: migration
+    concept: AWS Transfer Family
+    summary: SFTP・FTPS・FTP・AS2 のマネージドなサーバーで、ファイルを S3 や EFS に直接受け渡す
+    facts:
+      - 取引先は今までどおり SFTP などのクライアントでファイルを送受信できる
+      - ファイルは S3 のバケットや EFS に直接保存される
+      - サーバーの管理は不要で、既存の認証（サービス管理のユーザー、AD、独自の IdP）を使える
+    triggers:
+      - 取引先が SFTP でファイルを送ってくる
+      - SFTP のサーバーの運用をやめたい
+    pitfalls:
+      - EC2 に SFTP サーバーを立てると、OS の管理や冗長化の手間がかかる
+    relations:
+      - type: used_with
+        target: s3-standard
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html

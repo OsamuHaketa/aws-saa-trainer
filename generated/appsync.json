@@ -1,0 +1,93 @@
+[
+  {
+    "id": "appsync-graphql:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "appsync-graphql"
+    ],
+    "prompt": "モバイルアプリで、DynamoDB と Lambda の複数のデータを 1 回のリクエストで必要な分だけ取得し、データの変更もリアルタイムに受け取りたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS AppSync",
+        "correct": true,
+        "atomId": "appsync-graphql",
+        "why": "GraphQL で複数のデータソースをまとめ、変更を配信する"
+      },
+      {
+        "id": "b",
+        "text": "API Gateway の REST API",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "複数のエンドポイントを呼ぶ必要があり、リアルタイムの配信は別途必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キュー"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信"
+      }
+    ],
+    "explanation": "GraphQL + リアルタイムのサブスクリプション = AppSync。",
+    "keywords": [
+      "1 回のリクエスト",
+      "リアルタイム"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "appsync-graphql:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "appsync-graphql"
+    ],
+    "prompt": "「GraphQL」「サブスクリプション」「マネージド」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS AppSync",
+        "correct": true,
+        "atomId": "appsync-graphql",
+        "why": "マネージドな GraphQL API"
+      },
+      {
+        "id": "b",
+        "text": "API Gateway",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "REST・HTTP・WebSocket"
+      },
+      {
+        "id": "c",
+        "text": "Amazon MQ",
+        "correct": false,
+        "atomId": "mq-broker",
+        "why": "メッセージブローカー"
+      },
+      {
+        "id": "d",
+        "text": "AWS Step Functions",
+        "correct": false,
+        "atomId": "stepfunctions-state-machine",
+        "why": "ワークフロー"
+      }
+    ],
+    "explanation": "GraphQL = AppSync。",
+    "keywords": [
+      "GraphQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

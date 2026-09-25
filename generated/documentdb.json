@@ -1,0 +1,92 @@
+[
+  {
+    "id": "documentdb-cluster:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "documentdb-cluster"
+    ],
+    "prompt": "オンプレミスの MongoDB で動くアプリを、コードをほとんど変えずにマネージドな DB に移したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon DocumentDB",
+        "correct": true,
+        "atomId": "documentdb-cluster",
+        "why": "MongoDB 互換の API で、既存のドライバーを使える"
+      },
+      {
+        "id": "b",
+        "text": "Amazon DynamoDB",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "API が違い、アプリの改修が必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Neptune",
+        "correct": false,
+        "atomId": "neptune-graph",
+        "why": "グラフデータベース"
+      },
+      {
+        "id": "d",
+        "text": "Amazon RDS for MySQL",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "リレーショナル DB で、アプリの改修が必要"
+      }
+    ],
+    "explanation": "MongoDB 互換 = DocumentDB。",
+    "keywords": [
+      "MongoDB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "documentdb-cluster:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "documentdb-cluster"
+    ],
+    "prompt": "「MongoDB 互換」「JSON のドキュメント」「マネージド」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon DocumentDB",
+        "correct": true,
+        "atomId": "documentdb-cluster",
+        "why": "ドキュメントデータベース"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Keyspaces",
+        "correct": false,
+        "atomId": "keyspaces-table",
+        "why": "Cassandra 互換"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Timestream",
+        "correct": false,
+        "atomId": "timestream-db",
+        "why": "時系列データベース"
+      },
+      {
+        "id": "d",
+        "text": "Amazon MemoryDB",
+        "correct": false,
+        "atomId": "memorydb-cluster",
+        "why": "Redis 互換のインメモリ DB"
+      }
+    ],
+    "explanation": "MongoDB = DocumentDB、Cassandra = Keyspaces、Redis = ElastiCache / MemoryDB。",
+    "keywords": [
+      "MongoDB 互換"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

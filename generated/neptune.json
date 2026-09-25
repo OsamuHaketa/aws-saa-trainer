@@ -1,0 +1,92 @@
+[
+  {
+    "id": "neptune-graph:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "neptune-graph"
+    ],
+    "prompt": "SNS の「友達の友達」や「共通の興味を持つ人」をたどるレコメンド機能を、高速に実装したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Neptune",
+        "correct": true,
+        "atomId": "neptune-graph",
+        "why": "つながりをたどる検索が得意なグラフデータベース"
+      },
+      {
+        "id": "b",
+        "text": "Amazon RDS for PostgreSQL",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "JOIN の繰り返しで遅く複雑になる"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "大量のデータの集計向け"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Timestream",
+        "correct": false,
+        "atomId": "timestream-db",
+        "why": "時系列データ向け"
+      }
+    ],
+    "explanation": "関係性をたどる = グラフ DB（Neptune）。",
+    "keywords": [
+      "友達の友達"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "neptune-graph:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "neptune-graph"
+    ],
+    "prompt": "「グラフデータベース」「Gremlin」「不正検知のつながりの分析」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Neptune",
+        "correct": true,
+        "atomId": "neptune-graph",
+        "why": "ノードとエッジでデータを表す"
+      },
+      {
+        "id": "b",
+        "text": "Amazon DocumentDB",
+        "correct": false,
+        "atomId": "documentdb-cluster",
+        "why": "ドキュメント DB"
+      },
+      {
+        "id": "c",
+        "text": "Amazon OpenSearch",
+        "correct": false,
+        "atomId": "opensearch-domain",
+        "why": "全文検索"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Aurora",
+        "correct": false,
+        "atomId": "rds-aurora",
+        "why": "リレーショナル DB"
+      }
+    ],
+    "explanation": "グラフ = Neptune。",
+    "keywords": [
+      "グラフ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

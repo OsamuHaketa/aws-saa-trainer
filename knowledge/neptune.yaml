@@ -1,0 +1,26 @@
+# Neptune の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: neptune
+
+atoms:
+  - id: neptune-graph
+    category: database
+    concept: Amazon Neptune
+    summary: ノードと関係（エッジ）でデータを表す、マネージドなグラフデータベース
+    facts:
+      - Gremlin、openCypher、SPARQL のクエリ言語で、つながりをたどる検索を高速に行う
+      - SNS の友達関係、レコメンド、不正検知、ナレッジグラフなどに使う
+      - 最大 15 のリードレプリカを持ち、複数 AZ で高可用性にできる
+    triggers:
+      - 友達の友達を探す
+      - 関係性をたどる検索
+      - グラフデータベース
+    pitfalls:
+      - 複雑なつながりをリレーショナル DB の JOIN の繰り返しで扱うと、遅く複雑になる
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/neptune/latest/userguide/intro.html

@@ -1,0 +1,48 @@
+[
+  {
+    "id": "timestream-db:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "timestream-db"
+    ],
+    "prompt": "数万台の IoT センサーの温度を毎秒保存し、直近 1 時間の平均などを時間の範囲で素早く集計したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Timestream",
+        "correct": true,
+        "atomId": "timestream-db",
+        "why": "時刻付きのデータの保存と集計に向く"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Neptune",
+        "correct": false,
+        "atomId": "neptune-graph",
+        "why": "グラフ DB"
+      },
+      {
+        "id": "c",
+        "text": "Amazon DocumentDB",
+        "correct": false,
+        "atomId": "documentdb-cluster",
+        "why": "ドキュメント DB"
+      },
+      {
+        "id": "d",
+        "text": "S3 Glacier",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "長期保管向けで、すぐに集計できない"
+      }
+    ],
+    "explanation": "時系列データ = Timestream。",
+    "keywords": [
+      "毎秒",
+      "時間の範囲"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

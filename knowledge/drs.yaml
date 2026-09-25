@@ -1,0 +1,27 @@
+# Elastic Disaster Recovery の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: drs
+
+atoms:
+  - id: drs-recovery
+    category: dr
+    concept: AWS Elastic Disaster Recovery（DRS）
+    summary: サーバーを低コストのステージング領域に継続的に複製し、障害時に数分で AWS 上に復旧する
+    facts:
+      - オンプレミスや他のリージョンのサーバーを、ブロックレベルで継続的に AWS に複製する
+      - 平常時は安いステージング用のリソースだけを使い、障害時に復旧用のインスタンスを起動する
+      - RPO は秒単位、RTO は分単位を目指せる
+    triggers:
+      - オンプレミスのサーバーの DR を AWS に作りたい
+      - 秒単位の RPO と分単位の RTO を低コストで
+    pitfalls:
+      - DR サイトにフルの規模のサーバーを常に動かすと、コストが高くなる
+    relations:
+      - type: used_with
+        target: patterns-pilot-light
+    examDomains: [resilient, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html

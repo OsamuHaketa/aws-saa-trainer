@@ -1,0 +1,92 @@
+[
+  {
+    "id": "memorydb-cluster:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "memorydb-cluster"
+    ],
+    "prompt": "ゲームのリアルタイムのランキングを、マイクロ秒の読み取りで提供したい。キャッシュではなく主のデータベースとして使い、ノード障害でもデータを失いたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon MemoryDB",
+        "correct": true,
+        "atomId": "memorydb-cluster",
+        "why": "Redis 互換で、マルチ AZ のログに永続化する"
+      },
+      {
+        "id": "b",
+        "text": "ElastiCache（Memcached）",
+        "correct": false,
+        "atomId": "elasticache-memcached",
+        "why": "複製や永続化がない"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Accelerator",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB の前のキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "分析用のデータウェアハウス"
+      }
+    ],
+    "explanation": "耐久性のあるインメモリ DB = MemoryDB、DB の前のキャッシュ = ElastiCache。",
+    "keywords": [
+      "主のデータベース",
+      "失いたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "memorydb-cluster:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "memorydb-cluster",
+      "elasticache-redis"
+    ],
+    "prompt": "ElastiCache（Valkey / Redis OSS）と MemoryDB の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャッシュなら前者、永続的な主の DB なら後者",
+        "correct": true,
+        "atomId": "memorydb-cluster",
+        "why": "MemoryDB は書き込みをマルチ AZ のログに保存する"
+      },
+      {
+        "id": "b",
+        "text": "前者は Redis 互換、後者は MySQL 互換",
+        "correct": false,
+        "why": "どちらも Redis 互換"
+      },
+      {
+        "id": "c",
+        "text": "後者は読み取りが遅い",
+        "correct": false,
+        "why": "どちらもマイクロ秒の読み取り"
+      },
+      {
+        "id": "d",
+        "text": "前者の方が耐久性が高い",
+        "correct": false,
+        "why": "耐久性は MemoryDB の方が高い"
+      }
+    ],
+    "explanation": "キャッシュ = ElastiCache、耐久性が必要な主の DB = MemoryDB。",
+    "keywords": [
+      "キャッシュ",
+      "永続的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

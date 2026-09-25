@@ -1,0 +1,29 @@
+# Application Migration Service の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: mgn
+
+atoms:
+  - id: mgn-replication
+    category: migration
+    concept: AWS Application Migration Service（MGN）
+    summary: オンプレミスや他のクラウドのサーバーを、ブロックレベルで継続的に複製し、そのまま EC2 に移行する（リホスト）
+    facts:
+      - 移行元のサーバーにエージェントを入れ、ディスクを AWS に継続的に複製する
+      - テスト用のインスタンスを起動して確認してから、短い停止時間で切り替える
+      - アプリを作り直さずに、そのまま EC2 に移す（リフト＆シフト）
+    triggers:
+      - 数百台のサーバーをそのまま AWS に移したい
+      - リフト＆シフト
+      - 切り替え時の停止時間を短くしたい
+    pitfalls:
+      - データベースだけを移すなら DMS、ファイルだけを移すなら DataSync を使う
+    relations:
+      - type: confused_with
+        target: dms-replication
+        distinction: MGN はサーバー全体（OS・アプリ・データ）をブロックレベルで複製して EC2 に移す。DMS はデータベースのデータを移行先の DB に移す
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html

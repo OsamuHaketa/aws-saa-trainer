@@ -1,0 +1,92 @@
+[
+  {
+    "id": "transfer-sftp:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "transfer-sftp"
+    ],
+    "prompt": "取引先が毎日 SFTP で請求データを送ってくる。取引先の手順は変えずに、ファイルを直接 S3 に保存したい。サーバーの管理はしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Transfer Family",
+        "correct": true,
+        "atomId": "transfer-sftp",
+        "why": "マネージドな SFTP サーバーで、S3 に直接保存する"
+      },
+      {
+        "id": "b",
+        "text": "EC2 に SFTP サーバーを立てる",
+        "correct": false,
+        "why": "OS の管理や冗長化が必要"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "自社のストレージの転送向けで、取引先からの SFTP の受け口ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "HTTP でのアップロードの高速化"
+      }
+    ],
+    "explanation": "SFTP / FTPS / AS2 で S3・EFS に = Transfer Family。",
+    "keywords": [
+      "SFTP",
+      "サーバーの管理はしたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "transfer-sftp:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "transfer-sftp"
+    ],
+    "prompt": "「SFTP / FTPS / AS2」「S3 や EFS に直接保存」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Transfer Family",
+        "correct": true,
+        "atomId": "transfer-sftp",
+        "why": "マネージドなファイル転送のサーバー"
+      },
+      {
+        "id": "b",
+        "text": "Storage Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "オンプレミスのサーバーから NFS / SMB で使う"
+      },
+      {
+        "id": "c",
+        "text": "Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでの移行"
+      },
+      {
+        "id": "d",
+        "text": "AWS DMS",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "DB の移行"
+      }
+    ],
+    "explanation": "SFTP = Transfer Family。",
+    "keywords": [
+      "SFTP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

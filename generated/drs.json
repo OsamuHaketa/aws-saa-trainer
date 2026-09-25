@@ -1,0 +1,94 @@
+[
+  {
+    "id": "drs-recovery:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "drs-recovery"
+    ],
+    "prompt": "オンプレミスの重要なサーバーの DR を AWS に作りたい。RPO は秒単位、RTO は数分。平常時のコストは最小にしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic Disaster Recovery",
+        "correct": true,
+        "atomId": "drs-recovery",
+        "why": "安いステージングに継続的に複製し、障害時に数分で起動する"
+      },
+      {
+        "id": "b",
+        "text": "毎晩のテープのバックアップを AWS に送る",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "RPO が 1 日になる"
+      },
+      {
+        "id": "c",
+        "text": "AWS にフルの規模のサーバーを常時稼働",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "コストが高い"
+      },
+      {
+        "id": "d",
+        "text": "AWS Backup の日次のバックアップ",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "RPO が秒単位にならない"
+      }
+    ],
+    "explanation": "秒単位の RPO・分単位の RTO を低コストで（サーバー単位）= Elastic Disaster Recovery。",
+    "keywords": [
+      "RPO は秒単位",
+      "コストは最小"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "drs-recovery:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "drs-recovery"
+    ],
+    "prompt": "「サーバーを継続的に複製」「低コストのステージング」「障害時に数分で復旧」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic Disaster Recovery",
+        "correct": true,
+        "atomId": "drs-recovery",
+        "why": "DR のためのサーバーの複製と復旧"
+      },
+      {
+        "id": "b",
+        "text": "AWS Backup のバックアッププラン",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "ポリシーによるバックアップの管理"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送"
+      },
+      {
+        "id": "d",
+        "text": "S3 のクロスリージョンレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "オブジェクトの複製"
+      }
+    ],
+    "explanation": "サーバーの DR = Elastic Disaster Recovery。",
+    "keywords": [
+      "継続的に複製",
+      "数分で復旧"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

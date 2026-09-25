@@ -1,0 +1,28 @@
+# AppSync の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: appsync
+
+atoms:
+  - id: appsync-graphql
+    category: compute
+    concept: AWS AppSync
+    summary: マネージドな GraphQL API。複数のデータソースをまとめ、リアルタイムの更新をクライアントに届ける
+    facts:
+      - GraphQL の API を作り、DynamoDB、Lambda、RDS、HTTP などのデータソースにつなぐ
+      - クライアントは必要なデータだけを 1 回のリクエストで取得できる
+      - サブスクリプションで、データの変更をクライアントにリアルタイムに送れる
+    triggers:
+      - GraphQL
+      - モバイルアプリにリアルタイムにデータの変更を届けたい
+    pitfalls:
+      - REST の API で足りるなら、API Gateway でもよい
+    relations:
+      - type: confused_with
+        target: apigateway-api
+        distinction: API Gateway は REST・HTTP・WebSocket の API を作る。AppSync は GraphQL の API で、複数のデータソースをまとめ、サブスクリプションでリアルタイムに更新を届ける
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html

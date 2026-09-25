@@ -1,0 +1,92 @@
+[
+  {
+    "id": "mgn-replication:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "mgn-replication"
+    ],
+    "prompt": "データセンターの 200 台のサーバー（Windows と Linux）を、アプリを作り直さずに AWS に移したい。切り替え時の停止時間は短くしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Application Migration Service",
+        "correct": true,
+        "atomId": "mgn-replication",
+        "why": "サーバーを継続的に複製し、そのまま EC2 に切り替える"
+      },
+      {
+        "id": "b",
+        "text": "AWS DMS",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "DB の移行だけ"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync でサーバーのディスクを移す",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送で、サーバー全体の移行ではない"
+      },
+      {
+        "id": "d",
+        "text": "各サーバーを手で EC2 に作り直す",
+        "correct": false,
+        "why": "時間がかかり、ミスも起きる"
+      }
+    ],
+    "explanation": "サーバーのリホスト（リフト＆シフト）= MGN。",
+    "keywords": [
+      "200 台",
+      "作り直さずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "mgn-replication:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "mgn-replication",
+      "dms-replication"
+    ],
+    "prompt": "Application Migration Service と DMS の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はサーバー全体を移す",
+        "correct": true,
+        "atomId": "mgn-replication",
+        "why": "MGN はブロックレベルで OS ごと複製し、DMS は DB のデータを移す"
+      },
+      {
+        "id": "b",
+        "text": "前者は DB 専用、後者はサーバー専用",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "どちらもファイルの転送専用",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送は DataSync"
+      },
+      {
+        "id": "d",
+        "text": "後者は移行元を止める必要がある",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "CDC で止めずに移行できる"
+      }
+    ],
+    "explanation": "サーバー = MGN、DB = DMS、ファイル = DataSync。",
+    "keywords": [
+      "サーバー全体"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

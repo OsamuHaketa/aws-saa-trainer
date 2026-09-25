@@ -1,0 +1,28 @@
+# DocumentDB の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: documentdb
+
+atoms:
+  - id: documentdb-cluster
+    category: database
+    concept: Amazon DocumentDB（MongoDB 互換）
+    summary: MongoDB 互換の API を持つ、JSON のドキュメントを保存するマネージドなデータベース
+    facts:
+      - MongoDB のドライバーやツールをそのまま使える
+      - JSON のドキュメントを柔軟なスキーマで保存・検索する
+      - ストレージは 3 つの AZ に 6 つのコピーを持ち、自動で拡張する（Aurora と似た構成）
+    triggers:
+      - MongoDB を AWS のマネージドサービスに移行したい
+      - JSON のドキュメントを保存したい
+    pitfalls:
+      - MongoDB 互換が不要でキー・値のアクセスが中心なら、DynamoDB も検討する
+    relations:
+      - type: confused_with
+        target: dynamodb-table
+        distinction: DocumentDB は MongoDB 互換のドキュメント DB で、既存の MongoDB のアプリをそのまま移せる。DynamoDB は AWS 独自のキー・値 / ドキュメントの NoSQL で、サーバーレスに無制限にスケールする
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html

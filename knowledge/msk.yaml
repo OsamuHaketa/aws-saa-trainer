@@ -1,0 +1,28 @@
+# MSK の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: msk
+
+atoms:
+  - id: msk-cluster
+    category: streaming
+    concept: Amazon MSK（Managed Streaming for Apache Kafka）
+    summary: Apache Kafka のクラスターをマネージドで動かす。既存の Kafka のアプリやツールをそのまま使える
+    facts:
+      - Kafka の API と互換で、既存の Kafka のプロデューサーやコンシューマーをそのまま使える
+      - ブローカーの構成、パッチ、障害時の置き換えを AWS が行う
+      - MSK Serverless を使うと、クラスターの容量の管理も不要になる
+    triggers:
+      - オンプレミスの Kafka を移行したい
+      - Kafka のエコシステムを使いたい
+    pitfalls:
+      - Kafka が不要でシンプルなストリーミングなら、Kinesis Data Streams の方が運用は簡単
+    relations:
+      - type: confused_with
+        target: kinesis-data-streams
+        distinction: Kinesis Data Streams は AWS 独自のストリーミングサービスで、シャードの管理だけで使える。MSK は Apache Kafka 互換で、既存の Kafka のアプリやツールをそのまま使える
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html

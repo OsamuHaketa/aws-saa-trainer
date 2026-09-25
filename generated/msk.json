@@ -1,0 +1,91 @@
+[
+  {
+    "id": "msk-cluster:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "msk-cluster"
+    ],
+    "prompt": "オンプレミスの Apache Kafka で動くストリーミング処理を、Kafka のアプリやツールを変えずに AWS のマネージドサービスに移したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon MSK",
+        "correct": true,
+        "atomId": "msk-cluster",
+        "why": "Kafka 互換のマネージドなクラスター"
+      },
+      {
+        "id": "b",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "Kafka の API とは互換がなく、改修が必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon MQ",
+        "correct": false,
+        "atomId": "mq-broker",
+        "why": "ActiveMQ / RabbitMQ のブローカー"
+      },
+      {
+        "id": "d",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キュー"
+      }
+    ],
+    "explanation": "Kafka = MSK。",
+    "keywords": [
+      "Kafka"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "msk-cluster:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "msk-cluster",
+      "kinesis-data-streams"
+    ],
+    "prompt": "Kinesis Data Streams と Amazon MSK の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Kafka 互換が必要なら MSK",
+        "correct": true,
+        "atomId": "msk-cluster",
+        "why": "不要なら、AWS 独自で運用が簡単な Kinesis"
+      },
+      {
+        "id": "b",
+        "text": "MSK は順序を保証しない",
+        "correct": false,
+        "why": "パーティション内の順序は保証される"
+      },
+      {
+        "id": "c",
+        "text": "Kinesis は複数のアプリで読めない",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "複数のアプリで読める"
+      },
+      {
+        "id": "d",
+        "text": "MSK はデータを保持しない",
+        "correct": false,
+        "why": "保持期間を設定できる"
+      }
+    ],
+    "explanation": "Kafka のエコシステム = MSK、AWS ネイティブのシンプルさ = Kinesis。",
+    "keywords": [
+      "Kafka との互換"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

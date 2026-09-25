@@ -1,0 +1,28 @@
+# MemoryDB の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: memorydb
+
+atoms:
+  - id: memorydb-cluster
+    category: database
+    concept: Amazon MemoryDB
+    summary: Valkey / Redis OSS 互換で、データを複数 AZ のログに永続化する、耐久性のあるインメモリデータベース
+    facts:
+      - マイクロ秒の読み取りと 1 桁ミリ秒の書き込みで応答する
+      - 書き込みはマルチ AZ のトランザクションログに保存され、ノードの障害でもデータを失わない
+      - キャッシュではなく、プライマリのデータベースとして使える
+    triggers:
+      - インメモリの速さで、データを失わないデータベースが欲しい
+      - Redis 互換のプライマリ DB
+    pitfalls:
+      - DB の前に置くキャッシュが欲しいだけなら、ElastiCache の方が安い
+    relations:
+      - type: confused_with
+        target: elasticache-redis
+        distinction: ElastiCache は主に DB の前のキャッシュとして使う。MemoryDB はマルチ AZ のログで永続化し、プライマリのデータベースとして使える
+    examDomains: [performance, resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/memorydb/latest/devguide/what-is-memorydb.html

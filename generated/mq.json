@@ -1,0 +1,92 @@
+[
+  {
+    "id": "mq-broker:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "mq-broker"
+    ],
+    "prompt": "オンプレミスの RabbitMQ を使う業務アプリを、AMQP のままコードをほとんど変えずに AWS に移したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon MQ",
+        "correct": true,
+        "atomId": "mq-broker",
+        "why": "RabbitMQ / ActiveMQ のマネージドなブローカー"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "独自の API で、AMQP には対応しないので改修が必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "Pub/Sub の通知で、AMQP ではない"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "ストリーミングで、AMQP ではない"
+      }
+    ],
+    "explanation": "既存のブローカー・標準のプロトコル（AMQP / MQTT など）= Amazon MQ。",
+    "keywords": [
+      "RabbitMQ",
+      "AMQP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "mq-broker:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "mq-broker",
+      "sqs-standard"
+    ],
+    "prompt": "新しく作るクラウドネイティブなアプリで、Amazon MQ ではなく SQS を選ぶ理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サーバーレスでほぼ無制限にスケールし、管理が不要",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "Amazon MQ はブローカーのサイズや台数を管理する"
+      },
+      {
+        "id": "b",
+        "text": "SQS だけが AMQP に対応する",
+        "correct": false,
+        "why": "AMQP に対応するのは Amazon MQ"
+      },
+      {
+        "id": "c",
+        "text": "SQS は順序を保証できない",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "FIFO キューなら保証できる"
+      },
+      {
+        "id": "d",
+        "text": "Amazon MQ は AWS で使えない",
+        "correct": false,
+        "why": "使える"
+      }
+    ],
+    "explanation": "新しいアプリ = SQS / SNS、既存のブローカーの移行 = Amazon MQ。",
+    "keywords": [
+      "新しく作る"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]

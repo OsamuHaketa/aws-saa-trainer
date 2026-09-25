@@ -1,0 +1,24 @@
+# Keyspaces の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: keyspaces
+
+atoms:
+  - id: keyspaces-table
+    category: database
+    concept: Amazon Keyspaces（Apache Cassandra 互換）
+    summary: Apache Cassandra 互換の、サーバーレスなワイドカラム型のデータベース
+    facts:
+      - Cassandra のクエリ言語（CQL）やドライバーをそのまま使える
+      - サーバーを管理せず、使った分だけ払う
+    triggers:
+      - Cassandra を AWS のマネージドサービスに移したい
+      - CQL
+    pitfalls:
+      - Cassandra 互換が不要なら、DynamoDB でもよい
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/keyspaces/latest/devguide/what-is-keyspaces.html

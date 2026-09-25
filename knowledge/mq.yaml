@@ -1,0 +1,28 @@
+# Amazon MQ の Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+
+service: mq
+
+atoms:
+  - id: mq-broker
+    category: messaging
+    concept: Amazon MQ
+    summary: Apache ActiveMQ と RabbitMQ のマネージドなメッセージブローカー。既存のアプリのプロトコルのまま移行できる
+    facts:
+      - AMQP、MQTT、STOMP、OpenWire、JMS などの業界標準のプロトコルに対応する
+      - オンプレミスの ActiveMQ や RabbitMQ を使うアプリを、コードをほとんど変えずに移せる
+      - アクティブ/スタンバイの構成で、複数の AZ に冗長化できる
+    triggers:
+      - オンプレミスの ActiveMQ / RabbitMQ を移行したい
+      - AMQP や MQTT などのプロトコルを使っている
+    pitfalls:
+      - 新しく作るアプリなら、スケールしやすくサーバーレスな SQS / SNS を検討する
+    relations:
+      - type: confused_with
+        target: sqs-standard
+        distinction: SQS は AWS 独自の API のサーバーレスなキューで、ほぼ無制限にスケールする。Amazon MQ は ActiveMQ / RabbitMQ 互換で、AMQP などの標準のプロトコルを使う既存のアプリを移すときに使う
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html

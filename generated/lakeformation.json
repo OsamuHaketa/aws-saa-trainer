@@ -1,0 +1,92 @@
+[
+  {
+    "id": "lakeformation-permissions:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "lakeformation-permissions"
+    ],
+    "prompt": "S3 のデータレイクの顧客テーブルで、分析チームにはメールアドレスの列を見せたくない。Athena と Redshift Spectrum の両方で同じ制限をかけたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lake Formation",
+        "correct": true,
+        "atomId": "lakeformation-permissions",
+        "why": "列レベルの権限が、分析のツールをまたいで適用される"
+      },
+      {
+        "id": "b",
+        "text": "S3 のバケットポリシー",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "オブジェクト単位で、列は制御できない"
+      },
+      {
+        "id": "c",
+        "text": "IAM ポリシーだけ",
+        "correct": false,
+        "atomId": "iam-least-privilege",
+        "why": "列単位の制御はできない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "機密データの検出で、アクセスの制御ではない"
+      }
+    ],
+    "explanation": "データレイクの列・行レベルの権限 = Lake Formation。",
+    "keywords": [
+      "列を見せたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lakeformation-permissions:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "lakeformation-permissions"
+    ],
+    "prompt": "「データレイク」「列・行レベルのアクセス制御」「Glue Data Catalog」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Lake Formation",
+        "correct": true,
+        "atomId": "lakeformation-permissions",
+        "why": "データレイクの権限を一元管理する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Glue のクローラー",
+        "correct": false,
+        "atomId": "glue-crawler",
+        "why": "スキーマの推定と登録"
+      },
+      {
+        "id": "c",
+        "text": "Amazon QuickSight",
+        "correct": false,
+        "atomId": "quicksight-dashboard",
+        "why": "可視化"
+      },
+      {
+        "id": "d",
+        "text": "IAM Access Analyzer",
+        "correct": false,
+        "atomId": "iam-access-analyzer",
+        "why": "外部への共有の分析"
+      }
+    ],
+    "explanation": "データレイクの細かい権限 = Lake Formation。",
+    "keywords": [
+      "列・行レベル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
