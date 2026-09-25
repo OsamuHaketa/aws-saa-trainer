@@ -87,5 +87,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "glue-crawler:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "glue-crawler"
+    ],
+    "prompt": "S3 に毎日新しい日付のフォルダでデータが届く。Athena から新しい日付のデータも自動で見えるようにしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Glue クローラーを定期実行する",
+        "correct": true,
+        "atomId": "glue-crawler",
+        "why": "新しいパーティションを Data Catalog に自動で追加する"
+      },
+      {
+        "id": "b",
+        "text": "毎日 Athena のテーブルを作り直す",
+        "correct": false,
+        "why": "手間がかかる"
+      },
+      {
+        "id": "c",
+        "text": "S3 のバージョニングを有効にする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "パーティションの登録とは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "データを RDS に入れる",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "Athena から S3 のデータを見る要件に合わない"
+      }
+    ],
+    "explanation": "スキーマやパーティションの自動登録 = Glue クローラー（またはパーティション射影）。",
+    "keywords": [
+      "新しい日付"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "glue-crawler:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "glue-crawler"
+    ],
+    "prompt": "「S3 のデータのスキーマを推定」「Athena や EMR で共通のテーブル定義」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Glue クローラーと Data Catalog",
+        "correct": true,
+        "atomId": "glue-crawler",
+        "why": "メタデータを一元管理する"
+      },
+      {
+        "id": "b",
+        "text": "QuickSight",
+        "correct": false,
+        "atomId": "quicksight-dashboard",
+        "why": "可視化"
+      },
+      {
+        "id": "c",
+        "text": "OpenSearch",
+        "correct": false,
+        "atomId": "opensearch-domain",
+        "why": "全文検索"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis Data Firehose",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "ストリームの配信"
+      }
+    ],
+    "explanation": "メタデータのカタログ = Glue Data Catalog。",
+    "keywords": [
+      "テーブル定義"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

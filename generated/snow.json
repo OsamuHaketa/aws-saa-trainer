@@ -44,5 +44,92 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "snow-snowball:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "snow-snowball"
+    ],
+    "prompt": "10 TB のデータを移す。1 Gbps の回線に余裕があり、数日で転送できる。それでも Snowball Edge を注文した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "回線で数日なら DataSync の方が速く手軽",
+        "correct": true,
+        "atomId": "datasync-task",
+        "why": "デバイスの配送と返送にも日数がかかる"
+      },
+      {
+        "id": "b",
+        "text": "Snowball Edge は 10 TB を運べない",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "運べる"
+      },
+      {
+        "id": "c",
+        "text": "Snowball Edge は暗号化されない",
+        "correct": false,
+        "why": "暗号化される"
+      },
+      {
+        "id": "d",
+        "text": "Snowball Edge は S3 に取り込めない",
+        "correct": false,
+        "why": "S3 に取り込める"
+      }
+    ],
+    "explanation": "回線で現実的な時間に送れる = DataSync。回線では何週間・何か月もかかる = Snowball。",
+    "keywords": [
+      "回線に余裕"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "snow-snowball:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "snow-snowball"
+    ],
+    "prompt": "Snowball Edge でデータを S3 Glacier Deep Archive に置きたい。正しい手順は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "まず S3 に取り込み、ライフサイクルで Deep Archive に移す",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "Snowball から Glacier へ直接は取り込めない"
+      },
+      {
+        "id": "b",
+        "text": "Snowball から Deep Archive に直接取り込む",
+        "correct": false,
+        "why": "直接は取り込めない"
+      },
+      {
+        "id": "c",
+        "text": "Snowball を EFS に接続する",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "関係ない"
+      },
+      {
+        "id": "d",
+        "text": "Snowball のデータを EBS スナップショットにする",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "Snowball → S3 → ライフサイクルで Glacier / Deep Archive。",
+    "keywords": [
+      "Deep Archive"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

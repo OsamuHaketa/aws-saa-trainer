@@ -87,5 +87,140 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dms-schema-conversion:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dms-schema-conversion"
+    ],
+    "prompt": "SQL Server から Aurora MySQL に移行する。テーブル定義やストアドプロシージャの変換が必要。データの移行とあわせて何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スキーマ変換ツール",
+        "correct": true,
+        "atomId": "dms-schema-conversion",
+        "why": "異なるエンジンのスキーマやコードを変換する"
+      },
+      {
+        "id": "b",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送で、DB のスキーマは変換しない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Backup",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "バックアップの管理"
+      },
+      {
+        "id": "d",
+        "text": "RDS のリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "同じエンジン内の複製"
+      }
+    ],
+    "explanation": "異種間の移行 = スキーマ変換（SCT / DMS Schema Conversion）+ DMS でデータ。",
+    "keywords": [
+      "SQL Server",
+      "Aurora MySQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dms-schema-conversion:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dms-schema-conversion"
+    ],
+    "prompt": "オンプレミスの MySQL 8.0 から RDS for MySQL 8.0 へ移行するため、スキーマ変換ツールでの変換作業を計画した。何が過剰？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "同じエンジン同士なので、スキーマ変換は通常不要",
+        "correct": true,
+        "atomId": "dms-schema-conversion",
+        "why": "DMS やダンプで移行できる"
+      },
+      {
+        "id": "b",
+        "text": "DMS は MySQL に対応していない",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "対応している"
+      },
+      {
+        "id": "c",
+        "text": "RDS for MySQL にはデータを移せない",
+        "correct": false,
+        "why": "移せる"
+      },
+      {
+        "id": "d",
+        "text": "移行中は必ず業務を止める必要がある",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "DMS の CDC で止めずに移行できる"
+      }
+    ],
+    "explanation": "同種の移行 = スキーマ変換不要、異種の移行 = スキーマ変換が必要。",
+    "keywords": [
+      "同じ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dms-replication:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dms-replication"
+    ],
+    "prompt": "「DB の移行」「移行元を動かしたまま」「変更データキャプチャ（CDC）」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS DMS",
+        "correct": true,
+        "atomId": "dms-replication",
+        "why": "フルロードのあと、変更を継続的に複製する"
+      },
+      {
+        "id": "b",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送"
+      },
+      {
+        "id": "c",
+        "text": "AWS Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでの一括移行"
+      },
+      {
+        "id": "d",
+        "text": "Storage Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ハイブリッドのストレージ"
+      }
+    ],
+    "explanation": "DB の移行と継続的な複製 = DMS。",
+    "keywords": [
+      "CDC"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

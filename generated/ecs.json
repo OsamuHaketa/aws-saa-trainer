@@ -132,5 +132,268 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-task-role:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ecs-task-role"
+    ],
+    "prompt": "EC2 起動タイプの ECS で、同じホストに複数のアプリのタスクが載る。アプリ A のタスクだけに S3 の書き込み権限を与えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アプリ A のタスク定義にタスクロールを付ける",
+        "correct": true,
+        "atomId": "ecs-task-role",
+        "why": "タスクごとに権限を分けられる"
+      },
+      {
+        "id": "b",
+        "text": "EC2 のインスタンスロールに S3 の権限を付ける",
+        "correct": false,
+        "atomId": "iam-instance-profile",
+        "why": "同じホストの全タスクが権限を持ってしまう"
+      },
+      {
+        "id": "c",
+        "text": "タスク実行ロールに S3 の書き込み権限を付ける",
+        "correct": false,
+        "why": "実行ロールはイメージの取得やログの送信のためのもの"
+      },
+      {
+        "id": "d",
+        "text": "アクセスキーをコンテナの環境変数に入れる",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報を持たせることになる"
+      }
+    ],
+    "explanation": "アプリの権限 = タスクロール、ECS エージェントの権限（ECR・ログ）= タスク実行ロール。",
+    "keywords": [
+      "アプリ A のタスクだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-task-role:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ecs-task-role"
+    ],
+    "prompt": "ECS のタスクロールとタスク実行ロールの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はアプリの権限、後者はイメージの取得やログ送信の権限",
+        "correct": true,
+        "atomId": "ecs-task-role",
+        "why": "後者は ECS エージェントが使う"
+      },
+      {
+        "id": "b",
+        "text": "前者は EC2 起動タイプだけ、後者は Fargate だけで使う",
+        "correct": false,
+        "why": "どちらも両方の起動タイプで使う"
+      },
+      {
+        "id": "c",
+        "text": "前者はコンテナの CPU を決め、後者はメモリを決める",
+        "correct": false,
+        "why": "権限の設定で、リソースの量ではない"
+      },
+      {
+        "id": "d",
+        "text": "どちらも同じもので、名前が違うだけ",
+        "correct": false,
+        "why": "役割が違う"
+      }
+    ],
+    "explanation": "タスクロール = アプリ用、タスク実行ロール = ECS の仕組み用。",
+    "keywords": [
+      "タスクロール",
+      "タスク実行ロール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ecr:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ecs-ecr"
+    ],
+    "prompt": "社内で作ったコンテナイメージをプライベートに保存し、ECS と EKS から使いたい。プッシュ時に脆弱性もスキャンしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon ECR",
+        "correct": true,
+        "atomId": "ecs-ecr",
+        "why": "プライベートなレジストリで、スキャンもできる"
+      },
+      {
+        "id": "b",
+        "text": "S3 の公開バケット",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開すると誰でも取得できてしまう"
+      },
+      {
+        "id": "c",
+        "text": "EBS スナップショット",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "ボリュームのバックアップ"
+      },
+      {
+        "id": "d",
+        "text": "CodeCommit",
+        "correct": false,
+        "why": "ソースコードのリポジトリで、イメージのレジストリではない"
+      }
+    ],
+    "explanation": "コンテナイメージの保存 = ECR。",
+    "keywords": [
+      "コンテナイメージ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ecr:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "ecs-ecr"
+    ],
+    "prompt": "CI で毎日数十のイメージを ECR にプッシュしていて、保存の料金が増え続けている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ライフサイクルポリシー",
+        "correct": true,
+        "atomId": "ecs-ecr",
+        "why": "条件に合う古いイメージを自動で削除できる"
+      },
+      {
+        "id": "b",
+        "text": "イメージを EBS に移す",
+        "correct": false,
+        "why": "イメージのレジストリとして使えない"
+      },
+      {
+        "id": "c",
+        "text": "ECR のリージョンを変える",
+        "correct": false,
+        "why": "料金は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "イメージのスキャンを止める",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "保存の料金は減らない"
+      }
+    ],
+    "explanation": "古いイメージの自動削除 = ECR のライフサイクルポリシー。",
+    "keywords": [
+      "料金が増え続けている"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ec2-launch-type:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "ecs-ec2-launch-type"
+    ],
+    "prompt": "ECS の EC2 起動タイプを選ぶ理由として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "GPU や特定のインスタンスタイプを細かく選びたい",
+        "correct": true,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "ホストの EC2 を自分で管理する代わりに自由度が高い"
+      },
+      {
+        "id": "b",
+        "text": "サーバーのパッチ管理をしたくない",
+        "correct": false,
+        "atomId": "ecs-fargate",
+        "why": "それなら Fargate"
+      },
+      {
+        "id": "c",
+        "text": "タスクごとに課金されたい",
+        "correct": false,
+        "why": "Fargate の課金方式"
+      },
+      {
+        "id": "d",
+        "text": "Kubernetes のツールをそのまま使いたい",
+        "correct": false,
+        "atomId": "eks-cluster",
+        "why": "それなら EKS"
+      }
+    ],
+    "explanation": "細かい制御・GPU・RI や Savings Plans での最適化 = EC2 起動タイプ、管理を減らす = Fargate。",
+    "keywords": [
+      "GPU"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-fargate:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ecs-fargate"
+    ],
+    "prompt": "「コンテナを動かすサーバーを管理しない」「タスク単位で CPU・メモリを指定」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Fargate",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "サーバーレスのコンテナの実行環境"
+      },
+      {
+        "id": "b",
+        "text": "ECS の EC2 起動タイプ",
+        "correct": false,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "ホストの EC2 を自分で管理する"
+      },
+      {
+        "id": "c",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチジョブの管理"
+      },
+      {
+        "id": "d",
+        "text": "Elastic Beanstalk",
+        "correct": false,
+        "atomId": "beanstalk-environment",
+        "why": "アプリの実行環境を自動構築する"
+      }
+    ],
+    "explanation": "サーバーレスのコンテナ = Fargate。",
+    "keywords": [
+      "サーバーを管理しない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -130,5 +130,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "athena-query:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "athena-query"
+    ],
+    "prompt": "「S3 のデータに SQL」「サーバーレス」「スキャン量で課金」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Athena",
+        "correct": true,
+        "atomId": "athena-query",
+        "why": "S3 のデータに直接 SQL を実行する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "データウェアハウスで、データのロードやクラスターが必要"
+      },
+      {
+        "id": "c",
+        "text": "Amazon RDS",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "リレーショナル DB"
+      },
+      {
+        "id": "d",
+        "text": "Amazon EMR",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "Hadoop / Spark のクラスター"
+      }
+    ],
+    "explanation": "S3 × SQL × サーバーレス = Athena。",
+    "keywords": [
+      "スキャン量で課金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "athena-query:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "athena-query"
+    ],
+    "prompt": "Athena から、S3 のログに加えて DynamoDB や RDS のデータも同じ SQL で結合して分析したい。データを S3 に移したくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Athena のフェデレーテッドクエリ",
+        "correct": true,
+        "atomId": "athena-query",
+        "why": "コネクタで S3 以外のデータソースにも問い合わせられる"
+      },
+      {
+        "id": "b",
+        "text": "Glue のクローラーだけ",
+        "correct": false,
+        "atomId": "glue-crawler",
+        "why": "テーブル定義の作成で、S3 以外への問い合わせではない"
+      },
+      {
+        "id": "c",
+        "text": "QuickSight だけ",
+        "correct": false,
+        "atomId": "quicksight-dashboard",
+        "why": "可視化のサービス"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録"
+      }
+    ],
+    "explanation": "Athena で S3 以外のデータにも SQL = フェデレーテッドクエリ。",
+    "keywords": [
+      "データを S3 に移したくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

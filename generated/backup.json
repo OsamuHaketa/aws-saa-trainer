@@ -88,5 +88,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "backup-plan:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "backup-plan"
+    ],
+    "prompt": "「複数のサービスのバックアップを 1 つのポリシーで」「別リージョン・別アカウントへコピー」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Backup",
+        "correct": true,
+        "atomId": "backup-plan",
+        "why": "バックアッププランで一元管理・自動化する"
+      },
+      {
+        "id": "b",
+        "text": "EBS のデータライフサイクルマネージャー",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "EBS のスナップショットだけ"
+      },
+      {
+        "id": "c",
+        "text": "RDS の自動バックアップ",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "RDS だけ"
+      },
+      {
+        "id": "d",
+        "text": "S3 のレプリケーション",
+        "correct": false,
+        "atomId": "s3-cross-region-replication",
+        "why": "S3 のオブジェクトの複製"
+      }
+    ],
+    "explanation": "サービス横断のバックアップ管理 = AWS Backup。",
+    "keywords": [
+      "1 つのポリシー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "backup-plan:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "backup-plan"
+    ],
+    "prompt": "本番アカウントが乗っ取られてもバックアップを守れるよう、バックアップのコピーを別のアカウントに置きたい。組織内で一元管理したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Backup のクロスアカウントコピーを使う",
+        "correct": true,
+        "atomId": "backup-plan",
+        "why": "Organizations と連携し、別アカウントのボールトにコピーする"
+      },
+      {
+        "id": "b",
+        "text": "同じアカウントの別リージョンにだけコピーする",
+        "correct": false,
+        "why": "アカウントを乗っ取られると両方消されうる"
+      },
+      {
+        "id": "c",
+        "text": "バックアップを取らずにレプリカだけ持つ",
+        "correct": false,
+        "why": "誤削除や破壊も複製されてしまう"
+      },
+      {
+        "id": "d",
+        "text": "EBS スナップショットを公開する",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "誰でも見られてしまう"
+      }
+    ],
+    "explanation": "アカウント侵害への備え = 別アカウントへのコピー（+ Vault Lock）。",
+    "keywords": [
+      "別のアカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

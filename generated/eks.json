@@ -44,5 +44,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "eks-cluster:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "eks-cluster"
+    ],
+    "prompt": "「Kubernetes」「既存のマニフェストや Helm をそのまま使う」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EKS",
+        "correct": true,
+        "atomId": "eks-cluster",
+        "why": "マネージドな Kubernetes"
+      },
+      {
+        "id": "b",
+        "text": "Amazon ECS",
+        "correct": false,
+        "atomId": "ecs-fargate",
+        "why": "AWS 独自のコンテナのオーケストレーション"
+      },
+      {
+        "id": "c",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチジョブ"
+      },
+      {
+        "id": "d",
+        "text": "Elastic Beanstalk",
+        "correct": false,
+        "atomId": "beanstalk-environment",
+        "why": "アプリの実行環境の自動構築"
+      }
+    ],
+    "explanation": "Kubernetes = EKS、AWS 独自でシンプル = ECS。",
+    "keywords": [
+      "Kubernetes"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eks-cluster:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "eks-cluster",
+      "ecs-fargate"
+    ],
+    "prompt": "新しくコンテナを始めるチームが、Kubernetes の経験がなく、運用をシンプルにしたい。EKS ではなく ECS を選ぶ理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS と統合されていて、覚えることが少ない",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "Kubernetes の知識がなくても使いやすい"
+      },
+      {
+        "id": "b",
+        "text": "ECS だけが Fargate で動かせる",
+        "correct": false,
+        "atomId": "eks-cluster",
+        "why": "EKS も Fargate で動かせる"
+      },
+      {
+        "id": "c",
+        "text": "ECS はコンテナを動かせない",
+        "correct": false,
+        "why": "動かせる"
+      },
+      {
+        "id": "d",
+        "text": "EKS はマネージドではない",
+        "correct": false,
+        "why": "EKS のコントロールプレーンは AWS が管理する"
+      }
+    ],
+    "explanation": "Kubernetes の互換性が必要 = EKS、シンプルさ・AWS との統合 = ECS。",
+    "keywords": [
+      "Kubernetes の経験がなく"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

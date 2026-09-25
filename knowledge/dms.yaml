@@ -22,3 +22,25 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html
+
+  - id: dms-schema-conversion
+    category: migration
+    concept: スキーマ変換（DMS Schema Conversion / SCT）
+    summary: 異なる種類の DB への移行で、テーブル定義やストアドプロシージャなどを移行先の形式に変換する
+    facts:
+      - Oracle → Aurora PostgreSQL のような異種間の移行で、スキーマやコードを変換する
+      - 変換できない部分はレポートで示され、手で直す
+      - データそのものの移行は DMS で行う
+    triggers:
+      - 異なる DB エンジンへの移行
+      - ストアドプロシージャの変換
+    pitfalls:
+      - 同じエンジン同士（MySQL → RDS for MySQL など）の移行では、スキーマ変換は通常不要
+    relations:
+      - type: used_with
+        target: dms-replication
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html

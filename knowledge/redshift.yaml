@@ -23,3 +23,48 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html
+
+  - id: redshift-spectrum
+    category: analytics
+    concept: Redshift Spectrum
+    summary: S3 のデータを Redshift にロードせずに、Redshift から直接 SQL で問い合わせる
+    facts:
+      - S3 のデータを外部テーブルとして参照し、Redshift の中のテーブルと結合できる
+      - 頻繁に使うデータは Redshift に、古いデータは S3 に置いてコストを下げられる
+      - Glue Data Catalog のテーブル定義を使える
+    triggers:
+      - Redshift のデータと S3 の古いデータをまとめて分析したい
+      - S3 のデータを Redshift にロードしたくない
+    pitfalls:
+      - Redshift を使っていないなら、S3 への SQL は Athena で足りる
+    relations:
+      - type: confused_with
+        target: athena-query
+        distinction: Athena は単独でサーバーレスに S3 を問い合わせる。Redshift Spectrum は Redshift クラスターから S3 を問い合わせ、Redshift の中のデータと結合できる
+    examDomains: [cost, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html
+
+  - id: redshift-serverless
+    category: analytics
+    concept: Amazon Redshift Serverless
+    summary: クラスターを管理せず、使った分だけ払う Redshift
+    facts:
+      - ノードの種類や数を決めずに、負荷に応じて自動で容量が増減する
+      - クエリを実行した分の容量（RPU 時間）だけ課金される
+      - 利用が不定期な分析や、新しいワークロードに向く
+    triggers:
+      - たまにしか使わないデータウェアハウス
+      - クラスターのサイズを決めたくない
+    pitfalls:
+      - 常に高負荷で使い続けるなら、プロビジョンドのクラスターと予約の方が安いことがある
+    relations:
+      - type: part_of
+        target: redshift-cluster
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-serverless.html

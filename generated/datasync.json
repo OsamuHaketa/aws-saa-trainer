@@ -88,5 +88,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "datasync-task:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "datasync-task"
+    ],
+    "prompt": "「NAS から S3 / EFS / FSx へ」「オンラインで高速に転送」「定期的に同期」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS DataSync",
+        "correct": true,
+        "atomId": "datasync-task",
+        "why": "エージェントを置き、ネットワーク経由で高速に転送する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでオフラインに運ぶ"
+      },
+      {
+        "id": "c",
+        "text": "AWS DMS",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "データベースの移行"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "インターネット経由の S3 へのアップロードの高速化"
+      }
+    ],
+    "explanation": "ファイルのオンラインの移行・同期 = DataSync。",
+    "keywords": [
+      "NAS",
+      "同期"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "datasync-task:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "datasync-task"
+    ],
+    "prompt": "オンプレミスのファイルを S3 に移すため、自作のスクリプトで 1 ファイルずつコピーしている。遅く、失敗したファイルの再送や検証も手作業。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DataSync で転送し、整合性の検証も任せる",
+        "correct": true,
+        "atomId": "datasync-task",
+        "why": "並列転送・再試行・検証を自動で行う"
+      },
+      {
+        "id": "b",
+        "text": "スクリプトを 1 日 1 回にする",
+        "correct": false,
+        "why": "遅さや検証の問題は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "ファイルを EBS に一度置く",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "手間が増える"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront 経由でアップロードする",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "大量のファイル移行の定番ではない"
+      }
+    ],
+    "explanation": "大量のファイル転送 = DataSync（並列・暗号化・検証・スケジュール）。",
+    "keywords": [
+      "自作のスクリプト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

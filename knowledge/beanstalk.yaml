@@ -21,3 +21,26 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html
+
+  - id: beanstalk-deployment-policies
+    category: compute
+    concept: Elastic Beanstalk のデプロイ方式
+    summary: 一度に全台、ローリング、追加バッチ付きローリング、イミュータブル、トラフィック分割、ブルー/グリーンから選ぶ
+    facts:
+      - 一度に全台（All at once）は最も速いが、デプロイ中に停止する
+      - ローリングは少しずつ更新するが、その間は処理能力が下がる。追加バッチ付きなら能力を保てる
+      - イミュータブルは新しいインスタンス群を作って切り替え、失敗しても元の環境に影響しない
+      - ブルー/グリーンは別の環境を作り、URL（CNAME）の入れ替えで切り替える
+    triggers:
+      - デプロイ中も処理能力を落としたくない
+      - デプロイに失敗してもすぐ元に戻したい
+    pitfalls:
+      - 本番で一度に全台を使うと、デプロイ中にサービスが止まる
+    relations:
+      - type: part_of
+        target: beanstalk-environment
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html

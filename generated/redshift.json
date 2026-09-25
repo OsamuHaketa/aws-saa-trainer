@@ -43,5 +43,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-spectrum:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "redshift-spectrum"
+    ],
+    "prompt": "Redshift には直近 1 年のデータだけを置き、それより古い数年分は S3 に置いている。両方をまとめて 1 つの SQL で分析したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Redshift Spectrum",
+        "correct": true,
+        "atomId": "redshift-spectrum",
+        "why": "S3 のデータを外部テーブルとして Redshift から結合できる"
+      },
+      {
+        "id": "b",
+        "text": "古いデータを毎回 Redshift にロードする",
+        "correct": false,
+        "why": "ロードの時間とストレージのコストがかかる"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB に移す",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "分析向けではない"
+      },
+      {
+        "id": "d",
+        "text": "ElastiCache にキャッシュする",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "大量の分析データの置き場ではない"
+      }
+    ],
+    "explanation": "Redshift の中のデータ + S3 のデータを結合 = Redshift Spectrum。",
+    "keywords": [
+      "まとめて 1 つの SQL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-spectrum:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "redshift-spectrum",
+      "athena-query"
+    ],
+    "prompt": "Athena と Redshift Spectrum の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後者は Redshift から使う",
+        "correct": true,
+        "atomId": "redshift-spectrum",
+        "why": "Spectrum は Redshift の中のテーブルと結合できる"
+      },
+      {
+        "id": "b",
+        "text": "前者は S3 に問い合わせられない",
+        "correct": false,
+        "why": "どちらも S3 に問い合わせる"
+      },
+      {
+        "id": "c",
+        "text": "後者は Redshift がなくても使える",
+        "correct": false,
+        "why": "Redshift のクラスターかサーバーレスが必要"
+      },
+      {
+        "id": "d",
+        "text": "前者はデータのロードが必要",
+        "correct": false,
+        "why": "ロードは不要"
+      }
+    ],
+    "explanation": "Redshift を使っているなら Spectrum、使っていないなら Athena。",
+    "keywords": [
+      "Athena",
+      "Spectrum"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-serverless:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "redshift-serverless"
+    ],
+    "prompt": "月末の数日だけ重い集計をするデータウェアハウスが必要。クラスターのサイズの管理はしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Redshift Serverless",
+        "correct": true,
+        "atomId": "redshift-serverless",
+        "why": "使った分だけ払い、容量は自動で調整される"
+      },
+      {
+        "id": "b",
+        "text": "最大サイズのプロビジョンドの Redshift を常時稼働",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "使わない日も払う"
+      },
+      {
+        "id": "c",
+        "text": "RDS for PostgreSQL",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "大規模な分析向けではない"
+      },
+      {
+        "id": "d",
+        "text": "ElastiCache",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "キャッシュ"
+      }
+    ],
+    "explanation": "不定期な分析 = Redshift Serverless。",
+    "keywords": [
+      "月末の数日だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-cluster:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "redshift-cluster"
+    ],
+    "prompt": "Redshift が大量のデータの集計を速くできる理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "列指向のストレージと並列処理（MPP）",
+        "correct": true,
+        "atomId": "redshift-cluster",
+        "why": "必要な列だけを読み、複数のノードで並列に処理する"
+      },
+      {
+        "id": "b",
+        "text": "すべてのデータをメモリに置くから",
+        "correct": false,
+        "why": "ディスクに列指向で保存する"
+      },
+      {
+        "id": "c",
+        "text": "キー・値型の NoSQL だから",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "それは DynamoDB"
+      },
+      {
+        "id": "d",
+        "text": "データをエッジにキャッシュするから",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "それは CloudFront"
+      }
+    ],
+    "explanation": "Redshift = 列指向 + MPP のデータウェアハウス（OLAP）。",
+    "keywords": [
+      "列指向"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

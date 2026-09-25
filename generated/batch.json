@@ -44,5 +44,92 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "batch-jobs:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "batch-jobs"
+    ],
+    "prompt": "「大量のバッチジョブ」「ジョブキュー」「計算環境を自動で用意」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Batch",
+        "correct": true,
+        "atomId": "batch-jobs",
+        "why": "ジョブに合わせて EC2 や Fargate の計算環境を自動で増減する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Step Functions",
+        "correct": false,
+        "atomId": "stepfunctions-state-machine",
+        "why": "ワークフローの制御で、計算環境の管理はしない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キューで、計算環境は用意しない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Lambda",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "15 分までの処理向け"
+      }
+    ],
+    "explanation": "大量のバッチ + 計算環境の管理 = AWS Batch。",
+    "keywords": [
+      "ジョブキュー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "batch-jobs:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "batch-jobs"
+    ],
+    "prompt": "1 本 3 時間かかる数千の計算ジョブを、Lambda に分けて実行しようとしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lambda は 15 分が上限",
+        "correct": true,
+        "atomId": "batch-jobs",
+        "why": "長時間のジョブは Batch（EC2 / Fargate / スポット）"
+      },
+      {
+        "id": "b",
+        "text": "Lambda は並列に実行できない",
+        "correct": false,
+        "why": "並列に実行できる"
+      },
+      {
+        "id": "c",
+        "text": "Lambda は計算処理に使えない",
+        "correct": false,
+        "why": "使えるが時間の上限がある"
+      },
+      {
+        "id": "d",
+        "text": "Lambda はスポットより必ず安い",
+        "correct": false,
+        "why": "時間の上限が問題"
+      }
+    ],
+    "explanation": "長時間・大量の計算ジョブ = AWS Batch。",
+    "keywords": [
+      "3 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

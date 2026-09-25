@@ -43,5 +43,134 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "beanstalk-deployment-policies:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "beanstalk-deployment-policies"
+    ],
+    "prompt": "Elastic Beanstalk で、デプロイ中も処理能力を落とさず、失敗したら既存のインスタンスに影響を与えずに戻したい。どのデプロイ方式？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "イミュータブル",
+        "correct": true,
+        "atomId": "beanstalk-deployment-policies",
+        "why": "新しいインスタンス群で試し、成功したら入れ替える"
+      },
+      {
+        "id": "b",
+        "text": "一度に全台",
+        "correct": false,
+        "why": "デプロイ中に止まり、失敗の影響も全台に出る"
+      },
+      {
+        "id": "c",
+        "text": "ローリング",
+        "correct": false,
+        "why": "更新中は処理能力が下がり、失敗すると一部が壊れた状態になる"
+      },
+      {
+        "id": "d",
+        "text": "手動で 1 台ずつ SSH で更新",
+        "correct": false,
+        "why": "手間がかかり、失敗しやすい"
+      }
+    ],
+    "explanation": "能力を保ち、失敗しても既存に影響しない = イミュータブル（またはブルー/グリーン）。",
+    "keywords": [
+      "処理能力を落とさず",
+      "影響を与えずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "beanstalk-deployment-policies:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "beanstalk-deployment-policies"
+    ],
+    "prompt": "本番の Elastic Beanstalk 環境のデプロイ方式が「一度に全台」になっている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "デプロイ中はすべてのインスタンスが止まる",
+        "correct": true,
+        "atomId": "beanstalk-deployment-policies",
+        "why": "本番ではローリングやイミュータブルを使う"
+      },
+      {
+        "id": "b",
+        "text": "デプロイが遅すぎる",
+        "correct": false,
+        "why": "最も速い方式"
+      },
+      {
+        "id": "c",
+        "text": "新しいバージョンがデプロイされない",
+        "correct": false,
+        "why": "デプロイはされる"
+      },
+      {
+        "id": "d",
+        "text": "Auto Scaling が無効になる",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "Auto Scaling は無効にならない"
+      }
+    ],
+    "explanation": "一度に全台 = 速いが停止する（開発環境向け）。",
+    "keywords": [
+      "一度に全台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "beanstalk-environment:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "beanstalk-environment"
+    ],
+    "prompt": "「コードをアップロードするだけ」「ELB と Auto Scaling を自動で構築」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Elastic Beanstalk",
+        "correct": true,
+        "atomId": "beanstalk-environment",
+        "why": "実行環境を自動で作り、アプリに集中できる"
+      },
+      {
+        "id": "b",
+        "text": "AWS CloudFormation",
+        "correct": false,
+        "why": "テンプレートでリソースを作るが、自分で定義する"
+      },
+      {
+        "id": "c",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "バッチジョブ"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Lightsail",
+        "correct": false,
+        "why": "シンプルな VPS"
+      }
+    ],
+    "explanation": "コードだけで Web アプリの環境 = Elastic Beanstalk。",
+    "keywords": [
+      "コードをアップロードするだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

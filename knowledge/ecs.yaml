@@ -45,3 +45,49 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
+
+  - id: ecs-task-role
+    category: containers
+    concept: タスクロールとタスク実行ロール
+    summary: コンテナのアプリが AWS を使う権限はタスクロール、イメージの取得やログの送信はタスク実行ロール
+    facts:
+      - タスクロールは、コンテナ内のアプリが S3 や DynamoDB などを呼ぶための権限
+      - タスク実行ロールは、ECS エージェントが ECR からイメージを取得したり、CloudWatch Logs にログを送ったりする権限
+      - タスクごとにロールを分けて、最小権限にできる
+    triggers:
+      - コンテナのアプリから S3 にアクセスしたい
+      - ECR からイメージを取得できない
+    pitfalls:
+      - アプリ用の権限を EC2 のインスタンスロールに付けると、同じホストの全タスクがその権限を持つ
+    relations:
+      - type: used_with
+        target: iam-role
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
+      - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html
+
+  - id: ecs-ecr
+    category: containers
+    concept: Amazon ECR
+    summary: コンテナイメージを保存・管理するマネージドなレジストリ。脆弱性のスキャンやリージョン間の複製もできる
+    facts:
+      - ECS、EKS、Lambda などが使うコンテナイメージを保存する
+      - IAM でイメージのプッシュ・プルの権限を制御する
+      - イメージのスキャン（Inspector と連携）や、リージョン・アカウント間のレプリケーションができる
+      - ライフサイクルポリシーで古いイメージを自動で削除できる
+    triggers:
+      - コンテナイメージをプライベートに保存したい
+      - イメージの脆弱性をスキャンしたい
+    pitfalls:
+      - 古いイメージを削除しないと、保存の料金が増え続ける
+    relations:
+      - type: used_with
+        target: ecs-fargate
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html

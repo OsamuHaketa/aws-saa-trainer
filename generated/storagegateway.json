@@ -136,5 +136,183 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-file:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "storagegateway-file"
+    ],
+    "prompt": "「オンプレミスから NFS / SMB」「実体は S3」「よく使うファイルはローカルにキャッシュ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 File Gateway",
+        "correct": true,
+        "atomId": "storagegateway-file",
+        "why": "ファイル共有として使え、実体は S3 のオブジェクト"
+      },
+      {
+        "id": "b",
+        "text": "Tape Gateway",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "仮想テープ"
+      },
+      {
+        "id": "c",
+        "text": "Volume Gateway",
+        "correct": false,
+        "atomId": "storagegateway-volume",
+        "why": "iSCSI のブロックストレージ"
+      },
+      {
+        "id": "d",
+        "text": "DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "データの移行・同期で、常用のファイル共有ではない"
+      }
+    ],
+    "explanation": "NFS / SMB のまま S3 = S3 File Gateway。",
+    "keywords": [
+      "NFS",
+      "実体は S3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-file:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "storagegateway-file",
+      "datasync-task"
+    ],
+    "prompt": "Storage Gateway（S3 File Gateway）と DataSync の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "常用なら前者、移行なら後者",
+        "correct": true,
+        "atomId": "storagegateway-file",
+        "why": "DataSync は大量のデータを高速に転送する"
+      },
+      {
+        "id": "b",
+        "text": "前者は移行専用、後者は日常のファイル共有",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者は S3 に保存できない",
+        "correct": false,
+        "why": "S3 に保存する"
+      },
+      {
+        "id": "d",
+        "text": "後者はオンプレミスから使えない",
+        "correct": false,
+        "why": "オンプレミスのエージェントから転送する"
+      }
+    ],
+    "explanation": "ハイブリッドで使い続ける = Storage Gateway、移す・同期する = DataSync。",
+    "keywords": [
+      "使い分け"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-volume:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "storagegateway-volume"
+    ],
+    "prompt": "Volume Gateway のキャッシュ型と保管型の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保管型は本体がオンプレミス",
+        "correct": true,
+        "atomId": "storagegateway-volume",
+        "why": "保管型は非同期に AWS へバックアップする"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュ型は NFS、保管型は SMB",
+        "correct": false,
+        "why": "どちらも iSCSI"
+      },
+      {
+        "id": "c",
+        "text": "保管型はデータを AWS に送らない",
+        "correct": false,
+        "why": "スナップショットとして AWS に送る"
+      },
+      {
+        "id": "d",
+        "text": "キャッシュ型はテープを使う",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "テープは Tape Gateway"
+      }
+    ],
+    "explanation": "キャッシュ型 = 本体は AWS・よく使う分だけローカル、保管型 = 本体はローカル・AWS にバックアップ。",
+    "keywords": [
+      "キャッシュ型",
+      "保管型"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-tape:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "storagegateway-tape"
+    ],
+    "prompt": "「既存のバックアップソフトのまま」「物理テープをやめる」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Tape Gateway",
+        "correct": true,
+        "atomId": "storagegateway-tape",
+        "why": "仮想テープライブラリとして使え、データは S3 や Glacier に保存する"
+      },
+      {
+        "id": "b",
+        "text": "S3 File Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ファイル共有"
+      },
+      {
+        "id": "c",
+        "text": "Snowball Edge",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "物理デバイスでの一括移行"
+      },
+      {
+        "id": "d",
+        "text": "AWS Backup",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "AWS 上のリソースのバックアップの管理"
+      }
+    ],
+    "explanation": "仮想テープ = Tape Gateway。",
+    "keywords": [
+      "物理テープ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

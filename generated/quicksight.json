@@ -44,5 +44,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "quicksight-dashboard:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "quicksight-dashboard"
+    ],
+    "prompt": "「BI」「ダッシュボード」「サーバーレス」「ユーザー単位の料金」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon QuickSight",
+        "correct": true,
+        "atomId": "quicksight-dashboard",
+        "why": "データを可視化して共有する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "SQL で問い合わせる"
+      },
+      {
+        "id": "c",
+        "text": "CloudWatch ダッシュボード",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "システムのメトリクスの可視化"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "データウェアハウス"
+      }
+    ],
+    "explanation": "ビジネスのデータの可視化 = QuickSight。",
+    "keywords": [
+      "BI"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

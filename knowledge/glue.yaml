@@ -26,3 +26,27 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html
+
+  - id: glue-crawler
+    category: analytics
+    concept: Glue クローラーと Data Catalog
+    summary: S3 などのデータを調べてスキーマを推定し、Data Catalog にテーブルとして登録する
+    facts:
+      - クローラーが S3 のファイルを読み、列やパーティションを推定してテーブル定義を作る
+      - Data Catalog のテーブルは、Athena、Redshift Spectrum、EMR などから共通で使える
+      - スケジュールで定期的に実行し、新しいパーティションを自動で追加できる
+    triggers:
+      - S3 のデータのテーブル定義を自動で作りたい
+      - Athena から新しいパーティションが見えない
+    pitfalls:
+      - パーティションを追加しても Data Catalog に登録されないと、Athena のクエリの対象にならない
+    relations:
+      - type: part_of
+        target: glue-etl
+      - type: used_with
+        target: athena-query
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html

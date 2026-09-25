@@ -43,5 +43,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "opensearch-domain:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "opensearch-domain"
+    ],
+    "prompt": "多数のサーバーのログを集めて、キーワードで検索し、ダッシュボードで可視化したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OpenSearch Service",
+        "correct": true,
+        "atomId": "opensearch-domain",
+        "why": "ログの全文検索と可視化ができる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon RDS",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "ログの全文検索には向かない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Redshift",
+        "correct": false,
+        "atomId": "redshift-cluster",
+        "why": "構造化データの集計向け"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "キーでの読み書き"
+      }
+    ],
+    "explanation": "ログの検索と可視化 = OpenSearch Service（+ OpenSearch Dashboards）。",
+    "keywords": [
+      "キーワードで検索"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "opensearch-domain:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "opensearch-domain"
+    ],
+    "prompt": "DynamoDB のテーブルで、商品名の部分一致の検索をスキャンで実装していて遅い。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OpenSearch で検索する",
+        "correct": true,
+        "atomId": "opensearch-domain",
+        "why": "全文検索のインデックスで高速に探せる"
+      },
+      {
+        "id": "b",
+        "text": "DAX でスキャンを速くする",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "スキャンの設計の問題は残る"
+      },
+      {
+        "id": "c",
+        "text": "GSI を大量に作る",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "部分一致の検索には向かない"
+      },
+      {
+        "id": "d",
+        "text": "RCU を増やす",
+        "correct": false,
+        "atomId": "dynamodb-provisioned",
+        "why": "コストが増えるだけ"
+      }
+    ],
+    "explanation": "全文検索・あいまい検索 = OpenSearch（DynamoDB Streams などで同期する）。",
+    "keywords": [
+      "部分一致"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -44,5 +44,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "emr-cluster:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "emr-cluster"
+    ],
+    "prompt": "「Hadoop」「Spark」「クラスターを細かく制御」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EMR",
+        "correct": true,
+        "atomId": "emr-cluster",
+        "why": "ビッグデータ処理のクラスターを管理する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Glue",
+        "correct": false,
+        "atomId": "glue-etl",
+        "why": "サーバーレスの ETL で、クラスターは管理しない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 への SQL"
+      },
+      {
+        "id": "d",
+        "text": "AWS Batch",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "汎用のバッチジョブ"
+      }
+    ],
+    "explanation": "Hadoop / Spark のクラスター = EMR。",
+    "keywords": [
+      "Hadoop",
+      "Spark"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "emr-cluster:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "emr-cluster"
+    ],
+    "prompt": "EMR のジョブのコストを下げたい。データは S3 に置き、処理が終わったらクラスターは不要。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ジョブのたびにクラスターを作り、タスクノードはスポット",
+        "correct": true,
+        "atomId": "emr-cluster",
+        "why": "一時的なクラスターにし、中断されても困らない部分をスポットに"
+      },
+      {
+        "id": "b",
+        "text": "コアノードも含めてすべてスポットにし、HDFS にデータを置く",
+        "correct": false,
+        "why": "中断でデータを失いうる"
+      },
+      {
+        "id": "c",
+        "text": "クラスターを 24 時間起動したままにする",
+        "correct": false,
+        "why": "使わない時間も払う"
+      },
+      {
+        "id": "d",
+        "text": "Glacier Deep Archive からデータを直接読む",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "取り出しに時間がかかる"
+      }
+    ],
+    "explanation": "EMR のコスト最適化 = 一時的なクラスター + S3（EMRFS）+ タスクノードにスポット。",
+    "keywords": [
+      "処理が終わったら"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
