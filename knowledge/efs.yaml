@@ -48,3 +48,47 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html
+
+  - id: efs-throughput-modes
+    category: file-storage
+    concept: EFS のスループットモード（Elastic / プロビジョンド / バースト）
+    summary: 負荷に合わせて自動で増減する Elastic、一定の性能を確保するプロビジョンド、容量に比例するバーストから選ぶ
+    facts:
+      - Elastic スループットは、ワークロードに合わせて自動でスループットが増減し、使った分だけ払う
+      - プロビジョンドスループットは、保存量に関係なく一定のスループットを確保する
+      - バーストスループットは、保存量に比例したベースラインとバーストのクレジットで動く
+    triggers:
+      - 保存量は少ないのに高いスループットが必要
+      - アクセスの量が予測できない
+    pitfalls:
+      - バーストモードで保存量が少ないと、クレジットを使い切ってスループットが落ちる
+    relations:
+      - type: part_of
+        target: efs-filesystem
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/efs/latest/ug/performance.html
+
+  - id: efs-one-zone
+    category: file-storage
+    concept: EFS One Zone
+    summary: 1 つの AZ だけにデータを保存し、EFS の料金を下げる
+    facts:
+      - データを 1 つの AZ に保存するので、リージョンの複数 AZ に保存する標準より安い
+      - その AZ が障害になると、データにアクセスできなくなるおそれがある
+      - 開発環境や、別の場所から作り直せるデータに向く
+    triggers:
+      - EFS のコストを下げたい
+      - 開発・テスト用の共有ファイル
+    pitfalls:
+      - AZ の障害に耐える必要がある本番のデータには向かない
+    relations:
+      - type: part_of
+        target: efs-filesystem
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html

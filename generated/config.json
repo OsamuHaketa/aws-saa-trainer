@@ -130,5 +130,138 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "config-aggregator:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "config-aggregator"
+    ],
+    "prompt": "組織の 50 のアカウント・全リージョンで、Config ルールに違反しているリソースを 1 つの画面で見たい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Config アグリゲーターで組織全体を集約する",
+        "correct": true,
+        "atomId": "config-aggregator",
+        "why": "複数アカウント・リージョンの状況をまとめて見られる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントにサインインして確認する",
+        "correct": false,
+        "why": "手間が大きい"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail の組織の証跡を見る",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、設定の準拠状況ではない"
+      },
+      {
+        "id": "d",
+        "text": "IAM Access Analyzer を使う",
+        "correct": false,
+        "atomId": "iam-access-analyzer",
+        "why": "外部との共有の分析"
+      }
+    ],
+    "explanation": "複数アカウント・リージョンの Config の集約 = アグリゲーター。",
+    "keywords": [
+      "1 つの画面"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "config-conformance-packs:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "config-conformance-packs"
+    ],
+    "prompt": "CIS のベンチマークに沿った数十の Config ルールを、組織内のすべてのアカウントにまとめて展開したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Config の適合パック",
+        "correct": true,
+        "atomId": "config-conformance-packs",
+        "why": "ルール一式をまとめて組織に展開できる"
+      },
+      {
+        "id": "b",
+        "text": "SCP",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "操作の禁止で、設定の評価ではない"
+      },
+      {
+        "id": "c",
+        "text": "Config アグリゲーター",
+        "correct": false,
+        "atomId": "config-aggregator",
+        "why": "集約して見るもので、ルールは展開しない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFormation を各アカウントで手動実行",
+        "correct": false,
+        "why": "手間が大きく漏れが出る"
+      }
+    ],
+    "explanation": "ルール一式の展開 = 適合パック、状況の集約 = アグリゲーター。",
+    "keywords": [
+      "まとめて展開"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "config-rules:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "config-rules"
+    ],
+    "prompt": "「リソースの設定の変更履歴」「設定がルールに準拠しているか」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Config",
+        "correct": true,
+        "atomId": "config-rules",
+        "why": "設定の履歴を記録し、ルールで評価する"
+      },
+      {
+        "id": "b",
+        "text": "AWS CloudTrail",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API 操作の記録"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      },
+      {
+        "id": "d",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出"
+      }
+    ],
+    "explanation": "設定の履歴と準拠 = Config、誰が操作したか = CloudTrail。",
+    "keywords": [
+      "設定の変更履歴"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

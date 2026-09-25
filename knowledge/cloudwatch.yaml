@@ -86,3 +86,70 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html
+
+  - id: cloudwatch-logs-insights
+    category: monitoring
+    concept: CloudWatch Logs Insights
+    summary: CloudWatch Logs のログを、専用のクエリ言語で対話的に検索・集計する
+    facts:
+      - ロググループに対して、フィルタ、集計、並べ替えのクエリを実行する
+      - 追加のサーバーやデータの移動なしに、すぐにログを分析できる
+      - スキャンしたデータ量に応じて料金がかかる
+    triggers:
+      - ログからエラーの件数を時間ごとに集計したい
+      - CloudWatch Logs のログをその場で分析したい
+    pitfalls:
+      - 継続的な監視と通知には、メトリクスフィルターとアラームを使う
+    relations:
+      - type: part_of
+        target: cloudwatch-logs
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html
+
+  - id: cloudwatch-composite-alarms
+    category: monitoring
+    concept: 複合アラーム
+    summary: 複数のアラームの状態を AND / OR で組み合わせ、本当に対応が必要なときだけ通知する
+    facts:
+      - 複数のアラームの状態を、AND、OR、NOT のルールで組み合わせる
+      - 同じ障害で大量の通知が来る（アラームの嵐）のを減らせる
+    triggers:
+      - CPU が高く、かつエラー率も高いときだけ通知したい
+      - 通知が多すぎて重要なものを見逃す
+    pitfalls:
+      - 個々のアラームすべてに通知を付けると、1 つの障害で大量の通知が届く
+    relations:
+      - type: part_of
+        target: cloudwatch-alarms
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html
+
+  - id: cloudwatch-logs-subscription
+    category: monitoring
+    concept: CloudWatch Logs のサブスクリプションフィルター
+    summary: ログをリアルタイムに Lambda、Kinesis、Data Firehose、OpenSearch などへ送る
+    facts:
+      - ロググループに届いたログを、条件に合うものだけリアルタイムに転送する
+      - 送り先は Lambda、Kinesis Data Streams、Data Firehose、OpenSearch Service など
+      - 別のアカウントに送り、ログを 1 か所に集約することもできる
+    triggers:
+      - ログをリアルタイムに別のシステムへ流したい
+      - 複数のアカウントのログを 1 か所に集めたい
+    pitfalls:
+      - 定期的に S3 へエクスポートするだけでは、リアルタイムの処理にならない
+    relations:
+      - type: part_of
+        target: cloudwatch-logs
+      - type: used_with
+        target: kinesis-firehose
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Subscriptions.html

@@ -133,5 +133,228 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-ontap:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "fsx-ontap"
+    ],
+    "prompt": "同じファイルを Linux のサーバーは NFS で、Windows のクライアントは SMB で使いたい。オンプレミスでは NetApp を使っている。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FSx for NetApp ONTAP",
+        "correct": true,
+        "atomId": "fsx-ontap",
+        "why": "NFS・SMB・iSCSI のマルチプロトコルに対応する"
+      },
+      {
+        "id": "b",
+        "text": "FSx for Windows File Server",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "SMB が中心で、Linux の NFS からは使えない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "NFS だけで、Windows の SMB には対応しない"
+      },
+      {
+        "id": "d",
+        "text": "FSx for Lustre",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "HPC 向けの並列ファイルシステム"
+      }
+    ],
+    "explanation": "NFS と SMB の両方・NetApp からの移行 = FSx for NetApp ONTAP。",
+    "keywords": [
+      "NFS",
+      "SMB",
+      "NetApp"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-ontap:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "fsx-ontap"
+    ],
+    "prompt": "「マルチプロトコル（NFS・SMB・iSCSI）」「NetApp」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FSx for NetApp ONTAP",
+        "correct": true,
+        "atomId": "fsx-ontap",
+        "why": "オンプレミスの NetApp と同じ機能を使える"
+      },
+      {
+        "id": "b",
+        "text": "FSx for Lustre",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "HPC 向け"
+      },
+      {
+        "id": "c",
+        "text": "Storage Gateway の Volume Gateway",
+        "correct": false,
+        "atomId": "storagegateway-volume",
+        "why": "オンプレミスから iSCSI で S3 を使う"
+      },
+      {
+        "id": "d",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "NFS のみ"
+      }
+    ],
+    "explanation": "マルチプロトコル = FSx for NetApp ONTAP。",
+    "keywords": [
+      "マルチプロトコル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-lustre:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "fsx-lustre"
+    ],
+    "prompt": "FSx for Lustre のスクラッチと永続（Persistent）の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は短期向けで複製がない",
+        "correct": true,
+        "atomId": "fsx-lustre",
+        "why": "スクラッチは安いが、障害時にデータが失われうる"
+      },
+      {
+        "id": "b",
+        "text": "スクラッチは SMB、永続は NFS",
+        "correct": false,
+        "why": "どちらも Lustre のプロトコル"
+      },
+      {
+        "id": "c",
+        "text": "スクラッチは S3 と連携できない",
+        "correct": false,
+        "why": "どちらも S3 と連携できる"
+      },
+      {
+        "id": "d",
+        "text": "永続は 1 時間で自動削除される",
+        "correct": false,
+        "why": "永続は長く使うためのもの"
+      }
+    ],
+    "explanation": "短期のジョブ・安さ = スクラッチ、長期・重要なデータ = 永続（複製あり）。",
+    "keywords": [
+      "スクラッチ",
+      "永続"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-lustre:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "fsx-lustre"
+    ],
+    "prompt": "「HPC」「機械学習の学習データ」「S3 と連携する高性能な並列ファイルシステム」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FSx for Lustre",
+        "correct": true,
+        "atomId": "fsx-lustre",
+        "why": "高スループット・低レイテンシで、S3 のデータを使える"
+      },
+      {
+        "id": "b",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "汎用の NFS"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Windows File Server",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "Windows の SMB"
+      },
+      {
+        "id": "d",
+        "text": "S3 Glacier Deep Archive",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "長期保管用で、取り出しに時間がかかる"
+      }
+    ],
+    "explanation": "HPC・ML の並列ファイルシステム = FSx for Lustre。",
+    "keywords": [
+      "HPC",
+      "並列ファイルシステム"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-windows:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "fsx-windows"
+    ],
+    "prompt": "FSx for Windows File Server のマルチ AZ 配置の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "別の AZ のスタンバイに自動で切り替わる",
+        "correct": true,
+        "atomId": "fsx-windows",
+        "why": "シングル AZ より高い可用性"
+      },
+      {
+        "id": "b",
+        "text": "複数のリージョンに自動で複製する",
+        "correct": false,
+        "why": "マルチ AZ はリージョン内の冗長化"
+      },
+      {
+        "id": "c",
+        "text": "NFS でもアクセスできるようになる",
+        "correct": false,
+        "why": "プロトコルは変わらない"
+      },
+      {
+        "id": "d",
+        "text": "Active Directory が不要になる",
+        "correct": false,
+        "why": "AD との連携は必要"
+      }
+    ],
+    "explanation": "本番の Windows ファイル共有 = マルチ AZ で自動フェイルオーバー。",
+    "keywords": [
+      "マルチ AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

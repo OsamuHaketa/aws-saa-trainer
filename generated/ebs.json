@@ -441,5 +441,449 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-elastic-volumes:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-elastic-volumes"
+    ],
+    "prompt": "本番の EC2 のデータ用 EBS の空きが少なくなった。インスタンスを止めずに容量を増やしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic Volumes で容量を変更する",
+        "correct": true,
+        "atomId": "ebs-elastic-volumes",
+        "why": "接続したまま増やし、OS でファイルシステムを拡張する"
+      },
+      {
+        "id": "b",
+        "text": "スナップショットから大きなボリュームを作り付け替える",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "付け替えのために停止や切り替えの作業が必要になる"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストアを追加する",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "一時的な領域で、データの永続化には使えない"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスタイプを大きくする",
+        "correct": false,
+        "atomId": "ec2-instance-families",
+        "why": "EBS の容量は増えない"
+      }
+    ],
+    "explanation": "稼働中の容量・タイプ・性能の変更 = Elastic Volumes。",
+    "keywords": [
+      "止めずに容量を増やしたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-elastic-volumes:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ebs-elastic-volumes"
+    ],
+    "prompt": "多数の gp2 ボリュームを、コストを下げるため gp3 に変えたい。サービスは止めたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic Volumes でタイプを gp3 に変更する",
+        "correct": true,
+        "atomId": "ebs-elastic-volumes",
+        "why": "接続したままタイプを変えられる"
+      },
+      {
+        "id": "b",
+        "text": "スナップショットを取り、gp3 で作り直して付け替える",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "停止や切り替えの作業が必要になる"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを休止してから変更する",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "休止の必要はない"
+      },
+      {
+        "id": "d",
+        "text": "gp2 から gp3 には変更できない",
+        "correct": false,
+        "why": "変更できる"
+      }
+    ],
+    "explanation": "gp2 → gp3 の移行 = Elastic Volumes でその場で変更（多くの場合 gp3 の方が安い）。",
+    "keywords": [
+      "gp2",
+      "gp3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-elastic-volumes:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-elastic-volumes"
+    ],
+    "prompt": "一時的に大きくした EBS ボリュームを、使い終わったので Elastic Volumes で小さく戻そうとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "容量は増やせるが、減らせない",
+        "correct": true,
+        "atomId": "ebs-elastic-volumes",
+        "why": "小さくするには新しいボリュームにデータを移す"
+      },
+      {
+        "id": "b",
+        "text": "Elastic Volumes は gp3 では使えない",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "gp3 でも使える"
+      },
+      {
+        "id": "c",
+        "text": "容量を変えるとデータが消える",
+        "correct": false,
+        "why": "データは保たれる"
+      },
+      {
+        "id": "d",
+        "text": "容量の変更には AMI が必要",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "AMI は不要"
+      }
+    ],
+    "explanation": "EBS の容量は増やすだけ。減らすなら新しいボリュームを作ってデータを移す。",
+    "keywords": [
+      "小さく戻そう"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-multi-attach:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ebs-multi-attach"
+    ],
+    "prompt": "クラスター対応のアプリで、同じ AZ の 4 台の EC2 から 1 つのブロックストレージに同時に読み書きしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "io2 の EBS マルチアタッチ",
+        "correct": true,
+        "atomId": "ebs-multi-attach",
+        "why": "同じ AZ の最大 16 台の Nitro インスタンスに接続できる"
+      },
+      {
+        "id": "b",
+        "text": "gp3 の EBS を 4 台に付ける",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "マルチアタッチは io1 / io2 だけ"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストアを共有する",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "インスタンスストアは共有できない"
+      },
+      {
+        "id": "d",
+        "text": "S3 をブロックデバイスとして付ける",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "S3 はオブジェクトストレージ"
+      }
+    ],
+    "explanation": "複数台で同じブロックストレージ（同一 AZ）= io1 / io2 のマルチアタッチ。ファイル共有なら EFS。",
+    "keywords": [
+      "同じ AZ",
+      "ブロックストレージ",
+      "同時に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-multi-attach:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ebs-multi-attach",
+      "efs-filesystem"
+    ],
+    "prompt": "EBS マルチアタッチと EFS の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は同じ AZ、後者は複数の AZ",
+        "correct": true,
+        "atomId": "ebs-multi-attach",
+        "why": "EFS は NFS のファイル共有"
+      },
+      {
+        "id": "b",
+        "text": "前者はすべてのボリュームタイプで使える",
+        "correct": false,
+        "why": "io1 / io2 だけ"
+      },
+      {
+        "id": "c",
+        "text": "後者はブロックストレージである",
+        "correct": false,
+        "why": "EFS はファイルストレージ"
+      },
+      {
+        "id": "d",
+        "text": "前者は数千台に同時に付けられる",
+        "correct": false,
+        "why": "最大 16 台"
+      }
+    ],
+    "explanation": "マルチアタッチ = 同一 AZ・最大 16 台・ブロック、EFS = 複数 AZ・多数・ファイル。",
+    "keywords": [
+      "同じ AZ",
+      "複数の AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-recycle-bin:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ebs-recycle-bin"
+    ],
+    "prompt": "運用者が誤って EBS スナップショットを削除してしまうことに備え、削除後も一定期間は戻せるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ゴミ箱の保持ルール",
+        "correct": true,
+        "atomId": "ebs-recycle-bin",
+        "why": "削除されたスナップショットを保持期間内なら復元できる"
+      },
+      {
+        "id": "b",
+        "text": "S3 のバージョニング",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "S3 のオブジェクトの機能で、EBS のスナップショットには使えない"
+      },
+      {
+        "id": "c",
+        "text": "EBS の暗号化",
+        "correct": false,
+        "atomId": "ebs-encryption",
+        "why": "誤削除からは戻せない"
+      },
+      {
+        "id": "d",
+        "text": "Elastic Volumes",
+        "correct": false,
+        "atomId": "ebs-elastic-volumes",
+        "why": "ボリュームの変更の機能"
+      }
+    ],
+    "explanation": "スナップショットや AMI の誤削除 = ゴミ箱（Recycle Bin）。",
+    "keywords": [
+      "誤って削除"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-sc1:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-sc1"
+    ],
+    "prompt": "起動用のルートボリュームを、最も安いからと Cold HDD（sc1）にしようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "HDD はブートに使えない",
+        "correct": true,
+        "atomId": "ebs-sc1",
+        "why": "ブートボリュームには SSD（gp3 など）を使う"
+      },
+      {
+        "id": "b",
+        "text": "sc1 は暗号化できない",
+        "correct": false,
+        "atomId": "ebs-encryption",
+        "why": "暗号化できる"
+      },
+      {
+        "id": "c",
+        "text": "sc1 はスナップショットを取れない",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "取れる"
+      },
+      {
+        "id": "d",
+        "text": "sc1 は 1 GB から作れる",
+        "correct": false,
+        "why": "問題はブートに使えないこと"
+      }
+    ],
+    "explanation": "st1 / sc1 はブートボリュームにできない。",
+    "keywords": [
+      "ルートボリューム"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-sc1:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ebs-sc1"
+    ],
+    "prompt": "「ほとんどアクセスしない大容量のデータ」「EBS で最も安い」→ どのボリューム？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cold HDD（sc1）",
+        "correct": true,
+        "atomId": "ebs-sc1",
+        "why": "アクセスの少ないデータ向けの最安のボリューム"
+      },
+      {
+        "id": "b",
+        "text": "スループット最適化 HDD（st1）",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "頻繁に順番に読み書きするデータ向け"
+      },
+      {
+        "id": "c",
+        "text": "汎用 SSD（gp3）",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "汎用で、sc1 より高い"
+      },
+      {
+        "id": "d",
+        "text": "プロビジョンド IOPS SSD（io2）",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "高 IOPS の DB 向けで最も高い"
+      }
+    ],
+    "explanation": "最安・コールド = sc1、大量の順次アクセス = st1。",
+    "keywords": [
+      "最も安い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-encryption:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ebs-encryption"
+    ],
+    "prompt": "暗号化された EBS ボリュームについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スナップショットや通信も暗号化される",
+        "correct": true,
+        "atomId": "ebs-encryption",
+        "why": "ボリュームとインスタンスの間の通信も暗号化される"
+      },
+      {
+        "id": "b",
+        "text": "暗号化するとアプリの変更が必要",
+        "correct": false,
+        "why": "透過的に暗号化され、アプリの変更は不要"
+      },
+      {
+        "id": "c",
+        "text": "暗号化すると IOPS が半分になる",
+        "correct": false,
+        "why": "性能への影響はほぼない"
+      },
+      {
+        "id": "d",
+        "text": "スナップショットは暗号化されない",
+        "correct": false,
+        "why": "暗号化される"
+      }
+    ],
+    "explanation": "EBS の暗号化 = 保存時・スナップショット・通信まで、透過的に。",
+    "keywords": [
+      "暗号化された"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-snapshots:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-snapshots"
+    ],
+    "prompt": "東京リージョンの障害に備えて、EBS スナップショットを毎日取っているが、東京リージョンにしか置いていない。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リージョン障害時に使えない。別リージョンにコピーする",
+        "correct": true,
+        "atomId": "ebs-snapshots",
+        "why": "スナップショットは別リージョンにコピーできる"
+      },
+      {
+        "id": "b",
+        "text": "スナップショットは同じ AZ にしか置けない",
+        "correct": false,
+        "why": "リージョンの複数 AZ に保存される"
+      },
+      {
+        "id": "c",
+        "text": "スナップショットは 1 日 1 回しか取れない",
+        "correct": false,
+        "why": "何度でも取れる"
+      },
+      {
+        "id": "d",
+        "text": "スナップショットは暗号化できない",
+        "correct": false,
+        "atomId": "ebs-encryption",
+        "why": "暗号化できる"
+      }
+    ],
+    "explanation": "リージョン障害への備え = スナップショットを別リージョンへコピー（DLM や AWS Backup で自動化）。",
+    "keywords": [
+      "東京リージョンにしか"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

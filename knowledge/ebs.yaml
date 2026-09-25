@@ -135,3 +135,73 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: ebs-elastic-volumes
+    category: block-storage
+    concept: Elastic Volumes（稼働中の変更）
+    summary: 接続したまま、EBS ボリュームの容量・タイプ・IOPS・スループットを変更する
+    facts:
+      - インスタンスを止めずに、容量を増やしたり、gp2 から gp3 にタイプを変えたりできる
+      - 容量を増やしたあとは、OS 側でファイルシステムを拡張する
+      - 容量を減らすことはできない
+      - 同じボリュームへの変更は、一定の間隔（6 時間）をあける必要がある
+    triggers:
+      - 止めずにディスクの容量を増やしたい
+      - gp2 から gp3 に移行してコストを下げたい
+    pitfalls:
+      - 容量を増やすために、スナップショットから新しいボリュームを作り直す必要はない
+    relations:
+      - type: used_with
+        target: ebs-gp3
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html
+
+  - id: ebs-multi-attach
+    category: block-storage
+    concept: EBS マルチアタッチ
+    summary: io1 / io2 のボリュームを、同じ AZ の複数の Nitro インスタンスに同時に接続する
+    facts:
+      - プロビジョンド IOPS SSD（io1 / io2）だけが対応する
+      - 同じ AZ にある最大 16 台の Nitro ベースのインスタンスに接続できる
+      - 同時書き込みを安全に扱うには、クラスター対応のファイルシステムやアプリが必要
+    triggers:
+      - クラスター化したアプリで、1 つのブロックストレージを複数台から使いたい
+      - 同じ AZ の複数台で同じボリュームに書き込みたい
+    pitfalls:
+      - 複数の AZ や多数のサーバーでファイルを共有したいだけなら、EFS を使う
+    relations:
+      - type: confused_with
+        target: efs-filesystem
+        distinction: マルチアタッチは io1 / io2 のブロックストレージを同じ AZ の最大 16 台に付ける（クラスター対応のアプリが必要）。EFS は複数の AZ の多数のインスタンスからマウントできるファイル共有
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html
+
+  - id: ebs-recycle-bin
+    category: backup
+    concept: ゴミ箱（Recycle Bin）
+    summary: 誤って削除した EBS スナップショットや AMI を、保持期間内なら元に戻せる
+    facts:
+      - 保持ルールを作ると、削除されたスナップショットや AMI がゴミ箱に一定期間残る
+      - 保持期間内なら復元でき、過ぎると完全に削除される
+      - タグやリソースの種類で、対象を絞れる
+    triggers:
+      - 誤って削除したスナップショットを戻したい
+      - スナップショットの誤削除に備えたい
+    pitfalls:
+      - ゴミ箱の保持ルールは削除の前に作っておく必要がある
+    relations:
+      - type: used_with
+        target: ebs-snapshots
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html

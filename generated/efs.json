@@ -132,5 +132,181 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "efs-throughput-modes:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "efs-throughput-modes"
+    ],
+    "prompt": "EFS に置くデータは数 GB と少ないが、処理のときだけ高いスループットが必要で、アクセスのタイミングも予測できない。どのスループットモード？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Elastic スループット",
+        "correct": true,
+        "atomId": "efs-throughput-modes",
+        "why": "負荷に合わせて自動で増減し、使った分だけ払う"
+      },
+      {
+        "id": "b",
+        "text": "バーストスループット",
+        "correct": false,
+        "why": "保存量が少ないとベースラインが低く、クレジットが尽きやすい"
+      },
+      {
+        "id": "c",
+        "text": "プロビジョンドスループットを最大で",
+        "correct": false,
+        "why": "使わない時間も最大の性能分を払う"
+      },
+      {
+        "id": "d",
+        "text": "EFS One Zone に変える",
+        "correct": false,
+        "atomId": "efs-one-zone",
+        "why": "保存場所の話で、スループットのモードではない"
+      }
+    ],
+    "explanation": "予測できない・急な高スループット = Elastic、常に一定の高性能 = プロビジョンド。",
+    "keywords": [
+      "数 GB",
+      "予測できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-one-zone:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "efs-one-zone"
+    ],
+    "prompt": "開発チームが使う共有ファイルを EFS に置く。消えても Git から作り直せるので、AZ 障害への耐性より料金の安さを優先したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EFS One Zone を使う",
+        "correct": true,
+        "atomId": "efs-one-zone",
+        "why": "1 つの AZ に保存するので安い"
+      },
+      {
+        "id": "b",
+        "text": "EFS 標準（リージョン）を使う",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "複数 AZ に保存するので、One Zone より高い"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Lustre を使う",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "HPC 向けで、この用途には過剰"
+      },
+      {
+        "id": "d",
+        "text": "各サーバーのインスタンスストアに置く",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "サーバー間で共有できない"
+      }
+    ],
+    "explanation": "作り直せるデータのコスト削減 = One Zone（S3 の One Zone-IA と同じ考え方）。",
+    "keywords": [
+      "料金の安さを優先"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-filesystem:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "efs-filesystem"
+    ],
+    "prompt": "Amazon EFS について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複数 AZ の Linux から NFS で使える",
+        "correct": true,
+        "atomId": "efs-filesystem",
+        "why": "容量は自動で増減し、使った分だけ払う"
+      },
+      {
+        "id": "b",
+        "text": "SMB で Windows からマウントする",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "それは FSx for Windows File Server"
+      },
+      {
+        "id": "c",
+        "text": "1 台の EC2 にだけ接続できる",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "それは通常の EBS"
+      },
+      {
+        "id": "d",
+        "text": "事前に容量を決めて確保する",
+        "correct": false,
+        "why": "容量は自動で伸縮する"
+      }
+    ],
+    "explanation": "EFS = Linux 向けの NFS 共有、容量は自動、複数 AZ。",
+    "keywords": [
+      "NFS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-storage-classes:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "efs-storage-classes"
+    ],
+    "prompt": "EFS のライフサイクル管理で、IA に移したファイルに再びアクセスがあったときの設定でできることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "最初のアクセスで標準クラスへ戻す",
+        "correct": true,
+        "atomId": "efs-storage-classes",
+        "why": "よく使われるようになったファイルを自動で標準に戻せる"
+      },
+      {
+        "id": "b",
+        "text": "アクセスを拒否する",
+        "correct": false,
+        "why": "拒否はしない"
+      },
+      {
+        "id": "c",
+        "text": "S3 Glacier に移す",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "EFS の中のクラスの移動で、S3 には移さない"
+      },
+      {
+        "id": "d",
+        "text": "ファイルを削除する",
+        "correct": false,
+        "why": "削除はしない"
+      }
+    ],
+    "explanation": "EFS のライフサイクル = 標準 ↔ IA ↔ アーカイブを自動で移動（アクセス時に標準へ戻すこともできる）。",
+    "keywords": [
+      "再びアクセス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -48,3 +48,27 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html
+
+  - id: fsx-ontap
+    category: file-storage
+    concept: FSx for NetApp ONTAP
+    summary: NFS・SMB・iSCSI を 1 つのファイルシステムで提供する、NetApp ONTAP 互換のマネージドストレージ
+    facts:
+      - Linux（NFS）、Windows（SMB）、ブロック（iSCSI）から同じデータにアクセスできる
+      - スナップショット、クローン、重複排除、圧縮などの ONTAP の機能を使える
+      - オンプレミスの NetApp からの移行に向く
+    triggers:
+      - Linux と Windows の両方から同じファイルを使いたい
+      - オンプレミスの NetApp を移行したい
+      - NFS と SMB の両方が必要
+    pitfalls:
+      - Windows だけで Active Directory 連携が必要なら FSx for Windows File Server でもよい
+    relations:
+      - type: confused_with
+        target: fsx-windows
+        distinction: FSx for Windows File Server は SMB と Windows の機能に特化している。FSx for NetApp ONTAP は NFS・SMB・iSCSI のマルチプロトコルで、Linux と Windows の両方から使える
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html

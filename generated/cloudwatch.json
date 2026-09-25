@@ -133,5 +133,317 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs-insights:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-logs-insights"
+    ],
+    "prompt": "CloudWatch Logs に出ているアプリのログから、直近 24 時間のエラーの件数を 1 時間ごとに集計したい。すぐに調べたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Logs Insights",
+        "correct": true,
+        "atomId": "cloudwatch-logs-insights",
+        "why": "ロググループにクエリをかけて集計できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail のイベント履歴で検索する",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録で、アプリのログではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      }
+    ],
+    "explanation": "ログのその場での検索・集計 = Logs Insights。継続的な監視はメトリクスフィルター + アラーム。",
+    "keywords": [
+      "集計",
+      "すぐに調べたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-composite-alarms:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-composite-alarms"
+    ],
+    "prompt": "1 つの障害で CPU・レイテンシ・エラー率のアラームが同時に鳴り、大量の通知が来る。「レイテンシとエラー率が両方高い」ときだけ通知したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複合アラームで AND にする",
+        "correct": true,
+        "atomId": "cloudwatch-composite-alarms",
+        "why": "個々のアラームには通知を付けない"
+      },
+      {
+        "id": "b",
+        "text": "すべてのアラームのしきい値を下げる",
+        "correct": false,
+        "why": "通知がさらに増える"
+      },
+      {
+        "id": "c",
+        "text": "アラームをすべて削除する",
+        "correct": false,
+        "why": "障害に気付けなくなる"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail で通知する",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、性能の監視はしない"
+      }
+    ],
+    "explanation": "複数のアラームの組み合わせ = 複合アラーム。",
+    "keywords": [
+      "両方高い",
+      "大量の通知"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs-subscription:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-logs-subscription"
+    ],
+    "prompt": "各アカウントの CloudWatch Logs のログを、リアルタイムにログ集約用アカウントの S3 に集めたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サブスクリプションフィルターで Firehose に送る",
+        "correct": true,
+        "atomId": "cloudwatch-logs-subscription",
+        "why": "リアルタイムに転送し、Firehose が S3 に届ける"
+      },
+      {
+        "id": "b",
+        "text": "毎日手動で S3 にエクスポートする",
+        "correct": false,
+        "why": "リアルタイムではなく、手間もかかる"
+      },
+      {
+        "id": "c",
+        "text": "CloudWatch のダッシュボードを共有する",
+        "correct": false,
+        "why": "ログの集約にはならない"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail の証跡を作る",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の記録で、アプリのログは集まらない"
+      }
+    ],
+    "explanation": "ログのリアルタイムの転送 = サブスクリプションフィルター（Lambda・Kinesis・Firehose・OpenSearch へ）。",
+    "keywords": [
+      "リアルタイム",
+      "集めたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-agent:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-agent"
+    ],
+    "prompt": "EC2 のメモリ使用率とディスクの空き容量を CloudWatch で監視し、アプリのログも CloudWatch Logs に送りたい。何を入れる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch エージェント",
+        "correct": true,
+        "atomId": "cloudwatch-agent",
+        "why": "OS 内のメトリクスとログを集めて送る"
+      },
+      {
+        "id": "b",
+        "text": "SSM Session Manager",
+        "correct": false,
+        "atomId": "ssm-session-manager",
+        "why": "ログインの仕組みで、メトリクスは集めない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      }
+    ],
+    "explanation": "メモリ・ディスク・ログ = CloudWatch エージェント。",
+    "keywords": [
+      "メモリ使用率",
+      "ディスク"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-metrics:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-metrics"
+    ],
+    "prompt": "EC2 の基本モニタリングと詳細モニタリングの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "基本は 5 分、詳細は 1 分間隔",
+        "correct": true,
+        "atomId": "cloudwatch-metrics",
+        "why": "詳細にするとスケーリングの反応も速くなる"
+      },
+      {
+        "id": "b",
+        "text": "基本は 1 分間隔、詳細は 1 秒間隔",
+        "correct": false,
+        "why": "基本は 5 分間隔"
+      },
+      {
+        "id": "c",
+        "text": "詳細にするとメモリも取得される",
+        "correct": false,
+        "atomId": "cloudwatch-agent",
+        "why": "メモリはエージェントが必要"
+      },
+      {
+        "id": "d",
+        "text": "基本は有料、詳細は無料",
+        "correct": false,
+        "why": "逆"
+      }
+    ],
+    "explanation": "EC2 のメトリクス = 基本 5 分（無料）、詳細 1 分（有料）。メモリは含まれない。",
+    "keywords": [
+      "5 分",
+      "1 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-alarms:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-alarms"
+    ],
+    "prompt": "「メトリクスがしきい値を超えたら」「SNS で通知」「Auto Scaling を実行」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch アラーム",
+        "correct": true,
+        "atomId": "cloudwatch-alarms",
+        "why": "しきい値を超えたときにアクションを実行する"
+      },
+      {
+        "id": "b",
+        "text": "CloudWatch Logs Insights",
+        "correct": false,
+        "atomId": "cloudwatch-logs-insights",
+        "why": "ログの分析"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config ルール",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の準拠の評価"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail Insights",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の呼び出しの異常を検出する"
+      }
+    ],
+    "explanation": "しきい値 → アクション = CloudWatch アラーム。",
+    "keywords": [
+      "しきい値"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-logs"
+    ],
+    "prompt": "CloudWatch Logs のログの保持期間のデフォルトは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "無期限",
+        "correct": true,
+        "atomId": "cloudwatch-logs",
+        "why": "不要な保管の料金を減らすには保持期間を設定する"
+      },
+      {
+        "id": "b",
+        "text": "1 日",
+        "correct": false,
+        "why": "デフォルトは無期限"
+      },
+      {
+        "id": "c",
+        "text": "30 日",
+        "correct": false,
+        "why": "デフォルトは無期限"
+      },
+      {
+        "id": "d",
+        "text": "90 日",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "90 日は CloudTrail のイベント履歴"
+      }
+    ],
+    "explanation": "CloudWatch Logs = デフォルトで無期限に保存。保持期間を決めてコストを管理する。",
+    "keywords": [
+      "保持期間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

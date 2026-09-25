@@ -24,3 +24,45 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html
+
+  - id: config-aggregator
+    category: audit
+    concept: AWS Config アグリゲーター
+    summary: 複数のアカウントとリージョンの Config のデータを、1 つのアカウントに集めて一覧する
+    facts:
+      - 組織全体、または指定したアカウントとリージョンの設定と準拠状況を集約する
+      - 集約したデータは読み取り専用で、ルールの評価は各アカウントで行う
+    triggers:
+      - 全アカウントのルール違反を 1 か所で見たい
+      - 複数リージョンのリソースの設定を一覧したい
+    pitfalls:
+      - アグリゲーターで各アカウントのルールを作ることはできない（ルールの一括展開は適合パックや組織のルールで行う）
+    relations:
+      - type: part_of
+        target: config-rules
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html
+
+  - id: config-conformance-packs
+    category: audit
+    concept: 適合パック（Conformance Packs）
+    summary: 複数の Config ルールと修復アクションをまとめ、アカウントや組織に一括で展開する
+    facts:
+      - PCI DSS や CIS などのテンプレートを使い、ルールをまとめて展開できる
+      - Organizations と連携し、組織内のアカウントに一括でデプロイできる
+    triggers:
+      - コンプライアンスの基準に沿ったルール一式をまとめて適用したい
+      - 全アカウントに同じ Config ルールを展開したい
+    pitfalls:
+      - アカウントごとに手でルールを作ると、設定の漏れや違いが出る
+    relations:
+      - type: part_of
+        target: config-rules
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html

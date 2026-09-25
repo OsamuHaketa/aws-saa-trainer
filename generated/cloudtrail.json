@@ -133,5 +133,179 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-data-events:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-data-events"
+    ],
+    "prompt": "機密ファイルを誰がダウンロードしたかを調べようと CloudTrail を見たが、S3 の GetObject が記録されていない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "データイベントを有効にしていない",
+        "correct": true,
+        "atomId": "cloudtrail-data-events",
+        "why": "S3 のオブジェクト操作は、証跡でデータイベントを有効にして記録する"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail は S3 を記録できない",
+        "correct": false,
+        "why": "記録できる"
+      },
+      {
+        "id": "c",
+        "text": "GetObject は API ではない",
+        "correct": false,
+        "why": "S3 の API"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバージョニングが無効",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "バージョニングとは関係ない"
+      }
+    ],
+    "explanation": "管理イベント = デフォルトで記録、データイベント（S3 のオブジェクト操作など）= 有効にする必要がある。",
+    "keywords": [
+      "GetObject が記録されていない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-data-events:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-data-events"
+    ],
+    "prompt": "CloudTrail の管理イベントとデータイベントの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は設定、後者はデータの操作",
+        "correct": true,
+        "atomId": "cloudtrail-data-events",
+        "why": "例 バケットの作成は管理、オブジェクトの取得はデータ"
+      },
+      {
+        "id": "b",
+        "text": "前者は有料、後者は無料",
+        "correct": false,
+        "why": "データイベントは追加料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "前者は S3 だけ、後者は EC2 だけ",
+        "correct": false,
+        "why": "サービスの違いではない"
+      },
+      {
+        "id": "d",
+        "text": "後者はデフォルトで記録される",
+        "correct": false,
+        "why": "データイベントは有効にする必要がある"
+      }
+    ],
+    "explanation": "管理 = 作成・削除・設定変更（デフォルト記録）、データ = オブジェクトの読み書きや Lambda の実行（要有効化）。",
+    "keywords": [
+      "管理イベント",
+      "データイベント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-trail:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-trail"
+    ],
+    "prompt": "証跡を作らなくても CloudTrail のイベント履歴で見られるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "直近 90 日の管理イベント",
+        "correct": true,
+        "atomId": "cloudtrail-trail",
+        "why": "長期保管には証跡で S3 に保存する"
+      },
+      {
+        "id": "b",
+        "text": "過去 1 年のすべてのイベント",
+        "correct": false,
+        "why": "イベント履歴は 90 日"
+      },
+      {
+        "id": "c",
+        "text": "直近 90 日のデータイベント",
+        "correct": false,
+        "atomId": "cloudtrail-data-events",
+        "why": "データイベントはイベント履歴に含まれない"
+      },
+      {
+        "id": "d",
+        "text": "何も見られない",
+        "correct": false,
+        "why": "イベント履歴で 90 日分を見られる"
+      }
+    ],
+    "explanation": "イベント履歴 = 90 日の管理イベント。それより長く・データイベントも = 証跡。",
+    "keywords": [
+      "90 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-trail:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudtrail-trail"
+    ],
+    "prompt": "CloudTrail のログが S3 に届いたあとで、改ざんや削除がされていないことを証明したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ログファイルの整合性の検証を有効にする",
+        "correct": true,
+        "atomId": "cloudtrail-trail",
+        "why": "ダイジェストファイルで改ざんを検出できる"
+      },
+      {
+        "id": "b",
+        "text": "ログを CloudWatch Logs にも送る",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "送るだけでは改ざんの証明にならない"
+      },
+      {
+        "id": "c",
+        "text": "バケットを公開する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "逆にリスクが増える"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを有効にする",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録で、ログの改ざんとは関係ない"
+      }
+    ],
+    "explanation": "ログの改ざんの検出 = ログファイルの整合性の検証（削除の防止には S3 Object Lock や MFA Delete）。",
+    "keywords": [
+      "改ざん"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

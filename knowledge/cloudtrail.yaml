@@ -30,3 +30,26 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html
+
+  - id: cloudtrail-data-events
+    category: audit
+    concept: 管理イベントとデータイベント
+    summary: リソースの作成・変更などの管理イベントはデフォルトで記録され、S3 のオブジェクト操作などのデータイベントは別途有効にする
+    facts:
+      - 管理イベント（バケットやインスタンスの作成・削除など）はデフォルトで記録される
+      - データイベント（S3 の GetObject / PutObject、Lambda の Invoke など）は、証跡で有効にしないと記録されない
+      - データイベントは量が多く、追加の料金がかかる
+      - イベント履歴は直近 90 日の管理イベントを見られるが、長期保管には証跡で S3 に保存する
+    triggers:
+      - 誰が S3 のオブジェクトを読んだかを記録したい
+      - オブジェクト単位の操作の監査
+    pitfalls:
+      - デフォルトの設定のままでは、S3 のオブジェクトの読み取りは記録されていない
+    relations:
+      - type: part_of
+        target: cloudtrail-trail
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
