@@ -445,5 +445,183 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-metrics:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-metrics"
+    ],
+    "prompt": "「CPU 使用率」「ネットワークの入出力」「AWS のリソースの性能の数値」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch メトリクス",
+        "correct": true,
+        "atomId": "cloudwatch-metrics",
+        "why": "AWS のサービスが自動で送る性能の数値"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail の証跡",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      }
+    ],
+    "explanation": "性能の数値 = CloudWatch メトリクス。",
+    "keywords": [
+      "性能の数値"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-metrics:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-metrics"
+    ],
+    "prompt": "アプリの注文件数を CloudWatch で監視し、アラームにも使いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "カスタムメトリクスとして送る",
+        "correct": true,
+        "atomId": "cloudwatch-metrics",
+        "why": "PutMetricData や埋め込みメトリクス形式で送れる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail の証跡を作る",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config のルールにする",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを有効にする",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      }
+    ],
+    "explanation": "アプリ独自の数値 = カスタムメトリクス（ログからならメトリクスフィルター）。",
+    "keywords": [
+      "注文件数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-alarms:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-alarms"
+    ],
+    "prompt": "RDS の空きストレージが 10 GB を下回ったら、運用チームにメールで知らせたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch アラームから SNS で通知",
+        "correct": true,
+        "atomId": "cloudwatch-alarms",
+        "why": "しきい値を下回ったら SNS トピックに通知する"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail で RDS の操作を記録する",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録で、容量の監視ではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config で RDS の設定を記録する",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor を毎日見る",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "リアルタイムの通知にならない"
+      }
+    ],
+    "explanation": "指標のしきい値 → 通知 = CloudWatch アラーム + SNS。",
+    "keywords": [
+      "下回ったら",
+      "メール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-alarms:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-alarms"
+    ],
+    "prompt": "CloudWatch アラームの 3 つの状態は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "OK・ALARM・INSUFFICIENT_DATA",
+        "correct": true,
+        "atomId": "cloudwatch-alarms",
+        "why": "データが足りないときは INSUFFICIENT_DATA"
+      },
+      {
+        "id": "b",
+        "text": "RUNNING・STOPPED・TERMINATED",
+        "correct": false,
+        "why": "EC2 の状態"
+      },
+      {
+        "id": "c",
+        "text": "PENDING・ACTIVE・FAILED",
+        "correct": false,
+        "why": "アラームの状態ではない"
+      },
+      {
+        "id": "d",
+        "text": "GREEN・YELLOW・RED",
+        "correct": false,
+        "why": "アラームの状態ではない"
+      }
+    ],
+    "explanation": "アラーム = OK / ALARM / INSUFFICIENT_DATA。状態が変わったときにアクションを実行する。",
+    "keywords": [
+      "3 つの状態"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

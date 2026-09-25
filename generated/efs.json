@@ -308,5 +308,47 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "efs-filesystem:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "efs-filesystem"
+    ],
+    "prompt": "Windows のサーバー群で共有フォルダを使うため、Amazon EFS をマウントしようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EFS は Linux 向けの NFS",
+        "correct": true,
+        "atomId": "fsx-windows",
+        "why": "SMB で共有するなら FSx for Windows File Server"
+      },
+      {
+        "id": "b",
+        "text": "EFS は複数のサーバーで共有できない",
+        "correct": false,
+        "why": "共有できる"
+      },
+      {
+        "id": "c",
+        "text": "EFS は 1 つの AZ でしか使えない",
+        "correct": false,
+        "why": "複数 AZ で使える"
+      },
+      {
+        "id": "d",
+        "text": "EFS は容量を事前に決める必要がある",
+        "correct": false,
+        "why": "自動で伸縮する"
+      }
+    ],
+    "explanation": "Linux × NFS = EFS、Windows × SMB = FSx for Windows File Server。",
+    "keywords": [
+      "Windows"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

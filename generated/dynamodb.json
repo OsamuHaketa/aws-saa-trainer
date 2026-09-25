@@ -1561,5 +1561,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-on-demand:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-on-demand"
+    ],
+    "prompt": "アクセスが 1 年中ほぼ一定で予測できるテーブルを、オンデマンドモードのまま使い続けている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンドの方が安い",
+        "correct": true,
+        "atomId": "dynamodb-provisioned",
+        "why": "予測できる負荷はプロビジョンド（+ リザーブド）"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドは急な負荷に対応できない",
+        "correct": false,
+        "why": "急な増加に強い"
+      },
+      {
+        "id": "c",
+        "text": "オンデマンドでは GSI を作れない",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "作れる"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドではバックアップできない",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "できる"
+      }
+    ],
+    "explanation": "予測できない = オンデマンド、安定・予測できる = プロビジョンド。",
+    "keywords": [
+      "ほぼ一定"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-dax:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-dax"
+    ],
+    "prompt": "「DynamoDB の読み取りをマイクロ秒に」「コードの変更が少ない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DAX",
+        "correct": true,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB と API 互換のインメモリキャッシュ"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録"
+      },
+      {
+        "id": "c",
+        "text": "グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "マルチリージョンの複製"
+      },
+      {
+        "id": "d",
+        "text": "ポイントインタイムリカバリ",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "バックアップと復元"
+      }
+    ],
+    "explanation": "DynamoDB のキャッシュ = DAX。",
+    "keywords": [
+      "マイクロ秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-global-tables:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-global-tables"
+    ],
+    "prompt": "東京の DynamoDB を使うアプリの DR として、リージョン障害時は大阪ですぐに読み書きを続けたい。RPO はできるだけ小さくしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "東京と大阪のグローバルテーブル",
+        "correct": true,
+        "atomId": "dynamodb-global-tables",
+        "why": "両方のリージョンで読み書きでき、通常 1 秒程度で複製される"
+      },
+      {
+        "id": "b",
+        "text": "毎日のオンデマンドバックアップを大阪にコピー",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "最大 1 日分のデータを失う"
+      },
+      {
+        "id": "c",
+        "text": "PITR を有効にする",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "同じリージョン内の復元で、リージョン障害に対応しない"
+      },
+      {
+        "id": "d",
+        "text": "DAX を大阪に作る",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュで、データの複製ではない"
+      }
+    ],
+    "explanation": "DynamoDB のマルチリージョンの DR = グローバルテーブル（マルチアクティブ）。",
+    "keywords": [
+      "大阪ですぐに読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-global-tables:antipattern:1",
+    "type": "antipattern",
+    "level": 4,
+    "atomIds": [
+      "dynamodb-global-tables"
+    ],
+    "prompt": "グローバルテーブルで、東京と米国で同じ項目をほぼ同時に更新した。どちらの更新も必ず残ると考えている。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "競合したときは最後の書き込みが優先され、一方は上書きされる",
+        "correct": true,
+        "atomId": "dynamodb-global-tables",
+        "why": "同じ項目の同時更新は避ける設計にする"
+      },
+      {
+        "id": "b",
+        "text": "グローバルテーブルは米国では使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "グローバルテーブルは書き込みを受け付けない",
+        "correct": false,
+        "why": "どのリージョンでも書き込める"
+      },
+      {
+        "id": "d",
+        "text": "同時に更新すると両方のリージョンのテーブルが削除される",
+        "correct": false,
+        "why": "削除はされない"
+      }
+    ],
+    "explanation": "マルチリージョンの書き込みの競合 = 最後の書き込みが勝つ（Last Writer Wins）。",
+    "keywords": [
+      "同じ項目",
+      "同時に更新"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

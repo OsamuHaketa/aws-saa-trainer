@@ -1334,5 +1334,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elb-nlb:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "elb-nlb",
+      "elb-alb"
+    ],
+    "prompt": "ALB の前に NLB を置く構成（NLB → ALB）が使われるのはどんなとき？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "固定 IP と L7 の振り分けが両方必要",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "NLB で固定 IP、ALB で L7 の振り分け"
+      },
+      {
+        "id": "b",
+        "text": "コストを最小にしたいとき",
+        "correct": false,
+        "why": "ロードバランサーが 2 つになりコストは増える"
+      },
+      {
+        "id": "c",
+        "text": "UDP を HTTP に変換したいとき",
+        "correct": false,
+        "why": "変換はしない"
+      },
+      {
+        "id": "d",
+        "text": "TLS を必ず無効にしたいとき",
+        "correct": false,
+        "why": "TLS とは関係ない"
+      }
+    ],
+    "explanation": "固定 IP（NLB）+ L7 の機能（ALB）が両方必要 = NLB のターゲットに ALB を指定する。",
+    "keywords": [
+      "固定 IP",
+      "パス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

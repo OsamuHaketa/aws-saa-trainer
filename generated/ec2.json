@@ -3280,5 +3280,351 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-on-demand:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ec2-on-demand",
+      "ec2-spot-instances"
+    ],
+    "prompt": "オンデマンドとスポットの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は中断されない",
+        "correct": true,
+        "atomId": "ec2-on-demand",
+        "why": "スポットは安いが、2 分前の通知で中断される"
+      },
+      {
+        "id": "b",
+        "text": "前者は 1〜3 年の契約が必要",
+        "correct": false,
+        "why": "契約は不要"
+      },
+      {
+        "id": "c",
+        "text": "後者は中断されない",
+        "correct": false,
+        "why": "中断されうる"
+      },
+      {
+        "id": "d",
+        "text": "前者は後者より必ず安い",
+        "correct": false,
+        "why": "スポットの方が安い"
+      }
+    ],
+    "explanation": "中断されたくない × 契約なし = オンデマンド、中断してよい × 最安 = スポット。",
+    "keywords": [
+      "中断"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-on-demand:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "ec2-on-demand"
+    ],
+    "prompt": "今後 3 年間 24 時間動かし続ける本番の DB サーバーを、オンデマンドのまま使っている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "長期の割引を使えていない",
+        "correct": true,
+        "atomId": "ec2-reserved-instances",
+        "why": "定常の負荷は RI や Savings Plans で大きく割り引ける"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドは中断される",
+        "correct": false,
+        "why": "中断されない"
+      },
+      {
+        "id": "c",
+        "text": "オンデマンドは 1 年しか使えない",
+        "correct": false,
+        "why": "期限はない"
+      },
+      {
+        "id": "d",
+        "text": "オンデマンドでは EBS を使えない",
+        "correct": false,
+        "why": "使える"
+      }
+    ],
+    "explanation": "常時稼働が分かっているなら、RI / Savings Plans で割引を受ける。",
+    "keywords": [
+      "3 年間 24 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-savings-plans:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-savings-plans"
+    ],
+    "prompt": "数か月後にインスタンスファミリーを変え、一部を Fargate に移す予定なのに、EC2 Instance Savings Plans を購入しようとしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ファミリーの変更や Fargate に割引が効かない",
+        "correct": true,
+        "atomId": "ec2-savings-plans",
+        "why": "柔軟性が必要なら Compute Savings Plans"
+      },
+      {
+        "id": "b",
+        "text": "Savings Plans は EC2 に使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "Savings Plans は 1 か月単位の契約",
+        "correct": false,
+        "why": "1 年または 3 年"
+      },
+      {
+        "id": "d",
+        "text": "Savings Plans は中断される",
+        "correct": false,
+        "why": "中断はない（購入オプションの割引）"
+      }
+    ],
+    "explanation": "変化の予定がある = Compute Savings Plans。固定できる = EC2 Instance Savings Plans / RI。",
+    "keywords": [
+      "ファミリーを変え",
+      "Fargate"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-cluster-placement-group:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ec2-cluster-placement-group",
+      "ec2-spread-placement-group"
+    ],
+    "prompt": "クラスタープレイスメントグループとスプレッドプレイスメントグループの目的の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は低レイテンシ、後者は障害の分離",
+        "correct": true,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "クラスターは近くに、スプレッドは離して置く"
+      },
+      {
+        "id": "b",
+        "text": "前者は障害の分離、後者は低レイテンシ",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "どちらもコストを下げるため",
+        "correct": false,
+        "why": "目的は性能と可用性"
+      },
+      {
+        "id": "d",
+        "text": "前者は複数リージョン、後者は 1 つの AZ",
+        "correct": false,
+        "why": "クラスターは 1 つの AZ、スプレッドは複数 AZ にまたがれる"
+      }
+    ],
+    "explanation": "近くに = クラスター（性能）、離して = スプレッド（可用性）、グループで離す = パーティション。",
+    "keywords": [
+      "目的の違い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-spread-placement-group:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ec2-spread-placement-group"
+    ],
+    "prompt": "1 つの AZ に 20 台の Web サーバーを、スプレッドプレイスメントグループで起動しようとしたが失敗した。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スプレッドは 1 つの AZ に 7 台まで",
+        "correct": true,
+        "atomId": "ec2-spread-placement-group",
+        "why": "台数が多いなら複数 AZ に分けるか、パーティションを使う"
+      },
+      {
+        "id": "b",
+        "text": "スプレッドは Web サーバーに使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "スプレッドは 1 台しか起動できない",
+        "correct": false,
+        "why": "7 台/AZ まで"
+      },
+      {
+        "id": "d",
+        "text": "スプレッドはオンデマンドで使えない",
+        "correct": false,
+        "why": "使える"
+      }
+    ],
+    "explanation": "スプレッド = 1 AZ あたり 7 インスタンスまで。",
+    "keywords": [
+      "20 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ebs-volume:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ec2-ebs-volume"
+    ],
+    "prompt": "EC2 を終了してもルートボリュームのデータを残したい。どう設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "終了時の削除を無効にする",
+        "correct": true,
+        "atomId": "ec2-ebs-volume",
+        "why": "DeleteOnTermination を無効にすると、終了時にルートボリュームが削除されなくなる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスストアをルートにする",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "インスタンスストアは停止や終了で消える"
+      },
+      {
+        "id": "c",
+        "text": "休止を有効にする",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "終了とは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP を付ける",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "ボリュームとは関係ない"
+      }
+    ],
+    "explanation": "終了時にルートを残す = DeleteOnTermination を false に（またはスナップショット・AMI を取る）。",
+    "keywords": [
+      "終了してもルートボリューム"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ebs-volume:definition:2",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "ec2-ebs-volume"
+    ],
+    "prompt": "EBS ボリュームと EC2 の関係として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "同じ AZ だけに接続でき、データは残る",
+        "correct": true,
+        "atomId": "ec2-ebs-volume",
+        "why": "別の AZ へはスナップショットから作る"
+      },
+      {
+        "id": "b",
+        "text": "どの AZ のインスタンスにも接続できる",
+        "correct": false,
+        "why": "同じ AZ だけ"
+      },
+      {
+        "id": "c",
+        "text": "停止するとデータが消える",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "それはインスタンスストア"
+      },
+      {
+        "id": "d",
+        "text": "リージョンをまたいで直接接続できる",
+        "correct": false,
+        "why": "できない"
+      }
+    ],
+    "explanation": "EBS = AZ 単位・永続。別 AZ / リージョンへはスナップショット経由。",
+    "keywords": [
+      "同じ AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-ami:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ec2-ami"
+    ],
+    "prompt": "「ゴールデンイメージ」「設定済みのサーバーを素早く起動」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "カスタム AMI",
+        "correct": true,
+        "atomId": "ec2-ami",
+        "why": "必要なソフトと設定を入れたイメージから起動する"
+      },
+      {
+        "id": "b",
+        "text": "ユーザーデータ",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時にスクリプトで設定する方法で、起動は遅くなりやすい"
+      },
+      {
+        "id": "c",
+        "text": "EBS スナップショット",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "ボリュームのバックアップ"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "固定のパブリック IP"
+      }
+    ],
+    "explanation": "起動を速く = 設定済みのカスタム AMI（ゴールデン AMI）。",
+    "keywords": [
+      "ゴールデンイメージ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

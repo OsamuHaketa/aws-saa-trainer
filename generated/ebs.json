@@ -885,5 +885,228 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-gp3:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ebs-gp3"
+    ],
+    "prompt": "「容量に関係なく IOPS とスループットを設定」「汎用 SSD」「gp2 より安い」→ どのボリューム？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "gp3",
+        "correct": true,
+        "atomId": "ebs-gp3",
+        "why": "ベースライン 3,000 IOPS で、IOPS とスループットを別に増やせる"
+      },
+      {
+        "id": "b",
+        "text": "io2",
+        "correct": false,
+        "atomId": "ebs-io2",
+        "why": "高 IOPS の重要な DB 向け"
+      },
+      {
+        "id": "c",
+        "text": "st1",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "大量の順次アクセス向けの HDD"
+      },
+      {
+        "id": "d",
+        "text": "sc1",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "最も安いコールド HDD"
+      }
+    ],
+    "explanation": "汎用 SSD の既定の選択 = gp3。",
+    "keywords": [
+      "汎用 SSD"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-gp3:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-gp3"
+    ],
+    "prompt": "gp2 で IOPS を上げるためだけに、必要のない容量までボリュームを大きくしている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "gp3 に変える",
+        "correct": true,
+        "atomId": "ebs-gp3",
+        "why": "gp3 は容量とは別に IOPS を設定できる"
+      },
+      {
+        "id": "b",
+        "text": "st1 に変える",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "HDD で IOPS はさらに下がる"
+      },
+      {
+        "id": "c",
+        "text": "sc1 に変える",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "最も遅い HDD"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスを大きくする",
+        "correct": false,
+        "atomId": "ec2-instance-families",
+        "why": "ボリュームの IOPS は増えない"
+      }
+    ],
+    "explanation": "gp2 は容量に比例して IOPS が決まる。gp3 は容量と性能を分けて決められる。",
+    "keywords": [
+      "IOPS を上げるためだけに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-io2:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ebs-io2"
+    ],
+    "prompt": "「ミッションクリティカルな DB」「安定した高い IOPS」「高い耐久性」→ どのボリューム？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "io2",
+        "correct": true,
+        "atomId": "ebs-io2",
+        "why": "プロビジョンド IOPS SSD で、最も高い性能と耐久性"
+      },
+      {
+        "id": "b",
+        "text": "gp3",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "汎用で、非常に高い IOPS が必要な重要 DB には io2"
+      },
+      {
+        "id": "c",
+        "text": "st1",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "HDD"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスストア",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "一時的なストレージで、データが消える"
+      }
+    ],
+    "explanation": "重要な DB × 高 IOPS = io2。",
+    "keywords": [
+      "ミッションクリティカル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-io2:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ebs-io2"
+    ],
+    "prompt": "クラスター対応の DB で、同じ AZ の複数のインスタンスから 1 つの高性能なブロックストレージを共有したい。どのボリュームを選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "io2",
+        "correct": true,
+        "atomId": "ebs-multi-attach",
+        "why": "マルチアタッチを有効にする。対応は io1 / io2 だけ"
+      },
+      {
+        "id": "b",
+        "text": "gp3",
+        "correct": false,
+        "atomId": "ebs-gp3",
+        "why": "マルチアタッチに対応しない"
+      },
+      {
+        "id": "c",
+        "text": "st1",
+        "correct": false,
+        "atomId": "ebs-st1",
+        "why": "マルチアタッチに対応しない"
+      },
+      {
+        "id": "d",
+        "text": "sc1",
+        "correct": false,
+        "atomId": "ebs-sc1",
+        "why": "マルチアタッチに対応しない"
+      }
+    ],
+    "explanation": "複数台で同じブロックストレージ = io1 / io2 のマルチアタッチ。",
+    "keywords": [
+      "複数のインスタンスから"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-snapshots:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ebs-snapshots",
+      "ec2-ami"
+    ],
+    "prompt": "EBS スナップショットと AMI の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後者は起動に必要な一式",
+        "correct": true,
+        "atomId": "ec2-ami",
+        "why": "AMI はルートボリュームのスナップショットと起動の設定を含む"
+      },
+      {
+        "id": "b",
+        "text": "前者は別リージョンにコピーできない",
+        "correct": false,
+        "why": "コピーできる"
+      },
+      {
+        "id": "c",
+        "text": "後者はスナップショットを含まない",
+        "correct": false,
+        "why": "EBS の AMI はスナップショットを含む"
+      },
+      {
+        "id": "d",
+        "text": "前者は EC2 を起動できる",
+        "correct": false,
+        "why": "スナップショットからは直接起動できない"
+      }
+    ],
+    "explanation": "スナップショット = ボリュームのバックアップ、AMI = インスタンスを起動するためのテンプレート。",
+    "keywords": [
+      "ボリューム単位"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

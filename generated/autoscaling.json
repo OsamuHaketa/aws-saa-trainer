@@ -973,5 +973,179 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-group:definition:2",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-group"
+    ],
+    "prompt": "Auto Scaling グループの「最小・希望・最大」のうち、「希望する容量」とは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スケーリングで変わる目標の台数",
+        "correct": true,
+        "atomId": "autoscaling-group",
+        "why": "今の目標の台数で、最小〜最大の間で変わる"
+      },
+      {
+        "id": "b",
+        "text": "常に固定され、変わらない台数",
+        "correct": false,
+        "why": "スケーリングで変わる"
+      },
+      {
+        "id": "c",
+        "text": "最大台数と同じ意味",
+        "correct": false,
+        "why": "最大は上限"
+      },
+      {
+        "id": "d",
+        "text": "障害時にだけ使う台数",
+        "correct": false,
+        "why": "常に保とうとする台数"
+      }
+    ],
+    "explanation": "最小 ≤ 希望 ≤ 最大。ASG は希望する台数を保ち、スケーリングで希望を変える。",
+    "keywords": [
+      "希望する容量"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-group:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-group"
+    ],
+    "prompt": "1 台で動く社内ツールのサーバーが、故障したら自動で新しいサーバーに置き換わるようにしたい。コストは 1 台分に抑えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "台数を 1 に固定した ASG",
+        "correct": true,
+        "atomId": "autoscaling-group",
+        "why": "最小・最大・希望を 1 にすると、異常を検知して自動で置き換える"
+      },
+      {
+        "id": "b",
+        "text": "2 台を常に動かしておく",
+        "correct": false,
+        "why": "コストが 2 倍になる"
+      },
+      {
+        "id": "c",
+        "text": "毎日 AMI を取るだけ",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "置き換えは自動にならない"
+      },
+      {
+        "id": "d",
+        "text": "スポットインスタンスで動かす",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断されることがあり、置き換えの仕組みにもならない"
+      }
+    ],
+    "explanation": "1 台でも自動で置き換え = 最小・最大 1 の ASG（ID や IP を保ちたいなら EC2 の自動復旧）。",
+    "keywords": [
+      "自動で新しいサーバーに置き換わる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-target-tracking:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "ターゲット追跡スケーリングを設定したうえで、同じ指標のステップスケーリングも追加した。台数が不安定に増減する。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "同じ指標で複数のポリシーが競合している",
+        "correct": true,
+        "atomId": "autoscaling-target-tracking",
+        "why": "まずターゲット追跡だけにする"
+      },
+      {
+        "id": "b",
+        "text": "ターゲット追跡はスケールインしない",
+        "correct": false,
+        "why": "スケールインもする"
+      },
+      {
+        "id": "c",
+        "text": "ステップスケーリングは CPU を使えない",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "最大台数が設定されていない",
+        "correct": false,
+        "why": "最大は必須の設定"
+      }
+    ],
+    "explanation": "ポリシーを重ねると動きが読めなくなる。基本はターゲット追跡 1 つ。",
+    "keywords": [
+      "同じ指標"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-target-tracking:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "ALB の後ろの Web サーバー群で、1 台あたりのリクエスト数を 1,000 前後に保ちたい。どう設定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リクエスト数のターゲット追跡",
+        "correct": true,
+        "atomId": "autoscaling-target-tracking",
+        "why": "ALBRequestCountPerTarget を目標値に保つ"
+      },
+      {
+        "id": "b",
+        "text": "毎朝 9 時に台数を増やすスケジュール",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "リクエスト数に合わせた調整にならない"
+      },
+      {
+        "id": "c",
+        "text": "ヘルスチェックの間隔を短くする",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "台数は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "最大台数を 1,000 にする",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "上限を決めるだけで、調整にはならない"
+      }
+    ],
+    "explanation": "ターゲット追跡は CPU のほか、ALB のターゲットあたりのリクエスト数なども目標にできる。",
+    "keywords": [
+      "1 台あたりのリクエスト数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

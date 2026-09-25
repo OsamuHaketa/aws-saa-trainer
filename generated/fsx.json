@@ -356,5 +356,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-windows:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "fsx-windows"
+    ],
+    "prompt": "「SMB」「Active Directory」「Windows のファイル共有」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FSx for Windows",
+        "correct": true,
+        "atomId": "fsx-windows",
+        "why": "マネージドな Windows のファイルサーバー"
+      },
+      {
+        "id": "b",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "Linux 向けの NFS"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Lustre",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "HPC 向けの並列ファイルシステム"
+      },
+      {
+        "id": "d",
+        "text": "S3 File Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "オンプレミスから S3 を使う"
+      }
+    ],
+    "explanation": "Windows × SMB × AD = FSx for Windows File Server。",
+    "keywords": [
+      "SMB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

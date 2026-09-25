@@ -1013,5 +1013,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-signed-urls:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-signed-urls"
+    ],
+    "prompt": "有料の動画を CloudFront で配信し、署名付き URL を発行している。しかし S3 のバケットは公開したままにしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "署名を迂回して直接読まれる",
+        "correct": true,
+        "atomId": "s3-origin-access-control",
+        "why": "OAC でバケットを CloudFront からだけ読めるようにする"
+      },
+      {
+        "id": "b",
+        "text": "署名付き URL は動画に使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "署名付き URL には期限を設定できない",
+        "correct": false,
+        "why": "期限を設定できる"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront は動画を配信できない",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "配信できる"
+      }
+    ],
+    "explanation": "署名付き URL / Cookie + OAC（オリジンを直接読ませない）の組み合わせで守る。",
+    "keywords": [
+      "公開したまま"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

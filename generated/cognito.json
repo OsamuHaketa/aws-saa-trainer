@@ -264,5 +264,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-user-pool:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cognito-user-pool"
+    ],
+    "prompt": "Web アプリのログイン画面を自分で作らずに、Cognito が用意した画面で、サインアップや MFA も使いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マネージドログイン",
+        "correct": true,
+        "atomId": "cognito-user-pool",
+        "why": "ユーザープールの機能で、ログインや MFA の画面を Cognito が提供する"
+      },
+      {
+        "id": "b",
+        "text": "ID プールだけを使う",
+        "correct": false,
+        "atomId": "cognito-identity-pool",
+        "why": "AWS 認証情報を渡すもので、ログイン画面は提供しない"
+      },
+      {
+        "id": "c",
+        "text": "IAM ユーザーを利用者ごとに作る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "アプリの利用者の管理には向かない"
+      },
+      {
+        "id": "d",
+        "text": "IAM Identity Center",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "従業員の AWS へのシングルサインオン"
+      }
+    ],
+    "explanation": "アプリの利用者の認証の画面・MFA = Cognito ユーザープール（マネージドログイン）。",
+    "keywords": [
+      "ログイン画面を自分で作らずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

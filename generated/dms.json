@@ -222,5 +222,47 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dms-replication:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dms-replication"
+    ],
+    "prompt": "10 TB の DB を移行するため、業務を停止してダンプを取り、転送して取り込む計画にした。停止は最小にしたい。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "移行の間ずっと止まる",
+        "correct": true,
+        "atomId": "dms-replication",
+        "why": "DMS の CDC なら、フルロードのあとに変更を同期し、短い停止で切り替えられる"
+      },
+      {
+        "id": "b",
+        "text": "ダンプでは DB を移せない",
+        "correct": false,
+        "why": "移せるが、止める時間が長い"
+      },
+      {
+        "id": "c",
+        "text": "10 TB は AWS に移せない",
+        "correct": false,
+        "why": "移せる"
+      },
+      {
+        "id": "d",
+        "text": "DMS は同じエンジンにしか使えない",
+        "correct": false,
+        "why": "異なるエンジンにも使える"
+      }
+    ],
+    "explanation": "停止時間を最小にした DB の移行 = DMS（フルロード + CDC）。",
+    "keywords": [
+      "停止は最小"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -621,5 +621,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-authorizers:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "apigateway-authorizers"
+    ],
+    "prompt": "社内の別の AWS アカウントの Lambda からだけ、API Gateway の API を呼ばせたい。呼び出し側は IAM ロールを持っている。どの認可を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM 認可（SigV4 の署名）",
+        "correct": true,
+        "atomId": "apigateway-authorizers",
+        "why": "IAM ロールの権限で呼び出しを許可する"
+      },
+      {
+        "id": "b",
+        "text": "Cognito オーソライザー",
+        "correct": false,
+        "why": "アプリのエンドユーザー向け"
+      },
+      {
+        "id": "c",
+        "text": "API キーだけ",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "認証の仕組みではない"
+      },
+      {
+        "id": "d",
+        "text": "認可なしで公開する",
+        "correct": false,
+        "why": "誰でも呼べてしまう"
+      }
+    ],
+    "explanation": "AWS 内のサービス・IAM ロールからの呼び出し = IAM 認可（+ リソースポリシーでアカウントを指定）。",
+    "keywords": [
+      "IAM ロール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
