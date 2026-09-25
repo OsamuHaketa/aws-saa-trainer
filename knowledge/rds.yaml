@@ -237,3 +237,142 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: rds-multi-az-cluster
+    category: availability
+    concept: マルチ AZ DB クラスター（読み取り可能なスタンバイ 2 台）
+    summary: 3 つの AZ にライターと読み取り可能なスタンバイ 2 台を置き、フェイルオーバーを速くする
+    facts:
+      - 1 台のライターと、別々の AZ に 2 台の読み取り可能なスタンバイを持つ
+      - スタンバイは読み取りのクエリにも使える
+      - フェイルオーバーは通常 35 秒程度で、スタンバイ 1 台のマルチ AZ より速い
+      - RDS for MySQL と RDS for PostgreSQL で使える
+    triggers:
+      - フェイルオーバーを速くしたい
+      - スタンバイでも読み取りをしたい（Aurora は使わない）
+    pitfalls:
+      - スタンバイ 1 台のマルチ AZ（DB インスタンス）では、スタンバイを読み取りに使えない
+    relations:
+      - type: confused_with
+        target: rds-multi-az
+        distinction: マルチ AZ DB インスタンスはスタンバイが 1 台で読み取りに使えない。マルチ AZ DB クラスターは読み取り可能なスタンバイが 2 台で、フェイルオーバーも速い
+    examDomains: [resilient, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html
+
+  - id: rds-iam-authentication
+    category: security
+    concept: IAM データベース認証
+    summary: DB のパスワードの代わりに、IAM で発行した有効期限 15 分の認証トークンで接続する
+    facts:
+      - RDS for MySQL、RDS for PostgreSQL、Aurora で使える
+      - IAM ロールの権限で認証トークンを発行し、パスワードとして使う
+      - トークンの有効期限は 15 分で、接続は SSL/TLS で暗号化される
+      - DB のパスワードをアプリに保存しなくてよい
+    triggers:
+      - DB のパスワードをアプリに持たせたくない
+      - EC2 や Lambda の IAM ロールで DB に接続したい
+    pitfalls:
+      - 1 秒あたりの新規接続が非常に多い場合は、トークン発行が負担になりうる（RDS Proxy と組み合わせる）
+    relations:
+      - type: confused_with
+        target: secretsmanager-secret
+        distinction: IAM データベース認証はパスワードを使わず、IAM で発行した短期のトークンで接続する。Secrets Manager は DB のパスワードを保管し、自動でローテーションする
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html
+
+  - id: rds-aurora-endpoints
+    category: database
+    concept: Aurora のエンドポイント（クラスター / リーダー / カスタム）
+    summary: 書き込みはクラスターエンドポイント、読み取りはリーダーエンドポイントで複数のレプリカに分散する
+    facts:
+      - クラスターエンドポイント（ライターエンドポイント）は、常にその時点のプライマリを指す
+      - リーダーエンドポイントは、Aurora レプリカに接続を分散する
+      - カスタムエンドポイントで、分析用の大きなインスタンスだけなど、特定のインスタンス群を指定できる
+      - Aurora レプリカは最大 15 台で、プライマリの障害時にはレプリカが昇格する
+    triggers:
+      - 読み取りの接続を複数のレプリカに分散したい
+      - 分析のクエリだけを特定のレプリカに流したい
+    pitfalls:
+      - 書き込みをリーダーエンドポイントに送ると失敗する
+    relations:
+      - type: part_of
+        target: rds-aurora
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html
+
+  - id: rds-aurora-cloning
+    category: database
+    concept: Aurora のクローン
+    summary: コピーオンライトで、本番のクラスターと同じデータの新しいクラスターを素早く作る
+    facts:
+      - 作成時にはデータをコピーせず、元と同じストレージを共有する（コピーオンライト）
+      - 変更されたデータだけが新しく保存されるので、速くて安い
+      - 本番のデータを使ったテストや分析の環境をすぐ作れる
+    triggers:
+      - 本番と同じデータのテスト環境をすぐ作りたい
+      - スナップショットからの復元より速く複製したい
+    pitfalls:
+      - クローンは同じリージョンに作る。別のリージョンに複製するならスナップショットのコピーやグローバルデータベースを使う
+    relations:
+      - type: confused_with
+        target: rds-snapshots
+        distinction: スナップショットからの復元はデータ量に応じて時間がかかる。Aurora のクローンはストレージを共有するコピーオンライトで、すぐに作れて容量も少ない
+    examDomains: [cost, performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html
+
+  - id: rds-blue-green
+    category: availability
+    concept: RDS ブルー/グリーンデプロイ
+    summary: 本番と同期するステージング環境で更新を試し、短いダウンタイムで切り替える
+    facts:
+      - 本番（ブルー）から、レプリケーションで同期するステージング（グリーン）を作る
+      - グリーンでメジャーバージョンアップやパラメータの変更を試せる
+      - 切り替え（スイッチオーバー）は通常 1 分程度で、エンドポイント名は変わらない
+    triggers:
+      - DB のメジャーバージョンアップのダウンタイムを最小にしたい
+      - 本番のデータで更新を事前に試したい
+    pitfalls:
+      - 本番を直接アップグレードすると、問題が起きたときに戻すのが難しい
+    relations:
+      - type: used_with
+        target: rds-read-replica
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments.html
+
+  - id: rds-custom
+    category: database
+    concept: Amazon RDS Custom
+    summary: Oracle や SQL Server で、OS や DB の設定を自分で変更できるマネージドな DB
+    facts:
+      - 通常の RDS では OS にログインできないが、RDS Custom では OS や DB の設定にアクセスできる
+      - 独自のパッチや、特定のソフトウェアのインストールが必要な場合に使う
+      - 対応エンジンは Oracle と SQL Server
+      - バックアップなどの自動化は RDS が行う
+    triggers:
+      - OS へのアクセスが必要な Oracle / SQL Server
+      - 独自のソフトウェアを DB サーバーに入れたい
+    pitfalls:
+      - OS へのアクセスが不要なら、管理の負担が少ない通常の RDS を使う
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-custom.html

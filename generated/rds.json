@@ -943,5 +943,969 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az-cluster:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-multi-az-cluster"
+    ],
+    "prompt": "RDS for PostgreSQL で、フェイルオーバーをできるだけ速くし、スタンバイも読み取りに使いたい。Aurora には移行しない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチ AZ DB クラスター",
+        "correct": true,
+        "atomId": "rds-multi-az-cluster",
+        "why": "読み取り可能なスタンバイ 2 台で、フェイルオーバーも速い"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ DB インスタンス（スタンバイ 1 台）",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイは読み取りに使えない"
+      },
+      {
+        "id": "c",
+        "text": "同じ AZ にリードレプリカを 1 台",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "自動のフェイルオーバーはなく、AZ 障害にも弱い"
+      },
+      {
+        "id": "d",
+        "text": "手動スナップショットを 1 時間ごとに取る",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "復元に時間がかかり、読み取りの分散にもならない"
+      }
+    ],
+    "explanation": "読めるスタンバイ + 速いフェイルオーバー（RDS のまま）= マルチ AZ DB クラスター。",
+    "keywords": [
+      "スタンバイも読み取り",
+      "Aurora には移行しない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az-cluster:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "rds-multi-az-cluster",
+      "rds-multi-az"
+    ],
+    "prompt": "マルチ AZ DB インスタンスとマルチ AZ DB クラスターの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後者はスタンバイが 2 台あり、読み取りにも使える",
+        "correct": true,
+        "atomId": "rds-multi-az-cluster",
+        "why": "前者はスタンバイ 1 台で、読み取りには使えない"
+      },
+      {
+        "id": "b",
+        "text": "後者はスタンバイへのレプリケーションが非同期",
+        "correct": false,
+        "why": "後者も少なくとも 1 台のスタンバイの確認を待つ（半同期）"
+      },
+      {
+        "id": "c",
+        "text": "前者の方がフェイルオーバーが速い",
+        "correct": false,
+        "why": "後者の方が速い（通常 35 秒程度）"
+      },
+      {
+        "id": "d",
+        "text": "後者は Oracle と SQL Server だけで使える",
+        "correct": false,
+        "why": "後者は MySQL と PostgreSQL で使える"
+      }
+    ],
+    "explanation": "インスタンス = スタンバイ 1 台（読めない）、クラスター = 読めるスタンバイ 2 台（速い切り替え）。",
+    "keywords": [
+      "スタンバイが 2 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-iam-authentication:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-iam-authentication"
+    ],
+    "prompt": "Lambda から RDS for MySQL に接続する。DB のパスワードをどこにも保存せず、Lambda の実行ロールの権限で接続したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM データベース認証",
+        "correct": true,
+        "atomId": "rds-iam-authentication",
+        "why": "IAM で短期のトークンを発行し、パスワードの代わりに使う"
+      },
+      {
+        "id": "b",
+        "text": "Secrets Manager に DB のパスワードを保存する",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "安全に保管できるが、パスワードそのものは使う"
+      },
+      {
+        "id": "c",
+        "text": "パスワードを Lambda の環境変数に書く",
+        "correct": false,
+        "why": "パスワードを保存することになる"
+      },
+      {
+        "id": "d",
+        "text": "RDS をパブリックに公開する",
+        "correct": false,
+        "why": "認証の問題の解決にならず、危険"
+      }
+    ],
+    "explanation": "パスワードを使わず IAM で DB に接続 = IAM データベース認証。",
+    "keywords": [
+      "パスワードをどこにも保存せず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-iam-authentication:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "rds-iam-authentication",
+      "secretsmanager-secret"
+    ],
+    "prompt": "IAM データベース認証と Secrets Manager の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はパスワード不要、後者はパスワードを管理する",
+        "correct": true,
+        "atomId": "rds-iam-authentication",
+        "why": "IAM 認証は 15 分のトークン、Secrets Manager は自動ローテーション"
+      },
+      {
+        "id": "b",
+        "text": "前者はすべての DB エンジンで使える",
+        "correct": false,
+        "why": "前者は MySQL、PostgreSQL（Aurora を含む）など一部"
+      },
+      {
+        "id": "c",
+        "text": "後者は RDS のパスワードを保管できない",
+        "correct": false,
+        "why": "RDS のパスワードの管理は代表的な用途"
+      },
+      {
+        "id": "d",
+        "text": "前者はトークンの有効期限がない",
+        "correct": false,
+        "why": "有効期限は 15 分"
+      }
+    ],
+    "explanation": "パスワードをなくす = IAM 認証、パスワードを安全に保管・ローテーション = Secrets Manager。",
+    "keywords": [
+      "トークン",
+      "ローテーション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-iam-authentication:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "rds-iam-authentication"
+    ],
+    "prompt": "IAM データベース認証の認証トークンの有効期限は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "15 分",
+        "correct": true,
+        "atomId": "rds-iam-authentication",
+        "why": "接続を確立するときにだけ使い、期限が切れる前に新しく発行する"
+      },
+      {
+        "id": "b",
+        "text": "1 時間",
+        "correct": false,
+        "why": "トークンは 15 分"
+      },
+      {
+        "id": "c",
+        "text": "24 時間",
+        "correct": false,
+        "why": "トークンは 15 分"
+      },
+      {
+        "id": "d",
+        "text": "無期限",
+        "correct": false,
+        "why": "有効期限がある"
+      }
+    ],
+    "explanation": "IAM DB 認証のトークン = 15 分。",
+    "keywords": [
+      "15 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-endpoints:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-endpoints"
+    ],
+    "prompt": "Aurora に 5 台のレプリカがある。アプリの読み取りの接続を、レプリカ全体に分散したい。どこに接続させる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リーダーエンドポイント",
+        "correct": true,
+        "atomId": "rds-aurora-endpoints",
+        "why": "Aurora レプリカに接続を分散する"
+      },
+      {
+        "id": "b",
+        "text": "クラスターエンドポイント",
+        "correct": false,
+        "why": "プライマリ（書き込み）を指す"
+      },
+      {
+        "id": "c",
+        "text": "プライマリのインスタンスのエンドポイント",
+        "correct": false,
+        "why": "1 台に固定され、分散しない"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy のエンドポイントだけ",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールのためのもので、それだけで読み取りを分散する設定ではない"
+      }
+    ],
+    "explanation": "書き込み = クラスターエンドポイント、読み取り = リーダーエンドポイント。",
+    "keywords": [
+      "読み取りの接続を分散"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-endpoints:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora-endpoints"
+    ],
+    "prompt": "Aurora で、重い分析クエリだけを大きなサイズの 2 台のレプリカに流し、アプリの読み取りには使わせたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "カスタムエンドポイントを作る",
+        "correct": true,
+        "atomId": "rds-aurora-endpoints",
+        "why": "特定のインスタンス群を指すエンドポイントを作れる"
+      },
+      {
+        "id": "b",
+        "text": "リーダーエンドポイントを使う",
+        "correct": false,
+        "why": "全レプリカに分散し、アプリの読み取りと混ざる"
+      },
+      {
+        "id": "c",
+        "text": "クラスターエンドポイントを使う",
+        "correct": false,
+        "why": "プライマリに接続し、書き込みの性能に影響する"
+      },
+      {
+        "id": "d",
+        "text": "マルチ AZ のスタンバイで分析する",
+        "correct": false,
+        "why": "Aurora の障害対策はレプリカで、スタンバイという仕組みはない"
+      }
+    ],
+    "explanation": "用途ごとにレプリカを分ける = カスタムエンドポイント。",
+    "keywords": [
+      "分析クエリだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-cloning:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-cloning"
+    ],
+    "prompt": "10 TB の本番 Aurora と同じデータで、テストを今すぐ始めたい。ストレージのコストも抑えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora のクローンを作る",
+        "correct": true,
+        "atomId": "rds-aurora-cloning",
+        "why": "コピーオンライトなので速く、変更分だけが保存される"
+      },
+      {
+        "id": "b",
+        "text": "スナップショットを取って復元する",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "データ量に応じて時間がかかり、全量分のストレージを使う"
+      },
+      {
+        "id": "c",
+        "text": "mysqldump でエクスポートしてインポートする",
+        "correct": false,
+        "why": "10 TB では非常に時間がかかる"
+      },
+      {
+        "id": "d",
+        "text": "本番のクラスターで直接テストする",
+        "correct": false,
+        "why": "本番に影響が出る"
+      }
+    ],
+    "explanation": "本番と同じデータのテスト環境を速く・安く = Aurora のクローン。",
+    "keywords": [
+      "今すぐ",
+      "ストレージのコストも抑えたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-cloning:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora-cloning"
+    ],
+    "prompt": "「コピーオンライト」「本番の Aurora と同じデータの環境をすぐ作る」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora のクローン",
+        "correct": true,
+        "atomId": "rds-aurora-cloning",
+        "why": "ストレージを共有し、変更分だけを新しく保存する"
+      },
+      {
+        "id": "b",
+        "text": "Aurora グローバルデータベース",
+        "correct": false,
+        "atomId": "rds-aurora-global-database",
+        "why": "別のリージョンへのレプリケーション"
+      },
+      {
+        "id": "c",
+        "text": "リードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "読み取りの分散で、独立したテスト環境ではない"
+      },
+      {
+        "id": "d",
+        "text": "自動バックアップ",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "任意の時点への復元で、復元には時間がかかる"
+      }
+    ],
+    "explanation": "コピーオンライト = Aurora のクローン。",
+    "keywords": [
+      "コピーオンライト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-blue-green:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-blue-green"
+    ],
+    "prompt": "RDS for MySQL のメジャーバージョンアップを、本番のデータで事前に確認し、切り替え時のダウンタイムを最小にしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS ブルー/グリーンデプロイ",
+        "correct": true,
+        "atomId": "rds-blue-green",
+        "why": "同期したグリーン環境で試し、1 分程度で切り替える"
+      },
+      {
+        "id": "b",
+        "text": "本番のインスタンスを直接アップグレードする",
+        "correct": false,
+        "why": "問題が起きたときに戻しにくく、停止時間も長い"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ を有効にする",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "障害対策で、アップグレードの事前確認はできない"
+      },
+      {
+        "id": "d",
+        "text": "手動スナップショットから新しいバージョンで復元する",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "データの同期がなく、切り替えまでの差分が失われる"
+      }
+    ],
+    "explanation": "本番と同期したステージングで試して素早く切り替え = ブルー/グリーンデプロイ。",
+    "keywords": [
+      "メジャーバージョンアップ",
+      "ダウンタイムを最小"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-custom:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "rds-custom"
+    ],
+    "prompt": "Oracle の DB で、ベンダー指定のエージェントを DB サーバーの OS に入れる必要がある。バックアップなどはマネージドにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon RDS Custom for Oracle",
+        "correct": true,
+        "atomId": "rds-custom",
+        "why": "OS にアクセスでき、自動化の多くは RDS が行う"
+      },
+      {
+        "id": "b",
+        "text": "通常の Amazon RDS for Oracle",
+        "correct": false,
+        "why": "OS にはログインできず、エージェントを入れられない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Aurora",
+        "correct": false,
+        "atomId": "rds-aurora",
+        "why": "Oracle 互換ではない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon DynamoDB",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "リレーショナル DB ではない"
+      }
+    ],
+    "explanation": "OS へのアクセスが必要なマネージド DB（Oracle / SQL Server）= RDS Custom。",
+    "keywords": [
+      "OS に入れる",
+      "マネージド"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-custom:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "rds-custom"
+    ],
+    "prompt": "通常の RDS と RDS Custom の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS Custom は OS や DB の設定にアクセスできる",
+        "correct": true,
+        "atomId": "rds-custom",
+        "why": "通常の RDS は OS にログインできない"
+      },
+      {
+        "id": "b",
+        "text": "RDS Custom はバックアップを取れない",
+        "correct": false,
+        "why": "バックアップなどは自動化される"
+      },
+      {
+        "id": "c",
+        "text": "RDS Custom はすべての DB エンジンで使える",
+        "correct": false,
+        "why": "Oracle と SQL Server"
+      },
+      {
+        "id": "d",
+        "text": "通常の RDS の方が管理の手間が大きい",
+        "correct": false,
+        "why": "RDS Custom の方が利用者の責任範囲が広い"
+      }
+    ],
+    "explanation": "RDS Custom = OS にアクセスできる代わりに、利用者の管理範囲が広がる。",
+    "keywords": [
+      "OS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-storage-autoscaling:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "rds-storage-autoscaling"
+    ],
+    "prompt": "ストレージ不足で止まらないよう、最初から必要量の 10 倍のストレージを割り当てた。より良い方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ストレージの自動スケーリング",
+        "correct": true,
+        "atomId": "rds-storage-autoscaling",
+        "why": "必要なときだけ増えるので、使わない分を払わずに済む"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ を有効にする",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "可用性の機能で、容量は増えない"
+      },
+      {
+        "id": "c",
+        "text": "リードレプリカを作る",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "読み取りの分散で、容量は増えない"
+      },
+      {
+        "id": "d",
+        "text": "毎日スナップショットを取る",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "バックアップで、容量不足の対策ではない"
+      }
+    ],
+    "explanation": "容量の予測ができない = ストレージの自動スケーリング（上限を設定）。",
+    "keywords": [
+      "10 倍"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-storage-autoscaling:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "rds-storage-autoscaling"
+    ],
+    "prompt": "RDS のストレージの自動スケーリングについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "空きが少なくなるとダウンタイムなしで増やし、最大値を設定できる",
+        "correct": true,
+        "atomId": "rds-storage-autoscaling",
+        "why": "増えたストレージは自動では減らない"
+      },
+      {
+        "id": "b",
+        "text": "使っていない容量を自動で減らす",
+        "correct": false,
+        "why": "自動では減らない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスのサイズ（CPU・メモリ）も自動で上げる",
+        "correct": false,
+        "why": "増えるのはストレージだけ"
+      },
+      {
+        "id": "d",
+        "text": "増やすときに DB の再起動が必要",
+        "correct": false,
+        "why": "ダウンタイムなしで増える"
+      }
+    ],
+    "explanation": "ストレージの自動スケーリング = 増やすだけ・ダウンタイムなし・上限あり。",
+    "keywords": [
+      "ダウンタイムなし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-snapshots:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-snapshots"
+    ],
+    "prompt": "7 年保存が必要なので、自動バックアップの保持期間を 7 年に設定しようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保持期間は最大 35 日までしか設定できない",
+        "correct": true,
+        "atomId": "rds-snapshots",
+        "why": "手動スナップショットは削除するまで残る"
+      },
+      {
+        "id": "b",
+        "text": "自動バックアップはマルチ AZ でしか使えない",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "シングル AZ でも使える"
+      },
+      {
+        "id": "c",
+        "text": "自動バックアップは暗号化できない",
+        "correct": false,
+        "atomId": "rds-encryption",
+        "why": "暗号化された DB のバックアップは暗号化される"
+      },
+      {
+        "id": "d",
+        "text": "自動バックアップは 1 日しか保持できない",
+        "correct": false,
+        "why": "最大 35 日まで設定できる"
+      }
+    ],
+    "explanation": "35 日を超える保管 = 手動スナップショット（または AWS Backup の保持ルール）。",
+    "keywords": [
+      "7 年"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-encryption:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-encryption"
+    ],
+    "prompt": "暗号化されていない RDS の設定画面で、既存のインスタンスの暗号化を有効にしようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "既存の DB は後から直接暗号化できない",
+        "correct": true,
+        "atomId": "rds-encryption",
+        "why": "暗号化は作成時に決まる"
+      },
+      {
+        "id": "b",
+        "text": "RDS は暗号化に対応していない",
+        "correct": false,
+        "why": "KMS で保存時の暗号化ができる"
+      },
+      {
+        "id": "c",
+        "text": "暗号化するとリードレプリカを作れなくなる",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "暗号化された DB からもリードレプリカを作れる"
+      },
+      {
+        "id": "d",
+        "text": "暗号化には DB の削除が必要で、データは戻せない",
+        "correct": false,
+        "why": "スナップショット経由でデータを保ったまま移行できる"
+      }
+    ],
+    "explanation": "未暗号化 → 暗号化 = スナップショット → 暗号化してコピー → 復元。",
+    "keywords": [
+      "既存のインスタンス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-encryption:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "rds-encryption"
+    ],
+    "prompt": "暗号化された RDS について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スナップショットやレプリカも暗号化される",
+        "correct": true,
+        "atomId": "rds-encryption",
+        "why": "保存時の暗号化は関連するデータにも適用される"
+      },
+      {
+        "id": "b",
+        "text": "リードレプリカだけは暗号化されない",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "リードレプリカも暗号化される"
+      },
+      {
+        "id": "c",
+        "text": "暗号化を後から無効にできる",
+        "correct": false,
+        "why": "作成後に無効にはできない"
+      },
+      {
+        "id": "d",
+        "text": "暗号化にはパスワードを毎回入力する",
+        "correct": false,
+        "why": "KMS の鍵で透過的に暗号化される"
+      }
+    ],
+    "explanation": "暗号化した DB = ストレージ、スナップショット、バックアップ、レプリカ、ログまで暗号化。",
+    "keywords": [
+      "スナップショット",
+      "レプリカ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora"
+    ],
+    "prompt": "「3 つの AZ に 6 つのコピー」「最大 15 台のレプリカ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Aurora",
+        "correct": true,
+        "atomId": "rds-aurora",
+        "why": "クラスターのストレージが 3 AZ に 6 つのコピーを持つ"
+      },
+      {
+        "id": "b",
+        "text": "RDS マルチ AZ DB インスタンス",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイ 1 台の構成"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "マルチリージョンの NoSQL"
+      },
+      {
+        "id": "d",
+        "text": "ElastiCache（Valkey / Redis OSS）",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "インメモリのキャッシュ"
+      }
+    ],
+    "explanation": "6 つのコピー・15 レプリカ = Aurora。",
+    "keywords": [
+      "6 つのコピー",
+      "15 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-global-database:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora-global-database"
+    ],
+    "prompt": "東京の Aurora のリージョン障害に備えて、毎日スナップショットを大阪にコピーしている。RPO 1 秒・RTO 1 分の要件に対して何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "最大 1 日分のデータを失い、復元にも時間がかかる",
+        "correct": true,
+        "atomId": "rds-aurora-global-database",
+        "why": "要件を満たすには Aurora グローバルデータベース"
+      },
+      {
+        "id": "b",
+        "text": "スナップショットは別リージョンにコピーできない",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "コピーできる"
+      },
+      {
+        "id": "c",
+        "text": "大阪リージョンでは Aurora を使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "スナップショットのコピーは暗号化できない",
+        "correct": false,
+        "atomId": "rds-encryption",
+        "why": "暗号化してコピーできる"
+      }
+    ],
+    "explanation": "秒単位の RPO・分単位の RTO をリージョン間で = Aurora グローバルデータベース。",
+    "keywords": [
+      "RPO 1 秒",
+      "RTO 1 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-serverless:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-serverless"
+    ],
+    "prompt": "Aurora Serverless v2 の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "負荷に応じて容量（ACU）を細かく自動で増減する",
+        "correct": true,
+        "atomId": "rds-aurora-serverless",
+        "why": "最小と最大の ACU を設定する"
+      },
+      {
+        "id": "b",
+        "text": "キー・値型の NoSQL で、スキーマがない",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "DynamoDB の特徴"
+      },
+      {
+        "id": "c",
+        "text": "容量は固定で、手動でインスタンスを変更する",
+        "correct": false,
+        "why": "プロビジョンドの Aurora の特徴"
+      },
+      {
+        "id": "d",
+        "text": "読み取り専用で、書き込みはできない",
+        "correct": false,
+        "why": "書き込みもできる"
+      }
+    ],
+    "explanation": "Aurora Serverless v2 = ACU 単位の自動スケール。予測できない負荷に向く。",
+    "keywords": [
+      "ACU"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-serverless:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora-serverless"
+    ],
+    "prompt": "1 日のうち 2 時間だけ使う社内システムの DB を、ピークに合わせた大きなプロビジョンドの Aurora で 24 時間動かしている。より安くするには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora Serverless v2 に移行する",
+        "correct": true,
+        "atomId": "rds-aurora-serverless",
+        "why": "負荷に合わせて容量が変わり、その分だけ払う"
+      },
+      {
+        "id": "b",
+        "text": "リードレプリカを追加する",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "コストが増える"
+      },
+      {
+        "id": "c",
+        "text": "マルチ AZ を有効にする",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "可用性のための機能で、コストは増える"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスを最大サイズにして 3 年の RI にする",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "使わない時間の分まで払い続ける"
+      }
+    ],
+    "explanation": "断続的・予測しにくい負荷 = Aurora Serverless v2。",
+    "keywords": [
+      "2 時間だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-automated-backups:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "rds-automated-backups"
+    ],
+    "prompt": "自動バックアップからポイントインタイムリカバリで復元すると、どうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "新しい DB インスタンスとして復元される",
+        "correct": true,
+        "atomId": "rds-automated-backups",
+        "why": "アプリの接続先を新しいエンドポイントに変える"
+      },
+      {
+        "id": "b",
+        "text": "既存の DB が上書きされる",
+        "correct": false,
+        "why": "既存の DB は上書きされない"
+      },
+      {
+        "id": "c",
+        "text": "リードレプリカとして復元される",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "独立した新しいインスタンスになる"
+      },
+      {
+        "id": "d",
+        "text": "同じエンドポイントのまま、データだけ戻る",
+        "correct": false,
+        "why": "エンドポイントは新しくなる"
+      }
+    ],
+    "explanation": "RDS の復元 = 常に新しい DB インスタンス（スナップショットからも同じ）。",
+    "keywords": [
+      "新しい DB インスタンス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
