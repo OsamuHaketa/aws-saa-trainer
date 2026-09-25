@@ -1,0 +1,235 @@
+# AI / ML サービスの Knowledge Atoms
+# スキーマ: lib/schema/atom.ts / 検証: npm run validate
+# SAA では「この用途にはどのサービスか」を選ぶ問題が中心
+
+service: ai
+
+atoms:
+  - id: ai-rekognition
+    category: ai
+    concept: Amazon Rekognition
+    summary: 画像や動画から、物体・顔・文字・不適切なコンテンツなどを検出する
+    facts:
+      - 画像や動画の中の物体、シーン、顔、有名人、文字を検出する
+      - 不適切なコンテンツ（モデレーション）の検出に使える
+      - 機械学習の専門知識なしに API で使える
+    triggers:
+      - 画像の中の物体や顔を検出したい
+      - アップロードされた画像の不適切なコンテンツを検出したい
+    pitfalls:
+      - 書類の文字や表を構造ごと読み取るなら Textract を使う
+    relations:
+      - type: confused_with
+        target: ai-textract
+        distinction: Rekognition は画像や動画の物体・顔・シーンを検出する（文字の検出もできるが簡易）。Textract は書類から文字・表・フォームの項目を構造ごと抽出する
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html
+
+  - id: ai-textract
+    category: ai
+    concept: Amazon Textract
+    summary: スキャンした書類や PDF から、文字・表・フォームの項目を抽出する
+    facts:
+      - 印刷や手書きの文字を読み取る（OCR）
+      - 表やフォームの構造（項目名と値の組）を保ったまま抽出する
+      - 請求書やレシート、身分証明書の分析の機能もある
+    triggers:
+      - 請求書の PDF から金額や日付を取り出したい
+      - スキャンした申込書をデータにしたい
+    pitfalls:
+      - 抽出した文章の感情やキーフレーズの分析は Comprehend で行う
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/textract/latest/dg/what-is.html
+
+  - id: ai-comprehend
+    category: ai
+    concept: Amazon Comprehend
+    summary: 文章から、感情・キーフレーズ・エンティティ・言語・個人情報などを自然言語処理で分析する
+    facts:
+      - 文章の感情（肯定・否定など）、キーフレーズ、人名や組織名などのエンティティを抽出する
+      - 個人情報（PII）の検出や、文章の分類にも使える
+      - Comprehend Medical は医療の文章に特化している
+    triggers:
+      - 顧客のレビューの感情を分析したい
+      - 問い合わせの文章から個人情報を検出したい
+    pitfalls:
+      - 音声を文字にするのは Transcribe、翻訳は Translate
+    relations: []
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html
+
+  - id: ai-transcribe
+    category: ai
+    concept: Amazon Transcribe
+    summary: 音声をテキストに変換する（音声認識）
+    facts:
+      - 録音ファイルやリアルタイムの音声を文字に起こす
+      - 話者の区別や、個人情報の自動の伏せ字（マスキング）ができる
+      - コールセンターの通話の分析（Call Analytics）にも使う
+    triggers:
+      - 通話の録音を文字にしたい
+      - 動画に字幕を付けたい
+    pitfalls:
+      - 文字を音声にするのは Polly（逆方向）
+    relations:
+      - type: confused_with
+        target: ai-polly
+        distinction: Transcribe は音声 → テキスト（音声認識）。Polly はテキスト → 音声（音声合成）
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html
+
+  - id: ai-polly
+    category: ai
+    concept: Amazon Polly
+    summary: テキストを自然な音声に変換する（音声合成）
+    facts:
+      - 多くの言語と声の種類から選んで、文章を読み上げる
+      - SSML で読み方や間の取り方を調整できる
+    triggers:
+      - 記事を音声で読み上げたい
+      - 音声の案内を自動で作りたい
+    pitfalls:
+      - 音声を文字にするのは Transcribe
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/polly/latest/dg/what-is.html
+
+  - id: ai-translate
+    category: ai
+    concept: Amazon Translate
+    summary: テキストを別の言語に機械翻訳する
+    facts:
+      - ニューラル機械翻訳で、多くの言語の間で翻訳する
+      - リアルタイムの翻訳と、文書の一括翻訳ができる
+      - 固有の用語はカスタム用語集で訳し方を指定できる
+    triggers:
+      - サイトの内容を多言語に翻訳したい
+      - 問い合わせの文章を日本語に翻訳したい
+    pitfalls:
+      - 音声のままでは翻訳できない。先に Transcribe で文字にする
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/translate/latest/dg/what-is.html
+
+  - id: ai-lex
+    category: ai
+    concept: Amazon Lex
+    summary: 音声やテキストで会話するチャットボットを作る
+    facts:
+      - 音声認識と自然言語理解で、ユーザーの意図（インテント）を理解して応答する
+      - Amazon Connect（コールセンター）や Web サイトのチャットに組み込める
+      - Lambda を呼び出して、予約などの処理を実行できる
+    triggers:
+      - チャットボットを作りたい
+      - 電話の自動応答で予約を受け付けたい
+    pitfalls:
+      - 社内文書から答えを探す検索なら Kendra を使う
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html
+
+  - id: ai-kendra
+    category: ai
+    concept: Amazon Kendra
+    summary: 社内の文書やナレッジから、自然な言葉の質問で答えを探す、機械学習を使った検索サービス
+    facts:
+      - S3、SharePoint、Confluence などの文書をまとめて検索できる
+      - キーワードの一致ではなく、質問の意味を理解して答えの部分を返す
+    triggers:
+      - 社内のマニュアルを自然な言葉の質問で検索したい
+      - エンタープライズ検索
+    pitfalls:
+      - 商品のキーワード検索やログの分析なら OpenSearch Service が向く
+    relations:
+      - type: confused_with
+        target: opensearch-domain
+        distinction: OpenSearch はキーワードでの全文検索やログの分析を自分で構成して行う。Kendra は機械学習で質問の意味を理解し、社内の文書から答えを探す
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/kendra/latest/dg/what-is-kendra.html
+
+  - id: ai-personalize
+    category: ai
+    concept: Amazon Personalize
+    summary: 利用者の行動の履歴から、個人に合わせたおすすめ（レコメンド）を作る
+    facts:
+      - 閲覧や購入の履歴のデータから、利用者ごとのおすすめの商品やコンテンツを返す
+      - 機械学習の専門知識なしに、Amazon.com と同様の技術を使える
+    triggers:
+      - EC サイトでおすすめ商品を表示したい
+      - 利用者ごとにコンテンツを出し分けたい
+    pitfalls:
+      - 独自のモデルを一から作る必要がないなら、SageMaker より Personalize が手軽
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/personalize/latest/dg/what-is-personalize.html
+
+  - id: ai-sagemaker
+    category: ai
+    concept: Amazon SageMaker AI
+    summary: 機械学習のモデルを作成・学習・デプロイするための、フルマネージドなプラットフォーム
+    facts:
+      - 独自のデータでモデルを学習し、推論用のエンドポイントとして公開できる
+      - ノートブック、学習ジョブ、ハイパーパラメータの調整、モデルの監視などの機能を持つ
+      - データサイエンティストが独自のモデルを作る場合に使う
+    triggers:
+      - 独自の機械学習モデルを学習させてデプロイしたい
+      - 自社のデータで予測モデルを作りたい
+    pitfalls:
+      - 画像認識や翻訳などの一般的な用途なら、学習不要の AI サービス（Rekognition など）の方が手軽
+    relations: []
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html
+
+  - id: ai-bedrock
+    category: ai
+    concept: Amazon Bedrock
+    summary: 複数の基盤モデル（生成 AI）を API で使い、自社のデータと組み合わせたアプリを作る
+    facts:
+      - Anthropic の Claude など、複数の会社の基盤モデルを 1 つの API で使える
+      - ナレッジベースで、自社の文書を参照して回答させる（RAG）ことができる
+      - サーバーやモデルの管理は不要で、入力したデータはモデルの学習に使われない
+    triggers:
+      - 生成 AI で文章の要約やチャットを作りたい
+      - 自社の文書を参照して回答する生成 AI アプリ
+    pitfalls:
+      - 独自のモデルを一から学習させる必要がなければ、SageMaker で自前のモデルを作るより手軽
+    relations:
+      - type: confused_with
+        target: ai-sagemaker
+        distinction: Bedrock は既存の基盤モデルを API で使う生成 AI のサービス。SageMaker AI は独自のモデルを作成・学習・デプロイするためのプラットフォーム
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html

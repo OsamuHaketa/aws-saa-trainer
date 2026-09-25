@@ -1,0 +1,678 @@
+[
+  {
+    "id": "ai-rekognition:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-rekognition"
+    ],
+    "prompt": "利用者が投稿する画像に、不適切なコンテンツが含まれていないかを自動で判定したい。機械学習の専門家はいない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Rekognition",
+        "correct": true,
+        "atomId": "ai-rekognition",
+        "why": "画像や動画のモデレーションを API で行える"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Textract",
+        "correct": false,
+        "atomId": "ai-textract",
+        "why": "書類の文字や表の抽出"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "音声合成"
+      }
+    ],
+    "explanation": "画像・動画の分析 = Rekognition。",
+    "keywords": [
+      "画像",
+      "不適切なコンテンツ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-rekognition:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-rekognition"
+    ],
+    "prompt": "「画像や動画の物体・顔の検出」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Rekognition",
+        "correct": true,
+        "atomId": "ai-rekognition",
+        "why": "画像と動画の分析"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Transcribe",
+        "correct": false,
+        "atomId": "ai-transcribe",
+        "why": "音声の文字起こし"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Kendra",
+        "correct": false,
+        "atomId": "ai-kendra",
+        "why": "文書の検索"
+      }
+    ],
+    "explanation": "画像・顔 = Rekognition。",
+    "keywords": [
+      "顔の検出"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-textract:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-textract"
+    ],
+    "prompt": "毎月届く数千枚の請求書の PDF から、請求日・金額・取引先の名前を表の構造ごと取り出してデータベースに入れたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Textract",
+        "correct": true,
+        "atomId": "ai-textract",
+        "why": "書類から文字・表・フォームの項目を抽出する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像の物体や顔の検出が中心"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の意味の分析で、書類の読み取りではない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Lex",
+        "correct": false,
+        "atomId": "ai-lex",
+        "why": "チャットボット"
+      }
+    ],
+    "explanation": "書類の OCR と構造の抽出 = Textract。",
+    "keywords": [
+      "請求書の PDF"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-textract:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ai-textract",
+      "ai-rekognition"
+    ],
+    "prompt": "Rekognition と Textract の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "書類の文字や表なら後者",
+        "correct": true,
+        "atomId": "ai-textract",
+        "why": "写真の物体や顔なら Rekognition。Textract はフォームや表の構造を保って抽出する"
+      },
+      {
+        "id": "b",
+        "text": "前者は動画だけ、後者は画像だけ",
+        "correct": false,
+        "why": "Rekognition は画像も動画も扱う"
+      },
+      {
+        "id": "c",
+        "text": "前者は音声、後者は文章",
+        "correct": false,
+        "atomId": "ai-transcribe",
+        "why": "音声は Transcribe"
+      },
+      {
+        "id": "d",
+        "text": "どちらも翻訳のサービス",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳は Translate"
+      }
+    ],
+    "explanation": "画像の中身 = Rekognition、書類のデータ化 = Textract。",
+    "keywords": [
+      "書類"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-comprehend:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-comprehend"
+    ],
+    "prompt": "数万件の商品レビューが肯定的か否定的かを自動で分類し、よく出る話題も抽出したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Comprehend",
+        "correct": true,
+        "atomId": "ai-comprehend",
+        "why": "感情分析とキーフレーズの抽出ができる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "音声合成"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像の分析"
+      }
+    ],
+    "explanation": "文章の感情・キーフレーズ = Comprehend。",
+    "keywords": [
+      "肯定的か否定的か"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-transcribe:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-transcribe"
+    ],
+    "prompt": "コールセンターの通話の録音を文字にし、クレジットカード番号などの個人情報は自動で伏せたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Transcribe",
+        "correct": true,
+        "atomId": "ai-transcribe",
+        "why": "音声を文字にし、個人情報を自動でマスクできる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "テキストを音声にする（逆方向）"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Textract",
+        "correct": false,
+        "atomId": "ai-textract",
+        "why": "書類の読み取り"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Lex",
+        "correct": false,
+        "atomId": "ai-lex",
+        "why": "チャットボット"
+      }
+    ],
+    "explanation": "音声 → 文字 = Transcribe。",
+    "keywords": [
+      "通話の録音を文字に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-transcribe:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "ai-transcribe",
+      "ai-polly"
+    ],
+    "prompt": "Transcribe と Polly の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は音声を文字に、後者は文字を音声にする",
+        "correct": true,
+        "atomId": "ai-transcribe",
+        "why": "音声認識と音声合成"
+      },
+      {
+        "id": "b",
+        "text": "前者は翻訳、後者は要約",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳は Translate"
+      },
+      {
+        "id": "c",
+        "text": "どちらも画像の分析",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像は Rekognition"
+      },
+      {
+        "id": "d",
+        "text": "前者は文字を音声に、後者は音声を文字にする",
+        "correct": false,
+        "why": "逆"
+      }
+    ],
+    "explanation": "Transcribe = 音声 → テキスト、Polly = テキスト → 音声。",
+    "keywords": [
+      "音声を文字に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-polly:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-polly"
+    ],
+    "prompt": "「ニュース記事を自然な音声で読み上げ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Polly",
+        "correct": true,
+        "atomId": "ai-polly",
+        "why": "テキストの音声合成"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Transcribe",
+        "correct": false,
+        "atomId": "ai-transcribe",
+        "why": "音声の文字起こし"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Kendra",
+        "correct": false,
+        "atomId": "ai-kendra",
+        "why": "文書の検索"
+      }
+    ],
+    "explanation": "読み上げ = Polly。",
+    "keywords": [
+      "読み上げ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-translate:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ai-translate"
+    ],
+    "prompt": "英語の問い合わせの音声を、日本語の文章にして担当者に渡したい。どの組み合わせ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Transcribe で文字にし、Translate で翻訳する",
+        "correct": true,
+        "atomId": "ai-translate",
+        "why": "音声のままでは翻訳できないので、先に文字にする"
+      },
+      {
+        "id": "b",
+        "text": "Polly で文字にし、Comprehend で翻訳する",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "Polly は音声合成、Comprehend は翻訳しない"
+      },
+      {
+        "id": "c",
+        "text": "Rekognition で文字にし、Lex で翻訳する",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "Rekognition は画像、Lex はチャットボット"
+      },
+      {
+        "id": "d",
+        "text": "Textract で文字にし、Kendra で翻訳する",
+        "correct": false,
+        "atomId": "ai-textract",
+        "why": "Textract は書類、Kendra は検索"
+      }
+    ],
+    "explanation": "音声 → Transcribe → テキスト → Translate → 別の言語。",
+    "keywords": [
+      "音声",
+      "日本語の文章"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-lex:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-lex"
+    ],
+    "prompt": "Web サイトに、ホテルの予約を会話で受け付けるチャットボットを付けたい。予約の処理は Lambda で行う。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Lex",
+        "correct": true,
+        "atomId": "ai-lex",
+        "why": "会話のボットを作り、Lambda で処理を実行できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "音声合成だけ"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Kendra",
+        "correct": false,
+        "atomId": "ai-kendra",
+        "why": "文書の検索"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Personalize",
+        "correct": false,
+        "atomId": "ai-personalize",
+        "why": "レコメンド"
+      }
+    ],
+    "explanation": "チャットボット = Lex。",
+    "keywords": [
+      "チャットボット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-kendra:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-kendra"
+    ],
+    "prompt": "社内の S3 と SharePoint にある数万の規程やマニュアルから、「出張の日当はいくら？」のような質問で答えを探せるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Kendra",
+        "correct": true,
+        "atomId": "ai-kendra",
+        "why": "質問の意味を理解して、文書から答えを探す"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 のデータに SQL を実行する"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析で、検索のサービスではない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Textract",
+        "correct": false,
+        "atomId": "ai-textract",
+        "why": "書類の読み取り"
+      }
+    ],
+    "explanation": "社内文書の自然な言葉での検索 = Kendra。",
+    "keywords": [
+      "質問で答えを探せる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-personalize:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-personalize"
+    ],
+    "prompt": "EC サイトで、利用者ごとの閲覧・購入の履歴から「あなたへのおすすめ」を表示したい。機械学習の専門家はいない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Personalize",
+        "correct": true,
+        "atomId": "ai-personalize",
+        "why": "履歴のデータから個人向けのおすすめを作る"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SageMaker AI で一から作る",
+        "correct": false,
+        "atomId": "ai-sagemaker",
+        "why": "専門知識が必要で、手間が大きい"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳"
+      }
+    ],
+    "explanation": "レコメンド = Personalize。",
+    "keywords": [
+      "おすすめ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-sagemaker:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "ai-sagemaker"
+    ],
+    "prompt": "データサイエンティストが、自社の製造データで不良品を予測する独自のモデルを学習させ、推論の API として公開したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SageMaker AI",
+        "correct": true,
+        "atomId": "ai-sagemaker",
+        "why": "独自のモデルの学習からデプロイまでを管理する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "学習済みの画像分析で、独自の予測モデルを作るものではない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon QuickSight",
+        "correct": false,
+        "atomId": "quicksight-dashboard",
+        "why": "可視化"
+      }
+    ],
+    "explanation": "独自のモデルを作る = SageMaker AI、学習済みの用途別サービス = Rekognition など。",
+    "keywords": [
+      "独自のモデル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-bedrock:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-bedrock"
+    ],
+    "prompt": "社内の文書を参照して回答する生成 AI のチャットを作りたい。モデルやサーバーの管理はしたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Bedrock（ナレッジベース）",
+        "correct": true,
+        "atomId": "ai-bedrock",
+        "why": "基盤モデルを API で使い、自社の文書で回答させる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SageMaker AI でモデルを一から学習",
+        "correct": false,
+        "atomId": "ai-sagemaker",
+        "why": "手間とコストが大きい"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Lex だけ",
+        "correct": false,
+        "atomId": "ai-lex",
+        "why": "決まった会話の流れのボットで、文書から回答を生成しない"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "翻訳"
+      }
+    ],
+    "explanation": "生成 AI のアプリ = Bedrock（RAG はナレッジベース）。",
+    "keywords": [
+      "生成 AI",
+      "社内の文書"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-bedrock:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ai-bedrock",
+      "ai-sagemaker"
+    ],
+    "prompt": "Amazon Bedrock と SageMaker AI の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は既存のモデルを API で使う",
+        "correct": true,
+        "atomId": "ai-bedrock",
+        "why": "Bedrock はモデルの管理が不要。SageMaker AI は独自のモデルを作る"
+      },
+      {
+        "id": "b",
+        "text": "前者は画像分析だけ、後者は翻訳だけ",
+        "correct": false,
+        "why": "どちらも用途は限られない"
+      },
+      {
+        "id": "c",
+        "text": "後者はモデルを学習できない",
+        "correct": false,
+        "why": "学習できる"
+      },
+      {
+        "id": "d",
+        "text": "前者はサーバーの管理が必要",
+        "correct": false,
+        "why": "管理は不要"
+      }
+    ],
+    "explanation": "既存の基盤モデル = Bedrock、独自のモデルの作成 = SageMaker AI。",
+    "keywords": [
+      "基盤モデル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  }
+]
