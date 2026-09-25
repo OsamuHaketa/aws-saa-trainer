@@ -1186,5 +1186,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-price-class:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-price-class"
+    ],
+    "prompt": "世界中のユーザーに低レイテンシで配信する要件なのに、料金を下げるため価格クラス 100 にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一部の地域のエッジを使わず、そこの利用者が遅くなる",
+        "correct": true,
+        "atomId": "cloudfront-price-class",
+        "why": "世界中で低レイテンシなら価格クラス All"
+      },
+      {
+        "id": "b",
+        "text": "価格クラス 100 は HTTPS を使えない",
+        "correct": false,
+        "atomId": "cloudfront-viewer-https",
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "価格クラス 100 は S3 をオリジンにできない",
+        "correct": false,
+        "why": "できる"
+      },
+      {
+        "id": "d",
+        "text": "価格クラス 100 はキャッシュしない",
+        "correct": false,
+        "why": "キャッシュする"
+      }
+    ],
+    "explanation": "価格クラスはコストと性能のトレードオフ。",
+    "keywords": [
+      "世界中",
+      "価格クラス 100"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

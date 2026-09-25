@@ -1278,5 +1278,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-warm-pool:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-warm-pool"
+    ],
+    "prompt": "「初期化済みのインスタンスを停止状態で待機」「スケールアウトを速く」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ウォームプール",
+        "correct": true,
+        "atomId": "autoscaling-warm-pool",
+        "why": "起動と初期化に時間がかかるアプリ向け"
+      },
+      {
+        "id": "b",
+        "text": "ライフサイクルフック",
+        "correct": false,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "起動・終了の途中で処理を挟む"
+      },
+      {
+        "id": "c",
+        "text": "予測スケーリング",
+        "correct": false,
+        "atomId": "autoscaling-predictive",
+        "why": "負荷を予測して先に増やす"
+      },
+      {
+        "id": "d",
+        "text": "EC2 の休止",
+        "correct": false,
+        "atomId": "ec2-hibernate",
+        "why": "1 台のメモリの状態を保って止める"
+      }
+    ],
+    "explanation": "待機させるインスタンスの池 = ウォームプール。",
+    "keywords": [
+      "待機"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

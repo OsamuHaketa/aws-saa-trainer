@@ -3059,5 +3059,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-vpn-cloudhub:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "vpc-vpn-cloudhub"
+    ],
+    "prompt": "「複数の拠点の VPN を 1 つの仮想プライベートゲートウェイにつなぐ」「拠点同士も通信」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPN CloudHub",
+        "correct": true,
+        "atomId": "vpc-vpn-cloudhub",
+        "why": "ハブ＆スポーク型の拠点間の VPN"
+      },
+      {
+        "id": "b",
+        "text": "Client VPN",
+        "correct": false,
+        "atomId": "vpc-client-vpn",
+        "why": "個人の端末からの VPN"
+      },
+      {
+        "id": "c",
+        "text": "Direct Connect ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "DX を複数のリージョンで使う"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      }
+    ],
+    "explanation": "拠点間の VPN のハブ = CloudHub。",
+    "keywords": [
+      "拠点同士"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

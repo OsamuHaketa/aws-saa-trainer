@@ -444,5 +444,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cost-anomaly-detection:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cost-anomaly-detection"
+    ],
+    "prompt": "「機械学習でいつものコストのパターンを学習」「異常な増加を通知」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cost Anomaly Detection",
+        "correct": true,
+        "atomId": "cost-anomaly-detection",
+        "why": "しきい値なしで異常を見つける"
+      },
+      {
+        "id": "b",
+        "text": "AWS Budgets の予算アラート",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "決めた予算のしきい値で通知する"
+      },
+      {
+        "id": "c",
+        "text": "AWS Cost Explorer の予測",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "コストの分析と予測"
+      },
+      {
+        "id": "d",
+        "text": "AWS Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "ベストプラクティスのチェック"
+      }
+    ],
+    "explanation": "異常の検出 = Cost Anomaly Detection。",
+    "keywords": [
+      "異常な増加"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

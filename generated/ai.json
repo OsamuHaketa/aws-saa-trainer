@@ -900,5 +900,273 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ai-polly:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ai-polly"
+    ],
+    "prompt": "電話の自動音声の案内の文面を頻繁に変える。録音し直さずに、文章から自然な音声を作りたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Polly",
+        "correct": true,
+        "atomId": "ai-polly",
+        "why": "テキストから音声を合成する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Transcribe",
+        "correct": false,
+        "atomId": "ai-transcribe",
+        "why": "音声を文字にする（逆方向）"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Translate",
+        "correct": false,
+        "atomId": "ai-translate",
+        "why": "文章の翻訳"
+      }
+    ],
+    "explanation": "テキスト → 音声 = Polly。",
+    "keywords": [
+      "文章から自然な音声"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-translate:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-translate"
+    ],
+    "prompt": "「Web サイトの記事を多言語に機械翻訳」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Translate",
+        "correct": true,
+        "atomId": "ai-translate",
+        "why": "ニューラル機械翻訳"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "音声合成"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Lex",
+        "correct": false,
+        "atomId": "ai-lex",
+        "why": "チャットボット"
+      }
+    ],
+    "explanation": "翻訳 = Translate。",
+    "keywords": [
+      "機械翻訳"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-lex:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-lex"
+    ],
+    "prompt": "「チャットボット」「音声やテキストで会話」「インテント」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Lex",
+        "correct": true,
+        "atomId": "ai-lex",
+        "why": "会話のボットを作る"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Kendra",
+        "correct": false,
+        "atomId": "ai-kendra",
+        "why": "文書の検索"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Polly",
+        "correct": false,
+        "atomId": "ai-polly",
+        "why": "音声合成"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Personalize",
+        "correct": false,
+        "atomId": "ai-personalize",
+        "why": "レコメンド"
+      }
+    ],
+    "explanation": "チャットボット = Lex。",
+    "keywords": [
+      "チャットボット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-kendra:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ai-kendra",
+      "opensearch-domain"
+    ],
+    "prompt": "社内の文書の検索で、OpenSearch Service ではなく Kendra を選ぶのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "自然な質問の意味を理解して答えを探したいとき",
+        "correct": true,
+        "atomId": "ai-kendra",
+        "why": "Kendra は機械学習で文書から答えを返す"
+      },
+      {
+        "id": "b",
+        "text": "ログを集めてダッシュボードで可視化したいとき",
+        "correct": false,
+        "atomId": "opensearch-domain",
+        "why": "それは OpenSearch が得意"
+      },
+      {
+        "id": "c",
+        "text": "商品のキーワード検索を自分で細かく調整したいとき",
+        "correct": false,
+        "atomId": "opensearch-domain",
+        "why": "それは OpenSearch が得意"
+      },
+      {
+        "id": "d",
+        "text": "時系列のデータを集計したいとき",
+        "correct": false,
+        "atomId": "timestream-db",
+        "why": "それは Timestream"
+      }
+    ],
+    "explanation": "質問の意味で社内文書を探す = Kendra、キーワード検索・ログ分析 = OpenSearch。",
+    "keywords": [
+      "自然な質問"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-personalize:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ai-personalize"
+    ],
+    "prompt": "「利用者ごとのおすすめ」「閲覧・購入の履歴」「機械学習の専門知識なし」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Personalize",
+        "correct": true,
+        "atomId": "ai-personalize",
+        "why": "個人向けのレコメンドを作る"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Rekognition",
+        "correct": false,
+        "atomId": "ai-rekognition",
+        "why": "画像の分析"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Comprehend",
+        "correct": false,
+        "atomId": "ai-comprehend",
+        "why": "文章の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Kendra",
+        "correct": false,
+        "atomId": "ai-kendra",
+        "why": "文書の検索"
+      }
+    ],
+    "explanation": "レコメンド = Personalize。",
+    "keywords": [
+      "おすすめ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ai-sagemaker:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ai-sagemaker"
+    ],
+    "prompt": "画像に写った一般的な物体を判定したいだけなのに、SageMaker AI で一から画像認識のモデルを作ろうとしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "学習済みの Rekognition を使えば手間が少ない",
+        "correct": true,
+        "atomId": "ai-rekognition",
+        "why": "一般的な用途は学習不要の AI サービスで足りる"
+      },
+      {
+        "id": "b",
+        "text": "SageMaker AI では画像を扱えない",
+        "correct": false,
+        "why": "扱える"
+      },
+      {
+        "id": "c",
+        "text": "SageMaker AI はモデルを公開できない",
+        "correct": false,
+        "why": "推論のエンドポイントとして公開できる"
+      },
+      {
+        "id": "d",
+        "text": "Rekognition は API で使えない",
+        "correct": false,
+        "why": "API で使える"
+      }
+    ],
+    "explanation": "一般的な用途 = 学習済みの AI サービス、独自の予測 = SageMaker AI。",
+    "keywords": [
+      "一般的な物体"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

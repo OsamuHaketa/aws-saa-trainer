@@ -43,5 +43,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "keyspaces-table:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "keyspaces-table"
+    ],
+    "prompt": "「Apache Cassandra 互換」「CQL」「サーバーレス」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Keyspaces",
+        "correct": true,
+        "atomId": "keyspaces-table",
+        "why": "Cassandra 互換のワイドカラム型 DB"
+      },
+      {
+        "id": "b",
+        "text": "Amazon DocumentDB",
+        "correct": false,
+        "atomId": "documentdb-cluster",
+        "why": "MongoDB 互換"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Neptune",
+        "correct": false,
+        "atomId": "neptune-graph",
+        "why": "グラフ DB"
+      },
+      {
+        "id": "d",
+        "text": "Amazon MemoryDB",
+        "correct": false,
+        "atomId": "memorydb-cluster",
+        "why": "Redis 互換"
+      }
+    ],
+    "explanation": "Cassandra = Keyspaces。",
+    "keywords": [
+      "Cassandra"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -263,5 +263,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "config-aggregator:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "config-aggregator"
+    ],
+    "prompt": "「複数のアカウントとリージョンの Config のデータを 1 つのアカウントに集める」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Config アグリゲーター",
+        "correct": true,
+        "atomId": "config-aggregator",
+        "why": "準拠状況や設定を集約して一覧する"
+      },
+      {
+        "id": "b",
+        "text": "Config の適合パック",
+        "correct": false,
+        "atomId": "config-conformance-packs",
+        "why": "ルールの一括展開"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail の組織の証跡",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録の集約"
+      },
+      {
+        "id": "d",
+        "text": "Security Hub",
+        "correct": false,
+        "atomId": "securityhub-findings",
+        "why": "セキュリティの検出結果の集約"
+      }
+    ],
+    "explanation": "Config のデータの集約 = アグリゲーター。",
+    "keywords": [
+      "集める"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "config-conformance-packs:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "config-conformance-packs"
+    ],
+    "prompt": "「複数の Config ルールと修復をまとめてデプロイ」「コンプライアンスの基準のテンプレート」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Config の適合パック",
+        "correct": true,
+        "atomId": "config-conformance-packs",
+        "why": "ルールのセットをアカウントや組織に展開する"
+      },
+      {
+        "id": "b",
+        "text": "Config アグリゲーター",
+        "correct": false,
+        "atomId": "config-aggregator",
+        "why": "データの集約"
+      },
+      {
+        "id": "c",
+        "text": "SCP",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "操作の禁止"
+      },
+      {
+        "id": "d",
+        "text": "CloudFormation のドリフト検出",
+        "correct": false,
+        "atomId": "cloudformation-drift",
+        "why": "手作業の変更の検出"
+      }
+    ],
+    "explanation": "ルールのセットの展開 = 適合パック。",
+    "keywords": [
+      "まとめてデプロイ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

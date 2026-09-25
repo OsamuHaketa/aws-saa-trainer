@@ -359,5 +359,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-archive-replay:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "eventbridge-archive-replay"
+    ],
+    "prompt": "「イベントバスのイベントを保存」「指定した期間のイベントを流し直す」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アーカイブとリプレイ",
+        "correct": true,
+        "atomId": "eventbridge-archive-replay",
+        "why": "障害の復旧やテストに使う"
+      },
+      {
+        "id": "b",
+        "text": "SQS のデッドレターキュー",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "処理できないメッセージの隔離"
+      },
+      {
+        "id": "c",
+        "text": "Kinesis の保持期間",
+        "correct": false,
+        "atomId": "kinesis-shards",
+        "why": "ストリームのデータの保持"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail のイベント履歴",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録"
+      }
+    ],
+    "explanation": "イベントの再送 = アーカイブとリプレイ。",
+    "keywords": [
+      "流し直す"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

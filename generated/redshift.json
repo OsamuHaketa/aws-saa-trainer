@@ -310,5 +310,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-serverless:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "redshift-serverless"
+    ],
+    "prompt": "「クラスターの管理なし」「使った分だけの Redshift」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Redshift Serverless",
+        "correct": true,
+        "atomId": "redshift-serverless",
+        "why": "容量を自動で調整し、RPU 時間で課金する"
+      },
+      {
+        "id": "b",
+        "text": "Redshift Spectrum",
+        "correct": false,
+        "atomId": "redshift-spectrum",
+        "why": "S3 のデータへの問い合わせ"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 への SQL"
+      },
+      {
+        "id": "d",
+        "text": "Amazon EMR",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "Hadoop / Spark のクラスター"
+      }
+    ],
+    "explanation": "管理なしの Redshift = Redshift Serverless。",
+    "keywords": [
+      "クラスターの管理なし"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

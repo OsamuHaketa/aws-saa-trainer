@@ -756,5 +756,138 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs-insights:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-logs-insights"
+    ],
+    "prompt": "「CloudWatch Logs のログをクエリで検索・集計」「その場で分析」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Logs Insights",
+        "correct": true,
+        "atomId": "cloudwatch-logs-insights",
+        "why": "CloudWatch Logs Insights。専用のクエリ言語でロググループを分析する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "S3 のデータへの SQL"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail Lake",
+        "correct": false,
+        "why": "CloudTrail のイベントへの SQL"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config の高度なクエリ",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "リソースの設定への問い合わせ"
+      }
+    ],
+    "explanation": "CloudWatch Logs のその場の分析 = Logs Insights。",
+    "keywords": [
+      "クエリで検索"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-composite-alarms:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-composite-alarms"
+    ],
+    "prompt": "「複数のアラームを AND / OR で組み合わせる」「通知の嵐を減らす」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複合アラーム",
+        "correct": true,
+        "atomId": "cloudwatch-composite-alarms",
+        "why": "複数のアラームの状態から判定する"
+      },
+      {
+        "id": "b",
+        "text": "メトリクスフィルター",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログから数値を作る"
+      },
+      {
+        "id": "c",
+        "text": "異常検出のアラーム",
+        "correct": false,
+        "atomId": "cloudwatch-alarms",
+        "why": "1 つのメトリクスの通常の範囲から外れたら鳴る"
+      },
+      {
+        "id": "d",
+        "text": "ダッシュボード",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "メトリクスの可視化"
+      }
+    ],
+    "explanation": "アラームの組み合わせ = 複合アラーム。",
+    "keywords": [
+      "AND / OR"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs-subscription:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-logs-subscription"
+    ],
+    "prompt": "「ロググループのログをリアルタイムに Lambda や Kinesis へ転送」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サブスクリプションフィルター",
+        "correct": true,
+        "atomId": "cloudwatch-logs-subscription",
+        "why": "条件に合うログをリアルタイムに送る"
+      },
+      {
+        "id": "b",
+        "text": "メトリクスフィルター",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログからメトリクスを作る"
+      },
+      {
+        "id": "c",
+        "text": "S3 へのエクスポート",
+        "correct": false,
+        "why": "一括の出力で、リアルタイムではない"
+      },
+      {
+        "id": "d",
+        "text": "Logs Insights",
+        "correct": false,
+        "atomId": "cloudwatch-logs-insights",
+        "why": "その場の分析"
+      }
+    ],
+    "explanation": "ログのストリーミング転送 = サブスクリプションフィルター。",
+    "keywords": [
+      "リアルタイムに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

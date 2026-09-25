@@ -2002,5 +2002,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-transactions:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-transactions"
+    ],
+    "prompt": "「DynamoDB で複数の項目の書き込みをすべて成功かすべて失敗に」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "トランザクション",
+        "correct": true,
+        "atomId": "dynamodb-transactions",
+        "why": "TransactWriteItems で ACID に処理する"
+      },
+      {
+        "id": "b",
+        "text": "BatchWriteItem",
+        "correct": false,
+        "why": "まとめて書き込むが、原子的ではない"
+      },
+      {
+        "id": "c",
+        "text": "条件付き書き込み",
+        "correct": false,
+        "why": "1 つの項目の条件の確認で、複数の項目はまとめられない"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録"
+      }
+    ],
+    "explanation": "複数項目の ACID = トランザクション。",
+    "keywords": [
+      "すべて成功かすべて失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

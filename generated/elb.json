@@ -1378,5 +1378,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elb-alb-authentication:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "elb-alb-authentication"
+    ],
+    "prompt": "「アプリのコードを変えずにログインを追加」「ALB のリスナールールで Cognito / OIDC」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB のユーザー認証",
+        "correct": true,
+        "atomId": "elb-alb-authentication",
+        "why": "ALB が認証してから、認証済みのリクエストだけを送る"
+      },
+      {
+        "id": "b",
+        "text": "API Gateway の Lambda オーソライザー",
+        "correct": false,
+        "atomId": "apigateway-authorizers",
+        "why": "API Gateway の機能で、ALB ではない"
+      },
+      {
+        "id": "c",
+        "text": "Cognito ID プール",
+        "correct": false,
+        "atomId": "cognito-identity-pool",
+        "why": "AWS 認証情報を渡す仕組み"
+      },
+      {
+        "id": "d",
+        "text": "WAF の IP 制限",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "ユーザーの認証ではない"
+      }
+    ],
+    "explanation": "ALB でログイン = 認証アクション（Cognito / OIDC）。",
+    "keywords": [
+      "コードを変えずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

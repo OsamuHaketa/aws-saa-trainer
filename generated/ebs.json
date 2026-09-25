@@ -1197,5 +1197,47 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-recycle-bin:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ebs-recycle-bin"
+    ],
+    "prompt": "スナップショットを誤って削除したあとで、ゴミ箱の保持ルールを作ったが、そのスナップショットを戻せない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保持ルールは作成後に削除されたものだけが対象",
+        "correct": true,
+        "atomId": "ebs-recycle-bin",
+        "why": "ルールは削除の前に作っておく"
+      },
+      {
+        "id": "b",
+        "text": "ゴミ箱は AMI にしか使えない",
+        "correct": false,
+        "why": "スナップショットにも使える"
+      },
+      {
+        "id": "c",
+        "text": "ゴミ箱は 1 日しか保持しない",
+        "correct": false,
+        "why": "保持期間は設定できる"
+      },
+      {
+        "id": "d",
+        "text": "スナップショットは暗号化されていると戻せない",
+        "correct": false,
+        "why": "暗号化とは関係ない"
+      }
+    ],
+    "explanation": "ゴミ箱 = 事前に保持ルールを作っておく必要がある。",
+    "keywords": [
+      "削除したあとで"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

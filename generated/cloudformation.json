@@ -313,5 +313,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudformation-drift:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudformation-drift"
+    ],
+    "prompt": "「スタックのリソースが手作業で変更されていないかを検出」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ドリフト検出",
+        "correct": true,
+        "atomId": "cloudformation-drift",
+        "why": "テンプレートと実際の設定の違いを見つける"
+      },
+      {
+        "id": "b",
+        "text": "変更セット",
+        "correct": false,
+        "atomId": "cloudformation-stack",
+        "why": "これからの更新の内容の確認"
+      },
+      {
+        "id": "c",
+        "text": "StackSets",
+        "correct": false,
+        "atomId": "cloudformation-stacksets",
+        "why": "複数のアカウントへの展開"
+      },
+      {
+        "id": "d",
+        "text": "ロールバック",
+        "correct": false,
+        "why": "失敗した更新を元に戻す"
+      }
+    ],
+    "explanation": "手作業の変更の検出 = ドリフト検出。",
+    "keywords": [
+      "手作業で変更"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

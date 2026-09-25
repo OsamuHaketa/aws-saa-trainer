@@ -395,5 +395,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-local-zones:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "infrastructure-local-zones"
+    ],
+    "prompt": "「大都市の近くに置かれたリージョンの拡張」「その地域のユーザーに 1 桁ミリ秒」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Local Zones",
+        "correct": true,
+        "atomId": "infrastructure-local-zones",
+        "why": "親のリージョンからサブネットを延ばして使う"
+      },
+      {
+        "id": "b",
+        "text": "AWS Wavelength",
+        "correct": false,
+        "atomId": "infrastructure-wavelength",
+        "why": "5G のネットワークの中"
+      },
+      {
+        "id": "c",
+        "text": "AWS Outposts",
+        "correct": false,
+        "atomId": "infrastructure-outposts",
+        "why": "自社のデータセンターに置く"
+      },
+      {
+        "id": "d",
+        "text": "エッジロケーション",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "CloudFront などの配信の拠点"
+      }
+    ],
+    "explanation": "大都市の近く = Local Zones。",
+    "keywords": [
+      "大都市の近く"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-wavelength:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "infrastructure-wavelength"
+    ],
+    "prompt": "5G のスマートフォン向けの AR ゲームで、端末からの通信をインターネットに出さずに、数ミリ秒でサーバーに届けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Wavelength",
+        "correct": true,
+        "atomId": "infrastructure-wavelength",
+        "why": "通信事業者の 5G ネットワークの中でサーバーを動かす"
+      },
+      {
+        "id": "b",
+        "text": "AWS Local Zones",
+        "correct": false,
+        "atomId": "infrastructure-local-zones",
+        "why": "大都市の近くの拠点で、5G のネットワークの中ではない"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信で、ゲームのサーバーの処理はしない"
+      },
+      {
+        "id": "d",
+        "text": "Global Accelerator",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "インターネットの経路を最適化するが、5G の中ではない"
+      }
+    ],
+    "explanation": "5G の端末 × 超低レイテンシ = Wavelength。",
+    "keywords": [
+      "5G のスマートフォン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

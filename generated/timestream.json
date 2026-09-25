@@ -44,5 +44,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "timestream-db:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "timestream-db"
+    ],
+    "prompt": "「時系列データベース」「IoT のセンサー値」「時間の範囲で集計」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Timestream",
+        "correct": true,
+        "atomId": "timestream-db",
+        "why": "時刻付きのデータを保存・分析する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Neptune",
+        "correct": false,
+        "atomId": "neptune-graph",
+        "why": "グラフ DB"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Keyspaces",
+        "correct": false,
+        "atomId": "keyspaces-table",
+        "why": "Cassandra 互換"
+      },
+      {
+        "id": "d",
+        "text": "Amazon DocumentDB",
+        "correct": false,
+        "atomId": "documentdb-cluster",
+        "why": "MongoDB 互換"
+      }
+    ],
+    "explanation": "時系列 = Timestream。",
+    "keywords": [
+      "時系列"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

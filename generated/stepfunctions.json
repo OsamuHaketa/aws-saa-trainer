@@ -354,5 +354,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-callback:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-callback"
+    ],
+    "prompt": "「.waitForTaskToken」「人の承認を待つ」「SendTaskSuccess」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "タスクトークンによるコールバック",
+        "correct": true,
+        "atomId": "stepfunctions-callback",
+        "why": "トークンが返ってくるまでワークフローを止める"
+      },
+      {
+        "id": "b",
+        "text": "Express ワークフロー",
+        "correct": false,
+        "atomId": "stepfunctions-standard-express",
+        "why": "5 分までの短い処理"
+      },
+      {
+        "id": "c",
+        "text": "SQS のロングポーリング",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信の待ち方"
+      },
+      {
+        "id": "d",
+        "text": "Lambda の非同期呼び出し",
+        "correct": false,
+        "atomId": "lambda-async-failure",
+        "why": "呼び出してすぐに戻る"
+      }
+    ],
+    "explanation": "外部の完了を待つ = タスクトークン。",
+    "keywords": [
+      "waitForTaskToken"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

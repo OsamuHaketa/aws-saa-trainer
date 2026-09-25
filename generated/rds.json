@@ -2216,5 +2216,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "rds-blue-green:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "rds-blue-green"
+    ],
+    "prompt": "「本番と同期するステージング環境」「1 分程度で切り替え」「メジャーバージョンアップ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ブルー/グリーンデプロイ",
+        "correct": true,
+        "atomId": "rds-blue-green",
+        "why": "グリーンで試して、エンドポイントを変えずに切り替える"
+      },
+      {
+        "id": "b",
+        "text": "RDS のマルチ AZ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "障害への備え"
+      },
+      {
+        "id": "c",
+        "text": "RDS のリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "読み取りの分散"
+      },
+      {
+        "id": "d",
+        "text": "Aurora のクローン",
+        "correct": false,
+        "atomId": "rds-aurora-cloning",
+        "why": "テスト用の複製で、切り替えの仕組みではない"
+      }
+    ],
+    "explanation": "安全な更新と素早い切り替え = ブルー/グリーンデプロイ。",
+    "keywords": [
+      "ステージング環境"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

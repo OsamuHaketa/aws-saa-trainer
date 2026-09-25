@@ -1069,5 +1069,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-large-messages:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "sqs-large-messages"
+    ],
+    "prompt": "「SQS の拡張クライアントライブラリ」「メッセージの本体を S3 に置く」→ 何のため？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "大きなメッセージを扱うため",
+        "correct": true,
+        "atomId": "sqs-large-messages",
+        "why": "サイズの上限を超える本体は S3 に置き、キューには参照だけを入れる"
+      },
+      {
+        "id": "b",
+        "text": "メッセージの順序を保証するため",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "順序は FIFO キューの機能"
+      },
+      {
+        "id": "c",
+        "text": "メッセージを暗号化するため",
+        "correct": false,
+        "why": "暗号化は SSE で行う"
+      },
+      {
+        "id": "d",
+        "text": "保持期間を 14 日より長くするため",
+        "correct": false,
+        "atomId": "sqs-retention",
+        "why": "保持期間は変わらない"
+      }
+    ],
+    "explanation": "大きなペイロード = S3 + 参照（拡張クライアントライブラリ）。",
+    "keywords": [
+      "拡張クライアントライブラリ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

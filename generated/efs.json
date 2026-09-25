@@ -393,5 +393,90 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "efs-throughput-modes:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "efs-throughput-modes"
+    ],
+    "prompt": "EFS のバーストスループットモードの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保存量に比例したベースラインとバーストのクレジット",
+        "correct": true,
+        "atomId": "efs-throughput-modes",
+        "why": "保存量が少ないとスループットも低い"
+      },
+      {
+        "id": "b",
+        "text": "保存量に関係なく一定のスループットを確保する",
+        "correct": false,
+        "why": "それはプロビジョンドスループット"
+      },
+      {
+        "id": "c",
+        "text": "負荷に合わせて自動で増減し、使った分だけ払う",
+        "correct": false,
+        "why": "それは Elastic スループット"
+      },
+      {
+        "id": "d",
+        "text": "1 つの AZ にだけ保存する",
+        "correct": false,
+        "atomId": "efs-one-zone",
+        "why": "それは One Zone のストレージクラス"
+      }
+    ],
+    "explanation": "バースト = 保存量に比例、プロビジョンド = 一定を確保、Elastic = 自動で増減。",
+    "keywords": [
+      "バースト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-one-zone:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "efs-one-zone"
+    ],
+    "prompt": "本番の顧客のアップロードファイルを、料金を下げるため EFS One Zone に置いた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "その AZ の障害でファイルにアクセスできなくなる",
+        "correct": true,
+        "atomId": "efs-one-zone",
+        "why": "本番の重要なデータは複数 AZ の標準に置く"
+      },
+      {
+        "id": "b",
+        "text": "One Zone は Linux からマウントできない",
+        "correct": false,
+        "why": "マウントできる"
+      },
+      {
+        "id": "c",
+        "text": "One Zone は暗号化できない",
+        "correct": false,
+        "why": "暗号化できる"
+      },
+      {
+        "id": "d",
+        "text": "One Zone は容量が固定",
+        "correct": false,
+        "why": "自動で伸縮する"
+      }
+    ],
+    "explanation": "One Zone = 作り直せるデータ向け。",
+    "keywords": [
+      "本番の顧客"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
