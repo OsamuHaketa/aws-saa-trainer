@@ -3104,5 +3104,140 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nat-gateway:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "vpc-nat-gateway"
+    ],
+    "prompt": "プライベートサブネットの EC2 → ? → インターネット（外向きだけ）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NAT ゲートウェイ",
+        "correct": true,
+        "atomId": "vpc-nat-gateway",
+        "why": "外からの接続は受けずに、外向きの通信だけを通す"
+      },
+      {
+        "id": "b",
+        "text": "インターネットゲートウェイだけ",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "プライベートサブネットから直接は使わない"
+      },
+      {
+        "id": "c",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      },
+      {
+        "id": "d",
+        "text": "S3 ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "S3 への経路で、インターネットではない"
+      }
+    ],
+    "explanation": "プライベート → NAT GW（パブリックサブネット）→ IGW → インターネット。",
+    "keywords": [
+      "外向きだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-interface-endpoint:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "vpc-interface-endpoint"
+    ],
+    "prompt": "NAT のないプライベートサブネットの EC2 → ? → Secrets Manager。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インターフェイス VPC エンドポイント",
+        "correct": true,
+        "atomId": "vpc-interface-endpoint",
+        "why": "サブネットの ENI から、AWS のネットワーク内で接続する"
+      },
+      {
+        "id": "b",
+        "text": "ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "S3 と DynamoDB だけ"
+      },
+      {
+        "id": "c",
+        "text": "インターネットゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "インターネットを経由してしまう"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "オンプレミスとの接続"
+      }
+    ],
+    "explanation": "S3・DynamoDB 以外の AWS サービスへのプライベート接続 = インターフェイスエンドポイント。",
+    "keywords": [
+      "NAT のない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "vpc-direct-connect"
+    ],
+    "prompt": "オンプレミスのデータセンター → ? → Transit Gateway → 30 の VPC（安定した専用線）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Direct Connect",
+        "correct": true,
+        "atomId": "vpc-direct-connect",
+        "why": "専用線で、DX ゲートウェイと Transit VIF で TGW につなぐ"
+      },
+      {
+        "id": "b",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続で、オンプレミスとはつながらない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Client VPN",
+        "correct": false,
+        "atomId": "vpc-client-vpn",
+        "why": "個人の端末からの接続"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイ（外向き）",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "外向きのインターネット通信"
+      }
+    ],
+    "explanation": "オンプレ ↔ 多数の VPC = DX（+ DX ゲートウェイ）→ TGW。",
+    "keywords": [
+      "専用線"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

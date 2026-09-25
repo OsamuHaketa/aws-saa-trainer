@@ -2045,5 +2045,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-streams:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-streams"
+    ],
+    "prompt": "DynamoDB（項目の追加・更新）→ ? → Lambda（確認メールを送る）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB Streams",
+        "correct": true,
+        "atomId": "dynamodb-streams",
+        "why": "項目の変更を記録し、Lambda を起動する"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB TTL",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "期限切れの項目の削除"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Accelerator",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "読み取りのキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB の PITR",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "任意の時点への復元"
+      }
+    ],
+    "explanation": "DB の変更 → イベント = DynamoDB Streams。",
+    "keywords": [
+      "項目の追加・更新"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-dax:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-dax"
+    ],
+    "prompt": "アプリ → ? → DynamoDB（読み取りをマイクロ秒に）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DAX",
+        "correct": true,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB と API 互換のインメモリキャッシュ"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録"
+      },
+      {
+        "id": "c",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "RDS への接続のプール"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信"
+      }
+    ],
+    "explanation": "DynamoDB の前のキャッシュ = DAX。",
+    "keywords": [
+      "マイクロ秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

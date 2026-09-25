@@ -572,5 +572,51 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-fargate:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "ecs-fargate"
+    ],
+    "prompt": "毎日 2 時に、30〜40 分かかるデータの集計を実行したい。処理はコンテナにしてある。サーバーを常に動かしておきたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Scheduler で Fargate タスクを起動",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "決まった時刻にタスクを動かし、終われば料金もかからない"
+      },
+      {
+        "id": "b",
+        "text": "Lambda を cron で実行する",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "15 分の上限を超える"
+      },
+      {
+        "id": "c",
+        "text": "EC2 を 24 時間動かして cron を設定する",
+        "correct": false,
+        "atomId": "ec2-on-demand",
+        "why": "使わない時間も料金がかかる"
+      },
+      {
+        "id": "d",
+        "text": "SQS に毎日メッセージを入れて放置する",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "処理が実行されない"
+      }
+    ],
+    "explanation": "定期実行の長いコンテナの処理 = EventBridge Scheduler + Fargate タスク（または AWS Batch）。",
+    "keywords": [
+      "30〜40 分",
+      "常に動かしておきたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -2261,5 +2261,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "rds-proxy:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "rds-proxy"
+    ],
+    "prompt": "多数の Lambda → ? → RDS（接続を共有してまとめる）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS Proxy",
+        "correct": true,
+        "atomId": "rds-proxy",
+        "why": "接続をプールして、DB の接続数を抑える"
+      },
+      {
+        "id": "b",
+        "text": "DAX",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB のキャッシュ"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "インターネットへの外向きの通信"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "API の入口"
+      }
+    ],
+    "explanation": "Lambda ↔ RDS = RDS Proxy。",
+    "keywords": [
+      "接続を共有"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-read-replica:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "rds-read-replica"
+    ],
+    "prompt": "RDS for MySQL（東京）→ ? → RDS for MySQL（大阪、読み取りと DR 用）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "クロスリージョンリードレプリカ",
+        "correct": true,
+        "atomId": "rds-read-replica",
+        "why": "別リージョンに非同期で複製し、DR 時は昇格できる"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ のスタンバイ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "同じリージョンの別の AZ"
+      },
+      {
+        "id": "c",
+        "text": "RDS Proxy",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプール"
+      },
+      {
+        "id": "d",
+        "text": "自動バックアップ",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "同じリージョンでの復元"
+      }
+    ],
+    "explanation": "別リージョンへの複製（RDS）= クロスリージョンリードレプリカ。",
+    "keywords": [
+      "大阪"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

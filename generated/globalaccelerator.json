@@ -223,5 +223,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "globalaccelerator-accelerator:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "世界中の利用者 → ? → 複数リージョンの ALB（固定の IP 2 つ、TCP/UDP）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Global Accelerator",
+        "correct": true,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "エニーキャスト IP で受け、最適なリージョンへ届ける"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "外向きの通信"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のシンプルルーティング",
+        "correct": false,
+        "atomId": "route53-simple",
+        "why": "固定の IP を持たない DNS"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "S3 へのアップロードの高速化"
+      }
+    ],
+    "explanation": "固定 IP + グローバル = Global Accelerator。",
+    "keywords": [
+      "固定の IP 2 つ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

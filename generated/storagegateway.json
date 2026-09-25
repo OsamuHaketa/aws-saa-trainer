@@ -359,5 +359,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-file:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "storagegateway-file"
+    ],
+    "prompt": "オンプレミスの NFS クライアント → ? → S3（実体はオブジェクトとして保存）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 File Gateway",
+        "correct": true,
+        "atomId": "storagegateway-file",
+        "why": "NFS / SMB のファイル共有として使え、実体は S3"
+      },
+      {
+        "id": "b",
+        "text": "Tape Gateway",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "仮想テープ"
+      },
+      {
+        "id": "c",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "AWS 内の NFS"
+      },
+      {
+        "id": "d",
+        "text": "Amazon FSx for Lustre",
+        "correct": false,
+        "atomId": "fsx-lustre",
+        "why": "HPC 向け"
+      }
+    ],
+    "explanation": "オンプレから NFS / SMB で S3 = S3 File Gateway。",
+    "keywords": [
+      "NFS クライアント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

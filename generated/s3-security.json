@@ -1889,5 +1889,97 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "s3-presigned-url"
+    ],
+    "prompt": "モバイルアプリから大きな動画を S3 に直接アップロードさせたい。バケットは非公開のまま、アプリに AWS の長期の認証情報は持たせない。サーバー側で何を発行する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "期限付きの署名付き URL",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "その URL を使う間だけアップロードを許可する"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーのアクセスキー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報をアプリに持たせることになる"
+      },
+      {
+        "id": "c",
+        "text": "バケットポリシーで全員に PutObject を許可",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "誰でも書き込めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "S3 のウェブサイトエンドポイント",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "静的サイトの公開で、アップロードの許可ではない"
+      }
+    ],
+    "explanation": "非公開のバケットへの一時的なアップロード = 署名付き URL（または Cognito ID プール）。",
+    "keywords": [
+      "直接アップロード",
+      "長期の認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-presigned-url:scenario:2",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "s3-presigned-url"
+    ],
+    "prompt": "社外の取引先に、非公開のバケットにある 1 つの見積書の PDF を、24 時間だけダウンロードできるようにしたい。取引先は AWS のアカウントを持っていない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "有効期限 24 時間の署名付き URL を渡す",
+        "correct": true,
+        "atomId": "s3-presigned-url",
+        "why": "期限が切れると使えなくなる"
+      },
+      {
+        "id": "b",
+        "text": "バケットを 24 時間だけ公開する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "他のファイルも見られるおそれがある"
+      },
+      {
+        "id": "c",
+        "text": "取引先用に IAM ユーザーを作る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "管理が増え、期限の管理も手間"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront の地域制限を設定する",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限で、特定の相手への共有ではない"
+      }
+    ],
+    "explanation": "期限付きで特定のファイルを共有 = 署名付き URL。",
+    "keywords": [
+      "24 時間だけ",
+      "アカウントを持っていない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

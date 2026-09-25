@@ -264,5 +264,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "glue-crawler:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "glue-crawler"
+    ],
+    "prompt": "S3 のデータ → ? → Athena（テーブル定義を使って SQL）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Glue Data Catalog",
+        "correct": true,
+        "atomId": "glue-crawler",
+        "why": "クローラーで登録したスキーマとパーティションを管理する"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "DynamoDB の変更の記録"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キュー"
+      },
+      {
+        "id": "d",
+        "text": "Route 53",
+        "correct": false,
+        "atomId": "route53-simple",
+        "why": "DNS"
+      }
+    ],
+    "explanation": "S3 のデータのテーブル定義 = Glue Data Catalog。",
+    "keywords": [
+      "テーブル定義"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

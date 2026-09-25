@@ -309,5 +309,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dms-replication:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "dms-replication"
+    ],
+    "prompt": "オンプレミスの MySQL → ? → Aurora MySQL（止めずに移行、変更も同期）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS DMS",
+        "correct": true,
+        "atomId": "dms-replication",
+        "why": "フルロードと変更データキャプチャで移行する"
+      },
+      {
+        "id": "b",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送"
+      },
+      {
+        "id": "c",
+        "text": "Storage Gateway",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ハイブリッドのストレージ"
+      },
+      {
+        "id": "d",
+        "text": "AWS Backup",
+        "correct": false,
+        "atomId": "backup-plan",
+        "why": "バックアップの管理"
+      }
+    ],
+    "explanation": "DB の移行 = DMS。",
+    "keywords": [
+      "止めずに移行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -889,5 +889,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-agent:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "cloudwatch-agent"
+    ],
+    "prompt": "EC2 の OS → ? → CloudWatch（メモリ使用率・ディスクの空き容量）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudWatch エージェント",
+        "correct": true,
+        "atomId": "cloudwatch-agent",
+        "why": "OS の中のメトリクスを送る"
+      },
+      {
+        "id": "b",
+        "text": "VPC のフローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail の証跡",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config のルール",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の記録"
+      }
+    ],
+    "explanation": "OS 内のメトリクス = CloudWatch エージェント。",
+    "keywords": [
+      "メモリ使用率"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudwatch-logs-subscription:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "cloudwatch-logs-subscription"
+    ],
+    "prompt": "20 のアカウントのアプリのログを、セキュリティチームのアカウントの S3 にリアルタイムに集めて長期保管したい。ログは CloudWatch Logs に出ている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サブスクリプションフィルター + Firehose",
+        "correct": true,
+        "atomId": "cloudwatch-logs-subscription",
+        "why": "Firehose に送って S3 に配信する。アカウントをまたいでリアルタイムに集約できる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントで毎月手動で S3 にエクスポート",
+        "correct": false,
+        "why": "リアルタイムではなく、手間も大きい"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail の組織の証跡を作る",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録で、アプリのログは集まらない"
+      },
+      {
+        "id": "d",
+        "text": "Config アグリゲーターで集約する",
+        "correct": false,
+        "atomId": "config-aggregator",
+        "why": "設定の情報の集約"
+      }
+    ],
+    "explanation": "ログのリアルタイムの集約 = サブスクリプションフィルター → Firehose → S3。",
+    "keywords": [
+      "リアルタイムに集めて"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

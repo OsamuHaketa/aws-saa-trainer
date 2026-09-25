@@ -1239,5 +1239,51 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ebs-snapshots:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "ebs-snapshots"
+    ],
+    "prompt": "EBS ボリューム → ? → 毎日のスナップショット（7 日で自動削除、別リージョンへコピー）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Data Lifecycle Manager",
+        "correct": true,
+        "atomId": "ebs-snapshots",
+        "why": "スナップショットの作成・保持・コピーを自動化する（AWS Backup でもよい）"
+      },
+      {
+        "id": "b",
+        "text": "EBS の Elastic Volumes",
+        "correct": false,
+        "atomId": "ebs-elastic-volumes",
+        "why": "ボリュームの変更"
+      },
+      {
+        "id": "c",
+        "text": "S3 のライフサイクル",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "S3 のオブジェクトの移動や削除"
+      },
+      {
+        "id": "d",
+        "text": "EC2 のユーザーデータ",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時のスクリプト"
+      }
+    ],
+    "explanation": "スナップショットの自動化 = DLM / AWS Backup。",
+    "keywords": [
+      "自動削除",
+      "別リージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

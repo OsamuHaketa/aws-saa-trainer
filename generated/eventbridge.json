@@ -404,5 +404,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-bus:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "eventbridge-bus"
+    ],
+    "prompt": "GuardDuty の検出結果 → ? → Lambda（侵害された EC2 を隔離）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon EventBridge",
+        "correct": true,
+        "atomId": "eventbridge-bus",
+        "why": "イベントのパターンに合うものをターゲットに送る"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS FIFO",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "キューで、検出結果の振り分けの定番ではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      }
+    ],
+    "explanation": "AWS サービスのイベント → 自動対応 = EventBridge。",
+    "keywords": [
+      "自動対応"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -438,5 +438,139 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sns-fanout:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "sns-fanout"
+    ],
+    "prompt": "注文サービス → SNS トピック → ? ×3 → 在庫・配送・請求の処理。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS キュー",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "処理ごとにキューを持ち、独立して確実に処理する"
+      },
+      {
+        "id": "b",
+        "text": "Kinesis のシャード",
+        "correct": false,
+        "atomId": "kinesis-shards",
+        "why": "ストリームの分割単位で、SNS の購読先の定番ではない"
+      },
+      {
+        "id": "c",
+        "text": "EBS ボリューム",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "ストレージで、メッセージを受け取れない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront ディストリビューション",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信"
+      }
+    ],
+    "explanation": "SNS → 複数の SQS = ファンアウト。",
+    "keywords": [
+      "×3"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-topic:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "sns-topic"
+    ],
+    "prompt": "CloudWatch アラーム → ? → 運用チームのメールと SMS。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SNS",
+        "correct": true,
+        "atomId": "sns-topic",
+        "why": "アラームの通知先として、複数の購読者に配信する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キューで、メールや SMS は送らない"
+      },
+      {
+        "id": "c",
+        "text": "AWS CloudTrail",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作の記録"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Kinesis",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "ストリーミング"
+      }
+    ],
+    "explanation": "アラーム → SNS → メール・SMS・Lambda など。",
+    "keywords": [
+      "メールと SMS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-topic:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "sns-topic"
+    ],
+    "prompt": "数百万台のスマートフォンのアプリに、セールのお知らせをプッシュ通知したい。iOS と Android の両方に送る。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon SNS のモバイルプッシュ",
+        "correct": true,
+        "atomId": "sns-topic",
+        "why": "APNs や FCM を通じて端末にプッシュ通知する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "端末に届ける仕組みではない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SES",
+        "correct": false,
+        "why": "メールの送信"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis Data Streams",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "データの取り込み"
+      }
+    ],
+    "explanation": "モバイルのプッシュ通知 = SNS（プラットフォームアプリケーション）。",
+    "keywords": [
+      "プッシュ通知"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

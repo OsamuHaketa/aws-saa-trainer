@@ -616,5 +616,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-firehose:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "kinesis-firehose"
+    ],
+    "prompt": "Kinesis Data Streams → ? → S3（自動でまとめて Parquet で保存）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Data Firehose",
+        "correct": true,
+        "atomId": "kinesis-firehose",
+        "why": "バッファして変換し、保存先に届ける"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SQS",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "キューで、S3 に自動で配信しない"
+      },
+      {
+        "id": "c",
+        "text": "AWS DataSync",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "ファイルの転送"
+      },
+      {
+        "id": "d",
+        "text": "AWS Glue のクローラー",
+        "correct": false,
+        "atomId": "glue-crawler",
+        "why": "スキーマの推定と登録"
+      }
+    ],
+    "explanation": "ストリーム → 保存先への配信 = Firehose。",
+    "keywords": [
+      "自動でまとめて"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

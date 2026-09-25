@@ -399,5 +399,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-state-machine:relation:1",
+    "type": "relation",
+    "level": 2,
+    "atomIds": [
+      "stepfunctions-state-machine"
+    ],
+    "prompt": "API Gateway → ? → 在庫確認・決済・発送の 3 つの Lambda を順番に（失敗時は再試行）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Step Functions",
+        "correct": true,
+        "atomId": "stepfunctions-state-machine",
+        "why": "ワークフローで順番・再試行・エラー処理を制御する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon SNS",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "同時に配信するだけで、順番の制御はしない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon SQS 標準キュー",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "順番の制御や再試行の定義はしない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "コンテンツの配信"
+      }
+    ],
+    "explanation": "複数のステップの制御 = Step Functions。",
+    "keywords": [
+      "順番に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

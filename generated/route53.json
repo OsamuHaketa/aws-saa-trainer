@@ -1458,5 +1458,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "route53-failover:scenario:1",
+    "type": "scenario",
+    "level": 3,
+    "atomIds": [
+      "route53-failover"
+    ],
+    "prompt": "東京の ALB が本番、大阪の ALB が待機系。東京の ALB が異常なときだけ、自動で大阪に切り替えたい。DNS で行う場合の設定は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "フェイルオーバールーティング",
+        "correct": true,
+        "atomId": "route53-failover",
+        "why": "東京をプライマリにしてヘルスチェックを付けると、異常時に大阪を返す"
+      },
+      {
+        "id": "b",
+        "text": "加重ルーティングで 50% ずつ振り分ける",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "平常時も大阪に流れてしまう"
+      },
+      {
+        "id": "c",
+        "text": "位置情報ルーティングで日本を東京に向ける",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "東京の障害で切り替わらない"
+      },
+      {
+        "id": "d",
+        "text": "シンプルルーティングで両方の IP を登録する",
+        "correct": false,
+        "atomId": "route53-simple",
+        "why": "異常を検知して外せない"
+      }
+    ],
+    "explanation": "アクティブ/パッシブ = フェイルオーバールーティング + ヘルスチェック。",
+    "keywords": [
+      "異常なときだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

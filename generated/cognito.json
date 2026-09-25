@@ -309,5 +309,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-identity-pool:relation:1",
+    "type": "relation",
+    "level": 3,
+    "atomIds": [
+      "cognito-identity-pool"
+    ],
+    "prompt": "Cognito ユーザープール（ログイン）→ ? → S3（一時的な AWS 認証情報で直接アップロード）。? に入るのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cognito ID プール",
+        "correct": true,
+        "atomId": "cognito-identity-pool",
+        "why": "トークンを IAM ロールの一時的な認証情報に交換する"
+      },
+      {
+        "id": "b",
+        "text": "IAM Identity Center",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "従業員の SSO"
+      },
+      {
+        "id": "c",
+        "text": "AWS STS の長期キー",
+        "correct": false,
+        "atomId": "iam-sts",
+        "why": "STS は長期のキーを発行しない"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway の API キー",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "利用量の管理"
+      }
+    ],
+    "explanation": "ユーザープール（認証）→ ID プール（AWS の認証情報）。",
+    "keywords": [
+      "一時的な AWS 認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
