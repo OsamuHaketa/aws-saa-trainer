@@ -2,6 +2,11 @@
 
 作成: 2026-09-26 / 対象: AWS Decision Trainer（このリポジトリ）
 
+| 版 | 日付 | 内容 |
+|---|---|---|
+| 1 | 2026-09-26 | 初版 |
+| 2 | 2026-09-26 | レビューを反映。ログイン許可の判定を `validateUserInfo` とリクエストごとの確認にした（7 章）、コンテンツをビルド時にまとめる（4.2）、本番のマイグレーションのルール（6.3）、外部キーとインデックス（6.2）、ID を保ったままの移行（9 章）、バックアップ（10 章） |
+
 ## 1. 目的とスコープ
 
 ローカル専用の学習アプリを、PC とスマホ（Android）のどちらからでも使え、**学習記録が 1 か所にまとまる**ようにする。あわせて、将来**社内のエンジニアにテスト公開する**ときに作り直しが要らない構成にしておく。
@@ -82,6 +87,10 @@ flowchart LR
 
 `.env.local` は Git に入れない。Vercel では環境変数を Preview と Production で分けて登録する。
 
+- どの変数にも `NEXT_PUBLIC_` を付けない（ブラウザに渡るバンドルに含めないため）
+- `lib/db/` と `lib/auth/` の先頭で `import "server-only"` し、クライアントのコンポーネントから誤って読み込むとビルドエラーになるようにする
+- ブラウザや PWA から Turso に直接つなぐことはしない。DB には必ず Next.js のサーバー側の処理を通してアクセスする
+
 ### 3.3 費用（Phase 1）
 
 | サービス | プラン | 費用 | 上限の目安 |
@@ -98,9 +107,9 @@ flowchart LR
 | フレームワーク | Next.js 16（App Router） | 現状のまま |
 | ホスティング | Vercel | Next.js をそのまま動かせる。GitHub への push で自動デプロイ、ブランチごとにプレビューが作られる |
 | DB | Turso（libSQL） | SQLite 互換なので、今のスキーマと Drizzle をそのまま使える。無料枠がある |
-| DB ドライバ | `@libsql/client` + `drizzle-orm/libsql` | better-sqlite3 はネイティブモジュールで、サーバーレスでは使いにくいため置き換える |
+| DB ドライバ | `@libsql/client` + `drizzle-orm/libsql` | better-sqlite3 はネイティブモジュールで、サーバーレスでは使いにくいため置き換える。変更の範囲を小さくするため、Turso の新しいドライバへの移行は Phase 1 では同時に行わない |
 | ORM / マイグレーション | Drizzle ORM / drizzle-kit | 現状のまま |
-| 認証 | Better Auth（Google プロバイダ） | ユーザーとセッションを自前の DB（Turso）に保存できる。Drizzle アダプタがある。無料 |
+| 認証 | Better Auth（Google プロバイダ） | ユーザーとセッションを自前の DB（Turso）に保存できる。Drizzle アダプタがある。ログインのたびに許可を判定できる（`validateUserInfo`）。無料 |
 | ログイン | Google OAuth（Google Workspace） | 社内のアカウントでそのままログインできる |
 | アクセス制御 | `proxy.ts`（未ログインならログイン画面へ）＋ サーバー側の `requireUser()` | Next.js 16 の推奨の形。proxy は簡易チェックで、本当の確認はデータを読む側で行う |
 | PWA | `app/manifest.ts` ＋ アイコン | Next.js 標準のマニフェスト機能を使う。Service Worker はオフライン対応をしないので、最小限にとどめる |
@@ -121,14 +130,21 @@ better-sqlite3 は同期 API（`.all()`・`.get()`・`.run()`）だが、libSQL 
 
 ### 4.2 コンテンツの配信
 
-問題と Atom はこれまでどおりリポジトリのファイルを正本とし、**デプロイに同梱する**。
+問題と Atom はこれまでどおりリポジトリのファイルを正本とする。DB には移さず、本番から問題を編集する管理画面も作らない。**ビルド時に 1 つのファイルにまとめて、デプロイに同梱する**。
 
-- 本番とプレビューでは、最初に呼ばれたときに 1 回だけ読み、以後はメモリに保持する（ファイルの更新日時は見ない）
-- ローカル（`NODE_ENV=development`）では、今までどおり更新日時を見て読み直す
-- `next.config.ts` の `outputFileTracingIncludes` で、`knowledge/**` と `generated/**` を関数のバンドルに含める
-- ビルドの前に `npm run validate` を実行し、エラーがあればデプロイを止める
+```text
+knowledge/*.yaml ─┐
+                  ├─ npm run build-content ─→ .generated/content.json ─→ デプロイに同梱
+generated/*.json ─┘   （検証 → 並び替え → 書き出し）
+```
 
-問題を直す流れ: `generated/*.json` を編集 → `npm run validate` → develop に push（プレビューで確認）→ main にマージ（本番に反映）
+- `npm run build-content`（`scripts/build-content.ts`）で、今の `parseContent()` と同じ検証と並び替えを行い、`.generated/content.json` に書き出す。エラーがあればビルドを止める。`package.json` の `prebuild` で自動で実行する
+- 本番とプレビューでは、`getContent()` が `.generated/content.json` を読む。YAML の解析やファイルの一覧取得は実行時には行わない。関数のバンドルに含めるファイルは、`next.config.ts` の `outputFileTracingIncludes` でこの 1 ファイルだけ指定すればよい
+- 読み込んだ内容は、**Vercel の関数のインスタンスごとに**、最初のアクセス時に読み込み、そのインスタンスが生きている間だけメモリに保持する。コールドスタートや別のインスタンスでは読み直しになる前提で作る（ファイル 1 つを読むだけなので軽い）
+- ローカル（`NODE_ENV=development`）では、今までどおり `knowledge/`・`generated/` を直接読み、更新日時が変わったら読み直す（問題を直してすぐ確認できるように）
+- `.generated/` は Git に入れない
+
+問題を直す流れ: `generated/*.json` を編集 → `npm run validate` → develop に push（プレビューで確認）→ main にマージ（本番に反映）。Git に履歴が残るので、問題のレビューや元に戻す作業がしやすく、DB のマイグレーションとも切り離せる。
 
 ## 5. 機能一覧
 
@@ -192,18 +208,34 @@ better-sqlite3 は同期 API（`.all()`・`.get()`・`.run()`）だが、libSQL 
 
 | テーブル | 変更 |
 |---|---|
-| `cards` | `user_id` を追加。主キーを `question_id` から **(`user_id`, `question_id`)** に変える |
+| `cards` | `user_id` を追加。主キーを `question_id` から **(`user_id`, `question_id`)** に変える。同じ問題でも、ユーザーごとに別の FSRS の状態を持つ |
 | `review_logs` | `user_id` を追加。`(user_id, answered_at)` にインデックスを張る |
-| `followups` | `user_id` を追加。`(user_id, resolved_at)` にインデックスを張る |
+| `followups` | `user_id` を追加。未解決のものを探すための部分インデックス `ON followups(user_id) WHERE resolved_at IS NULL` を張る |
 
-- ユーザー ID は必ずセッションから取る。リクエストの中身（クエリやボディ）からは受け取らない
-- 学習記録を取得する関数は、すべて `userId` を必須の引数にする（絞り込みの漏れを型で防ぐ）
+- 3 つのテーブルの `user_id` には、`user(id)` への外部キーを `ON DELETE CASCADE` で張る。ユーザーを消すと学習記録も消える
+  - Phase 2 で、退職者などの削除したユーザーの統計を残したくなった場合は、社内公開の前に CASCADE をやめるかどうか見直す
+  - SQLite の外部キーは `PRAGMA foreign_keys = ON` のときだけ効く。Turso の接続で有効になっているかを実装のときに確認する
+- ユーザー ID は必ずセッションから取る。クエリパラメータ、リクエストのボディ、フォーム、クライアントの状態からは受け取らない
+- 学習記録を読み書きする関数は、すべて `userId` を必須の引数にする（絞り込みの漏れを型で防ぐ）
+- インデックスは、実際のクエリプランを見て過不足があれば調整する
 
 ### 6.3 マイグレーション
 
 - スキーマの変更は、これまでどおり `npm run db:generate` でマイグレーションを作る
 - ローカルは起動時に自動で適用する
 - プレビューと本番の DB には、`npm run db:migrate`（`DATABASE_URL` に対象の DB を指定）で手動で適用してからデプロイする。サーバーレスでは起動のたびにマイグレーションを確認するのは無駄なので、自動適用はしない
+- 本番のスキーマ変更は、**変更前のアプリのままでも動く形（後方互換）**にする。マイグレーションを適用してから新しいアプリのデプロイが終わるまでの間は、古いアプリが新しいスキーマで動くため
+- 列の削除や名前の変更を 1 回のマイグレーションで行わない。Expand → Migrate → Contract の順に進める
+
+```text
+1. 新しい列を追加する（Expand）
+2. 新旧どちらの列でも動くアプリをデプロイする
+3. 既存のデータを新しい列に移す（Migrate）
+4. 古い列を参照している箇所がないことを確認する
+5. 後日のマイグレーションで古い列を消す（Contract）
+```
+
+- 本番のマイグレーションの前には、10 章のバックアップを取る
 
 ## 7. 認証とアクセス制御
 
@@ -211,20 +243,48 @@ better-sqlite3 は同期 API（`.all()`・`.get()`・`.run()`）だが、libSQL 
 
 1. 未ログインで任意のページを開く → `proxy.ts` がセッションの Cookie がないことを確認し、`/login` にリダイレクトする
 2. 「Google でログイン」→ Google の同意画面 → `/api/auth/callback/google`
-3. Better Auth がユーザーを作る前に、許可リストを確認する
-   - `ALLOWED_EMAILS` に含まれる、または `ALLOWED_DOMAINS` のドメインで、かつ Google がメールアドレスを確認済み（`email_verified`）であること
-   - どちらにも当てはまらなければ、ユーザーを作らずに `/login?error=not_allowed` に戻す
+3. Better Auth の `user.validateUserInfo` で、Google から受け取ったユーザー情報を確認する。これは初回のユーザー作成時だけでなく、**既存ユーザーが再ログインするとき**にも、Google から受け取った最新のメールアドレスで呼ばれる
+   - `ALLOWED_EMAILS` に含まれる、または `ALLOWED_DOMAINS` のドメインで、かつ Google がメールアドレスを確認済み（`email_verified`）であること。メールアドレスは小文字にそろえて比べる
+   - 当てはまらなければ `{ error }` を返して拒否し、`/login?error=not_allowed` に戻す。エラーの説明はブラウザに返るので、内部の情報は書かない
+   - 判定は `lib/auth/allowlist.ts` の `isAllowed(email)` にまとめ、ユーザーの作成とは切り離す（7.2 の `requireUser()` からも使う）
 4. セッションの Cookie（`HttpOnly`・`Secure`・`SameSite=Lax`）を発行する。有効期限は 30 日で、使うたびに延長する。スマホでも一度ログインすれば、ほぼログインし直す必要はない
+
+```ts
+// lib/auth/index.ts（イメージ）
+user: {
+  validateUserInfo: async ({ user }) => {
+    if (!isAllowed(user.email)) return { error: "not_allowed" };
+  },
+},
+```
 
 ### 7.2 確認する場所
 
+```text
+リクエスト
+  → proxy.ts: セッションの Cookie があるかだけ見る（DB は見ない）
+  → ページ / API
+  → requireUser(): DB でセッションを確認し、isAllowed(email) も確認する
+  → user.id で学習記録を読み書きする
+```
+
 | 場所 | 確認の内容 |
 |---|---|
-| `proxy.ts` | Cookie があるかだけを見る（簡易チェック。DB は見ない） |
-| `lib/auth/session.ts` の `requireUser()` | DB でセッションを確認し、ユーザーを返す。なければページは `/login` へリダイレクト、API は 401 を返す |
+| `proxy.ts` | Cookie があるかだけを見る。未ログインの人を `/login` に案内するための簡易チェックで、セキュリティ上の判定はしない |
+| `lib/auth/session.ts` の `requireUser()` | DB でセッションを確認し、さらに `isAllowed(user.email)` を確認してからユーザーを返す。だめならページは `/login` へリダイレクト、API は 401（許可リストから外れた場合は 403）を返す |
 | 各ページと API | 最初に `requireUser()` を呼び、その `user.id` で学習記録を読み書きする |
 
-### 7.3 Google OAuth クライアントの設定
+`requireUser()` でも許可リストを確認するので、許可リストから外した人は、30 日のセッションが残っていても次のリクエストから使えなくなる（Phase 2 で退職や異動があったとき用）。
+
+### 7.3 アクセス制御の二重化（Phase 2）
+
+```text
+Google Workspace（OAuth アプリを「内部」にする）→ 組織内のアカウントしか同意画面に進めない
+  → Better Auth の validateUserInfo → ALLOWED_DOMAINS / ALLOWED_EMAILS
+  → requireUser() → リクエストごとに許可リストを再確認
+```
+
+### 7.4 Google OAuth クライアントの設定
 
 | 項目 | Phase 1 | Phase 2 |
 |---|---|---|
@@ -241,7 +301,7 @@ better-sqlite3 は同期 API（`.all()`・`.get()`・`.run()`）だが、libSQL 
 |---|---|
 | マニフェスト | `app/manifest.ts`。`name`: AWS Decision Trainer、`short_name`: SAA Trainer、`display`: `standalone`、`start_url`: `/study`、`theme_color` / `background_color` は今の画面の色に合わせる |
 | アイコン | `public/icons/` に 192×192 と 512×512（maskable を含む） |
-| Service Worker | 置かない、または最小限（キャッシュはしない）。オフライン対応はスコープ外 |
+| Service Worker | 置かない、または最小限（キャッシュはしない）。学習の処理はサーバーと DB に依存しているので、中途半端にオフラインのキャッシュを入れると、端末・サーバー・Turso の間でデータの整合性を管理する手間が増える。オフラインでの学習が必要になったら、IndexedDB・同期キュー・競合の解決を含めて別のフェーズとして設計する |
 | インストール | Android の Chrome で開き、メニューの「ホーム画面に追加」または「アプリをインストール」 |
 | HTTPS | Vercel で自動 |
 
@@ -249,46 +309,65 @@ better-sqlite3 は同期 API（`.all()`・`.get()`・`.run()`）だが、libSQL 
 
 今の `local.db` にある学習記録を本番に持っていく。
 
-1. 本番に一度ログインして、自分の `user.id` を作る
+1. 本番に一度ログインして、自分の `user.id` を作る。**移行が終わるまで、本番では学習しない**（`review_logs` と `followups` を空のままにしておくため）
 2. `scripts/import-local.ts` を実行する。`local.db` の `cards`・`review_logs`・`followups` を読み、`user_id` を付けて本番の Turso に書き込む
-3. `review_logs.id` と `followups.source_log_id` / `review_logs.followup_id` の対応が崩れないよう、ID を振り直すときは対応表を作って置き換える
-4. 移行後、本番の分析画面の回答数がローカルと一致することを確認する
+   - `review_logs.id` と `followups.id` は**振り直さず、そのまま入れる**。`followups.source_log_id` と `review_logs.followup_id` の対応がそのまま保たれる
+   - 書き込む前に、本番の `review_logs` と `followups` が空であること（ID がぶつからないこと）を確認し、空でなければ中止する
+   - 1 つのトランザクションで書き込み、途中で失敗したらすべて取り消す
+3. 移行後に、次がローカルと一致することを確認する（スクリプトの最後で件数は自動で比べる）
+   - `cards`・`review_logs`・`followups` の件数
+   - ホームの復習待ちの件数、分析画面の回答の総数と正答率、未解決のフォローアップの数
 
-## 10. Phase 2: 社内テスト公開
+## 10. 学習記録のバックアップ
+
+問題のデータは GitHub にあるので作り直せるが、`cards`・`review_logs`・`followups` は作り直せない。そのため、問題よりも学習記録のバックアップを重視する。Turso のポイントインタイムリカバリだけには頼らない。
+
+| 項目 | 内容 |
+|---|---|
+| コマンド | `npm run backup`（`scripts/backup.ts`）。`DATABASE_URL` の DB から、3 つのテーブルと `user` を JSON で書き出す |
+| 出力先 | `backups/<日付>/cards.json`・`review_logs.json`・`followups.json`・`users.json`。`backups/` は Git に入れない |
+| 頻度 | Phase 1: 週 1 回（手動）と、本番のマイグレーションの直前。Phase 2: 利用人数に応じて見直す（GitHub Actions などで定期実行するかどうかも含めて） |
+| 復元 | 9 章の移行スクリプトと同じ形式で読み込めるようにして、バックアップからの復元にも使えるようにする |
+| Turso の PITR | 無料プランで何日前まで戻せるかを確認し、この章に書き足す |
+
+## 11. Phase 2: 社内テスト公開
 
 | 作業 | 内容 |
 |---|---|
-| ホスティング | Vercel Hobby は商用利用できない（従業員として使う場合も商用とみなされる）ので、次のどちらかに移す。**A. Vercel Pro**（月 $20/人。料金がかかるのはデプロイする側だけ）、**B. 会社の AWS の Amplify Hosting**（Next.js をそのまま動かせる。社内の費用で管理できる）。コードは標準的な Next.js と環境変数だけに依存させておき、どちらにも移せるようにする |
+| ホスティング | Vercel Hobby は商用利用できない（従業員として使う場合も商用とみなされる）ので、次のどちらかに移す。**A. Vercel Pro**（月 $20/人。料金がかかるのはデプロイする側だけ）、**B. 会社の AWS の Amplify Hosting**（Next.js をそのまま動かせる。社内の費用で管理できる）。コードは標準的な Next.js・環境変数・Turso だけに依存させ、Vercel 固有の機能を増やさないことで、どちらにも移せるようにする |
 | DB | Turso をそのまま使う。社内公開の前に Turso の規約（商用利用）と、会社のデータの置き場所に関するルールを確認する |
-| ログイン | `ALLOWED_DOMAINS=xincere.jp` にする。OAuth クライアントを会社の Google Cloud に作り直し、ユーザーの種類を「内部」にする |
+| ログイン | `ALLOWED_DOMAINS=xincere.jp` にする。OAuth クライアントを会社の Google Cloud に作り直し、ユーザーの種類を「内部」にする（7.3 の二重のアクセス制御） |
+| バックアップ | 頻度を見直す（10 章） |
 | コンテンツ | 問題の `status: draft` をレビューし、公開してよい問題だけにする |
 | 候補の機能 | ユーザーごとの設定、フィードバック、利用状況（5.2 を参照） |
 | 周知 | URL とインストール方法（PWA）を案内するだけ。アプリストアは使わない |
 
-## 11. 作業の順番（Phase 1）
+## 12. 作業の順番（Phase 1）
 
 | # | 作業 | 担当 |
 |---|---|---|
-| 1 | DB ドライバを libSQL に替え、DB を触る関数を非同期にする（ローカルは `file:local.db`）。テストを通す | Claude |
-| 2 | 学習記録のテーブルに `user_id` を追加し、関数に `userId` を通す | Claude |
-| 3 | Better Auth と Google ログイン、許可リスト、`proxy.ts`、`requireUser()`、ログイン画面 | Claude |
-| 4 | コンテンツをデプロイに同梱する（`outputFileTracingIncludes`、本番ではメモリに保持） | Claude |
-| 5 | PWA（マニフェスト、アイコン）とスマホ向けの画面の調整 | Claude |
-| 6 | Turso の DB（dev / prod）を作り、トークンを発行する | ユーザー |
-| 7 | Google Cloud で OAuth クライアントを作る（リダイレクト URI 3 つ） | ユーザー |
-| 8 | Vercel にリポジトリをつなぎ、関数リージョンを `hnd1` にし、環境変数を登録する | ユーザー |
-| 9 | develop をプレビューで確認 → main にマージして本番に出す | 両方 |
-| 10 | `local.db` の記録を本番に移す | Claude（スクリプト）＋ ユーザー（実行） |
+| 1 | DB ドライバを libSQL に替え、DB を触る関数を非同期にする（ローカルは `file:local.db`）。既存のテストをすべて通す | Claude |
+| 2 | 学習記録のテーブルに `user_id`・外部キー・インデックスを追加し、DB を触る関数すべてで `userId` を必須にする | Claude |
+| 3 | Better Auth を入れ、`user`・`session`・`account`・`verification` を Drizzle で管理する。Google ログインとログイン画面 | Claude |
+| 4 | アクセス制御: `validateUserInfo`、`isAllowed()`（`ALLOWED_EMAILS` / `ALLOWED_DOMAINS`）、`proxy.ts`、`requireUser()` | Claude |
+| 5 | コンテンツをビルド時にまとめる（`npm run build-content`）。本番ではそれを読む | Claude |
+| 6 | PWA（マニフェスト、アイコン）とスマホ向けの画面の調整 | Claude |
+| 7 | バックアップ（`npm run backup`）と移行スクリプト（`scripts/import-local.ts`） | Claude |
+| 8 | Turso の DB（dev / prod）を作り、トークンを発行する | ユーザー |
+| 9 | Google Cloud で OAuth クライアントを作る（リダイレクト URI: ローカル、プレビュー、本番） | ユーザー |
+| 10 | Vercel にリポジトリをつなぎ、関数リージョンを `hnd1` にし、環境変数を登録する。develop をプレビューで確認 → main にマージして本番に出す | 両方 |
+| 11 | `local.db` の記録を本番に移し、件数と画面の数値を確認する。最初のバックアップを取る | Claude（スクリプト）＋ ユーザー（実行） |
 
-6〜8 のコマンドや画面での手順は、1〜5 が終わった時点で別にまとめる。
+8〜10 のコマンドや画面での手順は、1〜7 が終わった時点で別にまとめる。
 
-## 12. リスクと未決事項
+## 13. リスクと未決事項
 
 | 項目 | 内容 | 対応 |
 |---|---|---|
-| Vercel Hobby の商用利用の制限 | 社内公開は Hobby ではできない | Phase 2 でホスティングを移す（10 章） |
+| Vercel Hobby の商用利用の制限 | 社内公開は Hobby ではできない | Phase 2 でホスティングを移す（11 章） |
 | Google Workspace の管理ポリシー | 会社の管理者が、外部アプリでの Google ログインを制限していることがある | Phase 1 は個人の Google アカウントでもログインできるよう、`ALLOWED_EMAILS` に個人のアドレスも入れられるようにしておく |
 | DB のレイテンシ | 1 回の回答で複数のクエリが走る | Vercel と Turso を同じ東京にそろえる。遅ければ、1 リクエストで読む量を減らす |
 | コールドスタート | しばらく使わないと、最初の表示が 1〜2 秒遅い | 個人利用では許容する |
 | 問題の中身が見える範囲 | ログインした人には全問題が見える | Phase 2 の前にレビューを終える |
-| 学習記録の消失 | Turso の障害や操作ミス | Turso のバックアップ（ポイントインタイムリカバリ）の保持期間を確認する。念のため、定期的に回答ログをエクスポートするスクリプトを用意する |
+| 学習記録の消失 | Turso の障害、操作ミス、マイグレーションの誤り | Turso のポイントインタイムリカバリを使うとともに、`cards`・`review_logs`・`followups` を定期的に書き出す（10 章） |
+| デプロイ中のスキーマの食い違い | マイグレーションの適用からデプロイ完了までの間、古いアプリが新しいスキーマで動く | スキーマ変更は後方互換にする（6.3） |
