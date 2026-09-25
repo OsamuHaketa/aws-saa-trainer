@@ -661,5 +661,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-shards:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kinesis-shards"
+    ],
+    "prompt": "Kinesis Data Streams の 1 つのシャードを、5 つのアプリが同時に読むと遅くなる。各アプリに専用の読み取りのスループットを持たせたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "拡張ファンアウトを使う",
+        "correct": true,
+        "atomId": "kinesis-shards",
+        "why": "コンシューマーごとに 1 シャードあたり 2 MB/秒を得られる"
+      },
+      {
+        "id": "b",
+        "text": "保持期間を 365 日に延ばす",
+        "correct": false,
+        "why": "読み取りの速さは変わらない"
+      },
+      {
+        "id": "c",
+        "text": "Firehose に置き換える",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "複数のアプリで読み直す用途に合わない"
+      },
+      {
+        "id": "d",
+        "text": "SQS に置き換える",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "複数のアプリで同じデータを読めない"
+      }
+    ],
+    "explanation": "複数のコンシューマーの読み取りの競合 = 拡張ファンアウト（またはシャードの追加）。",
+    "keywords": [
+      "5 つのアプリ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-flink:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kinesis-flink"
+    ],
+    "prompt": "ストリームの直近 1 分の集計のために、Lambda が毎回 DynamoDB に全件を保存して集計し直している。遅く複雑になっている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Flink で窓の集計をする",
+        "correct": true,
+        "atomId": "kinesis-flink",
+        "why": "Managed Service for Apache Flink で時間の窓の集計をする"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB の RCU を増やす",
+        "correct": false,
+        "atomId": "dynamodb-provisioned",
+        "why": "仕組みの複雑さは残る"
+      },
+      {
+        "id": "c",
+        "text": "Lambda のタイムアウトを延ばす",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "遅さの根本は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "S3 に保存して翌日集計する",
+        "correct": false,
+        "why": "リアルタイムではなくなる"
+      }
+    ],
+    "explanation": "ストリームのウィンドウ集計 = Flink。",
+    "keywords": [
+      "直近 1 分の集計"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

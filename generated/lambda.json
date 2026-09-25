@@ -872,5 +872,180 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-vpc:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "lambda-vpc"
+    ],
+    "prompt": "VPC に接続した Lambda から S3 に、インターネットを通らずにアクセスしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 のゲートウェイエンドポイント",
+        "correct": true,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ルートテーブルに経路を追加し、無料で S3 に届く"
+      },
+      {
+        "id": "b",
+        "text": "インターネットゲートウェイ（IGW）",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "Lambda の ENI にはパブリック IP がない"
+      },
+      {
+        "id": "c",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "オンプレミスとの接続"
+      }
+    ],
+    "explanation": "VPC 内の Lambda → S3 = ゲートウェイエンドポイント（他のサービスはインターフェイス）。",
+    "keywords": [
+      "インターネットを通らずに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-async-failure:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "lambda-async-failure"
+    ],
+    "prompt": "「非同期の Lambda」「成功・失敗の結果を別のサービスに送る」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Destinations",
+        "correct": true,
+        "atomId": "lambda-async-failure",
+        "why": "非同期呼び出しの送信先。SQS・SNS・Lambda・EventBridge に送れる"
+      },
+      {
+        "id": "b",
+        "text": "イベントソースマッピング",
+        "correct": false,
+        "atomId": "lambda-event-source-mapping",
+        "why": "キューやストリームのポーリング"
+      },
+      {
+        "id": "c",
+        "text": "プロビジョンド同時実行",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "コールドスタートの対策"
+      },
+      {
+        "id": "d",
+        "text": "Lambda レイヤー",
+        "correct": false,
+        "why": "ライブラリの共有"
+      }
+    ],
+    "explanation": "非同期の結果の送り先 = 送信先（Destinations）。",
+    "keywords": [
+      "成功・失敗の結果"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-memory:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "lambda-memory"
+    ],
+    "prompt": "「Lambda の CPU を上げる唯一の方法」→ 何を増やす？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メモリ",
+        "correct": true,
+        "atomId": "lambda-memory",
+        "why": "CPU はメモリに比例して割り当てられる"
+      },
+      {
+        "id": "b",
+        "text": "タイムアウト",
+        "correct": false,
+        "why": "実行時間の上限"
+      },
+      {
+        "id": "c",
+        "text": "予約同時実行",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "同時に動く数"
+      },
+      {
+        "id": "d",
+        "text": "エフェメラルストレージ",
+        "correct": false,
+        "why": "/tmp の容量"
+      }
+    ],
+    "explanation": "Lambda の CPU = メモリで決まる。",
+    "keywords": [
+      "CPU を上げる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-event-source-mapping:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "lambda-event-source-mapping"
+    ],
+    "prompt": "SQS の FIFO キューを Lambda で処理するとき、順序はどう保たれる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "メッセージグループ ID ごとに順番に処理される",
+        "correct": true,
+        "atomId": "lambda-event-source-mapping",
+        "why": "グループが違えば並列に処理される"
+      },
+      {
+        "id": "b",
+        "text": "順序は保たれない",
+        "correct": false,
+        "why": "FIFO の順序は保たれる"
+      },
+      {
+        "id": "c",
+        "text": "キュー全体が 1 つずつ順番に処理される",
+        "correct": false,
+        "why": "グループ単位で順序を守る"
+      },
+      {
+        "id": "d",
+        "text": "Lambda では FIFO キューを使えない",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "使える"
+      }
+    ],
+    "explanation": "SQS FIFO + Lambda = グループ内は順番、グループ間は並列。",
+    "keywords": [
+      "FIFO キュー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

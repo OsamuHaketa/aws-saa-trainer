@@ -614,5 +614,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-ou:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "organizations-ou"
+    ],
+    "prompt": "「組織内のアカウントをグループにまとめる」「まとめて SCP を適用」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "組織単位（OU）",
+        "correct": true,
+        "atomId": "organizations-ou",
+        "why": "階層にして、ポリシーを継承させる"
+      },
+      {
+        "id": "b",
+        "text": "IAM グループ",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "1 つのアカウント内のユーザーのまとまり"
+      },
+      {
+        "id": "c",
+        "text": "リソースグループ",
+        "correct": false,
+        "why": "タグなどでリソースをまとめる"
+      },
+      {
+        "id": "d",
+        "text": "VPC",
+        "correct": false,
+        "why": "ネットワーク"
+      }
+    ],
+    "explanation": "アカウントのグループ = OU。",
+    "keywords": [
+      "アカウントをグループに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

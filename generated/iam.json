@@ -2893,5 +2893,268 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "iam-user:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-user"
+    ],
+    "prompt": "IAM ユーザーのアクセスキーのうち、90 日以上使われていないものや古いものを洗い出したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM の認証情報レポート",
+        "correct": true,
+        "atomId": "iam-user",
+        "why": "全ユーザーのキーやパスワードの利用状況を一覧できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudWatch のメトリクス",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "性能の数値"
+      },
+      {
+        "id": "c",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録"
+      },
+      {
+        "id": "d",
+        "text": "AWS Budgets",
+        "correct": false,
+        "atomId": "cost-budgets",
+        "why": "予算の管理"
+      }
+    ],
+    "explanation": "認証情報の棚卸し = 認証情報レポート（未使用の権限は Access Analyzer）。",
+    "keywords": [
+      "使われていない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-sts:definition:3",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "iam-sts"
+    ],
+    "prompt": "STS の AssumeRole で得た一時的な認証情報の有効期限について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "最大 12 時間まで",
+        "correct": true,
+        "atomId": "iam-sts",
+        "why": "15 分からロールの最大セッション時間（最大 12 時間）まで指定でき、期限が切れたら取り直す"
+      },
+      {
+        "id": "b",
+        "text": "無期限に使える",
+        "correct": false,
+        "why": "期限がある"
+      },
+      {
+        "id": "c",
+        "text": "1 年に固定される",
+        "correct": false,
+        "why": "最大 12 時間"
+      },
+      {
+        "id": "d",
+        "text": "常に 1 秒だけ",
+        "correct": false,
+        "why": "短すぎる。最短は 15 分"
+      }
+    ],
+    "explanation": "AssumeRole のセッション = 最短 15 分、最長はロールの最大セッション時間（1〜12 時間）。",
+    "keywords": [
+      "有効期限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-permissions-boundary:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "iam-permissions-boundary"
+    ],
+    "prompt": "「開発者に IAM ロールを作らせるが、自分より強い権限は付けさせない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アクセス許可の境界",
+        "correct": true,
+        "atomId": "iam-permissions-boundary",
+        "why": "作れるロールの権限の上限を強制する"
+      },
+      {
+        "id": "b",
+        "text": "SCP",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "アカウント単位の上限"
+      },
+      {
+        "id": "c",
+        "text": "IAM グループ",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "ユーザーのまとまり"
+      },
+      {
+        "id": "d",
+        "text": "MFA",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "認証の強化"
+      }
+    ],
+    "explanation": "権限の委任の上限 = アクセス許可の境界。",
+    "keywords": [
+      "自分より強い権限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-mfa:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-mfa"
+    ],
+    "prompt": "管理者の IAM ユーザーに MFA を設定したが、アクセスキーでの CLI の操作には MFA が求められない。重要な操作に MFA を必須にしたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MFA を条件にしたポリシー",
+        "correct": true,
+        "atomId": "iam-mfa",
+        "why": "aws:MultiFactorAuthPresent を条件にし、MFA 付きの一時的な認証情報で操作する"
+      },
+      {
+        "id": "b",
+        "text": "アクセスキーを 2 つ作る",
+        "correct": false,
+        "why": "MFA の代わりにはならない"
+      },
+      {
+        "id": "c",
+        "text": "パスワードを長くする",
+        "correct": false,
+        "why": "CLI の操作には関係ない"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーで操作する",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "さらに危険"
+      }
+    ],
+    "explanation": "CLI でも MFA = 条件キー + GetSessionToken / AssumeRole で MFA 付きの一時的な認証情報。",
+    "keywords": [
+      "CLI の操作"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-access-analyzer:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-access-analyzer"
+    ],
+    "prompt": "各 IAM ロールで、90 日間使われていない権限やサービスを見つけて削りたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Access Analyzer",
+        "correct": true,
+        "atomId": "iam-access-analyzer",
+        "why": "未使用のアクセスの検出で、使われていないロールや権限を見つけられる"
+      },
+      {
+        "id": "b",
+        "text": "CloudTrail のイベント履歴を手で読む",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "手間が大きく、見落としやすい"
+      },
+      {
+        "id": "c",
+        "text": "Trusted Advisor のコストのチェック",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "権限の分析ではない"
+      },
+      {
+        "id": "d",
+        "text": "GuardDuty の検出結果",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出"
+      }
+    ],
+    "explanation": "未使用の権限の検出 = Access Analyzer（最終アクセスの情報も参考になる）。",
+    "keywords": [
+      "使われていない権限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-federation:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-federation"
+    ],
+    "prompt": "GitHub Actions からデプロイするため、OIDC のロールの信頼ポリシーで、GitHub のすべてのリポジトリからの引き受けを許可した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "他人のリポジトリからもロールを引き受けられうる",
+        "correct": true,
+        "atomId": "iam-federation",
+        "why": "sub の条件で自社のリポジトリやブランチに絞る"
+      },
+      {
+        "id": "b",
+        "text": "OIDC ではロールを引き受けられない",
+        "correct": false,
+        "why": "引き受けられる"
+      },
+      {
+        "id": "c",
+        "text": "GitHub Actions は AWS にアクセスできない",
+        "correct": false,
+        "why": "できる"
+      },
+      {
+        "id": "d",
+        "text": "信頼ポリシーに条件は書けない",
+        "correct": false,
+        "atomId": "iam-policy-conditions",
+        "why": "書ける"
+      }
+    ],
+    "explanation": "OIDC の信頼ポリシー = aud と sub（リポジトリ・ブランチ）の条件で絞る。",
+    "keywords": [
+      "すべてのリポジトリ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

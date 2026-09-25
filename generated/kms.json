@@ -789,5 +789,135 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kms-aws-managed-key:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "kms-aws-managed-key",
+      "kms-customer-managed-key"
+    ],
+    "prompt": "AWS マネージドキーと比べて、カスタマーマネージドキーを選ぶ理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーを制御できる",
+        "correct": true,
+        "atomId": "kms-customer-managed-key",
+        "why": "利用者を制御し、他アカウントとも共有でき、ローテーションや無効化も自分で決められる"
+      },
+      {
+        "id": "b",
+        "text": "料金が必ず無料になる",
+        "correct": false,
+        "why": "鍵の月額料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "鍵の管理が一切不要になる",
+        "correct": false,
+        "why": "管理が必要になる"
+      },
+      {
+        "id": "d",
+        "text": "暗号化の強さが上がる",
+        "correct": false,
+        "why": "強さは同じ"
+      }
+    ],
+    "explanation": "制御・共有・監査の要件 = カスタマーマネージドキー。",
+    "keywords": [
+      "カスタマーマネージドキー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-envelope-encryption:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kms-envelope-encryption"
+    ],
+    "prompt": "大量のファイルを暗号化するため、ファイルごとに KMS の Encrypt を呼んでいる。KMS のリクエストの上限に達して失敗する。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "データキーでローカルに暗号化する",
+        "correct": true,
+        "atomId": "kms-envelope-encryption",
+        "why": "KMS の呼び出しを減らせる"
+      },
+      {
+        "id": "b",
+        "text": "KMS の鍵をファイルの数だけ作る",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "管理が増え、上限の問題も残る"
+      },
+      {
+        "id": "c",
+        "text": "暗号化をやめる",
+        "correct": false,
+        "why": "要件に反する"
+      },
+      {
+        "id": "d",
+        "text": "CloudHSM に移すだけ",
+        "correct": false,
+        "atomId": "kms-cloudhsm",
+        "why": "設計の見直しが先"
+      }
+    ],
+    "explanation": "大量・大きなデータ = エンベロープ暗号化（データキーの再利用やキャッシュで呼び出しを減らす）。",
+    "keywords": [
+      "ファイルごとに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-cloudhsm:compare:2",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "kms-cloudhsm",
+      "kms-customer-managed-key"
+    ],
+    "prompt": "KMS のカスタムキーストア（CloudHSM）を使う理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵を専用の HSM に置ける",
+        "correct": true,
+        "atomId": "kms-cloudhsm",
+        "why": "KMS の API のまま使え、S3 などとの連携もそのまま使える"
+      },
+      {
+        "id": "b",
+        "text": "KMS の料金を無料にできる",
+        "correct": false,
+        "why": "CloudHSM の料金が加わる"
+      },
+      {
+        "id": "c",
+        "text": "鍵のローテーションが不要になる",
+        "correct": false,
+        "why": "関係ない"
+      },
+      {
+        "id": "d",
+        "text": "暗号化が速くなる",
+        "correct": false,
+        "why": "速さのためではない"
+      }
+    ],
+    "explanation": "専用 HSM の要件 + KMS の使いやすさ = カスタムキーストア。",
+    "keywords": [
+      "カスタムキーストア"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

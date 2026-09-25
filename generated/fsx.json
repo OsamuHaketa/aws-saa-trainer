@@ -490,5 +490,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-lustre:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "fsx-lustre"
+    ],
+    "prompt": "数日で終わる機械学習の学習のために、FSx for Lustre を永続（Persistent）で作り、終わったあとも残している。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一時的な用途ならスクラッチで作り、終われば削除できる",
+        "correct": true,
+        "atomId": "fsx-lustre",
+        "why": "データは S3 にあるので、ファイルシステムを残す必要はない"
+      },
+      {
+        "id": "b",
+        "text": "FSx for Lustre は機械学習に使えない",
+        "correct": false,
+        "why": "向いている"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Lustre は S3 と連携できない",
+        "correct": false,
+        "why": "連携できる"
+      },
+      {
+        "id": "d",
+        "text": "永続は Windows 専用",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "Windows 用は FSx for Windows"
+      }
+    ],
+    "explanation": "短期のジョブ = スクラッチ（安い・複製なし）+ S3 に結果を書き戻して削除。",
+    "keywords": [
+      "数日で終わる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "fsx-ontap:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "fsx-ontap"
+    ],
+    "prompt": "本番の NetApp のデータを使ったテスト環境を、容量をほとんど増やさずにすぐ作りたい。移行先は AWS。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FSx for NetApp ONTAP のクローン",
+        "correct": true,
+        "atomId": "fsx-ontap",
+        "why": "ONTAP のクローンは変更分だけを保存する"
+      },
+      {
+        "id": "b",
+        "text": "EFS を新しく作ってコピーする",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "全量のコピーで時間と容量がかかる"
+      },
+      {
+        "id": "c",
+        "text": "FSx for Windows のシャドウコピー",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "NetApp の移行先ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 にすべてコピーする",
+        "correct": false,
+        "why": "ファイルシステムとして使えず、容量もかかる"
+      }
+    ],
+    "explanation": "NetApp の機能（スナップショット・クローン・重複排除）= FSx for NetApp ONTAP。",
+    "keywords": [
+      "NetApp",
+      "すぐ作りたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

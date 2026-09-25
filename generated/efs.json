@@ -478,5 +478,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "efs-storage-classes:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "efs-storage-classes"
+    ],
+    "prompt": "「EFS で使われなくなったファイルを自動で安いクラスへ」「IA・アーカイブ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EFS のライフサイクル管理",
+        "correct": true,
+        "atomId": "efs-storage-classes",
+        "why": "アクセスのないファイルを自動で移す"
+      },
+      {
+        "id": "b",
+        "text": "S3 のライフサイクル",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "S3 のオブジェクトの機能"
+      },
+      {
+        "id": "c",
+        "text": "EBS の Elastic Volumes",
+        "correct": false,
+        "atomId": "ebs-elastic-volumes",
+        "why": "ボリュームの変更"
+      },
+      {
+        "id": "d",
+        "text": "AWS Backup のコールドストレージ",
+        "correct": false,
+        "why": "バックアップの保管先の移動"
+      }
+    ],
+    "explanation": "EFS のコスト削減 = ライフサイクル管理。",
+    "keywords": [
+      "自動で安いクラスへ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -309,5 +309,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "glue-etl:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "glue-etl"
+    ],
+    "prompt": "毎晩 S3 に届く CSV を Parquet に変換し、前回からの差分だけを処理したい。サーバーは管理したくない。Glue の何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Glue のジョブとジョブブックマーク",
+        "correct": true,
+        "atomId": "glue-etl",
+        "why": "処理済みのデータを覚えて、新しい分だけを処理する"
+      },
+      {
+        "id": "b",
+        "text": "Glue のクローラーだけ",
+        "correct": false,
+        "atomId": "glue-crawler",
+        "why": "スキーマの登録で、変換はしない"
+      },
+      {
+        "id": "c",
+        "text": "Athena の CREATE TABLE だけ",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "テーブル定義で、変換の処理ではない"
+      },
+      {
+        "id": "d",
+        "text": "EMR のクラスターを常時稼働",
+        "correct": false,
+        "atomId": "emr-cluster",
+        "why": "サーバーの管理が必要"
+      }
+    ],
+    "explanation": "Glue の ETL ジョブ + ジョブブックマーク（差分の処理）。",
+    "keywords": [
+      "差分だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

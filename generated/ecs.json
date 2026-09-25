@@ -618,5 +618,137 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ec2-launch-type:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ecs-ec2-launch-type"
+    ],
+    "prompt": "「ECS でホストの EC2 を自分で管理」「GPU や特定のタイプを選べる」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EC2 起動タイプ",
+        "correct": true,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "自由度が高い代わりに、ホストの管理が必要"
+      },
+      {
+        "id": "b",
+        "text": "AWS Fargate",
+        "correct": false,
+        "atomId": "ecs-fargate",
+        "why": "サーバーを管理しない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Lambda",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "関数の実行"
+      },
+      {
+        "id": "d",
+        "text": "Elastic Beanstalk",
+        "correct": false,
+        "atomId": "beanstalk-environment",
+        "why": "アプリの実行環境の自動構築"
+      }
+    ],
+    "explanation": "ホストを自分で管理 = EC2 起動タイプ。",
+    "keywords": [
+      "ホストの EC2 を自分で管理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-task-role:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ecs-task-role"
+    ],
+    "prompt": "Fargate のタスクが ECR からイメージを取得できず、起動に失敗する。タスクロールには ECR の権限を付けてある。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "イメージの取得はタスク実行ロールの権限で行う",
+        "correct": true,
+        "atomId": "ecs-task-role",
+        "why": "実行ロールに ECR と CloudWatch Logs の権限を付ける"
+      },
+      {
+        "id": "b",
+        "text": "Fargate は ECR を使えない",
+        "correct": false,
+        "atomId": "ecs-ecr",
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "タスクロールは Fargate では使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "ECR のイメージは公開しないと取得できない",
+        "correct": false,
+        "why": "プライベートのまま取得できる"
+      }
+    ],
+    "explanation": "イメージの取得・ログの送信 = タスク実行ロール、アプリの API 呼び出し = タスクロール。",
+    "keywords": [
+      "ECR からイメージを取得できず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-ecr:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ecs-ecr"
+    ],
+    "prompt": "「コンテナイメージのプライベートなレジストリ」「プッシュ時のスキャン」「ライフサイクルポリシー」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon ECR",
+        "correct": true,
+        "atomId": "ecs-ecr",
+        "why": "ECS・EKS・Lambda のイメージを保存する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon S3",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "オブジェクトストレージで、レジストリではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS CodeCommit",
+        "correct": false,
+        "why": "ソースコードのリポジトリ"
+      },
+      {
+        "id": "d",
+        "text": "Amazon EFS",
+        "correct": false,
+        "atomId": "efs-filesystem",
+        "why": "ファイルストレージ"
+      }
+    ],
+    "explanation": "コンテナイメージ = ECR。",
+    "keywords": [
+      "プライベートなレジストリ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

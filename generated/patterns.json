@@ -1917,5 +1917,90 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-loose-coupling:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "patterns-loose-coupling"
+    ],
+    "prompt": "画像のアップロード API が、同じリクエストの中でサムネイルの生成まで行い、生成が遅いと API がタイムアウトする。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "非同期に生成する",
+        "correct": true,
+        "atomId": "patterns-loose-coupling",
+        "why": "アップロード後にイベントやキューで生成し、API はすぐに応答する"
+      },
+      {
+        "id": "b",
+        "text": "API のタイムアウトを延ばす",
+        "correct": false,
+        "why": "利用者の待ち時間が長くなるだけ"
+      },
+      {
+        "id": "c",
+        "text": "サーバーを最大サイズにする",
+        "correct": false,
+        "why": "コストが増え、根本は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "サムネイルの生成をやめる",
+        "correct": false,
+        "why": "要件を満たさない"
+      }
+    ],
+    "explanation": "重い処理は非同期に切り離す（S3 イベント → SQS → Lambda など）。",
+    "keywords": [
+      "同じリクエストの中で"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-idempotency:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-idempotency"
+    ],
+    "prompt": "Lambda の非同期呼び出しで、失敗時に自動で再試行される。関数はメールを送る処理で、再試行のたびに同じメールが何通も届く。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "送信済みかを記録して、処理を冪等にする",
+        "correct": true,
+        "atomId": "patterns-idempotency",
+        "why": "再試行されても 2 通目は送らない"
+      },
+      {
+        "id": "b",
+        "text": "再試行を完全になくすため、Lambda をやめる",
+        "correct": false,
+        "why": "問題の解決にならない"
+      },
+      {
+        "id": "c",
+        "text": "メールの件名を毎回変える",
+        "correct": false,
+        "why": "重複は防げない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda のメモリを増やす",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "重複の対策にならない"
+      }
+    ],
+    "explanation": "再試行される処理 = 冪等にする（処理済みの記録を DynamoDB などに残す）。",
+    "keywords": [
+      "何通も届く"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

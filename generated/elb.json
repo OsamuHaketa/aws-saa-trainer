@@ -1467,5 +1467,183 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elb-gwlb:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elb-gwlb"
+    ],
+    "prompt": "サードパーティのファイアウォールのアプライアンスを 1 台の EC2 に入れ、全通信をそこに通している。性能と可用性が心配。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "GWLB の後ろにアプライアンスを複数置く",
+        "correct": true,
+        "atomId": "elb-gwlb",
+        "why": "透過的に振り分け、台数を増やしてスケールできる"
+      },
+      {
+        "id": "b",
+        "text": "アプライアンスのインスタンスを大きくするだけ",
+        "correct": false,
+        "why": "単一障害点のまま"
+      },
+      {
+        "id": "c",
+        "text": "ALB の後ろにアプライアンスを置く",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB は HTTP の振り分けで、透過的な検査の構成には向かない"
+      },
+      {
+        "id": "d",
+        "text": "アプライアンスを外して SG だけにする",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "要件の検査ができなくなる"
+      }
+    ],
+    "explanation": "仮想アプライアンスの冗長化とスケール = Gateway Load Balancer。",
+    "keywords": [
+      "1 台の EC2"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-sticky-sessions:antipattern:2",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elb-sticky-sessions"
+    ],
+    "prompt": "スティッキーセッションを長い期間にしたところ、一部のサーバーにだけ負荷が偏るようになった。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "利用者が同じサーバーに固定される",
+        "correct": true,
+        "atomId": "elb-sticky-sessions",
+        "why": "新しいサーバーに流れにくくなる。セッションを外部に置けば固定は不要"
+      },
+      {
+        "id": "b",
+        "text": "スティッキーセッションは負荷を均等にする機能",
+        "correct": false,
+        "why": "固定する機能"
+      },
+      {
+        "id": "c",
+        "text": "ヘルスチェックが無効になる",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "ヘルスチェックは動く"
+      },
+      {
+        "id": "d",
+        "text": "クロスゾーン負荷分散が無効になる",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "スティッキー = 偏りやすい。根本的にはステートレスにする。",
+    "keywords": [
+      "負荷が偏る"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-health-checks:definition:2",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "elb-health-checks"
+    ],
+    "prompt": "ALB のヘルスチェックで設定するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パスや間隔、しきい値",
+        "correct": true,
+        "atomId": "elb-health-checks",
+        "why": "成功とみなす応答コードも決める。例 /health に 30 秒ごと、200 なら正常"
+      },
+      {
+        "id": "b",
+        "text": "ターゲットの台数の上限",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "それは Auto Scaling の設定"
+      },
+      {
+        "id": "c",
+        "text": "証明書の有効期限",
+        "correct": false,
+        "atomId": "elb-tls-termination",
+        "why": "それは ACM の管理"
+      },
+      {
+        "id": "d",
+        "text": "セッションの固定の期間",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "それはスティッキーセッション"
+      }
+    ],
+    "explanation": "ヘルスチェック = パス・ポート・間隔・タイムアウト・正常 / 異常のしきい値・成功コード。",
+    "keywords": [
+      "設定するもの"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-tls-termination:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "elb-tls-termination"
+    ],
+    "prompt": "「ロードバランサーで HTTPS を復号」「ACM の証明書を自動更新」「サーバーの負荷を減らす」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ロードバランサーでの TLS 終端",
+        "correct": true,
+        "atomId": "elb-tls-termination",
+        "why": "証明書の管理をロードバランサーに集約する"
+      },
+      {
+        "id": "b",
+        "text": "SNI",
+        "correct": false,
+        "atomId": "elb-sni",
+        "why": "1 つのリスナーで複数の証明書を使う仕組み"
+      },
+      {
+        "id": "c",
+        "text": "NLB の TCP パススルー",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "復号せずにそのまま転送する"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront の地域制限",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位の制限"
+      }
+    ],
+    "explanation": "ALB で TLS を終端 = 証明書の一元管理・サーバーの負荷軽減。",
+    "keywords": [
+      "HTTPS を復号"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
