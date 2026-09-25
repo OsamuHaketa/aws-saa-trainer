@@ -48,3 +48,48 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html
+
+  - id: ssm-patch-manager
+    category: operations
+    concept: Systems Manager Patch Manager
+    summary: パッチベースラインとメンテナンスウィンドウで、多数のインスタンスへの OS のパッチ適用を自動化する
+    facts:
+      - パッチベースラインで、どのパッチを承認するかを決める
+      - メンテナンスウィンドウで、決まった時間帯にパッチの確認と適用を実行する
+      - EC2 とオンプレミスのサーバーの両方を対象にでき、準拠状況を確認できる
+    triggers:
+      - 数百台のサーバーに OS のパッチを定期的に当てたい
+      - パッチの適用状況を一覧したい
+    pitfalls:
+      - 各サーバーに SSH して手動でパッチを当てると、漏れや作業の手間が大きい
+    relations:
+      - type: used_with
+        target: ssm-run-command
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html
+
+  - id: ssm-run-command
+    category: operations
+    concept: Systems Manager Run Command
+    summary: SSH を使わずに、多数のインスタンスへ同じコマンドやスクリプトを一斉に実行する
+    facts:
+      - タグなどで対象を選び、多数のインスタンスに同時にコマンドを実行する
+      - SSH のポートや踏み台は不要で、IAM で実行できる人を制御する
+      - 実行の結果は S3 や CloudWatch Logs に残せる
+    triggers:
+      - 100 台のサーバーで同じコマンドを実行したい
+      - SSH なしでスクリプトを実行したい
+    pitfalls:
+      - 対話的にシェルで操作したいなら Session Manager を使う
+    relations:
+      - type: confused_with
+        target: ssm-session-manager
+        distinction: Run Command は多数のインスタンスにコマンドを一括で実行する。Session Manager は 1 台のインスタンスに対話的なシェルで接続する
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/systems-manager/latest/userguide/run-command.html

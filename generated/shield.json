@@ -132,5 +132,95 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "shield-advanced:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "shield-advanced"
+    ],
+    "prompt": "「DDoS の専門チーム（SRT）の支援」「攻撃による料金の増加を補償」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Shield Advanced",
+        "correct": true,
+        "atomId": "shield-advanced",
+        "why": "有料の高度な DDoS 対策"
+      },
+      {
+        "id": "b",
+        "text": "AWS Shield Standard",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "無料の基本的な保護で、支援や補償はない"
+      },
+      {
+        "id": "c",
+        "text": "AWS WAF",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "Web の攻撃のブロック"
+      },
+      {
+        "id": "d",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出"
+      }
+    ],
+    "explanation": "支援・補償・高度な検知 = Shield Advanced。",
+    "keywords": [
+      "補償"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "shield-standard:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "shield-standard"
+    ],
+    "prompt": "AWS Shield Standard について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "すべての利用者に無料で自動適用される",
+        "correct": true,
+        "atomId": "shield-standard",
+        "why": "一般的なネットワーク層の DDoS から守る"
+      },
+      {
+        "id": "b",
+        "text": "申し込みと月額料金が必要",
+        "correct": false,
+        "atomId": "shield-advanced",
+        "why": "それは Shield Advanced"
+      },
+      {
+        "id": "c",
+        "text": "SQL インジェクションを防ぐ",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "それは WAF"
+      },
+      {
+        "id": "d",
+        "text": "EC2 の脆弱性を検査する",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "それは Inspector"
+      }
+    ],
+    "explanation": "Shield Standard = 無料・自動。",
+    "keywords": [
+      "無料"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

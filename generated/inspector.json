@@ -44,5 +44,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "inspector-scan:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "inspector-scan"
+    ],
+    "prompt": "「EC2・ECR のコンテナイメージ・Lambda の CVE を継続的にスキャン」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Inspector",
+        "correct": true,
+        "atomId": "inspector-scan",
+        "why": "ソフトウェアの脆弱性とネットワークの公開を調べる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出で、ソフトウェアの脆弱性の検査ではない"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データ"
+      },
+      {
+        "id": "d",
+        "text": "AWS Shield",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "DDoS への保護"
+      }
+    ],
+    "explanation": "脆弱性（CVE）のスキャン = Inspector。",
+    "keywords": [
+      "CVE"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "inspector-scan:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "inspector-scan"
+    ],
+    "prompt": "Amazon Inspector で EC2 をスキャンするのに通常必要なものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSM Agent",
+        "correct": true,
+        "atomId": "inspector-scan",
+        "why": "エージェントレスのスキャンも選べる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスにパブリック IP を付けること",
+        "correct": false,
+        "why": "不要"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを停止すること",
+        "correct": false,
+        "why": "動いたままスキャンする"
+      },
+      {
+        "id": "d",
+        "text": "Macie を有効にすること",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "Macie とは関係ない"
+      }
+    ],
+    "explanation": "Inspector の EC2 のスキャン = SSM Agent を使う（エージェントレスのスキャンもある）。",
+    "keywords": [
+      "SSM Agent"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

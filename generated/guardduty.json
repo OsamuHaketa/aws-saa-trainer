@@ -89,5 +89,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "guardduty-detector:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "guardduty-detector"
+    ],
+    "prompt": "「CloudTrail・VPC フローログ・DNS ログを分析」「不審な動きを検出」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon GuardDuty",
+        "correct": true,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出を継続的に行う"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データの検出"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      }
+    ],
+    "explanation": "ログから脅威を検出 = GuardDuty。",
+    "keywords": [
+      "不審な動き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "guardduty-detector:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "guardduty-detector"
+    ],
+    "prompt": "GuardDuty を有効にするため、先に全アカウントで VPC フローログと DNS のログを有効にしようとした。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "GuardDuty はこれらのログを自分で直接分析するので、有効化は不要",
+        "correct": true,
+        "atomId": "guardduty-detector",
+        "why": "有効にするだけで分析が始まる"
+      },
+      {
+        "id": "b",
+        "text": "GuardDuty は VPC フローログを使わない",
+        "correct": false,
+        "why": "使う（独自に取得する）"
+      },
+      {
+        "id": "c",
+        "text": "GuardDuty は Organizations では使えない",
+        "correct": false,
+        "why": "組織全体で有効にできる"
+      },
+      {
+        "id": "d",
+        "text": "GuardDuty は検出した脅威を自動で必ず遮断する",
+        "correct": false,
+        "why": "遮断はしない。EventBridge などで自動対応を組む"
+      }
+    ],
+    "explanation": "GuardDuty = 有効化するだけ。ログの設定は不要で、検出後の対応は EventBridge + Lambda などで組む。",
+    "keywords": [
+      "先に全アカウントで"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "guardduty-detector:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "guardduty-detector"
+    ],
+    "prompt": "GuardDuty が「EC2 が暗号通貨のマイニングの通信をしている」と検出したら、自動でそのインスタンスを隔離したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge と Lambda で自動対応する",
+        "correct": true,
+        "atomId": "guardduty-detector",
+        "why": "GuardDuty 自体は遮断しないので、自動対応を組む"
+      },
+      {
+        "id": "b",
+        "text": "GuardDuty の設定で自動遮断を有効にする",
+        "correct": false,
+        "why": "GuardDuty に遮断の機能はない"
+      },
+      {
+        "id": "c",
+        "text": "Inspector で EC2 をスキャンする",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査で、隔離はしない"
+      },
+      {
+        "id": "d",
+        "text": "Macie のジョブを実行する",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データの検出"
+      }
+    ],
+    "explanation": "検出（GuardDuty）→ イベント（EventBridge）→ 対応（Lambda / SSM Automation）。",
+    "keywords": [
+      "自動でそのインスタンスを隔離"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

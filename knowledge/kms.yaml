@@ -67,3 +67,77 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html
+
+  - id: kms-envelope-encryption
+    category: encryption
+    concept: エンベロープ暗号化（データキー）
+    summary: データはデータキーで暗号化し、そのデータキーを KMS の鍵で暗号化する
+    facts:
+      - KMS の Encrypt API で直接暗号化できるデータは 4 KB まで
+      - 大きなデータは、GenerateDataKey で作ったデータキーでローカルに暗号化する
+      - 暗号化したデータキーをデータと一緒に保存し、復号時に KMS でデータキーを復号する
+      - S3 や EBS の SSE-KMS も、内部でこの仕組みを使っている
+    triggers:
+      - 数 GB のファイルを KMS の鍵で暗号化したい
+      - KMS の 4 KB の上限
+    pitfalls:
+      - 大きなファイルを KMS の Encrypt API に直接送ると、サイズの上限で失敗する
+    relations:
+      - type: used_with
+        target: kms-customer-managed-key
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/kms/latest/developerguide/kms-cryptography.html
+
+  - id: kms-key-policy
+    category: encryption
+    concept: KMS の鍵ポリシー
+    summary: 鍵ごとに必ず 1 つあるリソースポリシー。誰が鍵を管理・使用できるかを決め、別アカウントでの利用にも必要
+    facts:
+      - すべての KMS の鍵は鍵ポリシーを持ち、鍵へのアクセスの基本になる
+      - 別のアカウントに鍵を使わせるには、鍵ポリシーで相手のアカウントを許可し、相手側の IAM ポリシーでも許可する
+      - 鍵の管理者（ポリシーの変更など）と利用者（暗号化・復号）を分けられる
+      - AWS マネージドキーの鍵ポリシーは変更できない
+    triggers:
+      - 別のアカウントに暗号化した S3 のデータを読ませたい
+      - 鍵の管理者と利用者を分けたい
+    pitfalls:
+      - AWS マネージドキーで暗号化したデータは、鍵ポリシーを変えられないので別アカウントと共有しにくい。カスタマーマネージドキーを使う
+    relations:
+      - type: part_of
+        target: kms-customer-managed-key
+      - type: used_with
+        target: iam-resource-based-policy
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html
+      - https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html
+
+  - id: kms-cloudhsm
+    category: encryption
+    concept: AWS CloudHSM
+    summary: 専用のハードウェアセキュリティモジュール（HSM）を使い、鍵を利用者だけが管理する
+    facts:
+      - 利用者専用の HSM（シングルテナント）で、鍵は利用者だけが管理し、AWS は鍵にアクセスできない
+      - FIPS 140-3 レベル 3 の認定を受けた HSM を使える
+      - PKCS#11、JCE、CNG などの標準の API で使える
+      - KMS のカスタムキーストアとして使い、KMS と連携することもできる
+    triggers:
+      - 専用の HSM が規制で必要
+      - AWS にも鍵を扱わせたくない
+      - FIPS 140-3 レベル 3
+    pitfalls:
+      - 特別な要件がないなら、管理の手間が少ない KMS を使う
+    relations:
+      - type: confused_with
+        target: kms-customer-managed-key
+        distinction: KMS は AWS が管理するマルチテナントの HSM で鍵を守るマネージドサービス。CloudHSM は利用者専用の HSM で、鍵の管理とクラスターの運用を利用者が行う
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html

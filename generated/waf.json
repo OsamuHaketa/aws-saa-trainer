@@ -90,5 +90,186 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "waf-firewall-manager:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "waf-firewall-manager"
+    ],
+    "prompt": "組織の 40 のアカウントのすべての ALB と CloudFront に、同じ WAF のルールを付けたい。今後作られるものにも自動で付けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Firewall Manager",
+        "correct": true,
+        "atomId": "waf-firewall-manager",
+        "why": "組織全体に WAF のポリシーを一元的に適用する"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントで WAF を手で設定する",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "付け忘れが起きる"
+      },
+      {
+        "id": "c",
+        "text": "SCP で WAF を強制する",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP は操作の禁止で、ルールを付けることはできない"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config のルールで確認する",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "違反を検出するだけで、ルールは付けない"
+      }
+    ],
+    "explanation": "組織全体のファイアウォールのルールの一元管理 = Firewall Manager（Organizations が前提）。",
+    "keywords": [
+      "40 のアカウント",
+      "自動で付けたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-web-acl:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "waf-web-acl"
+    ],
+    "prompt": "「SQL インジェクション」「XSS」「レイヤー 7」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS WAF",
+        "correct": true,
+        "atomId": "waf-web-acl",
+        "why": "Web の攻撃のパターンをブロックする"
+      },
+      {
+        "id": "b",
+        "text": "AWS Shield Standard",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "DDoS 攻撃への保護"
+      },
+      {
+        "id": "c",
+        "text": "セキュリティグループ",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "IP とポートの制御"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      }
+    ],
+    "explanation": "Web アプリへの攻撃 = WAF。",
+    "keywords": [
+      "SQL インジェクション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-web-acl:selection:3",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "waf-web-acl"
+    ],
+    "prompt": "CloudFront で配信しているサイトへの、特定の国からのアクセスと、既知の悪性 IP からのアクセスをまとめてブロックしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "WAF の地域一致と IP ルール",
+        "correct": true,
+        "atomId": "waf-web-acl",
+        "why": "国や IP の評価で、Web ACL でまとめてブロックできる"
+      },
+      {
+        "id": "b",
+        "text": "セキュリティグループ",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "CloudFront には付けられない"
+      },
+      {
+        "id": "c",
+        "text": "NACL",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "VPC のサブネットの機能で、CloudFront には使えない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 の位置情報ルーティング",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "振り分けで、ブロックはしない"
+      }
+    ],
+    "explanation": "エッジでの細かいブロック（国・IP・レート・攻撃パターン）= WAF。",
+    "keywords": [
+      "特定の国",
+      "悪性 IP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-web-acl:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "waf-web-acl"
+    ],
+    "prompt": "AWS WAF の Web ACL を関連付けられないものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Network Load Balancer",
+        "correct": true,
+        "why": "WAF は HTTP の層で、NLB には付けられない"
+      },
+      {
+        "id": "b",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "関連付けられる"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront ディストリビューション",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "関連付けられる"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway の REST API",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "関連付けられる"
+      }
+    ],
+    "explanation": "WAF = CloudFront、ALB、API Gateway、AppSync、Cognito ユーザープールなど（NLB は不可）。",
+    "keywords": [
+      "関連付けられない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -133,5 +133,136 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-user-pool:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cognito-user-pool"
+    ],
+    "prompt": "「アプリのユーザーのサインアップ・サインイン」「ソーシャルログイン」「JWT のトークン」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cognito ユーザープール",
+        "correct": true,
+        "atomId": "cognito-user-pool",
+        "why": "アプリの利用者のユーザーディレクトリ"
+      },
+      {
+        "id": "b",
+        "text": "Cognito ID プール",
+        "correct": false,
+        "atomId": "cognito-identity-pool",
+        "why": "AWS の一時的な認証情報を渡す"
+      },
+      {
+        "id": "c",
+        "text": "IAM Identity Center",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "従業員の AWS アカウントへの SSO"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "AWS を操作する人やアプリの ID"
+      }
+    ],
+    "explanation": "アプリの利用者の認証 = ユーザープール。AWS のリソースへのアクセス = ID プール。",
+    "keywords": [
+      "サインアップ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-identity-pool:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "cognito-identity-pool"
+    ],
+    "prompt": "Cognito ID プールがアプリの利用者に渡すものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一時的な AWS 認証情報",
+        "correct": true,
+        "atomId": "cognito-identity-pool",
+        "why": "利用者ごとに S3 などへ直接アクセスできる"
+      },
+      {
+        "id": "b",
+        "text": "ユーザー名とパスワード",
+        "correct": false,
+        "why": "パスワードを渡すことはない"
+      },
+      {
+        "id": "c",
+        "text": "長期のアクセスキー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "一時的な認証情報を渡す"
+      },
+      {
+        "id": "d",
+        "text": "SSL/TLS の証明書",
+        "correct": false,
+        "why": "証明書は渡さない"
+      }
+    ],
+    "explanation": "ID プール = 利用者を IAM ロールに対応付け、STS の一時的な認証情報を渡す（ゲストにも可）。",
+    "keywords": [
+      "一時的な AWS 認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-identity-pool:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cognito-identity-pool"
+    ],
+    "prompt": "モバイルアプリから S3 に写真を上げるため、アプリに IAM ユーザーのアクセスキーを埋め込んで配布した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アプリから抜き出され、全利用者の権限で悪用される",
+        "correct": true,
+        "atomId": "cognito-identity-pool",
+        "why": "ID プールで利用者ごとに一時的な認証情報を渡す"
+      },
+      {
+        "id": "b",
+        "text": "アクセスキーでは S3 にアップロードできない",
+        "correct": false,
+        "why": "アップロードはできるが、危険"
+      },
+      {
+        "id": "c",
+        "text": "モバイルアプリからは S3 を使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "アクセスキーは 1 日で自動失効する",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "自動では失効しない"
+      }
+    ],
+    "explanation": "配布するアプリに長期の認証情報を入れない。ID プール（または署名付き URL）を使う。",
+    "keywords": [
+      "アクセスキーを埋め込んで"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

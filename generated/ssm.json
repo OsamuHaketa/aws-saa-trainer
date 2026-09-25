@@ -89,5 +89,229 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-patch-manager:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ssm-patch-manager"
+    ],
+    "prompt": "300 台の EC2 に、毎月第 2 日曜の深夜にセキュリティパッチを自動で当て、適用状況も確認したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Patch Manager",
+        "correct": true,
+        "atomId": "ssm-patch-manager",
+        "why": "承認したパッチを決まった時間帯に適用し、準拠状況を確認できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性を見つけるが、パッチは当てない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価で、パッチは当てない"
+      },
+      {
+        "id": "d",
+        "text": "各サーバーのユーザーデータ",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時に実行されるだけで、定期実行にはならない"
+      }
+    ],
+    "explanation": "パッチの自動適用 = Patch Manager、脆弱性の検出 = Inspector。",
+    "keywords": [
+      "パッチを自動で当て"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-patch-manager:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ssm-patch-manager",
+      "inspector-scan"
+    ],
+    "prompt": "Amazon Inspector と Systems Manager Patch Manager の役割の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Inspector は脆弱性を見つけ、Patch Manager はパッチを当てる",
+        "correct": true,
+        "atomId": "ssm-patch-manager",
+        "why": "組み合わせて使う"
+      },
+      {
+        "id": "b",
+        "text": "Inspector がパッチを当て、Patch Manager が見つける",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "どちらも S3 の機密データを見つける",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "それは Macie"
+      },
+      {
+        "id": "d",
+        "text": "どちらも DDoS を防ぐ",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "それは Shield"
+      }
+    ],
+    "explanation": "見つける（Inspector）→ 直す（Patch Manager）。",
+    "keywords": [
+      "見つけ",
+      "当てる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-run-command:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "ssm-run-command"
+    ],
+    "prompt": "本番の 100 台の EC2 で、ログのローテーションの設定を変えるシェルスクリプトを一斉に実行したい。SSH は使いたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Systems Manager Run Command",
+        "correct": true,
+        "atomId": "ssm-run-command",
+        "why": "タグで対象を選び、一斉にコマンドを実行する"
+      },
+      {
+        "id": "b",
+        "text": "Session Manager で 1 台ずつ接続する",
+        "correct": false,
+        "atomId": "ssm-session-manager",
+        "why": "対話的なシェルで、一斉実行には向かない"
+      },
+      {
+        "id": "c",
+        "text": "ユーザーデータを書き換える",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時にしか実行されない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFormation で全台を作り直す",
+        "correct": false,
+        "why": "スクリプトの実行のためには過剰"
+      }
+    ],
+    "explanation": "多数の台に一括でコマンド = Run Command、1 台に対話的に = Session Manager。",
+    "keywords": [
+      "100 台",
+      "一斉に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-session-manager:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "ssm-session-manager"
+    ],
+    "prompt": "Session Manager で EC2 に接続しようとしたが、インスタンスが一覧に出ない。プライベートサブネットで NAT はない。考えられる原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSM への経路かロールの権限がない",
+        "correct": true,
+        "atomId": "ssm-session-manager",
+        "why": "SSM Agent が Systems Manager と通信できる必要がある"
+      },
+      {
+        "id": "b",
+        "text": "SSH の 22 番ポートを開けていない",
+        "correct": false,
+        "why": "Session Manager は受信ポートを使わない"
+      },
+      {
+        "id": "c",
+        "text": "Elastic IP を付けていない",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "パブリック IP は不要"
+      },
+      {
+        "id": "d",
+        "text": "踏み台サーバーがない",
+        "correct": false,
+        "atomId": "vpc-bastion-host",
+        "why": "踏み台は不要"
+      }
+    ],
+    "explanation": "Session Manager の前提 = SSM Agent + インスタンスのロール（AmazonSSMManagedInstanceCore）+ SSM への経路（NAT か VPC エンドポイント）。",
+    "keywords": [
+      "一覧に出ない",
+      "NAT はない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-parameter-store:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "ssm-parameter-store"
+    ],
+    "prompt": "Parameter Store の SecureString パラメータの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "KMS の鍵で暗号化して保存する",
+        "correct": true,
+        "atomId": "ssm-parameter-store",
+        "why": "取得時に権限があれば復号される"
+      },
+      {
+        "id": "b",
+        "text": "自動でローテーションされる",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "自動ローテーションは Secrets Manager の機能"
+      },
+      {
+        "id": "c",
+        "text": "誰でも読める公開のパラメータになる",
+        "correct": false,
+        "why": "IAM で読める人を制御する"
+      },
+      {
+        "id": "d",
+        "text": "S3 に平文で保存される",
+        "correct": false,
+        "why": "暗号化して保存される"
+      }
+    ],
+    "explanation": "SecureString = KMS で暗号化された値。ローテーションが必要なら Secrets Manager。",
+    "keywords": [
+      "SecureString"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

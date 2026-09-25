@@ -131,5 +131,395 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "kms-envelope-encryption:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kms-envelope-encryption"
+    ],
+    "prompt": "アプリで 2 GB のファイルを KMS の鍵を使って暗号化したい。KMS の Encrypt API に送ったらサイズの上限で失敗した。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "データキーで暗号化し、データキーを KMS で守る",
+        "correct": true,
+        "atomId": "kms-envelope-encryption",
+        "why": "エンベロープ暗号化で、大きなデータもローカルで暗号化できる"
+      },
+      {
+        "id": "b",
+        "text": "ファイルを 4 KB ずつに分けて Encrypt API に送る",
+        "correct": false,
+        "why": "呼び出し回数が膨大になり非効率"
+      },
+      {
+        "id": "c",
+        "text": "CloudHSM に移行すれば上限がなくなる",
+        "correct": false,
+        "atomId": "kms-cloudhsm",
+        "why": "上限の問題はエンベロープ暗号化で解決する"
+      },
+      {
+        "id": "d",
+        "text": "暗号化をやめて S3 のバケットを非公開にする",
+        "correct": false,
+        "why": "暗号化の要件を満たさない"
+      }
+    ],
+    "explanation": "KMS の直接暗号化は 4 KB まで。大きなデータ = データキー（GenerateDataKey）によるエンベロープ暗号化。",
+    "keywords": [
+      "2 GB",
+      "サイズの上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-envelope-encryption:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "kms-envelope-encryption"
+    ],
+    "prompt": "KMS の Encrypt API で直接暗号化できるデータの最大サイズは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "4 KB",
+        "correct": true,
+        "atomId": "kms-envelope-encryption",
+        "why": "それより大きいデータはデータキーで暗号化する"
+      },
+      {
+        "id": "b",
+        "text": "64 KB",
+        "correct": false,
+        "why": "上限は 4 KB"
+      },
+      {
+        "id": "c",
+        "text": "1 MB",
+        "correct": false,
+        "why": "上限は 4 KB"
+      },
+      {
+        "id": "d",
+        "text": "5 GB",
+        "correct": false,
+        "why": "上限は 4 KB"
+      }
+    ],
+    "explanation": "KMS で直接 = 4 KB まで。",
+    "keywords": [
+      "4 KB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-key-policy:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kms-key-policy"
+    ],
+    "prompt": "アカウント A で SSE-KMS（カスタマーマネージドキー）で暗号化した S3 のデータを、アカウント B のロールに読ませたい。バケットポリシーは許可済みだが復号できない。何が必要？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーと B の IAM の両方で許可する",
+        "correct": true,
+        "atomId": "kms-key-policy",
+        "why": "クロスアカウントの鍵の利用は、鍵ポリシーと IAM の両方が必要"
+      },
+      {
+        "id": "b",
+        "text": "S3 のバケットを公開する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開しても鍵の権限がないと復号できない"
+      },
+      {
+        "id": "c",
+        "text": "B で同じ名前の鍵を作る",
+        "correct": false,
+        "why": "鍵の素材が違うので復号できない"
+      },
+      {
+        "id": "d",
+        "text": "アカウント B のバケットポリシーを変更する",
+        "correct": false,
+        "why": "データは A のバケットにあり、B のバケットは関係ない"
+      }
+    ],
+    "explanation": "SSE-KMS のクロスアカウント = バケットポリシー + 鍵ポリシー + 相手の IAM。",
+    "keywords": [
+      "アカウント B",
+      "復号できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-key-policy:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kms-key-policy"
+    ],
+    "prompt": "別アカウントと共有する予定の S3 のデータを、AWS マネージドキー（aws/s3）で暗号化した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーを変更できず共有できない",
+        "correct": true,
+        "atomId": "kms-key-policy",
+        "why": "共有するならカスタマーマネージドキーを使う"
+      },
+      {
+        "id": "b",
+        "text": "AWS マネージドキーは暗号化が弱い",
+        "correct": false,
+        "why": "暗号化の強さは同じ"
+      },
+      {
+        "id": "c",
+        "text": "AWS マネージドキーは S3 に使えない",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "S3 で使える"
+      },
+      {
+        "id": "d",
+        "text": "AWS マネージドキーは料金が高い",
+        "correct": false,
+        "why": "問題は鍵ポリシーを変えられないこと"
+      }
+    ],
+    "explanation": "クロスアカウント・細かい制御 = カスタマーマネージドキー。",
+    "keywords": [
+      "AWS マネージドキー",
+      "別アカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-cloudhsm:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "kms-cloudhsm"
+    ],
+    "prompt": "規制で、暗号鍵は専用の FIPS 140-3 レベル 3 の HSM に保管し、クラウド事業者も鍵にアクセスできないことが求められる。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS CloudHSM",
+        "correct": true,
+        "atomId": "kms-cloudhsm",
+        "why": "利用者専用の HSM で、鍵は利用者だけが管理する"
+      },
+      {
+        "id": "b",
+        "text": "KMS の AWS マネージドキー",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "AWS が管理する鍵"
+      },
+      {
+        "id": "c",
+        "text": "Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "秘密情報の保管で、専用の HSM ではない"
+      },
+      {
+        "id": "d",
+        "text": "SSE-S3",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "S3 が管理する鍵"
+      }
+    ],
+    "explanation": "専用の HSM・利用者だけが鍵を管理 = CloudHSM。",
+    "keywords": [
+      "専用",
+      "HSM"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-cloudhsm:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "kms-cloudhsm"
+    ],
+    "prompt": "KMS と CloudHSM の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudHSM は専用の HSM を自分で運用する",
+        "correct": true,
+        "atomId": "kms-cloudhsm",
+        "why": "CloudHSM はクラスターや鍵の管理が利用者の責任"
+      },
+      {
+        "id": "b",
+        "text": "KMS は暗号化できず、鍵の保管だけ",
+        "correct": false,
+        "why": "KMS も暗号化・復号できる"
+      },
+      {
+        "id": "c",
+        "text": "CloudHSM の方が管理の手間が少ない",
+        "correct": false,
+        "why": "KMS の方が手間は少ない"
+      },
+      {
+        "id": "d",
+        "text": "KMS は S3 や EBS と連携できない",
+        "correct": false,
+        "why": "KMS は多くのサービスと連携する"
+      }
+    ],
+    "explanation": "手間が少なく多くのサービスと連携 = KMS、専用の HSM が必要 = CloudHSM。",
+    "keywords": [
+      "専用の HSM"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-aws-managed-key:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "kms-aws-managed-key"
+    ],
+    "prompt": "KMS の AWS マネージドキーについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "鍵ポリシーを変更できない",
+        "correct": true,
+        "atomId": "kms-aws-managed-key",
+        "why": "サービスが自動で作る。aws/s3 や aws/ebs のような名前"
+      },
+      {
+        "id": "b",
+        "text": "利用者が自由に鍵ポリシーを書ける",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "それはカスタマーマネージドキー"
+      },
+      {
+        "id": "c",
+        "text": "利用者が手動で削除できる",
+        "correct": false,
+        "why": "削除はできない"
+      },
+      {
+        "id": "d",
+        "text": "別のアカウントと自由に共有できる",
+        "correct": false,
+        "why": "鍵ポリシーを変えられず、共有には向かない"
+      }
+    ],
+    "explanation": "AWS マネージドキー = 手間なしだが制御できない。制御が必要ならカスタマーマネージドキー。",
+    "keywords": [
+      "自動で作り"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-customer-managed-key:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "kms-customer-managed-key"
+    ],
+    "prompt": "カスタマーマネージドキーの自動ローテーションについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "有効にすると定期的に鍵の素材が更新され、古い素材も残る",
+        "correct": true,
+        "atomId": "kms-customer-managed-key",
+        "why": "過去に暗号化したデータもそのまま復号できる"
+      },
+      {
+        "id": "b",
+        "text": "ローテーションすると過去のデータを復号できなくなる",
+        "correct": false,
+        "why": "古い素材が残るので復号できる"
+      },
+      {
+        "id": "c",
+        "text": "ローテーションすると鍵 ID が変わる",
+        "correct": false,
+        "why": "鍵 ID は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "AWS マネージドキーだけがローテーションできる",
+        "correct": false,
+        "why": "カスタマーマネージドキーも有効にできる"
+      }
+    ],
+    "explanation": "自動ローテーション = 鍵 ID はそのまま、新しい素材で暗号化、古い素材で過去のデータを復号。",
+    "keywords": [
+      "自動ローテーション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-multi-region-keys:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "kms-multi-region-keys"
+    ],
+    "prompt": "東京の KMS 鍵で暗号化したデータを大阪にコピーし、大阪で同じ鍵 ID を指定して復号しようとしたができない。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "KMS の鍵はリージョンごとに別",
+        "correct": true,
+        "atomId": "kms-multi-region-keys",
+        "why": "マルチリージョンキーにするか、大阪の鍵で再暗号化する"
+      },
+      {
+        "id": "b",
+        "text": "KMS は大阪リージョンで使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "コピーするとデータが自動で復号される",
+        "correct": false,
+        "why": "復号はされない"
+      },
+      {
+        "id": "d",
+        "text": "大阪ではカスタマーマネージドキーを作れない",
+        "correct": false,
+        "why": "作れる"
+      }
+    ],
+    "explanation": "KMS の鍵はリージョン単位。リージョンをまたいで同じ鍵を使う = マルチリージョンキー。",
+    "keywords": [
+      "大阪",
+      "同じ鍵 ID"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

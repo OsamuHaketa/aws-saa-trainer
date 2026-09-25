@@ -44,5 +44,92 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "macie-job:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "macie-job"
+    ],
+    "prompt": "「S3 の個人情報（PII）を検出」「機械学習」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Amazon Macie",
+        "correct": true,
+        "atomId": "macie-job",
+        "why": "S3 の機密データを見つけて評価する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威の検出"
+      },
+      {
+        "id": "c",
+        "text": "IAM Access Analyzer",
+        "correct": false,
+        "atomId": "iam-access-analyzer",
+        "why": "外部への共有の分析"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査"
+      }
+    ],
+    "explanation": "S3 × 機密データ = Macie。",
+    "keywords": [
+      "個人情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "macie-job:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "macie-job"
+    ],
+    "prompt": "RDS のテーブルに個人情報が含まれていないかを調べるため、Amazon Macie を有効にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Macie は S3 だけが対象",
+        "correct": true,
+        "atomId": "macie-job",
+        "why": "RDS のデータは S3 にエクスポートすれば調べられる"
+      },
+      {
+        "id": "b",
+        "text": "Macie は個人情報を検出できない",
+        "correct": false,
+        "why": "検出できる"
+      },
+      {
+        "id": "c",
+        "text": "Macie は有効にすると RDS を停止する",
+        "correct": false,
+        "why": "停止しない"
+      },
+      {
+        "id": "d",
+        "text": "Macie は 1 つのバケットしか調べられない",
+        "correct": false,
+        "why": "多数のバケットを調べられる"
+      }
+    ],
+    "explanation": "Macie = S3 の機密データの検出。",
+    "keywords": [
+      "RDS のテーブル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
