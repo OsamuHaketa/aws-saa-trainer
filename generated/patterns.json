@@ -1487,5 +1487,222 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-stateless:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-stateless"
+    ],
+    "prompt": "「どのサーバーでもリクエストを処理できる」「セッションは外部のストアに置く」→ 何という設計？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ステートレス",
+        "correct": true,
+        "atomId": "patterns-stateless",
+        "why": "サーバーを自由に増減・置き換えできる"
+      },
+      {
+        "id": "b",
+        "text": "スティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じクライアントを同じサーバーに送る設定"
+      },
+      {
+        "id": "c",
+        "text": "冪等性",
+        "correct": false,
+        "atomId": "patterns-idempotency",
+        "why": "何度実行しても同じ結果になる性質"
+      },
+      {
+        "id": "d",
+        "text": "マルチ AZ",
+        "correct": false,
+        "atomId": "patterns-multi-az",
+        "why": "AZ の障害に備える冗長化"
+      }
+    ],
+    "explanation": "状態を外に出す = ステートレス。",
+    "keywords": [
+      "どのサーバーでも"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-loose-coupling:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "patterns-loose-coupling",
+      "sqs-standard"
+    ],
+    "prompt": "注文の受付と在庫の更新を、直接の API 呼び出しから SQS 経由に変えると何が良くなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "在庫側が止まっても受付を続けられる",
+        "correct": true,
+        "atomId": "patterns-loose-coupling",
+        "why": "キューが処理の遅れや停止を吸収する"
+      },
+      {
+        "id": "b",
+        "text": "注文と在庫の処理が必ず同時に終わる",
+        "correct": false,
+        "why": "非同期になるので、同時には終わらない"
+      },
+      {
+        "id": "c",
+        "text": "在庫の更新の順序が必ず保証される",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "標準キューは順序を保証しない"
+      },
+      {
+        "id": "d",
+        "text": "在庫のデータベースが不要になる",
+        "correct": false,
+        "why": "DB は必要"
+      }
+    ],
+    "explanation": "疎結合 = 片方の障害や遅れを、もう片方に波及させない。",
+    "keywords": [
+      "SQS 経由"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-idempotency:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "patterns-idempotency"
+    ],
+    "prompt": "決済の API を冪等にする方法として適切なのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一意なキーで処理済みかを判定する",
+        "correct": true,
+        "atomId": "patterns-idempotency",
+        "why": "リクエストごとの一意なキーで、2 回目以降は実行せずに前回の結果を返す"
+      },
+      {
+        "id": "b",
+        "text": "リクエストを受けるたびに必ず決済を実行する",
+        "correct": false,
+        "why": "重複すると二重に決済される"
+      },
+      {
+        "id": "c",
+        "text": "再試行を完全に禁止する",
+        "correct": false,
+        "atomId": "patterns-retry-backoff",
+        "why": "一時的な障害から回復できなくなる"
+      },
+      {
+        "id": "d",
+        "text": "FIFO キューを使えば、アプリの対策は不要",
+        "correct": false,
+        "atomId": "sqs-fifo",
+        "why": "重複排除には期間があり、アプリ側の対策も必要"
+      }
+    ],
+    "explanation": "冪等キー（Idempotency Key）で処理済みかを判定する。",
+    "keywords": [
+      "冪等"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-retry-backoff:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-retry-backoff"
+    ],
+    "prompt": "外部 API が失敗したとき、すべてのクライアントがちょうど 1 秒後に一斉に再試行する実装にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "再試行が同時に集中し、相手を再び過負荷にする",
+        "correct": true,
+        "atomId": "patterns-retry-backoff",
+        "why": "指数的に待ち時間を延ばし、ジッターでばらけさせる"
+      },
+      {
+        "id": "b",
+        "text": "1 秒では再試行が早すぎて、SDK がエラーを出す",
+        "correct": false,
+        "why": "SDK のエラーの問題ではない"
+      },
+      {
+        "id": "c",
+        "text": "再試行は 1 回しかできない",
+        "correct": false,
+        "why": "回数の制限の問題ではない"
+      },
+      {
+        "id": "d",
+        "text": "外部 API は再試行を受け付けない",
+        "correct": false,
+        "why": "受け付けるが、集中が問題"
+      }
+    ],
+    "explanation": "固定の間隔で一斉に再試行 = サンダリングハード。バックオフ + ジッターで防ぐ。",
+    "keywords": [
+      "一斉に再試行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-shared-responsibility:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "patterns-shared-responsibility"
+    ],
+    "prompt": "EC2 と RDS で、利用者の責任の範囲の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS は OS のパッチを AWS が管理する",
+        "correct": true,
+        "atomId": "patterns-shared-responsibility",
+        "why": "EC2 は OS も利用者の責任。どちらもデータとアクセス制御は利用者の責任"
+      },
+      {
+        "id": "b",
+        "text": "RDS はデータの暗号化の設定も AWS の責任",
+        "correct": false,
+        "why": "暗号化を使うかどうかは利用者が決める"
+      },
+      {
+        "id": "c",
+        "text": "EC2 は物理サーバーの保守も利用者の責任",
+        "correct": false,
+        "why": "物理サーバーは AWS の責任"
+      },
+      {
+        "id": "d",
+        "text": "どちらも利用者の責任の範囲は同じ",
+        "correct": false,
+        "why": "マネージドなほど利用者の範囲は狭くなる"
+      }
+    ],
+    "explanation": "IaaS（EC2）ほど利用者の範囲が広く、マネージド（RDS・Lambda）ほど狭い。",
+    "keywords": [
+      "EC2 と RDS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

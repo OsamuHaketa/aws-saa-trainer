@@ -1414,5 +1414,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "route53-private-hosted-zone:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "route53-private-hosted-zone"
+    ],
+    "prompt": "「VPC の中だけで使う社内の DNS 名」「インターネットからは解決できない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベートホストゾーン",
+        "correct": true,
+        "atomId": "route53-private-hosted-zone",
+        "why": "関連付けた VPC の中だけで名前を解決する"
+      },
+      {
+        "id": "b",
+        "text": "パブリックホストゾーン",
+        "correct": false,
+        "why": "インターネットから解決できる"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 Resolver のインバウンドエンドポイント",
+        "correct": false,
+        "atomId": "route53-resolver",
+        "why": "オンプレミスから VPC の名前を解決するためのもの"
+      },
+      {
+        "id": "d",
+        "text": "エイリアスレコード",
+        "correct": false,
+        "atomId": "route53-alias",
+        "why": "AWS のリソースを指すレコードの種類"
+      }
+    ],
+    "explanation": "社内向けの DNS = プライベートホストゾーン。",
+    "keywords": [
+      "VPC の中だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -623,5 +623,91 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-byte-range-fetch:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-byte-range-fetch"
+    ],
+    "prompt": "「大きなオブジェクトの一部だけを取得」「範囲を分けて並列にダウンロード」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バイト範囲フェッチ",
+        "correct": true,
+        "atomId": "s3-byte-range-fetch",
+        "why": "Range ヘッダーで必要な範囲だけを取得する"
+      },
+      {
+        "id": "b",
+        "text": "マルチパートアップロード",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "アップロードの並列化"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "エッジを経由して遠くからの転送を速くする"
+      },
+      {
+        "id": "d",
+        "text": "S3 Select",
+        "correct": false,
+        "why": "オブジェクトの中身を SQL で絞り込む機能"
+      }
+    ],
+    "explanation": "ダウンロードの並列化・一部だけ = バイト範囲フェッチ。",
+    "keywords": [
+      "一部だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-prefix-performance:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-prefix-performance"
+    ],
+    "prompt": "S3 の性能を上げるため、キーの先頭にランダムな文字列を付けるようにアプリを大きく改修しようとしている。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "今はプレフィックスごとに自動で拡張するので、ランダム化は不要",
+        "correct": true,
+        "atomId": "s3-prefix-performance",
+        "why": "必要ならプレフィックスを分けて並列化する"
+      },
+      {
+        "id": "b",
+        "text": "キーの先頭は数字しか使えない",
+        "correct": false,
+        "why": "文字も使える"
+      },
+      {
+        "id": "c",
+        "text": "ランダムな文字列を付けると暗号化されなくなる",
+        "correct": false,
+        "why": "暗号化とは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "S3 は 1 秒に 1 リクエストしか処理できない",
+        "correct": false,
+        "why": "プレフィックスごとに毎秒数千のリクエストを処理できる"
+      }
+    ],
+    "explanation": "以前のキー名のランダム化の推奨は不要になった。プレフィックスを分けて並列にすれば性能が伸びる。",
+    "keywords": [
+      "ランダムな文字列"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

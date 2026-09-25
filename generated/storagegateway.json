@@ -314,5 +314,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-tape:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "storagegateway-tape"
+    ],
+    "prompt": "物理テープの運用をやめるため、既存のバックアップソフトの設定を全面的に作り直して S3 に直接書くよう改修しようとしている。より簡単な方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Tape Gateway を使う",
+        "correct": true,
+        "atomId": "storagegateway-tape",
+        "why": "仮想テープライブラリとして、バックアップソフトの設定はほぼそのままでテープを S3 に置き換えられる"
+      },
+      {
+        "id": "b",
+        "text": "S3 File Gateway を使う",
+        "correct": false,
+        "atomId": "storagegateway-file",
+        "why": "ファイル共有で、テープのインターフェイスではない"
+      },
+      {
+        "id": "c",
+        "text": "EBS スナップショットを使う",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "オンプレミスのテープの代わりにはならない"
+      },
+      {
+        "id": "d",
+        "text": "物理テープを Snowball で毎月送る",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "テープの運用が残る"
+      }
+    ],
+    "explanation": "既存のバックアップソフトのまま = Tape Gateway（VTL）。",
+    "keywords": [
+      "既存のバックアップソフト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

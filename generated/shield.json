@@ -222,5 +222,92 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "shield-standard:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "shield-standard"
+    ],
+    "prompt": "大規模な DDoS 攻撃で、攻撃中の対応の支援と、増えた料金の補償が必要。無料の Shield Standard で十分だと考えた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "支援や補償は Shield Advanced の機能",
+        "correct": true,
+        "atomId": "shield-advanced",
+        "why": "Standard は基本的な保護だけ"
+      },
+      {
+        "id": "b",
+        "text": "Shield Standard は有料で申し込みが必要",
+        "correct": false,
+        "why": "無料で自動適用される"
+      },
+      {
+        "id": "c",
+        "text": "Shield Standard は DDoS から守らない",
+        "correct": false,
+        "why": "一般的な DDoS から守る"
+      },
+      {
+        "id": "d",
+        "text": "Shield Standard は CloudFront では使えない",
+        "correct": false,
+        "why": "CloudFront や Route 53 も保護される"
+      }
+    ],
+    "explanation": "支援（SRT）・補償・高度な検知 = Shield Advanced。",
+    "keywords": [
+      "支援",
+      "補償"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "shield-advanced:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "shield-advanced"
+    ],
+    "prompt": "Shield Advanced で保護する対象として登録できないものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バケット",
+        "correct": true,
+        "why": "S3 は Shield Advanced の保護の対象ではない（前に CloudFront を置く）"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront ディストリビューション",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "登録できる"
+      },
+      {
+        "id": "c",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "登録できる"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP アドレス",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "登録できる"
+      }
+    ],
+    "explanation": "Shield Advanced の対象 = CloudFront、Route 53、Global Accelerator、ELB、Elastic IP（EC2）など。",
+    "keywords": [
+      "登録できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

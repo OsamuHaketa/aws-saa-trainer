@@ -1712,5 +1712,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-ownership:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-object-ownership"
+    ],
+    "prompt": "「ACL を無効にする」「バケット所有者がすべてのオブジェクトを所有」→ 何の設定？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オブジェクト所有権",
+        "correct": true,
+        "atomId": "s3-object-ownership",
+        "why": "バケット所有者の強制を選ぶ。アクセス制御はポリシーだけで行う"
+      },
+      {
+        "id": "b",
+        "text": "S3 ブロックパブリックアクセス",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "公開の設定を止める機能"
+      },
+      {
+        "id": "c",
+        "text": "S3 のバージョニング",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "オブジェクトの古いバージョンを残す機能"
+      },
+      {
+        "id": "d",
+        "text": "S3 Object Lock",
+        "correct": false,
+        "atomId": "s3-object-lock",
+        "why": "削除や上書きを防ぐ機能"
+      }
+    ],
+    "explanation": "ACL の無効化 = オブジェクト所有権のバケット所有者の強制（新しいバケットのデフォルト）。",
+    "keywords": [
+      "ACL を無効"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock-governance:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "s3-object-lock-governance",
+      "s3-object-lock-compliance"
+    ],
+    "prompt": "本番の運用で、誤って長い保持期間を設定してしまう可能性がある。まず検証するときに、ガバナンスモードを使う理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "特別な権限があれば、設定の誤りを直せるから",
+        "correct": true,
+        "atomId": "s3-object-lock-governance",
+        "why": "コンプライアンスモードは誰も解除・短縮できない"
+      },
+      {
+        "id": "b",
+        "text": "ガバナンスモードの方が厳しく保護されるから",
+        "correct": false,
+        "why": "厳しいのはコンプライアンスモード"
+      },
+      {
+        "id": "c",
+        "text": "ガバナンスモードは保持期間を設定できないから",
+        "correct": false,
+        "why": "保持期間を設定できる"
+      },
+      {
+        "id": "d",
+        "text": "コンプライアンスモードはテストでは使えないから",
+        "correct": false,
+        "why": "使えるが、解除できない"
+      }
+    ],
+    "explanation": "検証や柔軟さ = ガバナンス、規制で誰にも消させない = コンプライアンス。",
+    "keywords": [
+      "検証"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock-governance:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "s3-object-lock-governance"
+    ],
+    "prompt": "「特別な権限があれば保持を解除できる」→ Object Lock のどのモード？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ガバナンスモード",
+        "correct": true,
+        "atomId": "s3-object-lock-governance",
+        "why": "s3:BypassGovernanceRetention の権限を持つユーザーは解除できる"
+      },
+      {
+        "id": "b",
+        "text": "コンプライアンスモード",
+        "correct": false,
+        "atomId": "s3-object-lock-compliance",
+        "why": "ルートユーザーでも解除できない"
+      },
+      {
+        "id": "c",
+        "text": "リーガルホールド",
+        "correct": false,
+        "atomId": "s3-legal-hold",
+        "why": "期間のない保持で、権限があれば外せる"
+      },
+      {
+        "id": "d",
+        "text": "MFA Delete",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "削除のときに MFA を求める設定"
+      }
+    ],
+    "explanation": "権限で解除できる保持期間 = ガバナンスモード。",
+    "keywords": [
+      "BypassGovernanceRetention"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-legal-hold:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "s3-legal-hold",
+      "s3-object-lock-compliance"
+    ],
+    "prompt": "Object Lock のリーガルホールドと保持期間（リテンション）の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は期限がなく、外すまで有効。後者は期限がある",
+        "correct": true,
+        "atomId": "s3-legal-hold",
+        "why": "両方を同じオブジェクトに付けることもできる"
+      },
+      {
+        "id": "b",
+        "text": "前者は期限が決まっていて、後者は無期限",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "前者はバージョニングがなくても使える",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "どちらもバージョニングが必要"
+      },
+      {
+        "id": "d",
+        "text": "後者は解除の権限があれば、いつでも外せる",
+        "correct": false,
+        "why": "コンプライアンスモードは外せない"
+      }
+    ],
+    "explanation": "期限あり = 保持期間、期限なし（訴訟など）= リーガルホールド。",
+    "keywords": [
+      "期限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

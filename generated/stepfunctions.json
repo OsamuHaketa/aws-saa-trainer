@@ -310,5 +310,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-standard-express:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "stepfunctions-standard-express"
+    ],
+    "prompt": "「最長 1 年」「各ステップは 1 回だけ実行」→ Step Functions のどのワークフロー？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "標準ワークフロー",
+        "correct": true,
+        "atomId": "stepfunctions-standard-express",
+        "why": "長時間で確実な処理向け"
+      },
+      {
+        "id": "b",
+        "text": "Express ワークフロー",
+        "correct": false,
+        "why": "最長 5 分で、大量・高頻度の実行向け"
+      },
+      {
+        "id": "c",
+        "text": "AWS Batch のジョブ",
+        "correct": false,
+        "atomId": "batch-jobs",
+        "why": "Step Functions のワークフローではない"
+      },
+      {
+        "id": "d",
+        "text": "EventBridge Scheduler",
+        "correct": false,
+        "atomId": "eventbridge-scheduler",
+        "why": "定期実行の仕組み"
+      }
+    ],
+    "explanation": "長時間・exactly-once = 標準、短時間・大量 = Express。",
+    "keywords": [
+      "最長 1 年"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

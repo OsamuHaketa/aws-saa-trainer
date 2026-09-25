@@ -670,5 +670,139 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-key:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "s3-bucket-key"
+    ],
+    "prompt": "毎秒数千のオブジェクトを SSE-KMS で書き込むバケットで、KMS のスロットリングと料金の増加が起きている。暗号化の方式は変えたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バケットキーを有効にする",
+        "correct": true,
+        "atomId": "s3-bucket-key",
+        "why": "KMS へのリクエストを大幅に減らせる"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3 に切り替える",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "方式を変えたくないという要件に反する"
+      },
+      {
+        "id": "c",
+        "text": "KMS の鍵を毎日作り直す",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "リクエストの数は減らない"
+      },
+      {
+        "id": "d",
+        "text": "暗号化をやめる",
+        "correct": false,
+        "why": "要件に反する"
+      }
+    ],
+    "explanation": "SSE-KMS のコストとスロットリング = S3 バケットキー。",
+    "keywords": [
+      "KMS のスロットリング"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-bucket-key:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-bucket-key"
+    ],
+    "prompt": "「SSE-KMS の KMS リクエストの料金を減らす」「バケット単位の鍵」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 バケットキー",
+        "correct": true,
+        "atomId": "s3-bucket-key",
+        "why": "バケット単位の鍵でデータキーを作り、KMS への呼び出しを減らす"
+      },
+      {
+        "id": "b",
+        "text": "SSE-C",
+        "correct": false,
+        "atomId": "s3-sse-c",
+        "why": "利用者が鍵を渡す方式"
+      },
+      {
+        "id": "c",
+        "text": "KMS マルチリージョンキー",
+        "correct": false,
+        "atomId": "kms-multi-region-keys",
+        "why": "リージョン間で同じ鍵を使う"
+      },
+      {
+        "id": "d",
+        "text": "クライアント側の暗号化",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "アップロード前に暗号化する"
+      }
+    ],
+    "explanation": "SSE-KMS のコスト削減 = バケットキー。",
+    "keywords": [
+      "KMS リクエストの料金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-sse-c:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-sse-c"
+    ],
+    "prompt": "「鍵は自社で管理し、S3 には保存させない」「リクエストごとに鍵を渡す」→ どの暗号化？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSE-C",
+        "correct": true,
+        "atomId": "s3-sse-c",
+        "why": "S3 は暗号化と復号だけを行い、鍵を保存しない"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "S3 が鍵を管理する"
+      },
+      {
+        "id": "c",
+        "text": "SSE-KMS",
+        "correct": false,
+        "atomId": "s3-sse-kms",
+        "why": "KMS が鍵を管理する"
+      },
+      {
+        "id": "d",
+        "text": "S3 バケットキー",
+        "correct": false,
+        "atomId": "s3-bucket-key",
+        "why": "SSE-KMS のコストを減らす仕組み"
+      }
+    ],
+    "explanation": "鍵を毎回渡す・S3 は保存しない = SSE-C（HTTPS が必須）。",
+    "keywords": [
+      "鍵を渡す"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

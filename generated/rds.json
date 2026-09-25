@@ -2040,5 +2040,181 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "rds-snapshots:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "rds-snapshots"
+    ],
+    "prompt": "RDS の手動スナップショットの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "自分で削除するまで残る",
+        "correct": true,
+        "atomId": "rds-snapshots",
+        "why": "DB を削除しても残り、別リージョンにもコピーできる"
+      },
+      {
+        "id": "b",
+        "text": "35 日を過ぎると自動で削除される",
+        "correct": false,
+        "atomId": "rds-automated-backups",
+        "why": "それは自動バックアップ"
+      },
+      {
+        "id": "c",
+        "text": "任意の秒単位の時点に戻せる",
+        "correct": false,
+        "why": "取得した時点にだけ戻せる"
+      },
+      {
+        "id": "d",
+        "text": "DB を削除すると一緒に削除される",
+        "correct": false,
+        "why": "手動スナップショットは残る"
+      }
+    ],
+    "explanation": "手動スナップショット = 長期保管・コピー・共有。任意の時点 = 自動バックアップ（最大 35 日）。",
+    "keywords": [
+      "手動スナップショット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-multi-az-cluster:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "rds-multi-az-cluster"
+    ],
+    "prompt": "「読み取り可能なスタンバイ 2 台」「フェイルオーバーは通常 35 秒程度」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチ AZ DB クラスター",
+        "correct": true,
+        "atomId": "rds-multi-az-cluster",
+        "why": "RDS for MySQL / PostgreSQL の構成"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ DB インスタンス",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイ 1 台で、読み取りに使えない"
+      },
+      {
+        "id": "c",
+        "text": "クロスリージョンリードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "別リージョンへの非同期の複製"
+      },
+      {
+        "id": "d",
+        "text": "Aurora グローバルデータベース",
+        "correct": false,
+        "atomId": "rds-aurora-global-database",
+        "why": "リージョン間の複製"
+      }
+    ],
+    "explanation": "読めるスタンバイ 2 台 = マルチ AZ DB クラスター。",
+    "keywords": [
+      "スタンバイ 2 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-endpoints:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora-endpoints"
+    ],
+    "prompt": "「Aurora の読み取りの接続を複数のレプリカに分散」→ どのエンドポイント？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リーダーエンドポイント",
+        "correct": true,
+        "atomId": "rds-aurora-endpoints",
+        "why": "Aurora レプリカに接続を分散する"
+      },
+      {
+        "id": "b",
+        "text": "クラスターエンドポイント",
+        "correct": false,
+        "why": "常にプライマリ（書き込み）を指す"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスエンドポイント",
+        "correct": false,
+        "why": "特定の 1 台を指す"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy のエンドポイント",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールのためのもの"
+      }
+    ],
+    "explanation": "書き込み = クラスター、読み取り = リーダー、用途別 = カスタム。",
+    "keywords": [
+      "読み取りの接続を分散"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-spectrum:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "redshift-spectrum"
+    ],
+    "prompt": "「Redshift から S3 のデータを外部テーブルとして問い合わせる」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Redshift Spectrum",
+        "correct": true,
+        "atomId": "redshift-spectrum",
+        "why": "S3 のデータを Redshift の中のテーブルと結合できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "単独で S3 に SQL を実行する"
+      },
+      {
+        "id": "c",
+        "text": "Redshift Serverless",
+        "correct": false,
+        "atomId": "redshift-serverless",
+        "why": "容量を自動で調整する Redshift"
+      },
+      {
+        "id": "d",
+        "text": "AWS Glue の ETL",
+        "correct": false,
+        "atomId": "glue-etl",
+        "why": "データの変換"
+      }
+    ],
+    "explanation": "Redshift × S3 の外部テーブル = Spectrum。",
+    "keywords": [
+      "外部テーブル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

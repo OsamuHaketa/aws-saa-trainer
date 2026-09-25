@@ -894,5 +894,180 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-visibility-timeout:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sqs-visibility-timeout"
+    ],
+    "prompt": "メッセージによって処理時間が 1 分〜20 分とばらつく。可視性タイムアウトを長くしすぎず、処理中の重複も防ぎたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "処理中にタイムアウトを延長する",
+        "correct": true,
+        "atomId": "sqs-visibility-timeout",
+        "why": "ChangeMessageVisibility で、時間がかかっているメッセージだけ見えない時間を延ばす"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウトを 0 秒にする",
+        "correct": false,
+        "why": "処理中に他の処理側に渡ってしまう"
+      },
+      {
+        "id": "c",
+        "text": "ロングポーリングを使う",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信の待ち方で、処理中の重複は防げない"
+      },
+      {
+        "id": "d",
+        "text": "メッセージの保持期間を延ばす",
+        "correct": false,
+        "atomId": "sqs-retention",
+        "why": "処理中の重複とは関係ない"
+      }
+    ],
+    "explanation": "処理時間がばらつく = 処理中に可視性タイムアウトを延長する。",
+    "keywords": [
+      "ばらつく"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-dlq:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sqs-dlq"
+    ],
+    "prompt": "処理できないメッセージを DLQ に移す設定をしたが、DLQ にたまったメッセージを誰も見ていない。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "失敗に気付けず、保持期間を過ぎると消える",
+        "correct": true,
+        "atomId": "sqs-dlq",
+        "why": "DLQ の件数にアラームを設定し、調べて再処理する"
+      },
+      {
+        "id": "b",
+        "text": "DLQ にあるメッセージは元のキューに戻せない",
+        "correct": false,
+        "why": "リドライブで元のキューに戻せる"
+      },
+      {
+        "id": "c",
+        "text": "DLQ はメッセージを保存しない",
+        "correct": false,
+        "why": "保存する"
+      },
+      {
+        "id": "d",
+        "text": "DLQ を使うとすべてのメッセージが移される",
+        "correct": false,
+        "why": "最大受信数を超えたものだけ"
+      }
+    ],
+    "explanation": "DLQ は監視（件数のアラーム）とリドライブ（再処理）までがセット。",
+    "keywords": [
+      "誰も見ていない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-queue-based-scaling:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "sqs-queue-based-scaling"
+    ],
+    "prompt": "SQS を処理する EC2 の Auto Scaling で、スケーリングの指標として推奨されるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "1 台あたりの滞留数",
+        "correct": true,
+        "atomId": "sqs-queue-based-scaling",
+        "why": "インスタンスあたりのバックログ（滞留数 ÷ 台数）を、1 台が処理できる量と比べる"
+      },
+      {
+        "id": "b",
+        "text": "キューの保持期間",
+        "correct": false,
+        "atomId": "sqs-retention",
+        "why": "保持期間は設定値で、負荷ではない"
+      },
+      {
+        "id": "c",
+        "text": "可視性タイムアウトの秒数",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "設定値で、負荷ではない"
+      },
+      {
+        "id": "d",
+        "text": "EC2 のディスクの空き容量",
+        "correct": false,
+        "why": "キューの負荷を表さない"
+      }
+    ],
+    "explanation": "キューの処理 = インスタンスあたりのバックログでターゲット追跡。",
+    "keywords": [
+      "バックログ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-retention:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "sqs-retention"
+    ],
+    "prompt": "月に一度、処理側のシステムが最大 10 日止まることがある。その間に届いたメッセージも失いたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キューの保持期間を 14 日にする",
+        "correct": true,
+        "atomId": "sqs-retention",
+        "why": "最大 14 日まで保持できる"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウトを 10 日にする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "上限は 12 時間で、保持の設定ではない"
+      },
+      {
+        "id": "c",
+        "text": "DLQ にすべてのメッセージを移す",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "DLQ にも保持期間がある"
+      },
+      {
+        "id": "d",
+        "text": "ロングポーリングを最大にする",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信の待ち方の設定"
+      }
+    ],
+    "explanation": "長い停止に備える = 保持期間を延ばす（最大 14 日）。",
+    "keywords": [
+      "最大 10 日止まる"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -2924,5 +2924,140 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-client-vpn:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-client-vpn"
+    ],
+    "prompt": "「リモートワークの社員の PC から VPC に接続」「OpenVPN ベース」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Client VPN",
+        "correct": true,
+        "atomId": "vpc-client-vpn",
+        "why": "ユーザーの端末からの VPN 接続"
+      },
+      {
+        "id": "b",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "拠点のネットワーク同士の接続"
+      },
+      {
+        "id": "c",
+        "text": "AWS Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "専用線"
+      },
+      {
+        "id": "d",
+        "text": "VPN CloudHub",
+        "correct": false,
+        "atomId": "vpc-vpn-cloudhub",
+        "why": "複数の拠点の VPN を相互につなぐ"
+      }
+    ],
+    "explanation": "人の端末から = Client VPN。",
+    "keywords": [
+      "社員の PC"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect-gateway:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "vpc-direct-connect-gateway"
+    ],
+    "prompt": "「1 本の Direct Connect を複数のリージョンの VPC で共有」「グローバルなリソース」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DX ゲートウェイ",
+        "correct": true,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "Direct Connect ゲートウェイ。複数のリージョンやアカウントの VPC に接続できる"
+      },
+      {
+        "id": "b",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "リージョンのハブ（DX ゲートウェイと組み合わせる）"
+      },
+      {
+        "id": "c",
+        "text": "仮想プライベートゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "1 つの VPC に付ける"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      }
+    ],
+    "explanation": "DX を複数リージョンで = Direct Connect ゲートウェイ。",
+    "keywords": [
+      "複数のリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-sharing:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "vpc-sharing"
+    ],
+    "prompt": "「AWS RAM」「サブネットを同じ組織の他のアカウントと共有」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC 共有",
+        "correct": true,
+        "atomId": "vpc-sharing",
+        "why": "参加アカウントは共有されたサブネットにリソースを作れる"
+      },
+      {
+        "id": "b",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "別々の VPC 同士をつなぐ"
+      },
+      {
+        "id": "c",
+        "text": "PrivateLink",
+        "correct": false,
+        "atomId": "vpc-privatelink",
+        "why": "特定のサービスだけを公開する"
+      },
+      {
+        "id": "d",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "多数の VPC をつなぐハブ"
+      }
+    ],
+    "explanation": "サブネットを共有 = VPC 共有（RAM）。",
+    "keywords": [
+      "AWS RAM"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

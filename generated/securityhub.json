@@ -85,5 +85,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "securityhub-findings:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "securityhub-findings"
+    ],
+    "prompt": "「セキュリティの検出結果を 1 か所に集約」「CIS などの基準で自動チェック」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Security Hub",
+        "correct": true,
+        "atomId": "securityhub-findings",
+        "why": "複数のサービスの結果を集め、基準で評価する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "脅威を検出するサービス"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Detective",
+        "correct": false,
+        "atomId": "detective-investigation",
+        "why": "問題の原因を調べるサービス"
+      },
+      {
+        "id": "d",
+        "text": "AWS CloudTrail",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の操作の記録"
+      }
+    ],
+    "explanation": "集約と基準のチェック = Security Hub。",
+    "keywords": [
+      "1 か所に集約"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -402,5 +402,184 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-parameter-store:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ssm-parameter-store",
+      "secretsmanager-secret"
+    ],
+    "prompt": "DB のパスワードを Parameter Store の SecureString ではなく Secrets Manager に置くべきなのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "自動のローテーションが必要なとき",
+        "correct": true,
+        "atomId": "secretsmanager-secret",
+        "why": "Secrets Manager は RDS などと連携してローテーションする"
+      },
+      {
+        "id": "b",
+        "text": "コストを最も安くしたいとき",
+        "correct": false,
+        "atomId": "ssm-parameter-store",
+        "why": "安いのは Parameter Store の標準パラメータ"
+      },
+      {
+        "id": "c",
+        "text": "暗号化せずに保存したいとき",
+        "correct": false,
+        "why": "どちらも暗号化して保存できる"
+      },
+      {
+        "id": "d",
+        "text": "設定値を階層で管理したいとき",
+        "correct": false,
+        "atomId": "ssm-parameter-store",
+        "why": "階層の管理は Parameter Store が得意"
+      }
+    ],
+    "explanation": "ローテーション = Secrets Manager、安さ・設定値の階層管理 = Parameter Store。",
+    "keywords": [
+      "SecureString"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-patch-manager:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ssm-patch-manager"
+    ],
+    "prompt": "「パッチベースライン」「メンテナンスウィンドウ」「OS のパッチを自動で適用」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Patch Manager",
+        "correct": true,
+        "atomId": "ssm-patch-manager",
+        "why": "多数のサーバーのパッチ適用を自動化する"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Inspector",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検出で、パッチは当てない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "ベストプラクティスのチェック"
+      }
+    ],
+    "explanation": "パッチの自動適用 = Patch Manager。",
+    "keywords": [
+      "パッチベースライン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-run-command:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ssm-run-command"
+    ],
+    "prompt": "「多数のインスタンスにコマンドを一斉実行」「SSH 不要」「タグで対象を選ぶ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Run Command",
+        "correct": true,
+        "atomId": "ssm-run-command",
+        "why": "IAM で実行を制御し、結果も残せる"
+      },
+      {
+        "id": "b",
+        "text": "Session Manager",
+        "correct": false,
+        "atomId": "ssm-session-manager",
+        "why": "1 台に対話的に接続する"
+      },
+      {
+        "id": "c",
+        "text": "EC2 のユーザーデータ",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時にだけ実行される"
+      },
+      {
+        "id": "d",
+        "text": "EventBridge Scheduler",
+        "correct": false,
+        "atomId": "eventbridge-scheduler",
+        "why": "決まった時刻にターゲットを実行する"
+      }
+    ],
+    "explanation": "一括のコマンド実行 = Run Command。",
+    "keywords": [
+      "一斉実行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-run-command:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "ssm-run-command",
+      "ssm-session-manager"
+    ],
+    "prompt": "Run Command と Session Manager の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一括実行なら前者、対話的なら後者",
+        "correct": true,
+        "atomId": "ssm-run-command",
+        "why": "どちらも SSH のポートは不要"
+      },
+      {
+        "id": "b",
+        "text": "前者は SSH が必要、後者は不要",
+        "correct": false,
+        "why": "どちらも不要"
+      },
+      {
+        "id": "c",
+        "text": "後者は多数の台に同時にコマンドを実行する",
+        "correct": false,
+        "why": "対話的な接続"
+      },
+      {
+        "id": "d",
+        "text": "前者は Windows では使えない",
+        "correct": false,
+        "why": "Windows でも使える"
+      }
+    ],
+    "explanation": "一括実行 = Run Command、対話的 = Session Manager。",
+    "keywords": [
+      "一括",
+      "対話的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

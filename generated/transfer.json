@@ -88,5 +88,47 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "transfer-sftp:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "transfer-sftp"
+    ],
+    "prompt": "取引先からの SFTP の受け口のため、EC2 に SFTP サーバーを 1 台立て、受け取ったファイルを cron で S3 にコピーしている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "1 台で冗長性がなく、OS の管理も必要",
+        "correct": true,
+        "atomId": "transfer-sftp",
+        "why": "Transfer Family なら S3 に直接保存され、管理も不要"
+      },
+      {
+        "id": "b",
+        "text": "SFTP では S3 にファイルを置けない",
+        "correct": false,
+        "why": "Transfer Family なら置ける"
+      },
+      {
+        "id": "c",
+        "text": "EC2 では SFTP を使えない",
+        "correct": false,
+        "why": "使えるが、運用の手間と単一障害点が問題"
+      },
+      {
+        "id": "d",
+        "text": "cron は Linux で使えない",
+        "correct": false,
+        "why": "使える"
+      }
+    ],
+    "explanation": "SFTP の受け口 = Transfer Family（マネージド・冗長化・S3 / EFS に直接）。",
+    "keywords": [
+      "EC2 に SFTP サーバーを 1 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

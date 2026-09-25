@@ -271,5 +271,139 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "waf-firewall-manager:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "waf-firewall-manager"
+    ],
+    "prompt": "「組織全体の WAF ルールを一元管理」「新しいアカウントにも自動で適用」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Firewall Manager",
+        "correct": true,
+        "atomId": "waf-firewall-manager",
+        "why": "Organizations と連携してセキュリティのルールを配る"
+      },
+      {
+        "id": "b",
+        "text": "AWS WAF の Web ACL だけ",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "アカウントごと・リソースごとの設定"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config のルール",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      },
+      {
+        "id": "d",
+        "text": "SCP",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "操作の禁止"
+      }
+    ],
+    "explanation": "組織全体のファイアウォールのルール = Firewall Manager。",
+    "keywords": [
+      "一元管理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-firewall-manager:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "waf-firewall-manager"
+    ],
+    "prompt": "Firewall Manager を使おうとしたが、ポリシーを作成できない。考えられる前提の不足は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Organizations を使っていない",
+        "correct": true,
+        "atomId": "waf-firewall-manager",
+        "why": "Firewall Manager には Organizations（管理者アカウントの指定）と AWS Config が必要"
+      },
+      {
+        "id": "b",
+        "text": "WAF を 1 つも作っていない",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "ポリシーから Web ACL を作れる"
+      },
+      {
+        "id": "c",
+        "text": "Shield Standard を無効にしていない",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "無効にはできず、関係ない"
+      },
+      {
+        "id": "d",
+        "text": "CloudTrail を無効にしている",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "Firewall Manager の前提ではない"
+      }
+    ],
+    "explanation": "Firewall Manager の前提 = Organizations（管理者アカウントの指定）+ AWS Config の有効化。",
+    "keywords": [
+      "作成できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "waf-firewall-manager:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "waf-firewall-manager"
+    ],
+    "prompt": "Firewall Manager でまとめて管理できないものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM ユーザーのパスワードポリシー",
+        "correct": true,
+        "why": "IAM の設定は Firewall Manager の対象ではない"
+      },
+      {
+        "id": "b",
+        "text": "WAF のルール",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "管理できる"
+      },
+      {
+        "id": "c",
+        "text": "セキュリティグループ",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "管理できる"
+      },
+      {
+        "id": "d",
+        "text": "Network Firewall",
+        "correct": false,
+        "atomId": "vpc-network-firewall",
+        "why": "管理できる"
+      }
+    ],
+    "explanation": "Firewall Manager = WAF、Shield Advanced、SG、Network Firewall、Route 53 Resolver DNS Firewall など。",
+    "keywords": [
+      "管理できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
