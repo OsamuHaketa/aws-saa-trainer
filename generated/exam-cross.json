@@ -1627,5 +1627,965 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-session-manager:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "ssm-session-manager",
+      "ssm-patch-manager",
+      "vpc-interface-endpoint"
+    ],
+    "prompt": "プライベートサブネットに 200 台の EC2 がある。\n・運用者は SSH のポートを開けずにシェルで接続したい\n・毎月決まった日に OS のパッチを自動で当てたい\n・サブネットからインターネットには出さない\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Session Manager + Patch Manager + SSM 用のインターフェイスエンドポイント",
+        "correct": true,
+        "atomId": "ssm-session-manager",
+        "why": "ポートを開けず、パッチを自動化し、SSM への経路をプライベートに持つ"
+      },
+      {
+        "id": "b",
+        "text": "踏み台サーバー + 各サーバーで手動のパッチ適用 + NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-bastion-host",
+        "why": "SSH のポートが必要で、手作業が多く、インターネットにも出る"
+      },
+      {
+        "id": "c",
+        "text": "Session Manager + Inspector でパッチを適用 + インターネットゲートウェイ",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "Inspector はパッチを当てず、インターネットに出てしまう"
+      },
+      {
+        "id": "d",
+        "text": "EC2 Instance Connect + ユーザーデータでパッチ + ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "SSH を使い、パッチは起動時だけで、SSM の経路にもならない"
+      }
+    ],
+    "explanation": "ポートを開けない運用 = Session Manager、パッチ = Patch Manager、NAT なし = SSM のインターフェイスエンドポイント（ssm / ssmmessages / ec2messages）。",
+    "keywords": [
+      "SSH のポートを開けずに",
+      "インターネットには出さない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-control-tower:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "organizations-control-tower",
+      "iam-identity-center",
+      "organizations-scp"
+    ],
+    "prompt": "急成長中の企業が、マルチアカウント環境を新しく作る。\n・ベストプラクティスに沿った環境をすぐに作り、新しいアカウントも標準の設定で払い出す\n・社員は 1 か所のサインインで、担当のアカウントに入る\n・全アカウントで特定のリージョンの利用を禁止する\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Control Tower + IAM Identity Center + SCP（ガードレール）",
+        "correct": true,
+        "atomId": "organizations-control-tower",
+        "why": "ランディングゾーンと Account Factory、SSO、予防のガードレール"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントを手で作成 + アカウントごとの IAM ユーザー + IAM ポリシー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "手作業が多く、IAM ポリシーはアカウントの管理者が外せる"
+      },
+      {
+        "id": "c",
+        "text": "Organizations の一括請求だけ + Cognito + AWS Config のルール",
+        "correct": false,
+        "atomId": "organizations-consolidated-billing",
+        "why": "統制と SSO の仕組みにならず、Config は禁止ではなく検出"
+      },
+      {
+        "id": "d",
+        "text": "CloudFormation StackSets + IAM の SAML 連携を各アカウント + Budgets",
+        "correct": false,
+        "atomId": "cloudformation-stacksets",
+        "why": "SSO の管理が分散し、リージョンの禁止にもならない"
+      }
+    ],
+    "explanation": "マルチアカウントの標準化 = Control Tower、SSO = Identity Center、禁止 = SCP。",
+    "keywords": [
+      "すぐに作り",
+      "1 か所のサインイン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "apigateway-authorizers:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "apigateway-authorizers",
+      "waf-web-acl",
+      "apigateway-throttling"
+    ],
+    "prompt": "モバイルアプリ向けの公開 API（API Gateway の REST API）を守る。\n・Cognito でログインしたユーザーだけが呼べる\n・SQL インジェクションや、同じ IP からの大量のリクエストを止める\n・バックエンドが処理できる量を超えないようにする\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cognito オーソライザー + WAF（マネージドルールとレート制限）+ スロットリング",
+        "correct": true,
+        "atomId": "apigateway-authorizers",
+        "why": "認証・L7 の防御・流量の制御をそれぞれ行う"
+      },
+      {
+        "id": "b",
+        "text": "API キーだけ + セキュリティグループ + Lambda の予約同時実行",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "API キーは認証ではなく、SG は API Gateway に付けられない"
+      },
+      {
+        "id": "c",
+        "text": "IAM 認可 + Shield Standard + CloudFront のキャッシュ",
+        "correct": false,
+        "atomId": "shield-standard",
+        "why": "モバイルの利用者に IAM の署名は向かず、SQL インジェクションを防げない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda オーソライザー + NACL + DynamoDB のオンデマンド",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "NACL は API Gateway に使えず、流量の制御にもならない"
+      }
+    ],
+    "explanation": "公開 API の防御 = オーソライザー（誰が）+ WAF（攻撃）+ スロットリング（量）。",
+    "keywords": [
+      "Cognito",
+      "SQL インジェクション",
+      "処理できる量"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-customer-managed-key:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "kms-customer-managed-key",
+      "ebs-encryption",
+      "rds-encryption"
+    ],
+    "prompt": "規制に対応するため、保存データの暗号化を徹底する。\n・今後作る EBS ボリュームは、作成者が意識しなくても必ず暗号化する\n・既存の暗号化されていない RDS も暗号化する\n・暗号鍵の利用は記録し、鍵を使える人を制限する\n最適な対応は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EBS のデフォルト暗号化 + RDS はスナップショット経由で暗号化 + CMK",
+        "correct": true,
+        "atomId": "kms-customer-managed-key",
+        "why": "カスタマーマネージドキーで鍵ポリシーを制御し、利用は CloudTrail に残る"
+      },
+      {
+        "id": "b",
+        "text": "EBS を作るたびに手で暗号化 + RDS の設定画面で暗号化を有効化 + SSE-S3",
+        "correct": false,
+        "atomId": "rds-encryption",
+        "why": "作成者の意識が必要で、既存の RDS は直接暗号化できない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストアを使う + RDS をマルチ AZ にする + AWS マネージドキー",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "インスタンスストアは要件と関係なく、鍵を使える人を制御できない"
+      },
+      {
+        "id": "d",
+        "text": "EBS のスナップショットだけ暗号化 + RDS のリードレプリカだけ暗号化 + KMS なし",
+        "correct": false,
+        "atomId": "ebs-snapshots",
+        "why": "元のボリュームや DB が暗号化されない"
+      }
+    ],
+    "explanation": "EBS = デフォルト暗号化、既存の RDS = 暗号化したスナップショットから復元、鍵の制御と監査 = カスタマーマネージドキー + CloudTrail。",
+    "keywords": [
+      "必ず暗号化",
+      "既存の暗号化されていない RDS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "guardduty-detector:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "guardduty-detector",
+      "securityhub-findings",
+      "eventbridge-bus"
+    ],
+    "prompt": "組織の全アカウントで脅威の検出と対応を自動化する。\n・不審な API 呼び出しや侵害された EC2 を継続的に検出する\n・検出結果をセキュリティアカウントで一元的に見る\n・重大な検出があれば自動で EC2 を隔離する\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "GuardDuty + Security Hub + EventBridge と Lambda",
+        "correct": true,
+        "atomId": "guardduty-detector",
+        "why": "GuardDuty（委任管理者）で検出、Security Hub で集約、EventBridge と Lambda で隔離する"
+      },
+      {
+        "id": "b",
+        "text": "Inspector + CloudTrail の組織の証跡 + 手動で SG を変更",
+        "correct": false,
+        "atomId": "inspector-scan",
+        "why": "脆弱性の検査で脅威は検出できず、対応も手動"
+      },
+      {
+        "id": "c",
+        "text": "Macie + Config アグリゲーター + SNS でメール通知だけ",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データの検出で、隔離もしない"
+      },
+      {
+        "id": "d",
+        "text": "Detective だけを有効化 + Trusted Advisor + Budgets",
+        "correct": false,
+        "atomId": "detective-investigation",
+        "why": "Detective は調査用で、継続的な検出や自動対応をしない"
+      }
+    ],
+    "explanation": "検出 = GuardDuty、集約 = Security Hub、自動対応 = EventBridge → Lambda / SSM Automation。",
+    "keywords": [
+      "自動で EC2 を隔離"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-latency:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "route53-latency",
+      "route53-health-checks",
+      "dynamodb-global-tables"
+    ],
+    "prompt": "世界中で使われる SaaS を、米国・欧州・東京の 3 リージョンでアクティブ/アクティブに動かす。\n・利用者を最も応答の速いリージョンに振り分ける\n・あるリージョンが異常なら、自動でそのリージョンを外す\n・データはどのリージョンでも読み書きする\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Route 53 のレイテンシールーティング + ヘルスチェック + DynamoDB グローバルテーブル",
+        "correct": true,
+        "atomId": "route53-latency",
+        "why": "速さで振り分け、異常なリージョンを外し、データは相互に複製"
+      },
+      {
+        "id": "b",
+        "text": "Route 53 の位置情報ルーティング + ヘルスチェックなし + RDS のリードレプリカ",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "異常を外せず、レプリカは読み取り専用"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のシンプルルーティング + CloudWatch アラーム + DynamoDB の PITR",
+        "correct": false,
+        "atomId": "route53-simple",
+        "why": "複数のリージョンを振り分けられず、PITR は複製ではない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 の加重ルーティング（均等）+ ELB のヘルスチェック + S3 の CRR",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "速さで選ばず、ELB のヘルスチェックは DNS に反映されない"
+      }
+    ],
+    "explanation": "マルチリージョン・アクティブ/アクティブ = レイテンシールーティング + ヘルスチェック + グローバルテーブル（Global Accelerator も選択肢）。",
+    "keywords": [
+      "アクティブ/アクティブ",
+      "どのリージョンでも読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-concurrency:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "lambda-concurrency",
+      "sqs-standard",
+      "lambda-event-source-mapping"
+    ],
+    "prompt": "イベントのたびに Lambda が RDS に書き込む。\n・セール時にはイベントが急増し、RDS が過負荷になる\n・急増時もイベントは失わず、あとで処理できればよい\n・RDS への同時の書き込み数に上限を設けたい\n最適な対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS を挟み、Lambda の同時実行数を制限",
+        "correct": true,
+        "atomId": "lambda-concurrency",
+        "why": "キューで受け止め、処理の速さを同時実行数で抑える"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のメモリを最大にして、処理を速くする",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "同時に来る数は減らず、RDS の過負荷は続く"
+      },
+      {
+        "id": "c",
+        "text": "RDS をマルチ AZ にして、スタンバイにも書き込ませる",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイには書き込めず、負荷の分散にならない"
+      },
+      {
+        "id": "d",
+        "text": "SNS で Lambda を直接呼び、失敗したら捨てる",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "急増を吸収できず、イベントを失う"
+      }
+    ],
+    "explanation": "急増の吸収 = SQS、下流の保護 = Lambda の同時実行数の上限（最大同時実行数の設定）。",
+    "keywords": [
+      "過負荷",
+      "失わず",
+      "上限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-origin-failover:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "cloudfront-origin-failover",
+      "s3-cross-region-replication",
+      "cloudfront-distribution"
+    ],
+    "prompt": "S3 と CloudFront で公開している静的サイトの可用性を上げる。\n・S3 のあるリージョンで障害が起きても、配信を続けたい\n・切り替えは自動で行いたい\n・コンテンツは 1 か所で更新したい\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CRR で別リージョンに複製し、CloudFront のオリジングループでフェイルオーバー",
+        "correct": true,
+        "atomId": "cloudfront-origin-failover",
+        "why": "更新は元のバケットで行い、障害時はセカンダリから配信する"
+      },
+      {
+        "id": "b",
+        "text": "S3 のバージョニングだけを有効にし、CloudFront の TTL を長くする",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "リージョン障害時にオリジンを切り替えられない"
+      },
+      {
+        "id": "c",
+        "text": "2 つのリージョンのバケットに手動でアップロードし、DNS で切り替える",
+        "correct": false,
+        "atomId": "route53-failover",
+        "why": "更新が 2 か所になり、切り替えも手動"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を有効にし、Global Accelerator を前に置く",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "配信のフェイルオーバーの仕組みにならない"
+      }
+    ],
+    "explanation": "静的サイトのリージョン冗長 = CRR + オリジングループ。",
+    "keywords": [
+      "リージョンで障害",
+      "1 か所で更新"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "efs-filesystem:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "efs-filesystem",
+      "backup-plan",
+      "efs-storage-classes"
+    ],
+    "prompt": "3 つの AZ の Linux の Web サーバーが、ユーザーのアップロードファイルを共有する。\n・どのサーバーからも同じファイルを読み書きする\n・毎日バックアップし、別のリージョンにもコピーする\n・1 か月以上たつとほとんど読まれないファイルが多い\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EFS + AWS Backup のリージョン間コピー + EFS のライフサイクル管理",
+        "correct": true,
+        "atomId": "efs-filesystem",
+        "why": "共有・バックアップ・古いファイルのコスト削減を満たす"
+      },
+      {
+        "id": "b",
+        "text": "各サーバーの EBS + スナップショット + gp3 から sc1 に変更",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "EBS は複数の AZ のサーバーで共有できない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスストア + rsync で同期 + S3 Glacier に手動で移す",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "停止で消え、同期や移動の手間も大きい"
+      },
+      {
+        "id": "d",
+        "text": "FSx for Windows + DFS レプリケーション + Intelligent-Tiering",
+        "correct": false,
+        "atomId": "fsx-windows",
+        "why": "Linux の NFS の共有には向かず、構成も合わない"
+      }
+    ],
+    "explanation": "Linux の共有ファイル = EFS、バックアップ = AWS Backup、古いファイル = ライフサイクル管理（IA）。",
+    "keywords": [
+      "共有",
+      "別のリージョンにもコピー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "mgn-replication:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "mgn-replication",
+      "dms-replication",
+      "dms-schema-conversion"
+    ],
+    "prompt": "オンプレミスのシステムを AWS に移す。\n・アプリのサーバー 50 台は、作り直さずにそのまま EC2 に移す\n・Oracle の DB は Aurora PostgreSQL に移し、ストアドプロシージャも変換する\n・切り替えの停止時間はできるだけ短くする\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サーバーは MGN、DB はスキーマ変換 + DMS の CDC",
+        "correct": true,
+        "atomId": "mgn-replication",
+        "why": "サーバーはリホスト、DB は変換してから継続的に複製する"
+      },
+      {
+        "id": "b",
+        "text": "サーバーは DataSync、DB は Snowball Edge でコピー",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "DataSync はファイル、Snowball では変更を同期できない"
+      },
+      {
+        "id": "c",
+        "text": "サーバーは手で EC2 に構築、DB はダンプをそのまま取り込む",
+        "correct": false,
+        "why": "時間がかかり、Oracle のダンプは PostgreSQL に取り込めない"
+      },
+      {
+        "id": "d",
+        "text": "サーバーは AMI をオンプレで作成、DB は RDS のリードレプリカ",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "オンプレのサーバーから AMI は作れず、リードレプリカは移行の仕組みではない"
+      }
+    ],
+    "explanation": "サーバー = MGN、異種 DB = スキーマ変換 + DMS（フルロード + CDC）。",
+    "keywords": [
+      "そのまま EC2",
+      "ストアドプロシージャ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-alb:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "elb-alb",
+      "ecs-fargate",
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "マイクロサービスをコンテナで動かす。\n・/orders と /users で別々のサービスにリクエストを振り分ける\n・コンテナのサーバーは管理したくない\n・各サービスは、1 タスクあたりのリクエスト数に応じて自動で増減させる\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB のパスルーティング + Fargate + ターゲット追跡",
+        "correct": true,
+        "atomId": "elb-alb",
+        "why": "パスでサービスを分け、タスクあたりのリクエスト数で増減する"
+      },
+      {
+        "id": "b",
+        "text": "NLB + ECS の EC2 起動タイプ + スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB はパスで振り分けられず、サーバーの管理も必要"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront + Lambda@Edge + 予測スケーリング",
+        "correct": false,
+        "atomId": "cloudfront-functions",
+        "why": "コンテナのサービスの振り分けとスケーリングにならない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 の加重ルーティング + EC2 の単体 + 手動スケーリング",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "パスで振り分けられず、自動で増減しない"
+      }
+    ],
+    "explanation": "パスでの振り分け = ALB、サーバーレスのコンテナ = Fargate、負荷での増減 = ターゲット追跡（ALBRequestCountPerTarget）。",
+    "keywords": [
+      "/orders",
+      "サーバーは管理したくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-endpoints:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "rds-aurora-endpoints",
+      "rds-aurora",
+      "rds-read-replica"
+    ],
+    "prompt": "Aurora MySQL を使う業務アプリがある。\n・画面からの読み取りが増え、プライマリの負荷が高い\n・BI ツールの重いクエリは、画面の読み取りと別のレプリカで処理したい\n・プライマリの障害時は自動でレプリカに切り替える\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "レプリカを追加し、画面はリーダー、BI はカスタムエンドポイント",
+        "correct": true,
+        "atomId": "rds-aurora-endpoints",
+        "why": "用途ごとにレプリカを分け、レプリカは切り替え先にもなる"
+      },
+      {
+        "id": "b",
+        "text": "すべての読み取りをクラスターエンドポイントに送る",
+        "correct": false,
+        "why": "プライマリに負荷が集中する"
+      },
+      {
+        "id": "c",
+        "text": "BI のクエリを Aurora のスナップショットから毎回復元して実行",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "時間がかかり、最新のデータでもない"
+      },
+      {
+        "id": "d",
+        "text": "RDS Proxy だけを追加する",
+        "correct": false,
+        "atomId": "rds-proxy",
+        "why": "接続のプールで、読み取りの分散や用途の分離にはならない"
+      }
+    ],
+    "explanation": "読み取りの分散 = リーダーエンドポイント、用途の分離 = カスタムエンドポイント。",
+    "keywords": [
+      "BI ツール",
+      "別のレプリカ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lakeformation-permissions:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "lakeformation-permissions",
+      "glue-crawler",
+      "quicksight-dashboard"
+    ],
+    "prompt": "S3 にデータレイクを作る。\n・毎日届くデータのスキーマとパーティションを自動で登録する\n・分析チームには個人情報の列を見せない\n・経営層には売上のダッシュボードを共有する\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Glue クローラー + Lake Formation の列の権限 + QuickSight",
+        "correct": true,
+        "atomId": "lakeformation-permissions",
+        "why": "カタログ・細かい権限・可視化を組み合わせる"
+      },
+      {
+        "id": "b",
+        "text": "手動の CREATE TABLE + S3 のバケットポリシー + CloudWatch ダッシュボード",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "列の制御ができず、CloudWatch はビジネスの BI ではない"
+      },
+      {
+        "id": "c",
+        "text": "DMS + IAM ポリシー + OpenSearch Dashboards",
+        "correct": false,
+        "atomId": "dms-replication",
+        "why": "DMS は DB の移行で、IAM では列を制御できない"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis Firehose + Macie + Athena のクエリ結果を CSV で配布",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "Macie は検出で、列を隠す制御ではない"
+      }
+    ],
+    "explanation": "データレイク = Glue（カタログ）+ Lake Formation（権限）+ Athena / QuickSight（分析・可視化）。",
+    "keywords": [
+      "個人情報の列を見せない",
+      "ダッシュボード"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "storagegateway-file:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "storagegateway-file",
+      "s3-lifecycle",
+      "s3-standard-ia"
+    ],
+    "prompt": "オンプレミスのファイルサーバーの容量が不足している。\n・利用者は今までどおり SMB の共有フォルダを使う\n・データの実体は AWS に置き、よく使うファイルは手元で速く開きたい\n・90 日以上使われないファイルの保存コストを下げたい\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 File Gateway + S3 のライフサイクルで 90 日後に標準-IA",
+        "correct": true,
+        "atomId": "storagegateway-file",
+        "why": "SMB のまま S3 に保存し、ローカルのキャッシュで速く開ける"
+      },
+      {
+        "id": "b",
+        "text": "Tape Gateway + Glacier Deep Archive",
+        "correct": false,
+        "atomId": "storagegateway-tape",
+        "why": "仮想テープで、共有フォルダとしては使えない"
+      },
+      {
+        "id": "c",
+        "text": "Volume Gateway の保管型 + EBS スナップショット",
+        "correct": false,
+        "atomId": "storagegateway-volume",
+        "why": "ブロックストレージで、データの本体はオンプレミスに残る"
+      },
+      {
+        "id": "d",
+        "text": "DataSync で S3 に一度だけコピー + 共有フォルダを廃止",
+        "correct": false,
+        "atomId": "datasync-task",
+        "why": "今までどおりに使う要件に反する"
+      }
+    ],
+    "explanation": "SMB / NFS のまま実体を S3 に = S3 File Gateway、古いファイル = ライフサイクル。",
+    "keywords": [
+      "SMB",
+      "容量が不足"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-intelligent-tiering:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-intelligent-tiering",
+      "s3-lifecycle",
+      "s3-standard-ia"
+    ],
+    "prompt": "機械学習のデータセット（数 PB）を S3 に置く。\n・どのデータがいつ使われるかは予測できない\n・使われるときは、すぐに読み出せる必要がある\n・取り出しの料金や、クラスの移動の設計の手間は避けたい\n最適なストレージクラスは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Intelligent-Tiering",
+        "correct": true,
+        "atomId": "s3-intelligent-tiering",
+        "why": "アクセスに応じて自動で階層を移し、取り出しの料金もない"
+      },
+      {
+        "id": "b",
+        "text": "S3 標準-IA に最初から置く",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "頻繁に使われると取り出しの料金が高くなる"
+      },
+      {
+        "id": "c",
+        "text": "S3 Glacier Deep Archive に置く",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "すぐに読み出せない"
+      },
+      {
+        "id": "d",
+        "text": "ライフサイクルで 30 日後に One Zone-IA",
+        "correct": false,
+        "atomId": "s3-one-zone-ia",
+        "why": "アクセスが予測できず、取り出しの料金もかかる"
+      }
+    ],
+    "explanation": "アクセスが予測できない = Intelligent-Tiering。",
+    "keywords": [
+      "予測できない",
+      "移動の設計の手間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-provisioned:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "dynamodb-provisioned",
+      "dynamodb-ttl",
+      "dynamodb-on-demand"
+    ],
+    "prompt": "DynamoDB のコストを下げたい。\n・アクセスは日中に多く夜は少ないが、毎日ほぼ同じパターンで予測できる\n・現在はオンデマンドモードを使っている\n・30 日を過ぎたセッションの項目は不要だが、テーブルに残り続けている\n最適な対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンド + オートスケーリング、TTL で古い項目を削除",
+        "correct": true,
+        "atomId": "dynamodb-provisioned",
+        "why": "予測できる負荷は安く処理し、不要なデータを無料で消す"
+      },
+      {
+        "id": "b",
+        "text": "オンデマンドのまま DAX を追加し、古い項目はスキャンして削除",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DAX の料金が増え、削除のたびに書き込み料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "グローバルテーブルにして夜は別のリージョンで処理",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "コストが増える"
+      },
+      {
+        "id": "d",
+        "text": "プロビジョンドを最大の容量で固定し、PITR を無効化",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "夜も最大の容量を払い、古い項目も消えない"
+      }
+    ],
+    "explanation": "予測できる負荷 = プロビジョンド + オートスケーリング、期限切れのデータ = TTL。",
+    "keywords": [
+      "予測できる",
+      "残り続けている"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-compute-optimizer:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "ec2-compute-optimizer",
+      "ec2-savings-plans",
+      "cost-explorer"
+    ],
+    "prompt": "数百台の EC2 のコストを下げる。\n・多くのインスタンスは CPU の使用率が低く、大きすぎる疑いがある\n・今後 3 年間は同じくらいの規模で使い続ける\n・購入の判断には、使用状況に基づく推奨を使いたい\n最適な進め方は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Compute Optimizer で適正化してから Savings Plans",
+        "correct": true,
+        "atomId": "ec2-compute-optimizer",
+        "why": "先にサイズを直し、そのあとで Cost Explorer の推奨に沿って長期の割引を買う"
+      },
+      {
+        "id": "b",
+        "text": "先に 3 年の RI を今のサイズで全台分買い、あとでサイズを見直す",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "大きすぎるサイズの分まで長期で払うことになる"
+      },
+      {
+        "id": "c",
+        "text": "すべてをスポットインスタンスに変え、サイズはそのまま",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "中断できない処理もあり、無駄なサイズも残る"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor を見て、すべてのインスタンスを停止する",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "サービスが止まってしまう"
+      }
+    ],
+    "explanation": "ライトサイジング（Compute Optimizer）→ 購入（Savings Plans、Cost Explorer の推奨）。",
+    "keywords": [
+      "大きすぎる",
+      "3 年間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-consolidated-billing:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "organizations-consolidated-billing",
+      "cost-budgets",
+      "cost-allocation-tags"
+    ],
+    "prompt": "子会社ごとに 20 のアカウントを持つ企業のコストを管理する。\n・請求をまとめ、利用量の割引を組織全体で受ける\n・子会社ごとに月の予算を超えそうなら通知する\n・同じアカウント内のプロジェクト別のコストも集計する\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Organizations の一括請求 + アカウントごとの Budgets + コスト配分タグ",
+        "correct": true,
+        "atomId": "organizations-consolidated-billing",
+        "why": "集約・予算の通知・タグ別の集計を組み合わせる"
+      },
+      {
+        "id": "b",
+        "text": "アカウントごとの個別の請求 + Cost Explorer を毎月手で確認 + IAM タグ",
+        "correct": false,
+        "atomId": "cost-explorer",
+        "why": "割引が合算されず、通知もない"
+      },
+      {
+        "id": "c",
+        "text": "Control Tower だけ + CloudWatch の請求アラーム + ABAC",
+        "correct": false,
+        "atomId": "iam-abac",
+        "why": "ABAC はアクセス制御で、コストの集計ではない"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor + Cost Anomaly Detection + S3 のオブジェクトタグ",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "請求の集約や予算の管理にならない"
+      }
+    ],
+    "explanation": "組織のコスト管理 = 一括請求（集約・割引）+ Budgets（予算）+ コスト配分タグ（内訳）。",
+    "keywords": [
+      "請求をまとめ",
+      "予算",
+      "プロジェクト別"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-concurrency:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "lambda-concurrency",
+      "rds-proxy",
+      "apigateway-caching"
+    ],
+    "prompt": "API Gateway + Lambda + RDS のサーバーレスの API を改善する。\n・朝一番のリクエストがコールドスタートで遅い\n・同じ一覧の API が何度も呼ばれ、DB の負荷が高い\n・ピーク時に DB の接続数が上限に達する\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プロビジョンド同時実行 + API Gateway のキャッシュ + RDS Proxy",
+        "correct": true,
+        "atomId": "lambda-concurrency",
+        "why": "起動の遅れ・繰り返しの読み取り・接続数をそれぞれ解決する"
+      },
+      {
+        "id": "b",
+        "text": "Lambda のメモリを最小に + キャッシュなし + RDS のインスタンスを最大に",
+        "correct": false,
+        "atomId": "lambda-memory",
+        "why": "遅くなり、DB の負荷と接続の問題も残る"
+      },
+      {
+        "id": "c",
+        "text": "予約同時実行を 0 に + CloudFront の地域制限 + リードレプリカ",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "0 にすると関数が動かず、接続の問題も残る"
+      },
+      {
+        "id": "d",
+        "text": "Lambda を EC2 に移す + DAX + DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "RDS の問題の解決にならない"
+      }
+    ],
+    "explanation": "コールドスタート = プロビジョンド同時実行、繰り返しの読み取り = キャッシュ、接続数 = RDS Proxy。",
+    "keywords": [
+      "コールドスタート",
+      "接続数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-prefix-performance:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-prefix-performance",
+      "cloudfront-distribution",
+      "s3-byte-range-fetch"
+    ],
+    "prompt": "動画のファイルを S3 から配信している。\n・世界中から同じ人気の動画が大量に読まれ、S3 から 503 Slow Down が返る\n・視聴者は動画の途中から再生することが多い\n・S3 のリクエスト料金も下げたい\n最適な対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront でエッジにキャッシュし、範囲リクエストで途中から配信",
+        "correct": true,
+        "atomId": "cloudfront-distribution",
+        "why": "同じ動画の読み取りはエッジで返し、S3 への負荷と料金を減らす"
+      },
+      {
+        "id": "b",
+        "text": "すべての動画を 1 つのプレフィックスに集め、S3 に直接アクセスさせる",
+        "correct": false,
+        "atomId": "s3-prefix-performance",
+        "why": "負荷が集中し、503 が増える"
+      },
+      {
+        "id": "c",
+        "text": "S3 Transfer Acceleration を有効にして直接配信する",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "アップロードの高速化で、読み取りの負荷は減らない"
+      },
+      {
+        "id": "d",
+        "text": "動画を DynamoDB に入れて配信する",
+        "correct": false,
+        "atomId": "dynamodb-item-size",
+        "why": "項目の上限を超え、配信にも向かない"
+      }
+    ],
+    "explanation": "人気コンテンツの大量の読み取り = CloudFront（範囲リクエストにも対応）。オリジンの負荷と料金も下がる。",
+    "keywords": [
+      "503 Slow Down",
+      "途中から再生"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
