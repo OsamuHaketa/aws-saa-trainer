@@ -455,3 +455,124 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html
+
+  # --- ネットワーク・可用性・コスト（追加） ------------------------------------
+
+  - id: ec2-eni
+    category: instance
+    concept: Elastic Network Interface（ENI）
+    summary: インスタンスに付ける仮想のネットワークカード。同じ AZ の別のインスタンスに付け替えられる
+    facts:
+      - プライベート IP、Elastic IP、セキュリティグループ、MAC アドレスを持つ
+      - 1 つのインスタンスに複数の ENI を付け、管理用と業務用のネットワークを分けられる
+      - 切り離して、同じ AZ の別のインスタンスに付け替えられる（IP や MAC アドレスごと移る）
+      - ENI は 1 つの AZ（サブネット）に属する
+    triggers:
+      - 管理用のネットワークを分けたい
+      - MAC アドレスに紐づくライセンス
+      - IP アドレスごと別のインスタンスに切り替えたい
+    pitfalls:
+      - 別の AZ のインスタンスには付けられない
+    relations:
+      - type: used_with
+        target: ec2-elastic-ip
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html
+
+  - id: ec2-enhanced-networking
+    category: instance
+    concept: 拡張ネットワーキング（ENA）
+    summary: SR-IOV により、インスタンスのネットワークを高帯域・低レイテンシにする
+    facts:
+      - Elastic Network Adapter（ENA）で、高い帯域幅と高いパケット処理性能（PPS）を実現する
+      - 追加料金はかからず、対応したインスタンスタイプと AMI で使う
+      - 現行世代の多くのインスタンスでは、デフォルトで有効
+    triggers:
+      - ネットワークの帯域幅や PPS を上げたい
+      - インスタンス間のレイテンシを下げたい（一般的な TCP/IP 通信）
+    pitfalls:
+      - MPI を使う密結合の HPC で OS バイパスが必要なら、EFA を使う
+    relations:
+      - type: confused_with
+        target: ec2-efa
+        distinction: ENA は一般的な TCP/IP 通信の帯域とレイテンシを改善する。EFA は ENA の機能に加えて OS バイパスを持ち、MPI などの HPC・機械学習のノード間通信を高速化する
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html
+
+  - id: ec2-auto-recovery
+    category: availability
+    concept: EC2 の自動復旧
+    summary: 基盤のハードウェア障害でシステムステータスチェックが失敗したとき、同じインスタンスを別のホストで復旧する
+    facts:
+      - システムステータスチェック（AWS 側のハードウェアやネットワークの障害）の失敗をきっかけに復旧する
+      - インスタンス ID、プライベート IP、Elastic IP、EBS のデータ、メタデータはそのまま保たれる
+      - インスタンスストアのデータは失われる
+      - CloudWatch アラームの復旧（recover）アクション、または対応インスタンスの簡易自動復旧で動く
+    triggers:
+      - 1 台のインスタンスをハードウェア障害から自動で復旧したい
+      - IP アドレスやインスタンス ID を変えずに復旧したい
+    pitfalls:
+      - OS やアプリの不具合（インスタンスステータスチェックの失敗）は、復旧アクションの対象ではない。再起動アクションなどを使う
+    relations:
+      - type: confused_with
+        target: autoscaling-group
+        distinction: 自動復旧は同じインスタンス（ID・IP をそのまま）を別のホストで動かし直す。Auto Scaling は異常なインスタンスを終了し、新しいインスタンスに置き換える（ID や IP は変わる）
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html
+
+  - id: ec2-spot-fleet
+    category: purchasing
+    concept: スポットフリート（配分戦略）
+    summary: 複数のインスタンスタイプや AZ のスポットを組み合わせて、目標のキャパシティを保つ
+    facts:
+      - 複数のインスタンスタイプと AZ の候補から、スポット（必要ならオンデマンドも）を起動して目標のキャパシティを保つ
+      - 中断されたインスタンスは、自動で別の候補から補充される
+      - 配分戦略 capacity-optimized / price-capacity-optimized は空きの多いプールを選び、中断されにくい
+      - 配分戦略 lowest-price は最も安いプールを選ぶが、中断されやすい
+      - Auto Scaling グループの混合インスタンスポリシーでも、同じようにスポットとオンデマンドを組み合わせられる
+    triggers:
+      - スポットの中断をできるだけ減らしたい
+      - 複数のインスタンスタイプを組み合わせる
+      - 目標のキャパシティを保ちながら安くしたい
+    pitfalls:
+      - インスタンスタイプを 1 つだけに絞ると、空きがなくなったときにまとめて中断されやすい
+    relations:
+      - type: used_with
+        target: ec2-spot-instances
+    examDomains: [cost, resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html
+      - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-allocation-strategy.html
+
+  - id: ec2-compute-optimizer
+    category: operations
+    concept: AWS Compute Optimizer
+    summary: 過去の使用状況を機械学習で分析し、EC2 などの最適なサイズやタイプを推奨する
+    facts:
+      - CloudWatch のメトリクスなど過去の使用状況から、過剰・不足のリソースを見つける
+      - EC2、Auto Scaling グループ、EBS、Lambda、ECS on Fargate などの推奨を出す
+      - 推奨を表示するだけで、リソースを自動では変更しない
+    triggers:
+      - インスタンスが大きすぎないか調べたい
+      - 適正なサイズ（ライトサイジング）の推奨が欲しい
+    pitfalls:
+      - 割引の購入（RI や Savings Plans）の判断とは別。サイズを最適化したあとで割引を考える
+    relations:
+      - type: used_with
+        target: ec2-instance-families
+    examDomains: [cost, performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html
