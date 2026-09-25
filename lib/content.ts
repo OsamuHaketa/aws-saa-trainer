@@ -66,9 +66,26 @@ export function parseContent(root: string): ParseResult {
   return { atoms: new Map(sorted.map((a) => [a.id, a])), questions, errors };
 }
 
-// --- アプリ用: ファイルが変わったら読み直す（開発中に問題を直してもすぐ反映される） ---
+// --- アプリ用 ---
+// 開発中: knowledge/ と generated/ を直接読み、ファイルが変わったら読み直す（問題を直してもすぐ反映される）
+// 本番: ビルド時に書き出した .generated/content.json（npm run build-content）だけを読む。
+//       関数のインスタンスごとに最初の 1 回だけ読み、インスタンスが生きている間はメモリに保持する
+
+/** ビルド時に書き出すコンテンツのファイル（プロジェクトのルートからの相対パス） */
+export const CONTENT_BUNDLE = ".generated/content.json";
+
+/** content.json の中身。Map は JSON にできないので配列にする（順番はそのまま） */
+export type ContentBundle = { atoms: AtomEntry[]; questions: QuestionEntry[] };
 
 let cache: { key: string; content: Content } | undefined;
+
+function loadBundle(root: string): Content {
+  const bundle = JSON.parse(readFileSync(join(root, CONTENT_BUNDLE), "utf8")) as ContentBundle;
+  return {
+    atoms: new Map(bundle.atoms.map((a) => [a.id, a])),
+    questions: new Map(bundle.questions.map((q) => [q.id, q])),
+  };
+}
 
 function contentKey(root: string): string {
   return ["knowledge", "generated"]
@@ -79,6 +96,10 @@ function contentKey(root: string): string {
 }
 
 export function getContent(root = process.cwd()): Content {
+  if (process.env.NODE_ENV === "production") {
+    cache ??= { key: CONTENT_BUNDLE, content: loadBundle(root) };
+    return cache.content;
+  }
   const key = contentKey(root);
   if (cache?.key === key) return cache.content;
   const { errors, ...content } = parseContent(root);

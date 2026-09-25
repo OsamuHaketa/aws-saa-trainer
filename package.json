@@ -10,7 +10,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "build-content": "tsx scripts/build-content.ts",
+    "prebuild": "npm run validate && npm run build-content"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

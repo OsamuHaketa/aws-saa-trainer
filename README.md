@@ -25,6 +25,7 @@ npm run dev        # http://localhost:3000
 | コマンド | 内容 |
 |---|---|
 | `npm run validate` | Atom と問題の検証（スキーマ、参照切れ、正解だけ長い選択肢、問題文に答えが含まれる など） |
+| `npm run build-content` | Atom と問題を `.generated/content.json` にまとめる。本番のアプリはこのファイルだけを読む（`npm run build` の前に validate と一緒に自動で実行される） |
 | `npm test` | 出題ロジックのテスト |
 | `npm run typecheck` | 型チェック |
 | `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（ローカルの DB には起動時に自動適用） |
