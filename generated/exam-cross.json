@@ -671,5 +671,961 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudtrail-trail:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "cloudtrail-trail",
+      "organizations-scp",
+      "s3-object-lock-compliance"
+    ],
+    "prompt": "30 のアカウントを持つ企業が、監査ログの管理を設計する。\n・全アカウントの API 操作の記録を、ログ専用のアカウントに集める\n・各アカウントの管理者でも、記録を止められないようにする\n・集めたログは 7 年間、誰も削除や改ざんができないようにする\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "組織の証跡 + SCP で証跡の停止を拒否 + Object Lock のコンプライアンスモード",
+        "correct": true,
+        "atomId": "cloudtrail-trail",
+        "why": "集約・停止の禁止・改ざんの防止をそれぞれ満たす"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントの証跡 + IAM ポリシーで停止を拒否 + S3 のバージョニング",
+        "correct": false,
+        "why": "アカウントの管理者は IAM を変えられ、古いバージョンも削除できる"
+      },
+      {
+        "id": "c",
+        "text": "組織の証跡 + CloudWatch アラームで停止を通知 + ガバナンスモード",
+        "correct": false,
+        "atomId": "s3-object-lock-governance",
+        "why": "通知だけでは止められず、ガバナンスモードは権限で解除できる"
+      },
+      {
+        "id": "d",
+        "text": "Config アグリゲーター + SCP でリージョンを制限 + Glacier Deep Archive",
+        "correct": false,
+        "atomId": "config-aggregator",
+        "why": "Config は API 操作の記録ではなく、改ざんの防止もない"
+      }
+    ],
+    "explanation": "集約 = 組織の証跡、止めさせない = SCP（cloudtrail:StopLogging などを拒否）、消させない = Object Lock コンプライアンス。",
+    "keywords": [
+      "記録を止められない",
+      "誰も削除や改ざん"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-interface-endpoint:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-interface-endpoint",
+      "vpc-direct-connect",
+      "iam-policy-conditions"
+    ],
+    "prompt": "オンプレミスのサーバーから S3 のバケットにデータを送る。\n・オンプレミスとは Direct Connect で接続済み\n・通信はインターネットを経由させない\n・バケットは、決められた経路からのアクセスだけを許可する\n正しい構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 のインターフェイスエンドポイント + バケットポリシーで aws:SourceVpce を条件に",
+        "correct": true,
+        "atomId": "s3-interface-endpoint",
+        "why": "DX 経由でエンドポイントに届き、その経路だけを許可する"
+      },
+      {
+        "id": "b",
+        "text": "S3 のゲートウェイエンドポイント + バケットポリシーで aws:SourceIp を条件に",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ゲートウェイエンドポイントはオンプレミスから使えない"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ経由でインターネットから S3 に送る",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "インターネットを経由してしまう"
+      },
+      {
+        "id": "d",
+        "text": "S3 Transfer Acceleration を使い、バケットを公開する",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "インターネット経由で、公開は要件に反する"
+      }
+    ],
+    "explanation": "オンプレミス → S3 をプライベートに = インターフェイスエンドポイント（PrivateLink）+ aws:SourceVpce。",
+    "keywords": [
+      "Direct Connect",
+      "インターネットを経由させない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "secretsmanager-secret:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "secretsmanager-secret",
+      "vpc-interface-endpoint",
+      "iam-instance-profile"
+    ],
+    "prompt": "プライベートサブネットの EC2 のアプリが、RDS のパスワードを使う。\n・パスワードはコードやサーバーに保存しない\n・パスワードは 30 日ごとに自動で変える\n・サブネットには NAT ゲートウェイがなく、インターネットにも出さない\n正しい構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Secrets Manager + インターフェイスエンドポイント + EC2 の IAM ロール",
+        "correct": true,
+        "atomId": "secretsmanager-secret",
+        "why": "ロールの権限で、エンドポイント経由でパスワードを取得する"
+      },
+      {
+        "id": "b",
+        "text": "Parameter Store の標準パラメータ + NAT ゲートウェイ + アクセスキー",
+        "correct": false,
+        "atomId": "ssm-parameter-store",
+        "why": "自動ローテーションがなく、NAT やキーは要件に反する"
+      },
+      {
+        "id": "c",
+        "text": "Secrets Manager + インターネットゲートウェイ + IAM ユーザーのキー",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "インターネットに出てしまい、キーをサーバーに置くことになる"
+      },
+      {
+        "id": "d",
+        "text": "ユーザーデータにパスワード + ゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "パスワードがサーバーに残り、ゲートウェイは S3 と DynamoDB だけ"
+      }
+    ],
+    "explanation": "秘密情報 = Secrets Manager、NAT なしで AWS サービス = インターフェイスエンドポイント、認証情報なしで = IAM ロール。",
+    "keywords": [
+      "NAT ゲートウェイがなく",
+      "30 日ごと"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-key-policy:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "kms-key-policy",
+      "iam-resource-based-policy",
+      "s3-sse-kms"
+    ],
+    "prompt": "アカウント A の S3 バケットのデータを、分析用のアカウント B の Athena から読みたい。\n・データは SSE-KMS（A のカスタマーマネージドキー）で暗号化されている\n・B の分析用ロールだけに読み取りを許可する\n・データのコピーは作らない\n必要な設定の組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A のバケットポリシーと鍵ポリシーで B のロールを許可し、B の IAM でも許可",
+        "correct": true,
+        "atomId": "kms-key-policy",
+        "why": "S3 と KMS の両方で、両方のアカウントの許可が必要"
+      },
+      {
+        "id": "b",
+        "text": "A のバケットポリシーだけで B のロールを許可する",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "鍵の権限がなく、復号できない"
+      },
+      {
+        "id": "c",
+        "text": "A のバケットを公開し、B から匿名で読む",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "要件に反し、KMS で暗号化されたデータは読めない"
+      },
+      {
+        "id": "d",
+        "text": "データを SSE-S3 で暗号化し直して B のアカウントにコピーする",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "コピーを作らない要件に反する"
+      }
+    ],
+    "explanation": "SSE-KMS のクロスアカウント = バケットポリシー + 鍵ポリシー + 相手の IAM ポリシー。",
+    "keywords": [
+      "アカウント B",
+      "SSE-KMS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cognito-identity-pool:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "cognito-identity-pool",
+      "cognito-user-pool",
+      "s3-iam-policy"
+    ],
+    "prompt": "写真共有のモバイルアプリを作る。\n・利用者はメールアドレスでサインアップ・サインインする\n・利用者はアプリから S3 に直接写真をアップロードする\n・各利用者は自分用のフォルダ（プレフィックス）にだけ書き込める\n正しい構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ユーザープールで認証し、ID プールでポリシー変数付きのロールを渡す",
+        "correct": true,
+        "atomId": "cognito-identity-pool",
+        "why": "利用者ごとの ID でプレフィックスを制限した一時的な認証情報を使う"
+      },
+      {
+        "id": "b",
+        "text": "利用者ごとに IAM ユーザーを作り、アクセスキーをアプリに配る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "利用者の数だけ長期のキーが必要になり危険"
+      },
+      {
+        "id": "c",
+        "text": "S3 のバケットを公開して、アプリからだれでも書き込めるようにする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "他人のフォルダにも書き込めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "IAM Identity Center で利用者を管理し、権限セットを割り当てる",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "従業員の AWS へのアクセス向けで、アプリの利用者向けではない"
+      }
+    ],
+    "explanation": "アプリの利用者 → AWS に直接 = ユーザープール（認証）+ ID プール（一時的な認証情報）+ ポリシー変数。",
+    "keywords": [
+      "自分用のフォルダ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "config-rules:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "config-rules",
+      "s3-block-public-access",
+      "organizations-scp"
+    ],
+    "prompt": "組織の全アカウントで、S3 のデータの公開を防ぐ。\n・新しく作るバケットも含めて、公開の設定をできないようにする\n・各アカウントの管理者にもこの設定を外させない\n・設定の違反があれば検出して記録する\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウントのブロックパブリックアクセス + SCP で変更を拒否 + Config ルール",
+        "correct": true,
+        "atomId": "s3-block-public-access",
+        "why": "防止・変更の禁止・検出を組み合わせる"
+      },
+      {
+        "id": "b",
+        "text": "バケットごとの ACL + IAM ポリシー + CloudTrail",
+        "correct": false,
+        "atomId": "s3-object-ownership",
+        "why": "ACL は推奨されず、管理者は IAM を変えられる"
+      },
+      {
+        "id": "c",
+        "text": "Macie のジョブ + GuardDuty + CloudWatch アラーム",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "検出はできるが、公開の設定そのものは防げない"
+      },
+      {
+        "id": "d",
+        "text": "バケットごとのブロックパブリックアクセス + Trusted Advisor",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "新しいバケットの設定忘れを防げず、管理者が外せる"
+      }
+    ],
+    "explanation": "アカウント単位のブロックパブリックアクセス（防止）+ SCP（外させない）+ Config（検出）。",
+    "keywords": [
+      "外させない",
+      "検出"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-stateless:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "patterns-stateless",
+      "elasticache-redis",
+      "rds-multi-az"
+    ],
+    "prompt": "EC サイトの Web 層と DB を作り直す。\n・Web サーバーは負荷に応じて自由に増減させたい\n・台数が減ってもログイン状態を失わない\n・DB は AZ の障害時に自動で切り替える\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複数 AZ の ASG + セッションは ElastiCache + RDS マルチ AZ",
+        "correct": true,
+        "atomId": "patterns-stateless",
+        "why": "Web 層をステートレスにし、DB は自動フェイルオーバー"
+      },
+      {
+        "id": "b",
+        "text": "複数 AZ の ASG + セッションは各サーバーのメモリ + RDS のリードレプリカ",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "スケールインでセッションが消え、レプリカは自動で切り替わらない"
+      },
+      {
+        "id": "c",
+        "text": "1 台の大きな EC2 + インスタンスストアにセッション + RDS シングル AZ",
+        "correct": false,
+        "atomId": "ec2-instance-store",
+        "why": "増減できず、障害に弱い"
+      },
+      {
+        "id": "d",
+        "text": "複数 AZ の ASG + セッションは EBS + DB は EC2 に自分で構築",
+        "correct": false,
+        "atomId": "ec2-ebs-volume",
+        "why": "EBS は台数をまたいで共有できず、DB の切り替えも自前"
+      }
+    ],
+    "explanation": "状態を外に出す（ElastiCache / DynamoDB）+ 複数 AZ の ASG + RDS マルチ AZ。",
+    "keywords": [
+      "自由に増減",
+      "ログイン状態"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-standard:exam:3",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "sqs-standard",
+      "sqs-dlq",
+      "patterns-idempotency"
+    ],
+    "prompt": "決済の完了通知を処理するシステムを作る。\n・外部の決済サービスからの通知を、処理側が止まっていても失わない\n・何度処理しても失敗するメッセージは、隔離してあとで調べる\n・同じ通知が 2 回届いても、二重に処理しない\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS で受け、DLQ を設定し、処理を冪等にする",
+        "correct": true,
+        "atomId": "sqs-standard",
+        "why": "キューで受け止め、失敗を隔離し、重複に備える"
+      },
+      {
+        "id": "b",
+        "text": "SNS で直接 Lambda を呼び、失敗したら捨てる",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "処理側が止まると失われる"
+      },
+      {
+        "id": "c",
+        "text": "Kinesis Data Streams で受け、保持期間を 1 日にする",
+        "correct": false,
+        "atomId": "kinesis-data-streams",
+        "why": "失敗の隔離や重複への対策がない"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway から Lambda を同期で呼び、失敗は外部に再送させる",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "処理側が止まると受け付けられない"
+      }
+    ],
+    "explanation": "失わない = SQS、隔離 = DLQ、二重に処理しない = 冪等性（または FIFO の重複排除）。",
+    "keywords": [
+      "失わない",
+      "隔離",
+      "2 回届いても"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-warm-standby:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "patterns-warm-standby",
+      "rds-aurora-global-database",
+      "route53-failover"
+    ],
+    "prompt": "EC サイト（ALB + EC2 + Aurora、東京）の DR を大阪に作る。\n・RTO は 15 分以内、RPO は数秒\n・大阪では平常時、小さい規模でシステム全体を動かしておく\n・切り替えは DNS で行う\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora グローバル DB + 大阪に小規模の ASG + Route 53 のフェイルオーバー",
+        "correct": true,
+        "atomId": "patterns-warm-standby",
+        "why": "縮小した全体を動かし、障害時に拡大して DNS で切り替える"
+      },
+      {
+        "id": "b",
+        "text": "毎日のスナップショットを大阪にコピー + 障害時に CloudFormation で構築",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "RPO が 1 日になり、RTO 15 分にも間に合わない"
+      },
+      {
+        "id": "c",
+        "text": "大阪に Aurora のリードレプリカだけ + Route 53 の加重ルーティング",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "サーバーが動いておらず、加重では障害時に切り替わらない"
+      },
+      {
+        "id": "d",
+        "text": "東京の Aurora をマルチ AZ にするだけ",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "リージョンの障害には対応できない"
+      }
+    ],
+    "explanation": "縮小した全体が稼働 = ウォームスタンバイ。データは Aurora グローバル DB、切り替えは Route 53 のフェイルオーバー。",
+    "keywords": [
+      "RTO は 15 分",
+      "小さい規模でシステム全体"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-resolver:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "route53-resolver",
+      "route53-private-hosted-zone",
+      "vpc-direct-connect"
+    ],
+    "prompt": "オンプレミスと VPC の間の名前解決を設計する。\n・Direct Connect で接続済み\n・VPC の EC2 から、オンプレミスの corp.local の名前を解決する\n・オンプレミスのサーバーから、プライベートホストゾーンの aws.internal の名前を解決する\n正しい構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Resolver のアウトバウンドとインバウンドのエンドポイント",
+        "correct": true,
+        "atomId": "route53-resolver",
+        "why": "VPC → オンプレはアウトバウンド、オンプレ → VPC はインバウンド"
+      },
+      {
+        "id": "b",
+        "text": "Resolver のインバウンドエンドポイントだけを作り、転送ルールは作らない",
+        "correct": false,
+        "why": "VPC からオンプレミスへの問い合わせを転送できない"
+      },
+      {
+        "id": "c",
+        "text": "プライベートホストゾーンをパブリックに変え、オンプレから直接引く",
+        "correct": false,
+        "atomId": "route53-private-hosted-zone",
+        "why": "社内の名前がインターネットに公開される"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリングを作り、オンプレの DNS サーバーを VPC に共有する",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ピアリングは VPC 同士の接続で、オンプレミスとの名前解決の仕組みではない"
+      }
+    ],
+    "explanation": "ハイブリッドの DNS = Resolver のインバウンド（オンプレ → AWS）+ アウトバウンド（AWS → オンプレ）。",
+    "keywords": [
+      "corp.local",
+      "aws.internal"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "batch-jobs:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "batch-jobs",
+      "ec2-spot-instances",
+      "ec2-spot-fleet"
+    ],
+    "prompt": "ゲノム解析のジョブを毎晩数千本実行する。\n・1 本のジョブは 2〜3 時間で、途中の結果を保存すれば再開できる\n・ジョブのキューと計算環境の管理はしたくない\n・コストを最も下げたい\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Batch のスポットの計算環境（複数タイプ）",
+        "correct": true,
+        "atomId": "batch-jobs",
+        "why": "キューと環境を任せ、中断しにくい形でスポットを使う"
+      },
+      {
+        "id": "b",
+        "text": "Lambda で 1 本ずつ実行し、Step Functions で並列にする",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "1 本が 15 分の上限を超える"
+      },
+      {
+        "id": "c",
+        "text": "オンデマンドの EC2 を 1 台で、ジョブを順番に実行する",
+        "correct": false,
+        "atomId": "ec2-on-demand",
+        "why": "時間がかかり、割引もない"
+      },
+      {
+        "id": "d",
+        "text": "3 年のリザーブドインスタンスを最大台数分買って常時稼働",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "夜間しか使わず、使わない時間も払う"
+      }
+    ],
+    "explanation": "大量のバッチ + 管理なし + 最安 = AWS Batch + スポット（タイプを分散）。",
+    "keywords": [
+      "再開できる",
+      "コストを最も下げたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-dax:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "dynamodb-dax",
+      "cloudfront-distribution",
+      "s3-origin-access-control"
+    ],
+    "prompt": "世界中から使われる商品カタログのアプリを高速にする。\n・商品情報は DynamoDB にあり、同じ商品が何度も読まれる。読み取りをマイクロ秒にしたい\n・商品画像は S3 にあり、世界中に低レイテンシで配信したい\n・画像のバケットは直接公開しない\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DynamoDB の前に DAX + 画像は CloudFront と OAC",
+        "correct": true,
+        "atomId": "dynamodb-dax",
+        "why": "読み取りはキャッシュ、画像はエッジで配信する"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB のグローバルテーブル + S3 を公開",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "マイクロ秒にならず、バケットの公開は要件に反する"
+      },
+      {
+        "id": "c",
+        "text": "RCU を最大にする + S3 Transfer Acceleration",
+        "correct": false,
+        "atomId": "s3-transfer-acceleration",
+        "why": "読み取りはミリ秒のままで、配信のキャッシュにならない"
+      },
+      {
+        "id": "d",
+        "text": "ElastiCache を画像のキャッシュにする + DynamoDB Streams",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "画像の世界への配信には向かない"
+      }
+    ],
+    "explanation": "DynamoDB のマイクロ秒の読み取り = DAX、世界への静的コンテンツ = CloudFront + OAC。",
+    "keywords": [
+      "マイクロ秒",
+      "世界中に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-transfer-acceleration:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-transfer-acceleration",
+      "s3-multipart-upload",
+      "s3-standard"
+    ],
+    "prompt": "世界中の撮影チームが、東京リージョンの S3 に数 GB の動画をアップロードする。\n・海外からのアップロードが遅い\n・回線が不安定で、途中で失敗するとやり直しになる\n・アップロードの仕組みはできるだけ簡単にしたい\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Transfer Acceleration + マルチパート",
+        "correct": true,
+        "atomId": "s3-transfer-acceleration",
+        "why": "エッジ経由で速くし、失敗した部分だけ再送できる"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront のキャッシュ + バイト範囲フェッチ",
+        "correct": false,
+        "atomId": "s3-byte-range-fetch",
+        "why": "キャッシュはダウンロード向けで、範囲フェッチも読み取りの機能"
+      },
+      {
+        "id": "c",
+        "text": "Snowball Edge を各国に送る",
+        "correct": false,
+        "atomId": "snow-snowball",
+        "why": "毎日の撮影のアップロードには手間がかかりすぎる"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect を各国の拠点から引く",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "撮影チームの移動先では使えず、コストも大きい"
+      }
+    ],
+    "explanation": "遠くからの大きなアップロード = Transfer Acceleration + マルチパート。",
+    "keywords": [
+      "海外",
+      "途中で失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ec2-cluster-placement-group:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "ec2-cluster-placement-group",
+      "ec2-efa",
+      "fsx-lustre"
+    ],
+    "prompt": "流体解析の HPC を AWS で動かす。\n・数百のノードが MPI で密に通信する\n・入力データは S3 にあり、ジョブ中は非常に高いスループットで読む\n・ジョブが終われば、ファイルシステムは不要\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "クラスター配置 + EFA + FSx for Lustre",
+        "correct": true,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "低レイテンシの通信と、S3 と連携した高速な一時ファイルシステム（スクラッチ）"
+      },
+      {
+        "id": "b",
+        "text": "スプレッド配置 + ENA + EFS",
+        "correct": false,
+        "atomId": "ec2-spread-placement-group",
+        "why": "ノードが離れて通信が遅くなり、スループットも足りない"
+      },
+      {
+        "id": "c",
+        "text": "複数 AZ の ASG + S3 を直接マウント",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "ノード間のレイテンシが大きくなる"
+      },
+      {
+        "id": "d",
+        "text": "Lambda を大量に並列実行 + DynamoDB",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "MPI の密な通信や長時間の計算に向かない"
+      }
+    ],
+    "explanation": "密結合の HPC = クラスター配置 + EFA + FSx for Lustre（S3 連携）。",
+    "keywords": [
+      "MPI",
+      "高いスループット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-data-streams:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "kinesis-data-streams",
+      "kinesis-flink",
+      "kinesis-firehose"
+    ],
+    "prompt": "IoT の機器から毎秒数万件のデータが届く。\n・直近 1 分の平均値をリアルタイムに計算して異常を検知する\n・すべての生データを S3 に保存し、あとで SQL で分析する\n・同じデータを 2 つの処理で使う\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Data Streams → Flink、Firehose → S3",
+        "correct": true,
+        "atomId": "kinesis-data-streams",
+        "why": "Data Streams で受け、Flink で集計し、Firehose で S3 に配信する。1 つのストリームを複数の処理が読む"
+      },
+      {
+        "id": "b",
+        "text": "SQS で受け、Lambda で集計し、同じメッセージを S3 にも保存",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "一度処理したメッセージは消え、2 つの処理で共有しにくい"
+      },
+      {
+        "id": "c",
+        "text": "Firehose だけで受け、S3 に保存してから集計する",
+        "correct": false,
+        "atomId": "kinesis-firehose",
+        "why": "バッファの分遅れ、リアルタイムの検知に向かない"
+      },
+      {
+        "id": "d",
+        "text": "RDS に直接書き込み、毎分 SQL で集計する",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "毎秒数万件の書き込みと集計に向かない"
+      }
+    ],
+    "explanation": "取り込み = Data Streams、リアルタイム集計 = Flink、保存 = Firehose → S3 → Athena。",
+    "keywords": [
+      "直近 1 分",
+      "2 つの処理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "opensearch-domain:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "opensearch-domain",
+      "dynamodb-streams",
+      "lambda-function"
+    ],
+    "prompt": "商品のデータは DynamoDB で管理している。\n・商品名や説明文で、あいまいな全文検索をしたい\n・DynamoDB を更新したら、数秒以内に検索結果にも反映したい\n・同期の仕組みはサーバーレスにしたい\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Streams → Lambda → OpenSearch",
+        "correct": true,
+        "atomId": "opensearch-domain",
+        "why": "変更を拾って検索用のインデックスに反映する"
+      },
+      {
+        "id": "b",
+        "text": "DynamoDB のテーブルを毎回スキャンして部分一致を探す",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "遅く、読み込み容量も大量に使う"
+      },
+      {
+        "id": "c",
+        "text": "毎日 S3 にエクスポートして Athena で検索する",
+        "correct": false,
+        "atomId": "dynamodb-export-s3",
+        "why": "数秒以内の反映にならず、全文検索にも向かない"
+      },
+      {
+        "id": "d",
+        "text": "商品名の単語ごとに GSI を作って Query で探す",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "あいまいな全文検索にはならない"
+      }
+    ],
+    "explanation": "DynamoDB + 全文検索 = Streams → Lambda → OpenSearch（ゼロ ETL の統合もある）。",
+    "keywords": [
+      "全文検索",
+      "数秒以内"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "eventbridge-scheduler:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "eventbridge-scheduler",
+      "ec2-savings-plans",
+      "ec2-on-demand"
+    ],
+    "prompt": "EC2 のコストを下げる。\n・本番の EC2 は 24 時間動き、今後も構成を変える予定がある（一部は Fargate へ移す）\n・開発の EC2 は平日の 9〜18 時しか使わない\n・管理の手間は増やしたくない\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "本番は Savings Plans、開発は夜間停止",
+        "correct": true,
+        "atomId": "ec2-savings-plans",
+        "why": "本番は柔軟な Compute Savings Plans、開発はスケジュールで使わない時間を止める"
+      },
+      {
+        "id": "b",
+        "text": "本番も開発も 3 年のスタンダード RI を全額前払い",
+        "correct": false,
+        "atomId": "ec2-reserved-instances",
+        "why": "構成の変更に弱く、開発の夜間の分も払う"
+      },
+      {
+        "id": "c",
+        "text": "本番も開発もスポットインスタンスに切り替える",
+        "correct": false,
+        "atomId": "ec2-spot-instances",
+        "why": "本番が中断されうる"
+      },
+      {
+        "id": "d",
+        "text": "本番も開発もオンデマンドのまま 24 時間動かす",
+        "correct": false,
+        "atomId": "ec2-on-demand",
+        "why": "割引も停止も使えていない"
+      }
+    ],
+    "explanation": "定常で変化あり = Compute Savings Plans、決まった時間だけ = スケジュールで停止（EventBridge Scheduler など）。",
+    "keywords": [
+      "構成を変える予定",
+      "平日の 9〜18 時"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kinesis-firehose:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "kinesis-firehose",
+      "athena-query",
+      "s3-lifecycle"
+    ],
+    "prompt": "アプリのログを分析する仕組みのコストを下げる。\n・ログは毎日数 TB で、Athena で日付を絞って調べることが多い\n・今は CSV のまま S3 に保存し、毎回全体をスキャンしている\n・90 日を過ぎたログはほとんど見ない\n最適な対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Parquet に変換・日付で分割・ライフサイクル",
+        "correct": true,
+        "atomId": "kinesis-firehose",
+        "why": "Firehose で変換・分割してスキャン量を減らし、90 日後は安いクラスに移す"
+      },
+      {
+        "id": "b",
+        "text": "Athena のクエリを 1 日 1 回にまとめる",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "毎回の全体スキャンの無駄は残る"
+      },
+      {
+        "id": "c",
+        "text": "ログを RDS に入れて SQL で調べる",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "大量のログの保存と分析に向かず、コストも高い"
+      },
+      {
+        "id": "d",
+        "text": "すべてのログを S3 Standard に置いたまま圧縮だけする",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "スキャン量は減るが、古いログの料金が下がらない"
+      }
+    ],
+    "explanation": "列指向（Parquet）+ パーティション = スキャン量削減、ライフサイクル = 保存料金削減。",
+    "keywords": [
+      "毎回全体をスキャン",
+      "90 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-serverless:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "rds-aurora-serverless",
+      "rds-proxy",
+      "lambda-function"
+    ],
+    "prompt": "新しい SaaS の API を作る。\n・API は Lambda で作る\n・DB はリレーショナルが必要で、負荷は時間帯で大きく変わり予測できない\n・Lambda の急増による DB の接続数の問題も避けたい\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Aurora Serverless v2 + RDS Proxy",
+        "correct": true,
+        "atomId": "rds-aurora-serverless",
+        "why": "容量を自動で調整し、接続はプールで共有する"
+      },
+      {
+        "id": "b",
+        "text": "最大サイズのプロビジョンドの RDS を 24 時間稼働",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "使わない時間も払い、接続数の問題も残る"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB のオンデマンドモードに移す",
+        "correct": false,
+        "atomId": "dynamodb-on-demand",
+        "why": "リレーショナルの要件を満たさない"
+      },
+      {
+        "id": "d",
+        "text": "EC2 に自分で MySQL を構築して管理する",
+        "correct": false,
+        "why": "容量や接続の管理が自前になる"
+      }
+    ],
+    "explanation": "予測できない負荷のリレーショナル DB = Aurora Serverless v2、Lambda からの接続 = RDS Proxy。",
+    "keywords": [
+      "予測できない",
+      "接続数"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ecs-fargate:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "ecs-fargate",
+      "ec2-savings-plans",
+      "ec2-spot-instances"
+    ],
+    "prompt": "コンテナのワークロードのコストを下げる。サーバーの管理はしたくない。\n・Web API のコンテナは常に最低 10 タスクが必要\n・画像変換のコンテナは中断されても再実行できる\n・今後 3 年は同じくらいの規模で使い続ける\n最適な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "割引と Fargate Spot を併用する",
+        "correct": true,
+        "atomId": "ecs-fargate",
+        "why": "Fargate の常時分は Compute Savings Plans、中断してよい画像変換は Fargate Spot"
+      },
+      {
+        "id": "b",
+        "text": "EC2 起動タイプにして、すべてをスポットで動かす",
+        "correct": false,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "サーバーの管理が必要で、Web API が中断されうる"
+      },
+      {
+        "id": "c",
+        "text": "Fargate のオンデマンドだけで、割引は使わない",
+        "correct": false,
+        "why": "割引を使えていない"
+      },
+      {
+        "id": "d",
+        "text": "Lambda にすべて移して、コンテナをやめる",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "常時の API のコンテナをそのまま移せず、改修が必要"
+      }
+    ],
+    "explanation": "Fargate × 定常 = Compute Savings Plans、Fargate × 中断可 = Fargate Spot。",
+    "keywords": [
+      "最低 10 タスク",
+      "中断されても"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
