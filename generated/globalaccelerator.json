@@ -135,5 +135,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "globalaccelerator-accelerator:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "世界中に配信する動画ファイルのダウンロードを速くするため、Global Accelerator だけを導入した。より適切なのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront でエッジにキャッシュする",
+        "correct": true,
+        "atomId": "cloudfront-distribution",
+        "why": "同じファイルを何度も配信するならキャッシュが効く"
+      },
+      {
+        "id": "b",
+        "text": "Global Accelerator の固定 IP を増やす",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "キャッシュしないので、毎回オリジンから届ける"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のシンプルルーティングにする",
+        "correct": false,
+        "atomId": "route53-simple",
+        "why": "速くならない"
+      },
+      {
+        "id": "d",
+        "text": "NLB に変える",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "リージョン内の負荷分散で、世界への配信は速くならない"
+      }
+    ],
+    "explanation": "キャッシュできるコンテンツ = CloudFront、キャッシュできない TCP/UDP・固定 IP = Global Accelerator。",
+    "keywords": [
+      "動画ファイル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "globalaccelerator-accelerator:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "Global Accelerator のトラフィックダイヤルとエンドポイントの重みで何ができる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "宛先ごとに流す割合を調整できる",
+        "correct": true,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "ブルー/グリーンや段階的な移行に使える"
+      },
+      {
+        "id": "b",
+        "text": "エッジでファイルをキャッシュできる",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "キャッシュはしない"
+      },
+      {
+        "id": "c",
+        "text": "DNS の TTL を変えられる",
+        "correct": false,
+        "why": "DNS の機能ではない"
+      },
+      {
+        "id": "d",
+        "text": "証明書を自動で更新できる",
+        "correct": false,
+        "why": "証明書の機能ではない"
+      }
+    ],
+    "explanation": "トラフィックダイヤル（リージョン単位）と重み（エンドポイント単位）で流量を調整する。",
+    "keywords": [
+      "トラフィックダイヤル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

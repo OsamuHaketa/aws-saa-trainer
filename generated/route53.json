@@ -622,5 +622,579 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "route53-weighted:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "route53-weighted"
+    ],
+    "prompt": "加重ルーティングで 2 つの ALB に 50% ずつ振り分けているが、片方が止まっても半分のユーザーがエラーになる。何が足りない？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "各レコードにヘルスチェックを関連付けていない",
+        "correct": true,
+        "atomId": "route53-health-checks",
+        "why": "異常なほうの宛先は応答から外れるようになる"
+      },
+      {
+        "id": "b",
+        "text": "重みを 100 と 0 にしていない",
+        "correct": false,
+        "why": "片方に流さなくなるだけで、障害の検知にはならない"
+      },
+      {
+        "id": "c",
+        "text": "エイリアスではなく A レコードを使っている",
+        "correct": false,
+        "atomId": "route53-alias",
+        "why": "レコードの種類は障害の検知と関係ない"
+      },
+      {
+        "id": "d",
+        "text": "TTL を 1 日にしていない",
+        "correct": false,
+        "why": "長くすると切り替えが遅くなる"
+      }
+    ],
+    "explanation": "加重・レイテンシー・位置情報などでも、ヘルスチェックを付ければ異常な宛先を外せる。",
+    "keywords": [
+      "片方が止まっても"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-weighted:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "route53-weighted"
+    ],
+    "prompt": "「新バージョンに 10%」「A/B テスト」→ Route 53 の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "加重ルーティング",
+        "correct": true,
+        "atomId": "route53-weighted",
+        "why": "重みの割合で振り分ける"
+      },
+      {
+        "id": "b",
+        "text": "フェイルオーバールーティング",
+        "correct": false,
+        "atomId": "route53-failover",
+        "why": "異常時の切り替え"
+      },
+      {
+        "id": "c",
+        "text": "位置情報ルーティング",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "国や大陸で振り分ける"
+      },
+      {
+        "id": "d",
+        "text": "複数値回答ルーティング",
+        "correct": false,
+        "atomId": "route53-multivalue",
+        "why": "複数の IP をランダムに返す"
+      }
+    ],
+    "explanation": "割合で分ける = 加重ルーティング。",
+    "keywords": [
+      "10%"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-failover:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "route53-failover"
+    ],
+    "prompt": "フェイルオーバールーティングの構成として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライマリが異常ならセカンダリを返す",
+        "correct": true,
+        "atomId": "route53-failover",
+        "why": "アクティブ/パッシブの構成"
+      },
+      {
+        "id": "b",
+        "text": "両方の宛先に常に同じ割合で振り分ける",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "それは加重ルーティング"
+      },
+      {
+        "id": "c",
+        "text": "ユーザーの国で宛先を変える",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "それは位置情報ルーティング"
+      },
+      {
+        "id": "d",
+        "text": "最も速いリージョンを返す",
+        "correct": false,
+        "atomId": "route53-latency",
+        "why": "それはレイテンシーベースルーティング"
+      }
+    ],
+    "explanation": "フェイルオーバー = プライマリ + ヘルスチェック → 異常時にセカンダリ。",
+    "keywords": [
+      "プライマリ",
+      "セカンダリ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-failover:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "route53-failover",
+      "globalaccelerator-accelerator"
+    ],
+    "prompt": "リージョン障害時の切り替えで、Route 53 のフェイルオーバーより Global Accelerator が速いのはなぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DNS のキャッシュ（TTL）に左右されないから",
+        "correct": true,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "固定の IP のまま、裏側の宛先を切り替える"
+      },
+      {
+        "id": "b",
+        "text": "Route 53 にはヘルスチェックがないから",
+        "correct": false,
+        "atomId": "route53-health-checks",
+        "why": "Route 53 にもヘルスチェックがある"
+      },
+      {
+        "id": "c",
+        "text": "Global Accelerator はエッジでキャッシュするから",
+        "correct": false,
+        "why": "キャッシュはしない"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 は 1 つのリージョンしか扱えないから",
+        "correct": false,
+        "why": "複数のリージョンを扱える"
+      }
+    ],
+    "explanation": "DNS の切り替えはクライアントのキャッシュが切れるまで反映されない。GA は IP が変わらない。",
+    "keywords": [
+      "DNS のキャッシュ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-health-checks:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "route53-health-checks"
+    ],
+    "prompt": "本番の Web サイトが HTTP 200 を返しているかを、世界の複数の地点から監視し、DNS の切り替えに使いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Route 53 ヘルスチェック",
+        "correct": true,
+        "atomId": "route53-health-checks",
+        "why": "複数の地点からエンドポイントを確認し、DNS に反映する"
+      },
+      {
+        "id": "b",
+        "text": "ELB のヘルスチェック",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "ロードバランサーとターゲットの間の確認で、DNS の切り替えには使わない"
+      },
+      {
+        "id": "c",
+        "text": "CloudWatch Logs",
+        "correct": false,
+        "atomId": "cloudwatch-logs",
+        "why": "ログの保存"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の評価"
+      }
+    ],
+    "explanation": "DNS での切り替えの判定 = Route 53 ヘルスチェック。",
+    "keywords": [
+      "DNS の切り替え"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-health-checks:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "route53-health-checks"
+    ],
+    "prompt": "Route 53 の「計算されたヘルスチェック」とは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複数の結果を組み合わせて判定する",
+        "correct": true,
+        "atomId": "route53-health-checks",
+        "why": "例 3 つのうち 2 つが正常なら正常"
+      },
+      {
+        "id": "b",
+        "text": "CPU 使用率から自動で計算する",
+        "correct": false,
+        "why": "CloudWatch アラームを使うヘルスチェックとは別"
+      },
+      {
+        "id": "c",
+        "text": "応答時間の平均を返す",
+        "correct": false,
+        "why": "判定の仕組みで、平均値を返すものではない"
+      },
+      {
+        "id": "d",
+        "text": "DNS の TTL を自動で計算する",
+        "correct": false,
+        "why": "TTL とは関係ない"
+      }
+    ],
+    "explanation": "計算されたヘルスチェック = 子のヘルスチェックの組み合わせ（AND / OR / N 個以上）。",
+    "keywords": [
+      "組み合わせ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-multivalue:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "route53-multivalue",
+      "route53-simple"
+    ],
+    "prompt": "複数値回答ルーティングと、複数の値を持つシンプルルーティングの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者はヘルスチェックで異常な値を外せる",
+        "correct": true,
+        "atomId": "route53-multivalue",
+        "why": "シンプルは全部の値を返し、ヘルスチェックは使えない"
+      },
+      {
+        "id": "b",
+        "text": "前者は 1 つの値しか返さない",
+        "correct": false,
+        "why": "最大 8 つの値を返す"
+      },
+      {
+        "id": "c",
+        "text": "前者はロードバランサーの代わりに通信を分散する",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "DNS の応答の話で、ロードバランサーの代わりではない"
+      },
+      {
+        "id": "d",
+        "text": "後者はエイリアスレコードを使えない",
+        "correct": false,
+        "atomId": "route53-alias",
+        "why": "シンプルでもエイリアスを使える"
+      }
+    ],
+    "explanation": "正常な IP だけを複数返す = 複数値回答。ELB の代わりにはならない。",
+    "keywords": [
+      "ヘルスチェック"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-geoproximity:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "route53-geoproximity"
+    ],
+    "prompt": "地理的近接性ルーティングの「バイアス」で何ができる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "振り分ける範囲を広げ・狭める",
+        "correct": true,
+        "atomId": "route53-geoproximity",
+        "why": "正の値で広げ、負の値で狭める"
+      },
+      {
+        "id": "b",
+        "text": "国ごとに固定の宛先を決める",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "それは位置情報ルーティング"
+      },
+      {
+        "id": "c",
+        "text": "通信の速さで宛先を決める",
+        "correct": false,
+        "atomId": "route53-latency",
+        "why": "それはレイテンシーベースルーティング"
+      },
+      {
+        "id": "d",
+        "text": "宛先の重みの割合を決める",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "それは加重ルーティング"
+      }
+    ],
+    "explanation": "地理的近接性 = 距離 + バイアスで範囲を調整（Route 53 のトラフィックフローで使う）。",
+    "keywords": [
+      "バイアス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-private-hosted-zone:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "route53-private-hosted-zone"
+    ],
+    "prompt": "プライベートホストゾーンを作り、レコードも登録したが、VPC 内の EC2 から名前解決できない。原因として考えられるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ゾーンを VPC に関連付けていない、または DNS 設定が無効",
+        "correct": true,
+        "atomId": "route53-private-hosted-zone",
+        "why": "VPC の enableDnsHostnames と enableDnsSupport を有効にする"
+      },
+      {
+        "id": "b",
+        "text": "プライベートホストゾーンはインターネットからしか使えない",
+        "correct": false,
+        "why": "VPC 内からだけ使える"
+      },
+      {
+        "id": "c",
+        "text": "プライベートホストゾーンにはエイリアスを登録できない",
+        "correct": false,
+        "atomId": "route53-alias",
+        "why": "登録できる"
+      },
+      {
+        "id": "d",
+        "text": "EC2 にパブリック IP がない",
+        "correct": false,
+        "why": "プライベートの名前解決にパブリック IP は不要"
+      }
+    ],
+    "explanation": "プライベートホストゾーン = VPC への関連付け + VPC の DNS 設定（DNS 解決・DNS ホスト名）が必要。",
+    "keywords": [
+      "名前解決できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-resolver:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "route53-resolver"
+    ],
+    "prompt": "VPC 内の EC2 から、オンプレミスの社内 DNS にある corp.example.local の名前を解決したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アウトバウンドエンドポイント",
+        "correct": true,
+        "atomId": "route53-resolver",
+        "why": "指定したドメインの問い合わせを社内の DNS に転送する"
+      },
+      {
+        "id": "b",
+        "text": "Resolver のインバウンドエンドポイント",
+        "correct": false,
+        "why": "オンプレミスから VPC の名前を解決するためのもの"
+      },
+      {
+        "id": "c",
+        "text": "パブリックホストゾーンに社内の名前を登録する",
+        "correct": false,
+        "why": "社内の名前がインターネットに公開されてしまう"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "DNS の転送の機能ではない"
+      }
+    ],
+    "explanation": "VPC → オンプレの名前 = アウトバウンド、オンプレ → VPC の名前 = インバウンド。",
+    "keywords": [
+      "VPC 内の EC2 から",
+      "オンプレミスの社内 DNS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-latency:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "route53-latency"
+    ],
+    "prompt": "レイテンシーベースルーティングは、何を基準に宛先を選ぶ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "通信のレイテンシの実測値",
+        "correct": true,
+        "atomId": "route53-latency",
+        "why": "物理的な距離ではなく、通信の速さで選ぶ"
+      },
+      {
+        "id": "b",
+        "text": "ユーザーの国や大陸",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "それは位置情報ルーティング"
+      },
+      {
+        "id": "c",
+        "text": "リージョンの料金",
+        "correct": false,
+        "why": "料金は基準ではない"
+      },
+      {
+        "id": "d",
+        "text": "リージョンのサーバーの CPU 使用率",
+        "correct": false,
+        "why": "サーバーの負荷は基準ではない"
+      }
+    ],
+    "explanation": "レイテンシー = 通信の速さ、位置情報 = 国・大陸、地理的近接性 = 距離 + バイアス。",
+    "keywords": [
+      "レイテンシ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-alias:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "route53-alias"
+    ],
+    "prompt": "example.com（ゾーンの頂点）を CloudFront に向けるため、CNAME レコードを作ろうとしたができない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エイリアスレコードで CloudFront を指す",
+        "correct": true,
+        "atomId": "route53-alias",
+        "why": "エイリアスはゾーンの頂点にも使える"
+      },
+      {
+        "id": "b",
+        "text": "CNAME の TTL を短くする",
+        "correct": false,
+        "why": "頂点に CNAME は作れない"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront の IP アドレスを A レコードに書く",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "CloudFront の IP は変わるので固定で書けない"
+      },
+      {
+        "id": "d",
+        "text": "www.example.com だけを使う",
+        "correct": false,
+        "why": "要件の example.com でアクセスできない"
+      }
+    ],
+    "explanation": "ゾーンの頂点 × AWS リソース = エイリアスレコード。",
+    "keywords": [
+      "ゾーンの頂点",
+      "CNAME"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-simple:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "route53-simple"
+    ],
+    "prompt": "「1 つの Web サーバーに名前を向けるだけ」「ヘルスチェック不要」→ Route 53 のどのルーティング？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "シンプルルーティング",
+        "correct": true,
+        "atomId": "route53-simple",
+        "why": "基本のルーティングで、ヘルスチェックは使えない"
+      },
+      {
+        "id": "b",
+        "text": "フェイルオーバールーティング",
+        "correct": false,
+        "atomId": "route53-failover",
+        "why": "異常時の切り替えが必要な場合"
+      },
+      {
+        "id": "c",
+        "text": "加重ルーティング",
+        "correct": false,
+        "atomId": "route53-weighted",
+        "why": "複数の宛先に割合で分ける場合"
+      },
+      {
+        "id": "d",
+        "text": "地理的近接性ルーティング",
+        "correct": false,
+        "atomId": "route53-geoproximity",
+        "why": "距離とバイアスで振り分ける場合"
+      }
+    ],
+    "explanation": "単純に 1 つの宛先 = シンプルルーティング。",
+    "keywords": [
+      "1 つの Web サーバー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

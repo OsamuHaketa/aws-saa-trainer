@@ -136,3 +136,96 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: cloudfront-cache-key
+    category: caching
+    concept: キャッシュキーとキャッシュポリシー
+    summary: キャッシュを区別する要素（パス、クエリ文字列、ヘッダー、Cookie）と TTL を決め、キャッシュヒット率を左右する
+    facts:
+      - キャッシュキーに含めた要素ごとに、別々のキャッシュが作られる
+      - 不要なヘッダーや Cookie、クエリ文字列をキャッシュキーに含めると、キャッシュヒット率が下がる
+      - キャッシュポリシーで、キャッシュキーと TTL（最小・最大・デフォルト）を設定する
+      - オリジンには送りたいがキャッシュキーには含めない値は、オリジンリクエストポリシーで送る
+    triggers:
+      - キャッシュヒット率が低い
+      - オリジンへのリクエストが減らない
+    pitfalls:
+      - すべてのヘッダーや Cookie をキャッシュキーに含めると、ほとんどキャッシュされなくなる
+    relations:
+      - type: part_of
+        target: cloudfront-distribution
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html
+
+  - id: cloudfront-viewer-https
+    category: edge-security
+    concept: CloudFront の HTTPS（ビューワープロトコルポリシーと証明書）
+    summary: ビューワーとの通信を HTTPS に強制し、独自ドメインの証明書は米国東部（バージニア北部）の ACM で発行する
+    facts:
+      - ビューワープロトコルポリシーで「HTTP を HTTPS にリダイレクト」や「HTTPS のみ」を選べる
+      - 独自ドメインの証明書は、米国東部（バージニア北部、us-east-1）リージョンの ACM で発行・インポートする必要がある
+      - オリジンへの通信（オリジンプロトコルポリシー）も HTTPS にできる
+    triggers:
+      - CloudFront で独自ドメインを HTTPS 化したい
+      - HTTP のアクセスを HTTPS に切り替えたい
+    pitfalls:
+      - 東京リージョンの ACM で作った証明書は、CloudFront に付けられない
+    relations:
+      - type: used_with
+        target: elb-tls-termination
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html
+
+  - id: cloudfront-alb-origin
+    category: edge-security
+    concept: ALB オリジンへの直接アクセスの制限
+    summary: CloudFront を経由しない ALB への直接アクセスを、マネージドプレフィックスリストやカスタムヘッダーで防ぐ
+    facts:
+      - ALB のセキュリティグループで、CloudFront のマネージドプレフィックスリストからの通信だけを許可できる
+      - CloudFront からオリジンに秘密の値のカスタムヘッダーを付け、ALB のリスナールールで確認する方法もある
+      - CloudFront の VPC オリジンを使うと、プライベートサブネットの ALB や EC2 をオリジンにできる
+      - WAF を CloudFront に付けても、ALB に直接来た通信は検査されない
+    triggers:
+      - CloudFront を経由しないアクセスを防ぎたい
+      - ALB に直接アクセスされて WAF をすり抜けられる
+    pitfalls:
+      - ALB を 0.0.0.0/0 に公開したままだと、CloudFront と WAF を迂回される
+    relations:
+      - type: used_with
+        target: waf-web-acl
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html
+
+  - id: cloudfront-price-class
+    category: caching
+    concept: CloudFront の価格クラス
+    summary: 配信に使うエッジロケーションの地域を絞り、料金を下げる
+    facts:
+      - 価格クラス All はすべてのエッジロケーションを使い、性能が最も良い
+      - 価格クラス 100 や 200 は、料金の高い地域のエッジロケーションを使わず、コストを下げる
+      - 使わない地域のユーザーも、別の地域のエッジから配信される（レイテンシは上がる）
+    triggers:
+      - CloudFront の料金を下げたい
+      - ユーザーが特定の地域（北米・欧州など）に集中している
+    pitfalls:
+      - 世界中で低レイテンシが必要なのに価格クラスを絞ると、一部の地域で遅くなる
+    relations:
+      - type: part_of
+        target: cloudfront-distribution
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html

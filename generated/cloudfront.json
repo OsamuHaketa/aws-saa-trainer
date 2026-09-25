@@ -403,5 +403,615 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-cache-key:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-cache-key"
+    ],
+    "prompt": "CloudFront のキャッシュポリシーで、すべてのヘッダーと Cookie をキャッシュキーに含めた。オリジンの負荷が全く減らない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リクエストごとにキーが変わり、ほぼキャッシュされない",
+        "correct": true,
+        "atomId": "cloudfront-cache-key",
+        "why": "必要な要素だけをキャッシュキーに含める"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront はヘッダーを読めないので、キャッシュが無効になる",
+        "correct": false,
+        "why": "ヘッダーは読めるが、キーが細かくなりすぎる"
+      },
+      {
+        "id": "c",
+        "text": "Cookie を含めるとオリジンが HTTPS でなくなる",
+        "correct": false,
+        "why": "プロトコルとは関係ない"
+      },
+      {
+        "id": "d",
+        "text": "TTL が自動で 1 年に設定される",
+        "correct": false,
+        "why": "TTL はキャッシュポリシーで決める"
+      }
+    ],
+    "explanation": "キャッシュキーに含めるものが多いほど、キャッシュヒット率は下がる。",
+    "keywords": [
+      "すべてのヘッダーと Cookie"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-cache-key:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-cache-key"
+    ],
+    "prompt": "オリジンのアプリは言語の判定に Accept-Language ヘッダーを使うが、それ以外のヘッダーは不要。キャッシュヒット率を高く保つには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キーは Accept-Language だけにする",
+        "correct": true,
+        "atomId": "cloudfront-cache-key",
+        "why": "言語ごとのキャッシュだけが作られる"
+      },
+      {
+        "id": "b",
+        "text": "すべてのヘッダーと Cookie をキャッシュキーに含める",
+        "correct": false,
+        "why": "ヒット率が大きく下がる"
+      },
+      {
+        "id": "c",
+        "text": "キャッシュを無効にして毎回オリジンへ送る",
+        "correct": false,
+        "why": "CloudFront の効果がなくなる"
+      },
+      {
+        "id": "d",
+        "text": "キャッシュの無効化を毎分実行する",
+        "correct": false,
+        "atomId": "cloudfront-invalidation",
+        "why": "費用がかかり、ヒット率も下がる"
+      }
+    ],
+    "explanation": "キャッシュキー = 本当に内容が変わる要素だけ。",
+    "keywords": [
+      "Accept-Language だけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-viewer-https:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-viewer-https"
+    ],
+    "prompt": "CloudFront に独自ドメインを付けるため、東京リージョンの ACM で証明書を発行したが、選択肢に出てこない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "証明書は us-east-1 で作る必要がある",
+        "correct": true,
+        "atomId": "cloudfront-viewer-https",
+        "why": "バージニア北部の ACM の証明書だけが使える"
+      },
+      {
+        "id": "b",
+        "text": "ACM の証明書は CloudFront に使えない",
+        "correct": false,
+        "why": "使える。リージョンが違う"
+      },
+      {
+        "id": "c",
+        "text": "独自ドメインは CloudFront では使えない",
+        "correct": false,
+        "why": "代替ドメイン名（CNAME）として使える"
+      },
+      {
+        "id": "d",
+        "text": "証明書の発行から 30 日待つ必要がある",
+        "correct": false,
+        "why": "待つ必要はない"
+      }
+    ],
+    "explanation": "CloudFront + ACM = 米国東部（バージニア北部）の証明書。ALB は同じリージョンの証明書。",
+    "keywords": [
+      "東京リージョンの ACM"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-viewer-https:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-viewer-https"
+    ],
+    "prompt": "CloudFront で配信するサイトに HTTP でアクセスしてきたユーザーを、自動で HTTPS に切り替えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ビューワープロトコルポリシーでリダイレクトにする",
+        "correct": true,
+        "atomId": "cloudfront-viewer-https",
+        "why": "HTTP のリクエストに HTTPS へのリダイレクトを返す"
+      },
+      {
+        "id": "b",
+        "text": "オリジンプロトコルポリシーを HTTPS にする",
+        "correct": false,
+        "why": "CloudFront とオリジンの間の設定"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットポリシーで HTTP を拒否する",
+        "correct": false,
+        "atomId": "s3-enforce-https",
+        "why": "拒否するだけで、切り替えはされない"
+      },
+      {
+        "id": "d",
+        "text": "WAF で HTTP を許可する",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "HTTPS への切り替えにはならない"
+      }
+    ],
+    "explanation": "ユーザーとの通信 = ビューワープロトコルポリシー、オリジンとの通信 = オリジンプロトコルポリシー。",
+    "keywords": [
+      "自動で HTTPS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-alb-origin:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-alb-origin"
+    ],
+    "prompt": "CloudFront に WAF を付けたが、攻撃者が ALB の DNS 名に直接アクセスして WAF を迂回している。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB で CloudFront からの通信だけ許可する",
+        "correct": true,
+        "atomId": "cloudfront-alb-origin",
+        "why": "CloudFront を経由しない通信を ALB で受けない"
+      },
+      {
+        "id": "b",
+        "text": "CloudFront の TTL を長くしてキャッシュさせる",
+        "correct": false,
+        "atomId": "cloudfront-cache-key",
+        "why": "直接アクセスは防げない"
+      },
+      {
+        "id": "c",
+        "text": "ALB を NLB に変える",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "直接アクセスの問題は残る"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront の地域制限を有効にする",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "ALB への直接アクセスは防げない"
+      }
+    ],
+    "explanation": "オリジンの ALB は CloudFront からだけ受ける（プレフィックスリスト、カスタムヘッダー、VPC オリジン）。",
+    "keywords": [
+      "直接アクセス",
+      "迂回"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-alb-origin:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-alb-origin"
+    ],
+    "prompt": "「オリジンに秘密のカスタムヘッダー」「ALB のルールで確認」→ 何のため？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "直接アクセスを防ぐため",
+        "correct": true,
+        "atomId": "cloudfront-alb-origin",
+        "why": "ヘッダーがないリクエストは ALB で拒否する"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュヒット率を上げるため",
+        "correct": false,
+        "atomId": "cloudfront-cache-key",
+        "why": "キャッシュキーの話ではない"
+      },
+      {
+        "id": "c",
+        "text": "ユーザーの国を判定するため",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "地域制限の話ではない"
+      },
+      {
+        "id": "d",
+        "text": "TLS の証明書を更新するため",
+        "correct": false,
+        "atomId": "elb-tls-termination",
+        "why": "証明書とは関係ない"
+      }
+    ],
+    "explanation": "カスタムヘッダー = 「CloudFront から来た」ことの証明。",
+    "keywords": [
+      "カスタムヘッダー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-price-class:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-price-class"
+    ],
+    "prompt": "利用者のほぼ全員が北米と欧州にいる。CloudFront の料金を下げたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "価格クラス 100 を選ぶ",
+        "correct": true,
+        "atomId": "cloudfront-price-class",
+        "why": "料金の高い地域のエッジを使わない"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュの無効化を増やす",
+        "correct": false,
+        "atomId": "cloudfront-invalidation",
+        "why": "費用が増え、性能も下がる"
+      },
+      {
+        "id": "c",
+        "text": "オリジンを全リージョンに置く",
+        "correct": false,
+        "why": "コストが増える"
+      },
+      {
+        "id": "d",
+        "text": "地域制限で他の国をすべて拒否する",
+        "correct": false,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "配信を止めてしまう。料金の最適化ではない"
+      }
+    ],
+    "explanation": "エッジの地域を絞ってコスト削減 = 価格クラス。",
+    "keywords": [
+      "北米と欧州",
+      "料金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-invalidation:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-invalidation"
+    ],
+    "prompt": "CloudFront のキャッシュの無効化の代わりに、ファイル名にバージョンを付ける（style.v2.css）利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "無効化せずにすぐ反映できる",
+        "correct": true,
+        "atomId": "cloudfront-invalidation",
+        "why": "新しい名前はキャッシュにないので、オリジンから取得される"
+      },
+      {
+        "id": "b",
+        "text": "古いファイルが自動で削除される",
+        "correct": false,
+        "why": "古いファイルはキャッシュの期限まで残る"
+      },
+      {
+        "id": "c",
+        "text": "TTL が 0 になる",
+        "correct": false,
+        "why": "TTL は変わらない"
+      },
+      {
+        "id": "d",
+        "text": "オリジンへのアクセスがなくなる",
+        "correct": false,
+        "why": "新しいファイルは一度オリジンから取得する"
+      }
+    ],
+    "explanation": "頻繁な更新 = ファイル名のバージョニング、たまの緊急の修正 = 無効化。",
+    "keywords": [
+      "バージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-invalidation:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-invalidation"
+    ],
+    "prompt": "ファイルを更新するたびに、毎回すべてのパス（/*）のキャッシュを無効化している。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャッシュが毎回空になり、オリジンの負荷が上がる",
+        "correct": true,
+        "atomId": "cloudfront-invalidation",
+        "why": "変更したファイルだけ無効化するか、ファイル名を変える"
+      },
+      {
+        "id": "b",
+        "text": "無効化するとディストリビューションが削除される",
+        "correct": false,
+        "why": "削除はされない"
+      },
+      {
+        "id": "c",
+        "text": "/* は指定できない",
+        "correct": false,
+        "why": "指定できる"
+      },
+      {
+        "id": "d",
+        "text": "無効化すると HTTPS が使えなくなる",
+        "correct": false,
+        "why": "関係ない"
+      }
+    ],
+    "explanation": "全体の無効化はオリジンに負荷をかける。必要な範囲だけ、またはバージョン付きファイル名を使う。",
+    "keywords": [
+      "毎回すべてのパス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-geo-restriction:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-geo-restriction"
+    ],
+    "prompt": "「特定の国からのアクセスを拒否」「配信権」→ CloudFront の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "地域制限（ジオブロッキング）",
+        "correct": true,
+        "atomId": "cloudfront-geo-restriction",
+        "why": "国単位で許可・拒否できる"
+      },
+      {
+        "id": "b",
+        "text": "署名付き URL",
+        "correct": false,
+        "atomId": "cloudfront-signed-urls",
+        "why": "特定のユーザーへの期限付きアクセス"
+      },
+      {
+        "id": "c",
+        "text": "価格クラス",
+        "correct": false,
+        "atomId": "cloudfront-price-class",
+        "why": "エッジの地域を絞る料金の設定"
+      },
+      {
+        "id": "d",
+        "text": "Route 53 の位置情報ルーティング",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "DNS で振り分けるが、拒否の機能ではない"
+      }
+    ],
+    "explanation": "国ごとに配信を止める = CloudFront の地域制限（より細かい条件なら WAF の地域一致）。",
+    "keywords": [
+      "特定の国"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-origin-failover:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-origin-failover"
+    ],
+    "prompt": "CloudFront のオリジングループで、セカンダリに切り替わるのはどんなとき？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライマリがエラーを返したとき",
+        "correct": true,
+        "atomId": "cloudfront-origin-failover",
+        "why": "500 系などのステータスコードや接続の失敗で切り替える"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュヒット率が下がったとき",
+        "correct": false,
+        "why": "キャッシュの状態では切り替わらない"
+      },
+      {
+        "id": "c",
+        "text": "ユーザーが別の国からアクセスしたとき",
+        "correct": false,
+        "why": "地域では切り替わらない"
+      },
+      {
+        "id": "d",
+        "text": "毎日決まった時刻",
+        "correct": false,
+        "why": "時刻では切り替わらない"
+      }
+    ],
+    "explanation": "オリジンフェイルオーバー = プライマリのエラーで、そのリクエストをセカンダリへ。",
+    "keywords": [
+      "エラーコード"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-functions:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "cloudfront-functions"
+    ],
+    "prompt": "CloudFront Functions と Lambda@Edge の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "軽い加工なら前者、重い処理や外部通信なら後者",
+        "correct": true,
+        "atomId": "cloudfront-functions",
+        "why": "前者はビューワーのリクエスト・レスポンスだけで、非常に安い"
+      },
+      {
+        "id": "b",
+        "text": "前者はネットワークにアクセスでき、後者はできない",
+        "correct": false,
+        "why": "逆。ネットワークにアクセスできるのは Lambda@Edge"
+      },
+      {
+        "id": "c",
+        "text": "前者の方が実行時間を長くできる",
+        "correct": false,
+        "why": "Lambda@Edge の方が長く実行できる"
+      },
+      {
+        "id": "d",
+        "text": "後者はオリジンへのリクエストを加工できない",
+        "correct": false,
+        "why": "Lambda@Edge はオリジンのリクエスト・レスポンスも加工できる"
+      }
+    ],
+    "explanation": "ヘッダーの追加や URL の書き換え = CloudFront Functions、外部 API 呼び出しや重い処理 = Lambda@Edge。",
+    "keywords": [
+      "軽い加工"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-signed-urls:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "cloudfront-signed-urls"
+    ],
+    "prompt": "CloudFront の署名付き URL と署名付き Cookie の使い分けは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "1 つのファイルなら URL、多数のファイルなら Cookie",
+        "correct": true,
+        "atomId": "cloudfront-signed-urls",
+        "why": "Cookie なら URL を変えずに複数のファイルに適用できる"
+      },
+      {
+        "id": "b",
+        "text": "URL は無料、Cookie は有料",
+        "correct": false,
+        "why": "料金の違いではない"
+      },
+      {
+        "id": "c",
+        "text": "URL は S3 専用、Cookie は ALB 専用",
+        "correct": false,
+        "why": "どちらも CloudFront で使う"
+      },
+      {
+        "id": "d",
+        "text": "Cookie は期限を設定できない",
+        "correct": false,
+        "why": "どちらも期限を設定できる"
+      }
+    ],
+    "explanation": "個別のファイル = 署名付き URL、会員エリアの多数のファイル = 署名付き Cookie。",
+    "keywords": [
+      "1 つのファイル",
+      "多数のファイル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-distribution:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "cloudfront-distribution",
+      "s3-origin-access-control",
+      "cloudfront-viewer-https"
+    ],
+    "prompt": "静的な Web サイトを S3 と CloudFront で公開する。\n・www.example.com で HTTPS 化する\n・S3 バケットへの直接のアクセスは禁止する\n・世界中のユーザーに低レイテンシで配信する\n正しい構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront に us-east-1 の証明書、S3 は OAC で非公開",
+        "correct": true,
+        "atomId": "cloudfront-distribution",
+        "why": "CloudFront だけがバケットを読め、HTTPS は CloudFront で終端する"
+      },
+      {
+        "id": "b",
+        "text": "東京の ACM 証明書を CloudFront に付け、S3 バケットを公開する",
+        "correct": false,
+        "why": "証明書は us-east-1 が必要で、バケットの公開は要件に反する"
+      },
+      {
+        "id": "c",
+        "text": "S3 の静的ウェブサイトホスティングだけで HTTPS 化する",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "S3 のウェブサイトエンドポイントは HTTPS に対応しない"
+      },
+      {
+        "id": "d",
+        "text": "ALB の後ろに S3 を置き、ALB で HTTPS 化する",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB は S3 をターゲットにできず、グローバルな配信にもならない"
+      }
+    ],
+    "explanation": "静的サイト + HTTPS + 非公開のバケット + グローバル = CloudFront（us-east-1 の ACM）+ OAC。",
+    "keywords": [
+      "HTTPS",
+      "直接のアクセスは禁止"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
