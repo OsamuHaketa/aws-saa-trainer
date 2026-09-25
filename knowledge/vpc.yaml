@@ -324,3 +324,149 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: vpc-interface-endpoint
+    category: connectivity
+    concept: インターフェイス VPC エンドポイント
+    summary: サブネットに ENI を作り、SQS や KMS などの AWS サービスへインターネットを通らずに接続する
+    facts:
+      - PrivateLink の仕組みで、サブネットにプライベート IP を持つ ENI を作る
+      - SQS、SNS、KMS、Secrets Manager、CloudWatch など、多くの AWS サービスに使える
+      - プライベート DNS を有効にすると、サービスの通常のエンドポイント名がプライベート IP に解決される
+      - エンドポイントにセキュリティグループを付けて、接続元を制限できる
+      - 時間単位の料金とデータ処理料金がかかる
+    triggers:
+      - プライベートサブネットから AWS のサービスの API を呼びたい
+      - NAT ゲートウェイやインターネットを経由させたくない
+    pitfalls:
+      - S3 と DynamoDB に VPC 内からだけアクセスするなら、無料のゲートウェイエンドポイントで足りる
+    relations:
+      - type: confused_with
+        target: vpc-nat-gateway
+        distinction: NAT ゲートウェイはインターネット全体への外向き通信を可能にする。インターフェイスエンドポイントは特定の AWS サービスへだけ、AWS のネットワーク内でプライベートに接続する
+      - type: part_of
+        target: vpc-privatelink
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html
+
+  - id: vpc-network-firewall
+    category: access-control
+    concept: AWS Network Firewall
+    summary: VPC の出入口で、ステートフルな検査やドメイン名でのフィルタリングを行うマネージドなファイアウォール
+    facts:
+      - VPC を出入りする通信を、専用のサブネットに置いたファイアウォールで検査する
+      - ステートフルなルール、侵入防止（IPS）、ドメイン名（FQDN）による許可・拒否ができる
+      - HTTP に限らず、VPC を流れるさまざまなプロトコルの通信が対象
+      - Transit Gateway と組み合わせて、複数の VPC の通信を 1 か所で検査できる
+    triggers:
+      - 外向きの通信を特定のドメインだけに制限したい
+      - VPC 全体の通信を検査したい
+      - IPS
+    pitfalls:
+      - Web アプリへの SQL インジェクションなど HTTP の攻撃を CloudFront や ALB で防ぐなら、WAF を使う
+    relations:
+      - type: confused_with
+        target: waf-web-acl
+        distinction: WAF は CloudFront、ALB、API Gateway の前で HTTP(S) のリクエストを検査する。Network Firewall は VPC の出入口で、HTTP 以外も含むネットワークの通信を検査する
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html
+
+  - id: vpc-client-vpn
+    category: connectivity
+    concept: AWS Client VPN
+    summary: 社員の PC などから、VPC やオンプレミスへ TLS の VPN で安全に接続する
+    facts:
+      - OpenVPN 互換のクライアントを使い、個々のユーザーの端末から接続する
+      - 証明書、Active Directory、SAML などでユーザーを認証できる
+      - マネージドサービスで、利用者数に合わせて自動でスケールする
+    triggers:
+      - 在宅勤務の社員が VPC にアクセスしたい
+      - ユーザーの端末からの VPN
+    pitfalls:
+      - 拠点（ネットワーク）同士をつなぐなら Site-to-Site VPN を使う
+    relations:
+      - type: confused_with
+        target: vpc-site-to-site-vpn
+        distinction: Client VPN は個々のユーザーの端末から接続する。Site-to-Site VPN はオンプレミスのネットワークと VPC をルーター同士でつなぐ
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html
+
+  - id: vpc-direct-connect-gateway
+    category: connectivity
+    concept: Direct Connect ゲートウェイ
+    summary: 1 つの Direct Connect 接続から、複数のリージョンやアカウントの VPC に接続する
+    facts:
+      - グローバルなリソースで、別のリージョンの VPC にも同じ Direct Connect から接続できる
+      - 仮想プライベートゲートウェイや Transit Gateway と関連付けて使う
+      - Direct Connect ゲートウェイを経由して、VPC 同士が通信することはできない
+    triggers:
+      - 1 本の Direct Connect で複数のリージョンの VPC につなぎたい
+      - 複数のアカウントの VPC に Direct Connect でつなぎたい
+    pitfalls:
+      - VPC 同士をつなぐハブにはならない。VPC 間は Transit Gateway やピアリングを使う
+    relations:
+      - type: used_with
+        target: vpc-direct-connect
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways-intro.html
+
+  - id: vpc-vpn-cloudhub
+    category: connectivity
+    concept: AWS VPN CloudHub
+    summary: 複数の拠点の Site-to-Site VPN を 1 つの仮想プライベートゲートウェイにつなぎ、拠点同士も通信させる
+    facts:
+      - 1 つの仮想プライベートゲートウェイに、複数のカスタマーゲートウェイから VPN を張る
+      - ハブ＆スポーク型で、拠点同士が AWS を経由して通信できる
+      - 通信はインターネット上の VPN で暗号化される
+      - 拠点ごとに異なる BGP の ASN を使う
+    triggers:
+      - 複数の支店同士を安くつなぎたい
+      - 支店の VPN を AWS 経由で相互に通信させたい
+    pitfalls:
+      - 安定した帯域が必要な拠点間通信には、インターネット経由なので向かない
+    relations:
+      - type: part_of
+        target: vpc-site-to-site-vpn
+    examDomains: [cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpn/latest/s2svpn/VPN_CloudHub.html
+
+  - id: vpc-sharing
+    category: connectivity
+    concept: VPC 共有（AWS RAM）
+    summary: AWS RAM で VPC のサブネットを、同じ組織の他のアカウントと共有する
+    facts:
+      - VPC の所有者が、AWS Resource Access Manager（RAM）でサブネットを他のアカウントと共有する
+      - 参加アカウントは、共有されたサブネットに EC2 や RDS などを作れる
+      - VPC、サブネット、ルートテーブルなどは所有者が管理し、参加アカウントは変更できない
+      - 同じ VPC 内なので、ピアリングや Transit Gateway なしで通信できる
+    triggers:
+      - 複数のアカウントで 1 つの VPC を使いたい
+      - ネットワークの管理をネットワークチームに一元化したい
+    pitfalls:
+      - VPC ごとにピアリングを大量に作る前に、共有でまとめられないかを考える
+    relations:
+      - type: confused_with
+        target: vpc-peering
+        distinction: VPC 共有は 1 つの VPC のサブネットを複数のアカウントで使う。ピアリングは別々の VPC 同士をつなぐ
+    examDomains: [secure, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html

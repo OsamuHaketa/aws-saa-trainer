@@ -1331,5 +1331,1421 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-interface-endpoint:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-interface-endpoint"
+    ],
+    "prompt": "NAT ゲートウェイのないプライベートサブネットの Lambda から、SQS にメッセージを送りたい。インターネットは経由させたくない。何を作る？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SQS のインターフェイスエンドポイント",
+        "correct": true,
+        "atomId": "vpc-interface-endpoint",
+        "why": "サブネットに ENI を作り、SQS へプライベートに接続する"
+      },
+      {
+        "id": "b",
+        "text": "SQS のゲートウェイエンドポイント",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ゲートウェイエンドポイントは S3 と DynamoDB だけ"
+      },
+      {
+        "id": "c",
+        "text": "インターネットゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "インターネットを経由してしまい、プライベートサブネットのままでは使えない"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続で、AWS のサービスにはつながらない"
+      }
+    ],
+    "explanation": "S3・DynamoDB 以外の AWS サービスへのプライベート接続 = インターフェイスエンドポイント。",
+    "keywords": [
+      "SQS",
+      "インターネットは経由させたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-interface-endpoint:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "vpc-interface-endpoint",
+      "vpc-nat-gateway"
+    ],
+    "prompt": "プライベートサブネットから AWS のサービスを使うとき、NAT ゲートウェイではなくインターフェイスエンドポイントを使う利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "通信が AWS のネットワーク内で完結し、インターネットに出ない",
+        "correct": true,
+        "atomId": "vpc-interface-endpoint",
+        "why": "特定のサービスにだけプライベートに接続する"
+      },
+      {
+        "id": "b",
+        "text": "どのインターネットのサイトにも接続できる",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "それは NAT ゲートウェイの特徴"
+      },
+      {
+        "id": "c",
+        "text": "料金が常に無料になる",
+        "correct": false,
+        "why": "インターフェイスエンドポイントは時間単位とデータ処理の料金がかかる"
+      },
+      {
+        "id": "d",
+        "text": "Elastic IP が不要になり、外から接続を受けられる",
+        "correct": false,
+        "why": "外からの接続を受ける機能ではない"
+      }
+    ],
+    "explanation": "NAT = インターネット全体へ外向き、インターフェイスエンドポイント = 特定の AWS サービスへプライベートに。",
+    "keywords": [
+      "インターネットに出ない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-interface-endpoint:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "vpc-interface-endpoint"
+    ],
+    "prompt": "インターフェイスエンドポイントで「プライベート DNS」を有効にすると、何が変わる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "通常のサービスのエンドポイント名が、プライベート IP に解決される",
+        "correct": true,
+        "atomId": "vpc-interface-endpoint",
+        "why": "アプリのコードを変えずにエンドポイント経由になる"
+      },
+      {
+        "id": "b",
+        "text": "エンドポイントがインターネットに公開される",
+        "correct": false,
+        "why": "公開されることはない"
+      },
+      {
+        "id": "c",
+        "text": "Route 53 のパブリックホストゾーンが自動で作られる",
+        "correct": false,
+        "atomId": "route53-private-hosted-zone",
+        "why": "パブリックホストゾーンは作られない"
+      },
+      {
+        "id": "d",
+        "text": "エンドポイントの料金が無料になる",
+        "correct": false,
+        "why": "料金は変わらない"
+      }
+    ],
+    "explanation": "プライベート DNS = sqs.ap-northeast-1.amazonaws.com などの通常の名前のまま、エンドポイントの ENI に向く。",
+    "keywords": [
+      "プライベート DNS"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-network-firewall:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-network-firewall"
+    ],
+    "prompt": "VPC から外への通信を、許可したドメイン（例 *.example.com）だけに制限し、侵入検知・防止も行いたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Network Firewall",
+        "correct": true,
+        "atomId": "vpc-network-firewall",
+        "why": "ドメイン名でのフィルタリングや IPS を VPC の出入口で行える"
+      },
+      {
+        "id": "b",
+        "text": "セキュリティグループのアウトバウンドルール",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "IP・ポートでの制御で、ドメイン名では制御できない"
+      },
+      {
+        "id": "c",
+        "text": "ネットワーク ACL の拒否ルール",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "IP・ポートでの制御で、ドメイン名や IPS はない"
+      },
+      {
+        "id": "d",
+        "text": "AWS WAF の Web ACL",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "CloudFront や ALB へのリクエストの検査で、外向きの通信は対象外"
+      }
+    ],
+    "explanation": "VPC の通信をドメイン名・IPS で検査 = Network Firewall。",
+    "keywords": [
+      "ドメインだけに制限",
+      "侵入検知"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-network-firewall:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "vpc-network-firewall",
+      "waf-web-acl"
+    ],
+    "prompt": "AWS WAF と AWS Network Firewall の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "WAF は HTTP のリクエストを、Network Firewall は VPC の通信全般を検査する",
+        "correct": true,
+        "atomId": "vpc-network-firewall",
+        "why": "WAF は CloudFront・ALB・API Gateway に付け、Network Firewall は VPC に置く"
+      },
+      {
+        "id": "b",
+        "text": "WAF は VPC の外向きの通信を、Network Firewall は受信だけを検査する",
+        "correct": false,
+        "why": "WAF は受信する HTTP リクエストが対象"
+      },
+      {
+        "id": "c",
+        "text": "WAF は DDoS 攻撃だけを、Network Firewall は SQL インジェクションだけを防ぐ",
+        "correct": false,
+        "why": "SQL インジェクションは WAF の対象"
+      },
+      {
+        "id": "d",
+        "text": "どちらもセキュリティグループの別名である",
+        "correct": false,
+        "why": "別のサービス"
+      }
+    ],
+    "explanation": "HTTP のアプリ層 = WAF、VPC のネットワーク層 = Network Firewall。",
+    "keywords": [
+      "HTTP",
+      "VPC の通信"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-network-firewall:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-network-firewall"
+    ],
+    "prompt": "「VPC の出入口でステートフル検査」「IPS」「FQDN フィルタ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Network Firewall",
+        "correct": true,
+        "atomId": "vpc-network-firewall",
+        "why": "VPC 向けのマネージドなファイアウォール"
+      },
+      {
+        "id": "b",
+        "text": "AWS Shield Advanced",
+        "correct": false,
+        "atomId": "shield-advanced",
+        "why": "DDoS 攻撃への対策"
+      },
+      {
+        "id": "c",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "ログを分析して脅威を検出するが、通信を止めない"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログ",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録で、検査やブロックはしない"
+      }
+    ],
+    "explanation": "VPC の通信の検査・ブロック = Network Firewall。",
+    "keywords": [
+      "IPS",
+      "FQDN"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-client-vpn:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-client-vpn"
+    ],
+    "prompt": "在宅勤務の社員が、自宅の PC からプライベートサブネットの社内システムに安全にアクセスできるようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Client VPN",
+        "correct": true,
+        "atomId": "vpc-client-vpn",
+        "why": "ユーザーの端末から VPC へ VPN で接続する"
+      },
+      {
+        "id": "b",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "拠点のネットワーク同士をつなぐもので、個人の PC 向けではない"
+      },
+      {
+        "id": "c",
+        "text": "Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "データセンターと AWS の専用線"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      }
+    ],
+    "explanation": "個人の端末から = Client VPN、拠点のネットワークから = Site-to-Site VPN。",
+    "keywords": [
+      "自宅の PC"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-client-vpn:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "vpc-client-vpn",
+      "vpc-site-to-site-vpn"
+    ],
+    "prompt": "Client VPN と Site-to-Site VPN の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は個人の端末、後者は拠点のネットワークから",
+        "correct": true,
+        "atomId": "vpc-client-vpn",
+        "why": "Site-to-Site はカスタマーゲートウェイ（ルーター）同士の接続"
+      },
+      {
+        "id": "b",
+        "text": "前者は暗号化されず、後者は暗号化される",
+        "correct": false,
+        "why": "どちらも暗号化される"
+      },
+      {
+        "id": "c",
+        "text": "前者は専用線、後者はインターネット経由",
+        "correct": false,
+        "why": "どちらもインターネット経由"
+      },
+      {
+        "id": "d",
+        "text": "前者はオンプレミス専用で、VPC には接続できない",
+        "correct": false,
+        "why": "Client VPN は VPC に接続する"
+      }
+    ],
+    "explanation": "人 → VPC = Client VPN、拠点 → VPC = Site-to-Site VPN。",
+    "keywords": [
+      "ユーザーの端末"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect-gateway:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-direct-connect-gateway"
+    ],
+    "prompt": "東京のデータセンターに 1 本ある Direct Connect で、東京と米国東部の両方のリージョンの VPC に接続したい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Direct Connect ゲートウェイ",
+        "correct": true,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "グローバルなリソースで、複数のリージョンの VPC とつなげる"
+      },
+      {
+        "id": "b",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続で、Direct Connect を他のリージョンに延ばすものではない"
+      },
+      {
+        "id": "c",
+        "text": "リージョンごとに別の Direct Connect を必ず引く",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "Direct Connect ゲートウェイで 1 本を共有できる"
+      },
+      {
+        "id": "d",
+        "text": "VPN CloudHub",
+        "correct": false,
+        "atomId": "vpc-vpn-cloudhub",
+        "why": "複数拠点の VPN をつなぐ仕組み"
+      }
+    ],
+    "explanation": "1 本の DX から複数リージョン・複数アカウントへ = Direct Connect ゲートウェイ。",
+    "keywords": [
+      "両方のリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect-gateway:antipattern:1",
+    "type": "antipattern",
+    "level": 4,
+    "atomIds": [
+      "vpc-direct-connect-gateway"
+    ],
+    "prompt": "Direct Connect ゲートウェイに 2 つの VPC を関連付けたので、その 2 つの VPC 同士も通信できると考えた。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DX ゲートウェイを経由した VPC 同士の通信はできない",
+        "correct": true,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "VPC 同士をつなぐにはピアリングや Transit Gateway を使う"
+      },
+      {
+        "id": "b",
+        "text": "DX ゲートウェイには VPC を 1 つしか関連付けられない",
+        "correct": false,
+        "why": "複数の VPC を関連付けられる"
+      },
+      {
+        "id": "c",
+        "text": "DX ゲートウェイは同じリージョンでしか使えない",
+        "correct": false,
+        "why": "複数のリージョンで使える"
+      },
+      {
+        "id": "d",
+        "text": "DX ゲートウェイを使うと Direct Connect が暗号化される",
+        "correct": false,
+        "why": "暗号化は VPN や MACsec で行う"
+      }
+    ],
+    "explanation": "DX ゲートウェイはオンプレミス ↔ VPC 用。VPC ↔ VPC のハブにはならない。",
+    "keywords": [
+      "VPC 同士"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-vpn-cloudhub:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-vpn-cloudhub"
+    ],
+    "prompt": "全国 5 つの支店が、それぞれ AWS に Site-to-Site VPN で接続している。追加の専用線なしで、支店同士も安く通信させたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPN CloudHub",
+        "correct": true,
+        "atomId": "vpc-vpn-cloudhub",
+        "why": "1 つの仮想プライベートゲートウェイを中心に、拠点同士を通信させる"
+      },
+      {
+        "id": "b",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続で、支店のネットワークはつながらない"
+      },
+      {
+        "id": "c",
+        "text": "Client VPN",
+        "correct": false,
+        "atomId": "vpc-client-vpn",
+        "why": "個人の端末からの接続"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "専用線を複数のリージョンで使う仕組み"
+      }
+    ],
+    "explanation": "複数拠点の VPN をハブ＆スポークで相互接続 = VPN CloudHub。",
+    "keywords": [
+      "支店同士",
+      "安く"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-sharing:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "vpc-sharing"
+    ],
+    "prompt": "組織内の 10 個のアプリのアカウントが、ネットワークチームが管理する 1 つの VPC のサブネットを使いたい。VPC はアプリ側に変更させたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS RAM でサブネットを各アカウントと共有する",
+        "correct": true,
+        "atomId": "vpc-sharing",
+        "why": "参加アカウントはリソースを作れるが、VPC 自体は変更できない"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントに VPC を作り、すべてピアリングする",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC が 10 個に増え、管理が分散する"
+      },
+      {
+        "id": "c",
+        "text": "ネットワークチームの IAM ユーザーを全員で共有する",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "認証情報の共有は禁止すべき"
+      },
+      {
+        "id": "d",
+        "text": "PrivateLink でサブネットを公開する",
+        "correct": false,
+        "atomId": "vpc-privatelink",
+        "why": "PrivateLink は特定のサービスを公開する仕組みで、サブネットは共有しない"
+      }
+    ],
+    "explanation": "1 つの VPC を複数アカウントで使う = VPC 共有（RAM）。",
+    "keywords": [
+      "1 つの VPC",
+      "サブネットを使いたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-sharing:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "vpc-sharing",
+      "vpc-peering"
+    ],
+    "prompt": "VPC 共有と VPC ピアリングの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は VPC を分け合い、後者は VPC 同士をつなぐ",
+        "correct": true,
+        "atomId": "vpc-sharing",
+        "why": "共有なら同じ VPC 内なのでピアリングは不要"
+      },
+      {
+        "id": "b",
+        "text": "前者は別のリージョンの VPC をつなぐ機能である",
+        "correct": false,
+        "why": "リージョンをまたいで VPC をつなぐのはピアリングなど"
+      },
+      {
+        "id": "c",
+        "text": "前者は CIDR が重複していないと使えない",
+        "correct": false,
+        "why": "1 つの VPC を共有するので、CIDR の重複の問題は起きない"
+      },
+      {
+        "id": "d",
+        "text": "後者は同じアカウントの VPC 同士でしか使えない",
+        "correct": false,
+        "why": "ピアリングは別のアカウントの VPC とも作れる"
+      }
+    ],
+    "explanation": "VPC 共有 = 1 つの VPC を分け合う、ピアリング = 2 つの VPC をつなぐ。",
+    "keywords": [
+      "共有",
+      "ピアリング"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-internet-gateway:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "vpc-internet-gateway"
+    ],
+    "prompt": "インターネットゲートウェイ（IGW）の役割は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC とインターネットの間の双方向の通信を可能にする",
+        "correct": true,
+        "atomId": "vpc-internet-gateway",
+        "why": "パブリックサブネットのルートテーブルから IGW への経路を作る"
+      },
+      {
+        "id": "b",
+        "text": "プライベートサブネットから外向きの通信だけを可能にする",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイの役割"
+      },
+      {
+        "id": "c",
+        "text": "オンプレミスと VPC を暗号化してつなぐ",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "Site-to-Site VPN の役割"
+      },
+      {
+        "id": "d",
+        "text": "VPC 同士を 1 対 1 でつなぐ",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC ピアリングの役割"
+      }
+    ],
+    "explanation": "IGW = インターネットとの出入口（双方向）。",
+    "keywords": [
+      "双方向"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-internet-gateway:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "vpc-internet-gateway"
+    ],
+    "prompt": "VPC に IGW を作り、EC2 にパブリック IP も付けたが、インターネットからつながらない。SG は正しい。原因として最も考えられるのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ルートテーブルに IGW への経路がない",
+        "correct": true,
+        "atomId": "vpc-route-table",
+        "why": "IGW を作るだけでは経路はできない"
+      },
+      {
+        "id": "b",
+        "text": "IGW を複数の AZ に作っていない",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "IGW は VPC に 1 つで、AZ ごとに作るものではない"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイを作っていない",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT は外向き専用で、外から受ける通信には使わない"
+      },
+      {
+        "id": "d",
+        "text": "VPC フローログを有効にしていない",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "記録の機能で、通信には関係ない"
+      }
+    ],
+    "explanation": "パブリックサブネット = ルートテーブルに 0.0.0.0/0 → IGW がある。",
+    "keywords": [
+      "ルートテーブル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-route-table:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "vpc-route-table"
+    ],
+    "prompt": "ルートテーブルで、宛先に最も具体的に一致するルートが複数あるとき、どれが使われる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "範囲が最も狭いルート",
+        "correct": true,
+        "atomId": "vpc-route-table",
+        "why": "最長一致でルートが選ばれる"
+      },
+      {
+        "id": "b",
+        "text": "最初に作ったルート",
+        "correct": false,
+        "why": "作成順ではなく最長一致"
+      },
+      {
+        "id": "c",
+        "text": "番号が最も小さいルート",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "番号順に評価するのは NACL"
+      },
+      {
+        "id": "d",
+        "text": "ランダムに選ばれる",
+        "correct": false,
+        "why": "最長一致で決まる"
+      }
+    ],
+    "explanation": "ルートテーブル = 最長一致（例 10.0.1.0/24 は 10.0.0.0/16 より優先）。",
+    "keywords": [
+      "最長一致"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-route-table:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-route-table"
+    ],
+    "prompt": "プライベートサブネットの EC2 がインターネットに出られるようにするため、NAT ゲートウェイを作った。次に何が必要？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "プライベートサブネットのルートテーブルに 0.0.0.0/0 → NAT ゲートウェイを追加する",
+        "correct": true,
+        "atomId": "vpc-route-table",
+        "why": "経路を作らないと NAT を使わない"
+      },
+      {
+        "id": "b",
+        "text": "プライベートサブネットのルートテーブルに 0.0.0.0/0 → IGW を追加する",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "それではパブリックサブネットになってしまう"
+      },
+      {
+        "id": "c",
+        "text": "EC2 に Elastic IP を付ける",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "NAT を使うならインスタンスにパブリック IP は不要"
+      },
+      {
+        "id": "d",
+        "text": "NAT ゲートウェイをプライベートサブネットに作り直す",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイはパブリックサブネットに置く"
+      }
+    ],
+    "explanation": "NAT を作ったら、プライベート側のルートテーブルで 0.0.0.0/0 を NAT に向ける。",
+    "keywords": [
+      "NAT ゲートウェイ",
+      "次に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-egress-only-igw:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "vpc-egress-only-igw",
+      "vpc-nat-gateway"
+    ],
+    "prompt": "IPv6 で外向きの通信だけを許可するとき、NAT ゲートウェイではなく Egress-Only IGW を使うのはなぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IPv6 はアドレス変換が不要で、外向きだけ許可すればよい",
+        "correct": true,
+        "atomId": "vpc-egress-only-igw",
+        "why": "Egress-Only IGW は IPv6 専用の外向き専用ゲートウェイ"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイは料金がかからず、使う理由がないから",
+        "correct": false,
+        "why": "NAT ゲートウェイは有料"
+      },
+      {
+        "id": "c",
+        "text": "Egress-Only IGW は IPv4 も変換できるから",
+        "correct": false,
+        "why": "Egress-Only IGW は IPv6 だけ"
+      },
+      {
+        "id": "d",
+        "text": "Egress-Only IGW は外からの接続も受けられるから",
+        "correct": false,
+        "why": "外からの接続は受けない"
+      }
+    ],
+    "explanation": "IPv4 の外向き専用 = NAT ゲートウェイ、IPv6 の外向き専用 = Egress-Only IGW。",
+    "keywords": [
+      "IPv6"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-security-group:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "vpc-security-group",
+      "vpc-nacl"
+    ],
+    "prompt": "セキュリティグループとネットワーク ACL の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SG はステートフル、NACL はステートレス",
+        "correct": true,
+        "atomId": "vpc-security-group",
+        "why": "SG は許可だけ、NACL は許可と拒否を書ける"
+      },
+      {
+        "id": "b",
+        "text": "SG は拒否ルールを書けて、NACL は許可ルールだけ",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "逆。SG は許可だけ"
+      },
+      {
+        "id": "c",
+        "text": "SG はサブネット単位、NACL はインスタンス単位",
+        "correct": false,
+        "why": "逆。SG は ENI（インスタンス）単位"
+      },
+      {
+        "id": "d",
+        "text": "どちらもステートフルで、戻りの通信は自動で許可される",
+        "correct": false,
+        "why": "NACL はステートレスで、戻りの通信も許可が必要"
+      }
+    ],
+    "explanation": "SG = インスタンス・ステートフル・許可のみ、NACL = サブネット・ステートレス・許可と拒否・番号順。",
+    "keywords": [
+      "ステートフル",
+      "ステートレス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-security-group:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "vpc-security-group"
+    ],
+    "prompt": "特定の悪意ある IP アドレスからの通信を止めるため、セキュリティグループに拒否ルールを追加しようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SG には拒否ルールがない。NACL の拒否ルールを使う",
+        "correct": true,
+        "atomId": "vpc-security-group",
+        "why": "SG は許可ルールだけを書ける"
+      },
+      {
+        "id": "b",
+        "text": "SG の拒否ルールはインスタンスを再起動しないと反映されない",
+        "correct": false,
+        "why": "そもそも拒否ルールはない"
+      },
+      {
+        "id": "c",
+        "text": "SG はステートレスなので、送信側にも拒否ルールが必要",
+        "correct": false,
+        "why": "SG はステートフル"
+      },
+      {
+        "id": "d",
+        "text": "SG は IP アドレスを指定できない",
+        "correct": false,
+        "why": "送信元に IP アドレスや CIDR を指定できる"
+      }
+    ],
+    "explanation": "特定の IP を拒否する = NACL（または WAF）。SG は許可のみ。",
+    "keywords": [
+      "拒否ルール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-flow-logs:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-flow-logs"
+    ],
+    "prompt": "「どの IP からの通信が ACCEPT / REJECT されたか記録」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "VPC フローログ",
+        "correct": true,
+        "atomId": "vpc-flow-logs",
+        "why": "VPC、サブネット、ENI 単位で IP 通信を記録する"
+      },
+      {
+        "id": "b",
+        "text": "AWS CloudTrail",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の呼び出しの記録で、パケットの通信は記録しない"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の変更の記録"
+      },
+      {
+        "id": "d",
+        "text": "CloudWatch メトリクス",
+        "correct": false,
+        "atomId": "cloudwatch-metrics",
+        "why": "数値の監視で、通信の送信元は記録しない"
+      }
+    ],
+    "explanation": "通信（IP・ポート・許可/拒否）の記録 = VPC フローログ、API の記録 = CloudTrail。",
+    "keywords": [
+      "ACCEPT",
+      "REJECT"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-flow-logs:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-flow-logs"
+    ],
+    "prompt": "通信の中身（HTTP のリクエスト本文）を調べるため、VPC フローログを有効にした。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IP やポートだけで、中身は記録しない",
+        "correct": true,
+        "atomId": "vpc-flow-logs",
+        "why": "中身を見るならトラフィックミラーリングなどを使う"
+      },
+      {
+        "id": "b",
+        "text": "フローログは S3 に保存できない",
+        "correct": false,
+        "why": "S3 や CloudWatch Logs に保存できる"
+      },
+      {
+        "id": "c",
+        "text": "フローログは ENI 単位では有効にできない",
+        "correct": false,
+        "why": "VPC、サブネット、ENI 単位で有効にできる"
+      },
+      {
+        "id": "d",
+        "text": "フローログは拒否された通信を記録しない",
+        "correct": false,
+        "why": "ACCEPT と REJECT の両方を記録できる"
+      }
+    ],
+    "explanation": "フローログ = 通信のメタデータ（誰が・どこへ・許可/拒否）。パケットの中身は含まない。",
+    "keywords": [
+      "中身"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-bastion-host:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "vpc-bastion-host",
+      "ssm-session-manager"
+    ],
+    "prompt": "踏み台サーバーの代わりに Systems Manager Session Manager を使う利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "受信ポートを開けず、SSH キーの管理も不要になる",
+        "correct": true,
+        "atomId": "ssm-session-manager",
+        "why": "IAM で認証し、操作のログも残せる"
+      },
+      {
+        "id": "b",
+        "text": "インスタンスにエージェントが要らない",
+        "correct": false,
+        "why": "SSM Agent が必要"
+      },
+      {
+        "id": "c",
+        "text": "プライベートサブネットのインスタンスにはつながらない",
+        "correct": false,
+        "why": "プライベートサブネットにも接続できる（エンドポイントや NAT 経由）"
+      },
+      {
+        "id": "d",
+        "text": "SSH のポート 22 を全世界に開ける必要がある",
+        "correct": false,
+        "why": "受信ポートは開けなくてよい"
+      }
+    ],
+    "explanation": "踏み台 + SSH キーより、Session Manager（ポートを開けない・IAM・ログ）が推奨。",
+    "keywords": [
+      "踏み台サーバー"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-bastion-host:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-bastion-host"
+    ],
+    "prompt": "踏み台サーバーを使う場合、踏み台のセキュリティグループの SSH の許可元として最も適切なのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "社内の IP アドレスの範囲だけ",
+        "correct": true,
+        "atomId": "vpc-bastion-host",
+        "why": "接続元を必要な範囲に絞る"
+      },
+      {
+        "id": "b",
+        "text": "0.0.0.0/0（すべて）",
+        "correct": false,
+        "why": "世界中から攻撃を受けやすい"
+      },
+      {
+        "id": "c",
+        "text": "VPC の CIDR 全体",
+        "correct": false,
+        "why": "外から踏み台に入れなくなる"
+      },
+      {
+        "id": "d",
+        "text": "許可元を指定しない",
+        "correct": false,
+        "why": "何も許可しないと接続できない"
+      }
+    ],
+    "explanation": "踏み台の SSH は、社内の IP など最小の範囲だけから許可する。",
+    "keywords": [
+      "許可元"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-privatelink:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-privatelink"
+    ],
+    "prompt": "「自社のサービスを多数の顧客 VPC に公開」「CIDR が重複していてもよい」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS PrivateLink",
+        "correct": true,
+        "atomId": "vpc-privatelink",
+        "why": "NLB の背後のサービスを、インターフェイスエンドポイントで一方向に公開する"
+      },
+      {
+        "id": "b",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "CIDR が重複していると使えず、VPC 全体がつながる"
+      },
+      {
+        "id": "c",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "多数の VPC をつなぐハブで、CIDR の重複は避ける必要がある"
+      },
+      {
+        "id": "d",
+        "text": "VPC 共有",
+        "correct": false,
+        "atomId": "vpc-sharing",
+        "why": "同じ組織のアカウントでサブネットを共有する仕組み"
+      }
+    ],
+    "explanation": "特定のサービスだけを一方向に公開・CIDR 重複 OK = PrivateLink。",
+    "keywords": [
+      "CIDR が重複",
+      "公開"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-privatelink:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "vpc-privatelink"
+    ],
+    "prompt": "PrivateLink でサービスを公開するとき、提供側がサービスの前に置くものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Network Load Balancer",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "NLB をエンドポイントサービスとして公開する"
+      },
+      {
+        "id": "b",
+        "text": "インターネットゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "インターネットは使わない"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "外向き通信用で、公開には使わない"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront ディストリビューション",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "インターネット向けの配信"
+      }
+    ],
+    "explanation": "PrivateLink の提供側 = NLB の背後にサービスを置き、エンドポイントサービスにする。",
+    "keywords": [
+      "NLB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-transit-gateway:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "vpc-transit-gateway"
+    ],
+    "prompt": "Transit Gateway でつないだ VPC 同士の通信の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TGW を経由して推移的に通信できる",
+        "correct": true,
+        "atomId": "vpc-transit-gateway",
+        "why": "A-TGW-B、B-TGW-C なら A と C も通信できる"
+      },
+      {
+        "id": "b",
+        "text": "推移的な通信はできず、1 対 1 の接続が必要",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "それは VPC ピアリングの特徴"
+      },
+      {
+        "id": "c",
+        "text": "CIDR が重複していても問題なく通信できる",
+        "correct": false,
+        "why": "重複すると正しくルーティングできない"
+      },
+      {
+        "id": "d",
+        "text": "同じアカウントの VPC だけをつなげる",
+        "correct": false,
+        "why": "RAM で共有すれば他のアカウントの VPC もつなげる"
+      }
+    ],
+    "explanation": "TGW = ハブ＆スポーク。推移的ルーティングができ、TGW のルートテーブルで分離もできる。",
+    "keywords": [
+      "推移的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-site-to-site-vpn:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "vpc-site-to-site-vpn"
+    ],
+    "prompt": "Site-to-Site VPN で、AWS 側とオンプレミス側に置くものの組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS 側は仮想プライベートゲートウェイか TGW、オンプレ側はカスタマーゲートウェイ",
+        "correct": true,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "1 つの接続に 2 本のトンネルが作られる"
+      },
+      {
+        "id": "b",
+        "text": "AWS 側は NAT ゲートウェイ、オンプレ側はインターネットゲートウェイ",
+        "correct": false,
+        "why": "NAT も IGW も VPN の終端ではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS 側は Direct Connect ロケーション、オンプレ側は ENI",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "Direct Connect の構成要素と混同している"
+      },
+      {
+        "id": "d",
+        "text": "両側ともカスタマーゲートウェイ",
+        "correct": false,
+        "why": "AWS 側は仮想プライベートゲートウェイか TGW"
+      }
+    ],
+    "explanation": "VPN = VGW / TGW（AWS）+ カスタマーゲートウェイ（オンプレ）、トンネルは 2 本。",
+    "keywords": [
+      "カスタマーゲートウェイ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-site-to-site-vpn:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-site-to-site-vpn"
+    ],
+    "prompt": "大量のデータを毎日転送するため、帯域とレイテンシが安定した接続が必要なのに、Site-to-Site VPN だけで構成した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インターネット経由で、品質が安定しない",
+        "correct": true,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "安定が必要なら Direct Connect を使う"
+      },
+      {
+        "id": "b",
+        "text": "VPN は暗号化されないので、データが漏れる",
+        "correct": false,
+        "why": "VPN は IPsec で暗号化される"
+      },
+      {
+        "id": "c",
+        "text": "VPN はオンプレミスとは接続できない",
+        "correct": false,
+        "why": "オンプレミスと接続するためのもの"
+      },
+      {
+        "id": "d",
+        "text": "VPN は 1 日 1 時間しか使えない",
+        "correct": false,
+        "why": "時間の制限はない"
+      }
+    ],
+    "explanation": "安定性・大量転送 = Direct Connect。VPN はすぐ・安く・暗号化だが品質はインターネット次第。",
+    "keywords": [
+      "安定した接続"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-direct-connect:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-direct-connect"
+    ],
+    "prompt": "「専用線」「安定したレイテンシ」「インターネットを経由しない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Direct Connect",
+        "correct": true,
+        "atomId": "vpc-direct-connect",
+        "why": "専用の接続で、帯域とレイテンシが安定する"
+      },
+      {
+        "id": "b",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "インターネット経由の暗号化接続"
+      },
+      {
+        "id": "c",
+        "text": "Global Accelerator",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "インターネットの利用者向けの経路の最適化"
+      },
+      {
+        "id": "d",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "VPC とオンプレミスをつなぐハブで、回線そのものではない"
+      }
+    ],
+    "explanation": "専用線 = Direct Connect。",
+    "keywords": [
+      "専用線"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-subnet:definition:2",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "vpc-subnet"
+    ],
+    "prompt": "サブネットと AZ の関係は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "1 つのサブネットは 1 つの AZ に属する",
+        "correct": true,
+        "atomId": "vpc-subnet",
+        "why": "複数の AZ に冗長化するには、AZ ごとにサブネットを作る"
+      },
+      {
+        "id": "b",
+        "text": "1 つのサブネットは複数の AZ にまたがる",
+        "correct": false,
+        "why": "サブネットは 1 つの AZ だけ"
+      },
+      {
+        "id": "c",
+        "text": "1 つのサブネットは複数のリージョンにまたがる",
+        "correct": false,
+        "why": "VPC もサブネットもリージョンをまたがない"
+      },
+      {
+        "id": "d",
+        "text": "サブネットと AZ は関係がない",
+        "correct": false,
+        "why": "サブネットは作成時に AZ を決める"
+      }
+    ],
+    "explanation": "VPC = リージョン、サブネット = AZ。",
+    "keywords": [
+      "AZ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-interface-endpoint:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "vpc-interface-endpoint",
+      "s3-gateway-endpoint",
+      "vpc-nat-gateway"
+    ],
+    "prompt": "プライベートサブネットの EC2 群が次の通信をする。NAT ゲートウェイのデータ処理料金が高額になっている。\n・S3 へ毎日数 TB のログを書き込む\n・Secrets Manager から DB のパスワードを取得する\n・インターネット上の外部 API は使わない\nセキュリティを保ちつつコストを最も下げる構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 はゲートウェイ、Secrets Manager はインターフェイスエンドポイントにする",
+        "correct": true,
+        "atomId": "vpc-interface-endpoint",
+        "why": "S3 は無料のゲートウェイ、他はインターフェイスで、インターネットに出ない"
+      },
+      {
+        "id": "b",
+        "text": "EC2 をパブリックサブネットに移し、IGW から直接アクセスする",
+        "correct": false,
+        "atomId": "vpc-internet-gateway",
+        "why": "インターネットに公開されてセキュリティが下がる"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイを各 AZ に増やす",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "可用性は上がるが、データ処理料金は減らない"
+      },
+      {
+        "id": "d",
+        "text": "S3 と Secrets Manager の両方をゲートウェイエンドポイントにする",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "ゲートウェイエンドポイントは S3 と DynamoDB だけ"
+      }
+    ],
+    "explanation": "外部のインターネットに出る必要がないなら、エンドポイントに置き換えて NAT をなくせる。S3 / DynamoDB はゲートウェイ（無料）、それ以外はインターフェイス。",
+    "keywords": [
+      "データ処理料金",
+      "外部 API は使わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
