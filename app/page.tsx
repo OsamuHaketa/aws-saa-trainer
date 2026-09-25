@@ -65,8 +65,8 @@ export default async function Home() {
         {coverage.totalAtoms}
       </p>
       <p className="muted small">
-        習得済み = その Atom の全問題を平均して、30 日後にも 80% 以上の確率で思い出せる状態。キーボード操作: 1〜4 で回答、Enter で次へ、G
-        で「勘だった」。
+        習得済み = その Atom の全問題を平均して、30 日後にも 80% 以上の確率で思い出せる状態。
+        <span className="key-hint">キーボード操作: 1〜4 で回答、Enter で次へ、G で「勘だった」。</span>
       </p>
 
       <h2>サービス別</h2>

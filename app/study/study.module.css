@@ -9,6 +9,11 @@
 .question {
   padding: 24px;
 }
+@media (max-width: 520px) {
+  .question {
+    padding: 16px;
+  }
+}
 
 .meta {
   display: flex;
@@ -44,6 +49,7 @@
   align-items: flex-start;
   gap: 12px;
   width: 100%;
+  min-height: 48px; /* 指で押しやすい高さ */
   padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);

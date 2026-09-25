@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { SignOutButton } from "@/app/components/SignOutButton";
 import { authenticate } from "@/lib/auth/session";
@@ -8,6 +8,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "AWS Decision Trainer",
   description: "AWS SAA の設計判断を 4 択で高速に回す学習ツール",
+  appleWebApp: { title: "SAA Trainer", statusBarStyle: "default" },
+};
+
+// ヘッダーの背景色（--surface）に合わせる
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1f1f1e" },
+  ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

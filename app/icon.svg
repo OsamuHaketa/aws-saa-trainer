@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 4 択（2×2）のうち 1 つが正解、の形。背景は全面を塗る（maskable でも欠けない） -->
+  <rect width="512" height="512" fill="#2f5bd3"/>
+  <g transform="translate(256 256)">
+    <rect x="-150" y="-150" width="136" height="136" rx="28" fill="#ffffff" fill-opacity="0.32"/>
+    <rect x="14" y="-150" width="136" height="136" rx="28" fill="#ffffff"/>
+    <rect x="-150" y="14" width="136" height="136" rx="28" fill="#ffffff" fill-opacity="0.32"/>
+    <rect x="14" y="14" width="136" height="136" rx="28" fill="#ffffff" fill-opacity="0.32"/>
+    <path d="M44 -82 l26 26 l52 -52" fill="none" stroke="#2f5bd3" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

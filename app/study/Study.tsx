@@ -291,7 +291,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
             {isCorrect ? (
               <label className={styles.toggle}>
                 <input type="checkbox" checked={guessed} onChange={(e) => setGuessed(e.target.checked)} />
-                勘だった <span className="kbd">G</span>
+                勘だった <span className="kbd key-hint">G</span>
                 <span className="muted small">（復習の間隔を短めにします）</span>
               </label>
             ) : (
@@ -304,7 +304,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
                       className={`${styles.chip} ${mistake === type ? styles.chipOn : ""}`}
                       onClick={() => setMistake(mistake === type ? null : type)}
                     >
-                      {MISTAKE_LABEL[type]} <span className="kbd">{key.toUpperCase()}</span>
+                      {MISTAKE_LABEL[type]} <span className="kbd key-hint">{key.toUpperCase()}</span>
                     </button>
                   ))}
                 </div>
@@ -313,7 +313,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
 
             <div className={styles.actions}>
               <button className="button" onClick={next} disabled={submitting}>
-                次へ <span className="kbd">Enter</span>
+                次へ <span className="kbd key-hint">Enter</span>
               </button>
             </div>
           </section>

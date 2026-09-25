@@ -87,6 +87,25 @@ a:hover {
   text-decoration: underline;
 }
 
+/* スマホ: ヘッダーを折り返し、余白を詰める */
+@media (max-width: 520px) {
+  .nav {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 16px;
+  }
+  .nav nav {
+    gap: 14px;
+  }
+}
+
+/* タッチ端末ではキーボード操作の表示を隠す（選択肢の番号は残す） */
+@media (hover: none) and (pointer: coarse) {
+  .key-hint {
+    display: none;
+  }
+}
+
 main {
   max-width: 760px;
   margin: 0 auto;

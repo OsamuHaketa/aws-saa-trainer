@@ -312,7 +312,7 @@ Google の OAuth クライアントを作る前でも、今までどおりロー
 | 項目 | 内容 |
 |---|---|
 | マニフェスト | `app/manifest.ts`。`name`: AWS Decision Trainer、`short_name`: SAA Trainer、`display`: `standalone`、`start_url`: `/study`、`theme_color` / `background_color` は今の画面の色に合わせる |
-| アイコン | `public/icons/` に 192×192 と 512×512（maskable を含む） |
+| アイコン | `public/icons/` に 192×192 と 512×512、maskable の 512×512。元の絵は `public/icons/icon.svg`（4 択の 2×2 のうち 1 つが正解の形）。ファビコンは `app/icon.svg`、iOS 用は `app/apple-icon.png` |
 | Service Worker | 置かない、または最小限（キャッシュはしない）。学習の処理はサーバーと DB に依存しているので、中途半端にオフラインのキャッシュを入れると、端末・サーバー・Turso の間でデータの整合性を管理する手間が増える。オフラインでの学習が必要になったら、IndexedDB・同期キュー・競合の解決を含めて別のフェーズとして設計する |
 | インストール | Android の Chrome で開き、メニューの「ホーム画面に追加」または「アプリをインストール」 |
 | HTTPS | Vercel で自動 |

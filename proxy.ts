@@ -15,6 +15,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // ログイン画面・認証の API・静的ファイル・PWA のファイルは対象外
-  matcher: ["/((?!login|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|icons/).*)"],
+  // ログイン画面・認証の API・静的ファイル・アイコン・PWA のマニフェストは対象外
+  matcher: ["/((?!login|api/auth|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|manifest.webmanifest|icons/).*)"],
 };
