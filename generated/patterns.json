@@ -399,5 +399,743 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-idempotency:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "patterns-idempotency"
+    ],
+    "prompt": "SQS 標準キューから注文を受け取り、決済を実行する。まれに同じ注文が 2 回届き、二重に課金されてしまう。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "処理を冪等にする",
+        "correct": true,
+        "atomId": "patterns-idempotency",
+        "why": "注文 ID で処理済みかを確認する。標準キューは少なくとも 1 回の配信"
+      },
+      {
+        "id": "b",
+        "text": "可視性タイムアウトを 0 秒にする",
+        "correct": false,
+        "atomId": "sqs-visibility-timeout",
+        "why": "処理中に別の処理側に渡り、重複が増える"
+      },
+      {
+        "id": "c",
+        "text": "ロングポーリングをやめる",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "重複の原因ではない"
+      },
+      {
+        "id": "d",
+        "text": "デッドレターキューを外す",
+        "correct": false,
+        "atomId": "sqs-dlq",
+        "why": "重複の対策にならない"
+      }
+    ],
+    "explanation": "重複しうる配信 = 処理を冪等にする（または FIFO キューの重複排除）。",
+    "keywords": [
+      "2 回届き",
+      "二重に課金"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-idempotency:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-idempotency"
+    ],
+    "prompt": "「何度実行しても結果が同じ」「重複したメッセージでも安全」→ 何という性質？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "冪等性",
+        "correct": true,
+        "atomId": "patterns-idempotency",
+        "why": "一意なキーで処理済みかを確認して実現する"
+      },
+      {
+        "id": "b",
+        "text": "疎結合",
+        "correct": false,
+        "atomId": "patterns-loose-coupling",
+        "why": "コンポーネント同士の依存を減らすこと"
+      },
+      {
+        "id": "c",
+        "text": "ステートレス",
+        "correct": false,
+        "atomId": "patterns-stateless",
+        "why": "サーバーに状態を持たないこと"
+      },
+      {
+        "id": "d",
+        "text": "結果整合性",
+        "correct": false,
+        "atomId": "dynamodb-consistency",
+        "why": "時間がたつと最新の値に揃うこと"
+      }
+    ],
+    "explanation": "何度実行しても同じ = 冪等性。",
+    "keywords": [
+      "何度実行しても"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-retry-backoff:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-retry-backoff"
+    ],
+    "prompt": "多数のクライアントが DynamoDB のスロットリングで失敗し、すぐに再試行を繰り返して状況が悪化している。どう直す？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バックオフとジッターで再試行",
+        "correct": true,
+        "atomId": "patterns-retry-backoff",
+        "why": "待ち時間を延ばし、ばらけさせて負荷の集中を防ぐ"
+      },
+      {
+        "id": "b",
+        "text": "再試行の待ち時間を 0 にする",
+        "correct": false,
+        "why": "負荷がさらに集中する"
+      },
+      {
+        "id": "c",
+        "text": "エラーを無視して処理を続ける",
+        "correct": false,
+        "why": "データが失われる"
+      },
+      {
+        "id": "d",
+        "text": "クライアントを増やす",
+        "correct": false,
+        "why": "負荷がさらに増える"
+      }
+    ],
+    "explanation": "スロットリングからの回復 = エクスポネンシャルバックオフ + ジッター（SDK に組み込み）。",
+    "keywords": [
+      "すぐに再試行"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-retry-backoff:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "patterns-retry-backoff"
+    ],
+    "prompt": "再試行にジッター（ランダムなずれ）を加える目的は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "再試行の集中を防ぐ",
+        "correct": true,
+        "atomId": "patterns-retry-backoff",
+        "why": "多数のクライアントの再試行のタイミングを分散させる"
+      },
+      {
+        "id": "b",
+        "text": "再試行の回数を無限にする",
+        "correct": false,
+        "why": "回数とは関係ない"
+      },
+      {
+        "id": "c",
+        "text": "エラーを隠す",
+        "correct": false,
+        "why": "エラーを隠す目的ではない"
+      },
+      {
+        "id": "d",
+        "text": "通信を暗号化する",
+        "correct": false,
+        "why": "暗号化とは関係ない"
+      }
+    ],
+    "explanation": "ジッター = 再試行が一斉に集中する（サンダリングハード）のを防ぐ。",
+    "keywords": [
+      "ジッター"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-shared-responsibility:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-shared-responsibility"
+    ],
+    "prompt": "責任共有モデルで、EC2 上の OS のセキュリティパッチの適用は誰の責任？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "利用者",
+        "correct": true,
+        "atomId": "patterns-shared-responsibility",
+        "why": "EC2 のゲスト OS は利用者が管理する"
+      },
+      {
+        "id": "b",
+        "text": "AWS",
+        "correct": false,
+        "why": "AWS が守るのはハードウェアや仮想化の基盤"
+      },
+      {
+        "id": "c",
+        "text": "AWS と利用者が交互に行う",
+        "correct": false,
+        "why": "交互に行う決まりはない"
+      },
+      {
+        "id": "d",
+        "text": "誰の責任でもない",
+        "correct": false,
+        "why": "利用者の責任"
+      }
+    ],
+    "explanation": "EC2 の OS = 利用者、RDS のエンジンのパッチ = AWS（メンテナンスウィンドウ）。",
+    "keywords": [
+      "OS のセキュリティパッチ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-shared-responsibility:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-shared-responsibility"
+    ],
+    "prompt": "S3 は AWS のマネージドサービスだから、バケットのアクセス制御も AWS が責任を持つと考えて、設定を確認していない。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "設定は利用者の責任",
+        "correct": true,
+        "atomId": "patterns-shared-responsibility",
+        "why": "データのアクセス制御や暗号化の設定は、マネージドでも利用者が行う"
+      },
+      {
+        "id": "b",
+        "text": "S3 はマネージドサービスではない",
+        "correct": false,
+        "why": "マネージドサービス"
+      },
+      {
+        "id": "c",
+        "text": "AWS がバケットを定期的に削除する",
+        "correct": false,
+        "why": "削除はしない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のアクセス制御は存在しない",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "バケットポリシーなどがある"
+      }
+    ],
+    "explanation": "どのサービスでも、データ・IAM・アクセス制御の設定は利用者の責任。",
+    "keywords": [
+      "アクセス制御も AWS が"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-well-architected:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-well-architected"
+    ],
+    "prompt": "「6 つの柱」「ワークロードをベストプラクティスで評価」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Well-Architected",
+        "correct": true,
+        "atomId": "patterns-well-architected",
+        "why": "Well-Architected Tool で評価できる"
+      },
+      {
+        "id": "b",
+        "text": "AWS Trusted Advisor",
+        "correct": false,
+        "why": "アカウントのリソースを自動でチェックするツール"
+      },
+      {
+        "id": "c",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の準拠の評価"
+      },
+      {
+        "id": "d",
+        "text": "AWS Control Tower",
+        "correct": false,
+        "atomId": "organizations-control-tower",
+        "why": "マルチアカウント環境の構築"
+      }
+    ],
+    "explanation": "6 つの柱 = Well-Architected。",
+    "keywords": [
+      "6 つの柱"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-well-architected:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "patterns-well-architected"
+    ],
+    "prompt": "Well-Architected フレームワークの 6 つの柱に含まれないものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スケジュール管理",
+        "correct": true,
+        "why": "柱ではない"
+      },
+      {
+        "id": "b",
+        "text": "セキュリティ",
+        "correct": false,
+        "why": "柱の 1 つ"
+      },
+      {
+        "id": "c",
+        "text": "コスト最適化",
+        "correct": false,
+        "why": "柱の 1 つ"
+      },
+      {
+        "id": "d",
+        "text": "持続可能性",
+        "correct": false,
+        "why": "柱の 1 つ"
+      }
+    ],
+    "explanation": "運用上の優秀性・セキュリティ・信頼性・パフォーマンス効率・コスト最適化・持続可能性。",
+    "keywords": [
+      "6 つの柱"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-az:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-multi-az"
+    ],
+    "prompt": "Web サーバーを 4 台、すべて AZ-a に置いている。1 つの AZ の障害でも動き続けるようにしたい。最もシンプルな方法は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "2 つ以上の AZ に分け、ELB で振り分ける",
+        "correct": true,
+        "atomId": "patterns-multi-az",
+        "why": "1 つの AZ が止まっても、他の AZ で処理を続けられる"
+      },
+      {
+        "id": "b",
+        "text": "台数を 8 台に増やす",
+        "correct": false,
+        "why": "同じ AZ のままでは AZ 障害で全台止まる"
+      },
+      {
+        "id": "c",
+        "text": "クラスタープレイスメントグループに入れる",
+        "correct": false,
+        "atomId": "ec2-cluster-placement-group",
+        "why": "1 つの AZ に集まる"
+      },
+      {
+        "id": "d",
+        "text": "大きなインスタンスタイプに変える",
+        "correct": false,
+        "atomId": "ec2-instance-families",
+        "why": "AZ 障害への耐性は変わらない"
+      }
+    ],
+    "explanation": "AZ 障害への備え = 複数 AZ に分散（ASG + ELB）。",
+    "keywords": [
+      "すべて AZ-a"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-az:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-multi-az"
+    ],
+    "prompt": "EC2 と RDS は複数 AZ に分けたが、NAT ゲートウェイは AZ-a に 1 つだけ置いた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AZ-a が止まると、他の AZ のサーバーも外に出られない",
+        "correct": true,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT ゲートウェイは AZ ごとに置く"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイは 1 つの VPC に 1 つしか作れない",
+        "correct": false,
+        "why": "AZ ごとに作れる"
+      },
+      {
+        "id": "c",
+        "text": "NAT ゲートウェイはプライベートサブネットに置くもの",
+        "correct": false,
+        "why": "パブリックサブネットに置く"
+      },
+      {
+        "id": "d",
+        "text": "RDS はマルチ AZ にできない",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "できる"
+      }
+    ],
+    "explanation": "AZ に属するリソース（NAT GW、サブネット、EBS など）は、AZ ごとに用意する。",
+    "keywords": [
+      "1 つだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-backup-restore:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-backup-restore"
+    ],
+    "prompt": "RTO 15 分の要件のシステムに、バックアップと復元の DR 戦略を採用した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "環境の作り直しに時間がかかり、15 分では戻せない",
+        "correct": true,
+        "atomId": "patterns-backup-restore",
+        "why": "RTO が短いならパイロットライト以上を使う"
+      },
+      {
+        "id": "b",
+        "text": "バックアップは別のリージョンに置けない",
+        "correct": false,
+        "why": "置ける"
+      },
+      {
+        "id": "c",
+        "text": "バックアップと復元は最もコストが高い",
+        "correct": false,
+        "why": "最もコストが低い"
+      },
+      {
+        "id": "d",
+        "text": "バックアップと復元ではデータを保護できない",
+        "correct": false,
+        "why": "データは保護できるが、復旧が遅い"
+      }
+    ],
+    "explanation": "バックアップと復元 = 最安だが RTO / RPO は数時間。",
+    "keywords": [
+      "RTO 15 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-warm-standby:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-warm-standby"
+    ],
+    "prompt": "「DR リージョンで縮小した全体を常に稼働」「障害時にスケールアップ」→ どの DR 戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ウォームスタンバイ",
+        "correct": true,
+        "atomId": "patterns-warm-standby",
+        "why": "全体が小さく動いているので、切り替えが速い"
+      },
+      {
+        "id": "b",
+        "text": "パイロットライト",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "中核（DB の複製など）だけが動いている"
+      },
+      {
+        "id": "c",
+        "text": "バックアップと復元",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "バックアップだけを置く"
+      },
+      {
+        "id": "d",
+        "text": "マルチサイト",
+        "correct": false,
+        "atomId": "patterns-multi-site",
+        "why": "フルの規模で同時に稼働する"
+      }
+    ],
+    "explanation": "縮小した全体 = ウォームスタンバイ。",
+    "keywords": [
+      "縮小した全体"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-warm-standby:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "patterns-warm-standby",
+      "patterns-multi-site"
+    ],
+    "prompt": "ウォームスタンバイとマルチサイト（アクティブ/アクティブ）の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "後者はフル規模で同時に稼働",
+        "correct": true,
+        "atomId": "patterns-multi-site",
+        "why": "マルチサイトは RTO がほぼゼロだが最も高い"
+      },
+      {
+        "id": "b",
+        "text": "前者の方がコストが高い",
+        "correct": false,
+        "why": "マルチサイトの方が高い"
+      },
+      {
+        "id": "c",
+        "text": "後者はデータを複製しない",
+        "correct": false,
+        "why": "どちらも複製する"
+      },
+      {
+        "id": "d",
+        "text": "前者は DR 側で何も動かさない",
+        "correct": false,
+        "why": "縮小した規模で動かす"
+      }
+    ],
+    "explanation": "ウォームスタンバイ = 縮小・待機、マルチサイト = フル規模・同時稼働。",
+    "keywords": [
+      "縮小",
+      "フル規模"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-site:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-multi-site"
+    ],
+    "prompt": "「複数リージョンで同時にトラフィックを処理」「RTO・RPO がほぼゼロ」→ どの DR 戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "マルチサイト",
+        "correct": true,
+        "atomId": "patterns-multi-site",
+        "why": "アクティブ/アクティブ。最も高いが、最も速く復旧できる"
+      },
+      {
+        "id": "b",
+        "text": "ウォームスタンバイ",
+        "correct": false,
+        "atomId": "patterns-warm-standby",
+        "why": "待機側は縮小した規模"
+      },
+      {
+        "id": "c",
+        "text": "パイロットライト",
+        "correct": false,
+        "atomId": "patterns-pilot-light",
+        "why": "中核だけを動かす"
+      },
+      {
+        "id": "d",
+        "text": "バックアップと復元",
+        "correct": false,
+        "atomId": "patterns-backup-restore",
+        "why": "最も遅い"
+      }
+    ],
+    "explanation": "同時稼働 = マルチサイト。",
+    "keywords": [
+      "同時に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-rpo-rto:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "patterns-rpo-rto"
+    ],
+    "prompt": "要件は「障害時に失ってよいデータは直近 1 時間分まで、4 時間以内に復旧」。RPO と RTO は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RPO 1 時間、RTO 4 時間",
+        "correct": true,
+        "atomId": "patterns-rpo-rto",
+        "why": "データの損失 = RPO、復旧時間 = RTO"
+      },
+      {
+        "id": "b",
+        "text": "RPO 4 時間、RTO 1 時間",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "RPO 1 時間、RTO 1 時間",
+        "correct": false,
+        "why": "復旧時間は 4 時間"
+      },
+      {
+        "id": "d",
+        "text": "RPO 4 時間、RTO 4 時間",
+        "correct": false,
+        "why": "データの損失は 1 時間"
+      }
+    ],
+    "explanation": "RPO = どこまで戻るか（データ）、RTO = いつまでに戻すか（時間）。",
+    "keywords": [
+      "失ってよいデータ",
+      "復旧"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-stateless:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "patterns-stateless"
+    ],
+    "prompt": "ステートレスなアプリの説明として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "サーバーに状態を持たない",
+        "correct": true,
+        "atomId": "patterns-stateless",
+        "why": "どのサーバーでも処理できる。セッションなどは外部のストアに置く"
+      },
+      {
+        "id": "b",
+        "text": "状態を各サーバーのメモリに持つ",
+        "correct": false,
+        "why": "それはステートフル"
+      },
+      {
+        "id": "c",
+        "text": "データベースを使わない",
+        "correct": false,
+        "why": "DB は使ってよい"
+      },
+      {
+        "id": "d",
+        "text": "1 台のサーバーでしか動かない",
+        "correct": false,
+        "why": "何台でも増減できる"
+      }
+    ],
+    "explanation": "ステートレス = 自由に増減・置き換えできる。Auto Scaling の前提。",
+    "keywords": [
+      "状態を持たず"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-loose-coupling:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "patterns-loose-coupling"
+    ],
+    "prompt": "「コンポーネントの間にキューを挟む」「片方が止まってももう片方は動く」→ 何という設計の原則？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "疎結合",
+        "correct": true,
+        "atomId": "patterns-loose-coupling",
+        "why": "依存を減らし、障害や負荷の影響を広げない"
+      },
+      {
+        "id": "b",
+        "text": "冪等性",
+        "correct": false,
+        "atomId": "patterns-idempotency",
+        "why": "何度実行しても同じ結果"
+      },
+      {
+        "id": "c",
+        "text": "ステートレス",
+        "correct": false,
+        "atomId": "patterns-stateless",
+        "why": "サーバーに状態を持たない"
+      },
+      {
+        "id": "d",
+        "text": "マルチ AZ",
+        "correct": false,
+        "atomId": "patterns-multi-az",
+        "why": "AZ の障害に備える"
+      }
+    ],
+    "explanation": "キューやイベントで分離 = 疎結合。",
+    "keywords": [
+      "キューを挟む"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

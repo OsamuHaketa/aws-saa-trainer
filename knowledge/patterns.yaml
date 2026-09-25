@@ -157,3 +157,114 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_prevent_interaction_failure_loosely_coupled_system.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: patterns-idempotency
+    category: design
+    concept: 冪等性（べきとうせい）
+    summary: 同じ処理を何度実行しても、1 回実行したときと同じ結果になるように作る
+    facts:
+      - SQS 標準キューや非同期の再試行では、同じメッセージが 2 回以上届くことがある
+      - 注文 ID などの一意なキーで処理済みかを確認し、二重の処理を防ぐ
+      - DynamoDB の条件付き書き込みなどで、処理済みの記録を残せる
+    triggers:
+      - 同じメッセージが 2 回届いても二重に課金しない
+      - 少なくとも 1 回の配信
+    pitfalls:
+      - 重複が起きないと仮定して作ると、再試行や重複配信で二重に処理される
+    relations:
+      - type: used_with
+        target: sqs-standard
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_prevent_interaction_failure_idempotent.html
+
+  - id: patterns-retry-backoff
+    category: design
+    concept: エクスポネンシャルバックオフとジッター
+    summary: 失敗した呼び出しを、待ち時間を指数的に延ばし、ランダムなずれを加えて再試行する
+    facts:
+      - 一時的なエラー（スロットリングなど）は、少し待って再試行すると成功することが多い
+      - 待ち時間を 1 秒、2 秒、4 秒…と延ばす（エクスポネンシャルバックオフ）
+      - ランダムなずれ（ジッター）を加え、多数のクライアントが同時に再試行するのを防ぐ
+      - AWS SDK には、この再試行の仕組みが組み込まれている
+    triggers:
+      - 429 やスロットリングのエラー
+      - 一時的なエラーからの回復
+    pitfalls:
+      - 待たずにすぐ再試行を繰り返すと、相手の負荷をさらに上げて障害を広げる
+    relations:
+      - type: used_with
+        target: apigateway-throttling
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/sdkref/latest/guide/feature-retry-behavior.html
+
+  - id: patterns-shared-responsibility
+    category: design
+    concept: 責任共有モデル
+    summary: AWS はクラウドそのもの（物理・基盤）、利用者はクラウドの中（データ・設定・OS など）のセキュリティに責任を持つ
+    facts:
+      - AWS は、データセンター、ハードウェア、ネットワーク、仮想化の基盤などを守る
+      - 利用者は、データ、IAM、セキュリティグループ、暗号化の設定などに責任を持つ
+      - EC2 では OS のパッチも利用者の責任だが、RDS や Lambda などのマネージドサービスでは AWS の範囲が広がる
+    triggers:
+      - OS のパッチは誰の責任か
+      - マネージドサービスで利用者の運用を減らしたい
+    pitfalls:
+      - マネージドサービスでも、データのアクセス制御や暗号化の設定は利用者の責任
+    relations: []
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://aws.amazon.com/compliance/shared-responsibility-model/
+
+  - id: patterns-well-architected
+    category: design
+    concept: AWS Well-Architected フレームワーク
+    summary: 運用上の優秀性・セキュリティ・信頼性・パフォーマンス効率・コスト最適化・持続可能性の 6 つの柱で設計を評価する
+    facts:
+      - 6 つの柱は、運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性
+      - Well-Architected Tool で、ワークロードを質問に沿って評価し、改善点を見つけられる
+    triggers:
+      - アーキテクチャをベストプラクティスで評価したい
+      - 設計のリスクを洗い出したい
+    pitfalls:
+      - 1 つの柱だけを最適化すると、ほかの柱（例：コストと信頼性）とのトレードオフを見落とす
+    relations: []
+    examDomains: [resilient, secure, performance, cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html
+
+  - id: patterns-multi-az
+    category: design
+    concept: マルチ AZ による冗長化
+    summary: 1 つの AZ の障害に備え、同じ役割のリソースを 2 つ以上の AZ に分けて置く
+    facts:
+      - AZ は互いに独立した電源・ネットワークを持つデータセンターの集まり
+      - EC2 は複数 AZ の Auto Scaling と ELB、DB はマルチ AZ 配置で冗長化する
+      - NAT ゲートウェイなど AZ に属するリソースは、AZ ごとに置く
+      - S3、DynamoDB、SQS などのリージョンのサービスは、自動で複数の AZ にデータを保存する
+    triggers:
+      - 1 つの AZ が止まっても動き続けたい
+      - 高可用性
+    pitfalls:
+      - 1 つの AZ にすべてを置くと、その AZ の障害でシステム全体が止まる
+    relations:
+      - type: used_with
+        target: autoscaling-group
+      - type: used_with
+        target: rds-multi-az
+    examDomains: [resilient]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/use-fault-isolation-to-protect-your-workload.html

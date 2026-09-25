@@ -291,5 +291,385 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "lambda-function:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "lambda-function",
+      "apigateway-api",
+      "dynamodb-table"
+    ],
+    "prompt": "新しいモバイルアプリの API を設計する。\n・利用者数は予測できず、夜間はほとんど使われない\n・サーバーの管理はしたくない\n・データはユーザー ID をキーに読み書きする\nコストと運用の負担を最も小さくする構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "API Gateway + Lambda + DynamoDB オンデマンド",
+        "correct": true,
+        "atomId": "lambda-function",
+        "why": "すべてサーバーレスで、使った分だけ払う"
+      },
+      {
+        "id": "b",
+        "text": "ALB + EC2 の Auto Scaling + RDS マルチ AZ",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "サーバーの管理が必要で、夜間も最低台数分を払う"
+      },
+      {
+        "id": "c",
+        "text": "NLB + ECS の EC2 起動タイプ + Aurora",
+        "correct": false,
+        "atomId": "ecs-ec2-launch-type",
+        "why": "ホストの EC2 の管理が必要"
+      },
+      {
+        "id": "d",
+        "text": "CloudFront + S3 だけ",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "静的な配信だけで、API の処理ができない"
+      }
+    ],
+    "explanation": "予測できない・サーバー管理なし・キーでアクセス = API Gateway + Lambda + DynamoDB（オンデマンド）。",
+    "keywords": [
+      "予測できず",
+      "サーバーの管理はしたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-standard:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "sqs-standard",
+      "autoscaling-group",
+      "sqs-queue-based-scaling"
+    ],
+    "prompt": "画像のアップロードを受けて、サムネイルを生成する。\n・アップロードは夕方に集中し、処理には 1 枚 20 分かかることがある\n・処理が遅れても、アップロードは必ず受け付ける\n・処理側のサーバーは負荷に合わせて増減させたい\n最適な構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 イベントで SQS に入れ、EC2 の ASG が滞留数でスケール",
+        "correct": true,
+        "atomId": "sqs-queue-based-scaling",
+        "why": "キューで受け付けを分離し、滞留数に合わせて処理側を増減する"
+      },
+      {
+        "id": "b",
+        "text": "S3 イベントで Lambda を直接呼び、サムネイルを作る",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "処理時間が 15 分を超えることがある"
+      },
+      {
+        "id": "c",
+        "text": "アップロードを受けた Web サーバーがその場で変換する",
+        "correct": false,
+        "why": "集中時に受け付けが遅くなり、失敗しうる"
+      },
+      {
+        "id": "d",
+        "text": "1 台の大きな EC2 で cron で順番に処理する",
+        "correct": false,
+        "why": "負荷に合わせて増減できず、単一障害点になる"
+      }
+    ],
+    "explanation": "受け付けと処理の分離（SQS）+ 滞留数でのスケーリング。15 分を超えるので Lambda は不可。",
+    "keywords": [
+      "20 分",
+      "必ず受け付ける"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-read-replica:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "rds-read-replica",
+      "elasticache-redis",
+      "rds-multi-az"
+    ],
+    "prompt": "ニュースサイトの DB（RDS for MySQL）が次の問題を抱えている。\n・同じ人気記事への読み取りが 95% を占め、DB の CPU が高い\n・AZ 障害時にも DB を自動で切り替えたい\n・アプリの改修は少しならできる\n最も効果的な組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ElastiCache でキャッシュ + マルチ AZ",
+        "correct": true,
+        "atomId": "elasticache-redis",
+        "why": "同じ読み取りはキャッシュで返し、AZ 障害には自動フェイルオーバー"
+      },
+      {
+        "id": "b",
+        "text": "マルチ AZ のスタンバイで読み取りを分散する",
+        "correct": false,
+        "atomId": "rds-multi-az",
+        "why": "スタンバイは読み取りに使えない"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを最大サイズにする",
+        "correct": false,
+        "why": "コストが高く、AZ 障害への対策にならない"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB にすべて移行する",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "改修が大きく、要件に対して過剰"
+      }
+    ],
+    "explanation": "同じデータの繰り返しの読み取り = キャッシュ、AZ 障害 = マルチ AZ。",
+    "keywords": [
+      "95%",
+      "自動で切り替え"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-lifecycle:exam:2",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "s3-lifecycle",
+      "s3-intelligent-tiering",
+      "s3-glacier-deep-archive"
+    ],
+    "prompt": "ログを S3 に保存する。\n・最初の 30 日は頻繁に分析する\n・30 日〜1 年はたまに調べ、すぐ取り出せる必要がある\n・1 年を過ぎたら監査のため 7 年保管し、取り出しは 48 時間以内でよい\nコストを最も下げる設定は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ライフサイクルで標準-IA → Deep Archive",
+        "correct": true,
+        "atomId": "s3-lifecycle",
+        "why": "アクセスの変化が分かっているのでライフサイクルで移す"
+      },
+      {
+        "id": "b",
+        "text": "すべて Intelligent-Tiering に置く",
+        "correct": false,
+        "atomId": "s3-intelligent-tiering",
+        "why": "アクセスが予測できるなら、監視料金の分ライフサイクルが有利"
+      },
+      {
+        "id": "c",
+        "text": "すべて標準に置く",
+        "correct": false,
+        "atomId": "s3-standard",
+        "why": "使わなくなったログのコストが高い"
+      },
+      {
+        "id": "d",
+        "text": "最初から Deep Archive に置く",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "頻繁な分析に使えない"
+      }
+    ],
+    "explanation": "標準 → 30 日で標準-IA → 1 年で Deep Archive → 8 年後に削除。アクセスのパターンが決まっている = ライフサイクルで段階的に移す。",
+    "keywords": [
+      "30 日",
+      "1 年",
+      "48 時間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-transit-gateway:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "vpc-transit-gateway",
+      "vpc-direct-connect-gateway",
+      "vpc-direct-connect"
+    ],
+    "prompt": "企業のネットワークを設計する。\n・東京リージョンに 30 個の VPC がある\n・オンプレミスのデータセンターとは Direct Connect でつなぐ\n・VPC 同士も互いに通信する必要がある\n管理をシンプルにする構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TGW に全 VPC をつなぎ、DX ゲートウェイでオンプレへ",
+        "correct": true,
+        "atomId": "vpc-transit-gateway",
+        "why": "TGW が VPC 同士とオンプレミスのハブになる"
+      },
+      {
+        "id": "b",
+        "text": "30 個の VPC をすべてピアリングでつなぐ",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ピアリングの数が膨大になり管理が複雑"
+      },
+      {
+        "id": "c",
+        "text": "各 VPC に Direct Connect を 1 本ずつ引く",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "コストと管理が増える"
+      },
+      {
+        "id": "d",
+        "text": "DX ゲートウェイだけで VPC 同士も通信させる",
+        "correct": false,
+        "atomId": "vpc-direct-connect-gateway",
+        "why": "DX ゲートウェイ経由で VPC 同士は通信できない"
+      }
+    ],
+    "explanation": "多数の VPC + オンプレミス = Transit Gateway（+ DX ゲートウェイの Transit VIF）。",
+    "keywords": [
+      "30 個の VPC",
+      "VPC 同士"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "kms-customer-managed-key:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "kms-customer-managed-key",
+      "s3-bucket-policy",
+      "cloudtrail-data-events"
+    ],
+    "prompt": "機密文書を S3 に保存する。\n・保存時は、利用者が管理し毎年ローテーションする鍵で暗号化する\n・特定のロールだけが読める\n・誰がいつどの文書を読んだかを記録する\n正しい組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SSE-KMS（カスタマーマネージドキー）+ バケットポリシー + データイベント",
+        "correct": true,
+        "atomId": "kms-customer-managed-key",
+        "why": "鍵ポリシーとバケットポリシーで絞り、読み取りをデータイベントで記録"
+      },
+      {
+        "id": "b",
+        "text": "SSE-S3 + バケットポリシー + 管理イベント",
+        "correct": false,
+        "atomId": "s3-sse-s3",
+        "why": "鍵を利用者が管理できず、読み取りも記録されない"
+      },
+      {
+        "id": "c",
+        "text": "SSE-KMS（AWS マネージドキー）+ ACL + VPC フローログ",
+        "correct": false,
+        "atomId": "kms-aws-managed-key",
+        "why": "鍵を制御できず、フローログは文書単位の記録にならない"
+      },
+      {
+        "id": "d",
+        "text": "クライアント側の暗号化 + 公開バケット + CloudWatch メトリクス",
+        "correct": false,
+        "atomId": "s3-client-side-encryption",
+        "why": "公開は要件に反し、読み取りの記録にならない"
+      }
+    ],
+    "explanation": "鍵の管理 = カスタマーマネージドキー、アクセス制御 = バケットポリシー（+ 鍵ポリシー）、読み取りの記録 = CloudTrail のデータイベント。",
+    "keywords": [
+      "利用者が管理",
+      "誰がいつ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "cloudfront-alb-origin:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "cloudfront-alb-origin",
+      "waf-web-acl",
+      "elb-alb"
+    ],
+    "prompt": "世界中に公開する動的な Web アプリ（ALB + EC2）を守る。\n・SQL インジェクションを防ぎたい\n・世界中からのレイテンシを下げたい\n・攻撃者に ALB を直接狙われないようにしたい\n正しい構成は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CloudFront + WAF、ALB は直接受けない",
+        "correct": true,
+        "atomId": "cloudfront-alb-origin",
+        "why": "エッジで検査・高速化し、直接アクセスを防ぐ"
+      },
+      {
+        "id": "b",
+        "text": "ALB に WAF を付け、ALB を全世界に公開する",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "直接狙われ、世界中からのレイテンシも下がらない"
+      },
+      {
+        "id": "c",
+        "text": "Global Accelerator + セキュリティグループ",
+        "correct": false,
+        "atomId": "globalaccelerator-accelerator",
+        "why": "SQL インジェクションを防げない"
+      },
+      {
+        "id": "d",
+        "text": "NLB + Shield Standard",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "SQL インジェクションを防げない"
+      }
+    ],
+    "explanation": "CloudFront（高速化）+ WAF（L7 の防御）+ オリジンの制限（プレフィックスリスト / カスタムヘッダー）。",
+    "keywords": [
+      "直接狙われない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-proxy:exam:1",
+    "type": "exam",
+    "level": 5,
+    "atomIds": [
+      "rds-proxy",
+      "lambda-function",
+      "secretsmanager-secret"
+    ],
+    "prompt": "Lambda から Aurora MySQL を使うサーバーレスの API がある。\n・ピーク時に DB の接続数が上限に達してエラーになる\n・DB の認証情報をコードに書きたくない\n・フェイルオーバー時の影響を小さくしたい\n最適な対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "RDS Proxy を使い、認証情報は Secrets Manager で管理",
+        "correct": true,
+        "atomId": "rds-proxy",
+        "why": "接続のプールでピークを吸収し、フェイルオーバーも速い"
+      },
+      {
+        "id": "b",
+        "text": "Lambda の同時実行数を無制限にする",
+        "correct": false,
+        "atomId": "lambda-concurrency",
+        "why": "接続数がさらに増える"
+      },
+      {
+        "id": "c",
+        "text": "Aurora のインスタンスを最大にし、パスワードを環境変数に入れる",
+        "correct": false,
+        "why": "接続の問題の根本解決にならず、認証情報も安全でない"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB に移行し、Aurora をやめる",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "要件に対して改修が大きすぎる"
+      }
+    ],
+    "explanation": "Lambda × RDS の接続問題 = RDS Proxy（Secrets Manager や IAM 認証と連携）。",
+    "keywords": [
+      "接続数が上限",
+      "コードに書きたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
