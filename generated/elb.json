@@ -542,5 +542,797 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elb-sni:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "elb-sni"
+    ],
+    "prompt": "a.example.com と b.example.org の 2 つのドメインを、1 つの ALB の 443 番ポートで HTTPS 化したい。証明書は別々。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リスナーに両方の証明書を付ける（SNI）",
+        "correct": true,
+        "atomId": "elb-sni",
+        "why": "ホスト名で証明書が選ばれる"
+      },
+      {
+        "id": "b",
+        "text": "ドメインごとに ALB を分ける",
+        "correct": false,
+        "why": "できるが、コストと管理が増える"
+      },
+      {
+        "id": "c",
+        "text": "1 つのドメインを HTTP のままにする",
+        "correct": false,
+        "why": "HTTPS 化の要件を満たさない"
+      },
+      {
+        "id": "d",
+        "text": "証明書を EC2 にだけ入れる",
+        "correct": false,
+        "atomId": "elb-tls-termination",
+        "why": "ALB で TLS を終端する構成ではなくなり、管理も増える"
+      }
+    ],
+    "explanation": "1 つのリスナーで複数ドメインの証明書 = SNI。",
+    "keywords": [
+      "2 つのドメイン",
+      "1 つの ALB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-sni:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "elb-sni"
+    ],
+    "prompt": "「1 つのリスナーに複数の証明書」「ホスト名で証明書を選ぶ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SNI",
+        "correct": true,
+        "atomId": "elb-sni",
+        "why": "TLS の接続時にクライアントが送るホスト名を使う"
+      },
+      {
+        "id": "b",
+        "text": "スティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じクライアントを同じターゲットに送る"
+      },
+      {
+        "id": "c",
+        "text": "クロスゾーン負荷分散",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "AZ をまたいで均等に振り分ける"
+      },
+      {
+        "id": "d",
+        "text": "登録解除の遅延",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "外すターゲットの処理中のリクエストを待つ"
+      }
+    ],
+    "explanation": "複数証明書 = SNI。",
+    "keywords": [
+      "複数の証明書"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-x-forwarded-for:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elb-x-forwarded-for"
+    ],
+    "prompt": "ALB の後ろの Web サーバーのアクセスログで、送信元 IP がすべて同じプライベート IP になっている。本当のクライアントの IP を記録するには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "X-Forwarded-For ヘッダーの値をログに出す",
+        "correct": true,
+        "atomId": "elb-x-forwarded-for",
+        "why": "ALB が元のクライアントの IP をこのヘッダーに入れる"
+      },
+      {
+        "id": "b",
+        "text": "ALB に Elastic IP を付けて送信元を固定する",
+        "correct": false,
+        "atomId": "ec2-elastic-ip",
+        "why": "ALB には Elastic IP を付けられず、ログの問題も解決しない"
+      },
+      {
+        "id": "c",
+        "text": "VPC フローログを有効にする",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "ALB とサーバー間の通信が記録されるだけ"
+      },
+      {
+        "id": "d",
+        "text": "スティッキーセッションを有効にする",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "振り分け先を固定するだけ"
+      }
+    ],
+    "explanation": "ALB 経由のクライアント IP = X-Forwarded-For。",
+    "keywords": [
+      "送信元 IP",
+      "本当のクライアント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-x-forwarded-for:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elb-x-forwarded-for"
+    ],
+    "prompt": "ALB の後ろの EC2 のセキュリティグループで、社内の IP アドレスからだけ許可しようとしたところ、誰もアクセスできなくなった。原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EC2 から見た送信元は ALB になる",
+        "correct": true,
+        "atomId": "elb-x-forwarded-for",
+        "why": "クライアントの IP の制限は ALB の SG や WAF で行う"
+      },
+      {
+        "id": "b",
+        "text": "SG では IP アドレスを指定できない",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "CIDR を指定できる"
+      },
+      {
+        "id": "c",
+        "text": "ALB は社内の IP を変換して使えなくする",
+        "correct": false,
+        "why": "変換するのではなく、ALB が新しい接続を張る"
+      },
+      {
+        "id": "d",
+        "text": "社内の IP は IPv6 でしか指定できない",
+        "correct": false,
+        "why": "IPv4 でも指定できる"
+      }
+    ],
+    "explanation": "ALB → EC2 の接続元は ALB。クライアントでの制限は ALB 側（SG / WAF）で行う。",
+    "keywords": [
+      "ALB の後ろの EC2"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-alb-authentication:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "elb-alb-authentication"
+    ],
+    "prompt": "社内向けの既存の Web アプリに、アプリのコードを変えずに Cognito でのログインを追加したい。ALB を使っている。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB のリスナールールで認証を設定する",
+        "correct": true,
+        "atomId": "elb-alb-authentication",
+        "why": "ALB が認証してから、認証済みのリクエストだけを送る"
+      },
+      {
+        "id": "b",
+        "text": "NLB に変えて認証を設定する",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB には HTTP のユーザー認証の機能はない"
+      },
+      {
+        "id": "c",
+        "text": "各サーバーのセキュリティグループで認証する",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "SG は IP とポートの制御"
+      },
+      {
+        "id": "d",
+        "text": "WAF でユーザー名とパスワードを確認する",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "WAF はリクエストの検査で、ユーザーのログインは扱わない"
+      }
+    ],
+    "explanation": "コードを変えずにログイン = ALB の認証アクション（Cognito / OIDC）。",
+    "keywords": [
+      "コードを変えずに",
+      "ログイン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-gwlb:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "elb-gwlb"
+    ],
+    "prompt": "Gateway Load Balancer の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "仮想アプライアンスに通信を透過的に通し、スケールさせる",
+        "correct": true,
+        "atomId": "elb-gwlb",
+        "why": "GENEVE で通信をアプライアンスに送る"
+      },
+      {
+        "id": "b",
+        "text": "HTTP のパスで振り分ける",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ALB の特徴"
+      },
+      {
+        "id": "c",
+        "text": "固定 IP で TCP を超低レイテンシに処理する",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB の特徴"
+      },
+      {
+        "id": "d",
+        "text": "エッジロケーションでコンテンツをキャッシュする",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "CloudFront の特徴"
+      }
+    ],
+    "explanation": "サードパーティのファイアウォール・IDS/IPS を挟む = GWLB。",
+    "keywords": [
+      "仮想アプライアンス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-gwlb:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "elb-gwlb"
+    ],
+    "prompt": "「サードパーティのファイアウォール」「GENEVE」「アプライアンスをスケール」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Gateway Load Balancer",
+        "correct": true,
+        "atomId": "elb-gwlb",
+        "why": "アプライアンスへの通信の振り分けとスケール"
+      },
+      {
+        "id": "b",
+        "text": "AWS Network Firewall",
+        "correct": false,
+        "atomId": "vpc-network-firewall",
+        "why": "AWS のマネージドなファイアウォールで、サードパーティ製品ではない"
+      },
+      {
+        "id": "c",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "HTTP の振り分け"
+      },
+      {
+        "id": "d",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "VPC をつなぐハブ"
+      }
+    ],
+    "explanation": "サードパーティのアプライアンス = GWLB、AWS 製のマネージド = Network Firewall。",
+    "keywords": [
+      "サードパーティ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-cross-zone:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "elb-cross-zone"
+    ],
+    "prompt": "クロスゾーン負荷分散のデフォルトの設定は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB は有効、NLB と GWLB は無効",
+        "correct": true,
+        "atomId": "elb-cross-zone",
+        "why": "NLB で有効にすると AZ 間のデータ転送料金がかかる"
+      },
+      {
+        "id": "b",
+        "text": "ALB も NLB もデフォルトで無効",
+        "correct": false,
+        "why": "ALB はデフォルトで有効"
+      },
+      {
+        "id": "c",
+        "text": "ALB も NLB もデフォルトで有効",
+        "correct": false,
+        "why": "NLB はデフォルトで無効"
+      },
+      {
+        "id": "d",
+        "text": "ALB は無効、NLB は常に有効",
+        "correct": false,
+        "why": "逆"
+      }
+    ],
+    "explanation": "ALB = デフォルト有効（無料。ターゲットグループ単位で無効にもできる）、NLB / GWLB = デフォルト無効（有効にすると AZ 間の料金）。",
+    "keywords": [
+      "デフォルト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-cross-zone:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "elb-cross-zone"
+    ],
+    "prompt": "2 つの AZ に 2 台と 8 台のターゲットがある。クロスゾーン負荷分散が無効だと、AZ-a の 2 台の 1 台あたりが受ける割合は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "25%",
+        "correct": true,
+        "atomId": "elb-cross-zone",
+        "why": "各 AZ に 50% ずつ届き、AZ-a の 2 台で分ける。有効なら全 10 台で均等に 10% ずつになる"
+      },
+      {
+        "id": "b",
+        "text": "10%（全台で均等）",
+        "correct": false,
+        "why": "それは有効な場合"
+      },
+      {
+        "id": "c",
+        "text": "50%（AZ-a の 1 台がすべて受ける）",
+        "correct": false,
+        "why": "AZ-a の 2 台で分ける"
+      },
+      {
+        "id": "d",
+        "text": "5%（AZ-b の方が多く受ける）",
+        "correct": false,
+        "why": "無効だと AZ ごとに均等に届く"
+      }
+    ],
+    "explanation": "無効 = AZ ごとに均等 → AZ 内で分ける。台数が偏るとターゲットの負荷も偏る。",
+    "keywords": [
+      "無効",
+      "2 台と 8 台"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-sticky-sessions:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "elb-sticky-sessions"
+    ],
+    "prompt": "ALB のスティッキーセッションの仕組みは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cookie で同じターゲットに送り続ける",
+        "correct": true,
+        "atomId": "elb-sticky-sessions",
+        "why": "有効期間を設定できる"
+      },
+      {
+        "id": "b",
+        "text": "クライアントの IP ごとに証明書を変える",
+        "correct": false,
+        "atomId": "elb-sni",
+        "why": "SNI とも別の話"
+      },
+      {
+        "id": "c",
+        "text": "すべての AZ に均等に振り分ける",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "クロスゾーン負荷分散の説明"
+      },
+      {
+        "id": "d",
+        "text": "処理中のリクエストが終わるまで待つ",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "登録解除の遅延の説明"
+      }
+    ],
+    "explanation": "スティッキーセッション = Cookie で同じターゲットへ。偏りやスケールインでのセッション消失に注意。",
+    "keywords": [
+      "Cookie"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-sticky-sessions:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elb-sticky-sessions"
+    ],
+    "prompt": "古いアプリがセッションを各サーバーのメモリに持っている。改修はすぐにはできない。ログイン状態が途中で切れないようにするには？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB のスティッキーセッションを有効にする",
+        "correct": true,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じサーバーに送り続けるので、当面はセッションを保てる"
+      },
+      {
+        "id": "b",
+        "text": "ALB のクロスゾーン負荷分散を無効にする",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "AZ 内の振り分けの話で、同じサーバーに固定はされない"
+      },
+      {
+        "id": "c",
+        "text": "ヘルスチェックの間隔を長くする",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "セッションの問題は解決しない"
+      },
+      {
+        "id": "d",
+        "text": "NLB に変える",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "NLB でも同じサーバーに固定する仕組みは別途必要"
+      }
+    ],
+    "explanation": "当面の回避策 = スティッキーセッション。根本的には ElastiCache や DynamoDB にセッションを外出しする。",
+    "keywords": [
+      "改修はすぐにはできない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-health-checks:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "elb-health-checks"
+    ],
+    "prompt": "ALB のヘルスチェックのパスを、DB に問い合わせる重いページにした。DB が少し遅くなると全ターゲットが異常になる。より良い設計は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アプリ自体の稼働を返す軽いパスを使う",
+        "correct": true,
+        "atomId": "elb-health-checks",
+        "why": "依存先の一時的な遅延で全台を外さないようにする"
+      },
+      {
+        "id": "b",
+        "text": "ヘルスチェックを無効にする",
+        "correct": false,
+        "why": "異常なターゲットにもリクエストが送られてしまう"
+      },
+      {
+        "id": "c",
+        "text": "ヘルスチェックのタイムアウトを 0 秒にする",
+        "correct": false,
+        "why": "すぐに異常と判定される"
+      },
+      {
+        "id": "d",
+        "text": "NLB に変える",
+        "correct": false,
+        "atomId": "elb-nlb",
+        "why": "ヘルスチェックの設計の問題は解決しない"
+      }
+    ],
+    "explanation": "ヘルスチェックは軽く、そのターゲット自体が正常かを確認する。",
+    "keywords": [
+      "重いページ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-health-checks:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "elb-health-checks"
+    ],
+    "prompt": "「正常なターゲットにだけ送る」「HTTP 200 が返るかを定期的に確認」→ ELB の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ヘルスチェック",
+        "correct": true,
+        "atomId": "elb-health-checks",
+        "why": "異常なターゲットにはリクエストを送らない"
+      },
+      {
+        "id": "b",
+        "text": "登録解除の遅延",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "外すときに処理中のリクエストを待つ"
+      },
+      {
+        "id": "c",
+        "text": "スティッキーセッション",
+        "correct": false,
+        "atomId": "elb-sticky-sessions",
+        "why": "同じターゲットに送り続ける"
+      },
+      {
+        "id": "d",
+        "text": "クロスゾーン負荷分散",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "AZ をまたいで振り分ける"
+      }
+    ],
+    "explanation": "正常なターゲットだけに送る = ヘルスチェック。",
+    "keywords": [
+      "正常なターゲット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-deregistration-delay:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "elb-deregistration-delay"
+    ],
+    "prompt": "登録解除の遅延（デフォルト 300 秒）の間、外そうとしているターゲットはどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "新規は送らず、処理中の完了を待つ",
+        "correct": true,
+        "atomId": "elb-deregistration-delay",
+        "why": "時間を過ぎると接続が切られる"
+      },
+      {
+        "id": "b",
+        "text": "新しいリクエストも送られ続ける",
+        "correct": false,
+        "why": "新しいリクエストは送られない"
+      },
+      {
+        "id": "c",
+        "text": "すぐに接続が切られる",
+        "correct": false,
+        "why": "処理中のリクエストを待つ"
+      },
+      {
+        "id": "d",
+        "text": "別の AZ に移される",
+        "correct": false,
+        "why": "ターゲットは移動しない"
+      }
+    ],
+    "explanation": "登録解除の遅延 = 新規は止め、処理中は待つ（Connection Draining）。",
+    "keywords": [
+      "300 秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-deregistration-delay:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elb-deregistration-delay"
+    ],
+    "prompt": "リクエストの処理がすべて数秒で終わるアプリで、登録解除の遅延をデフォルトの 300 秒のままにしている。どんな問題が起きる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "外すたびに 5 分待たされる",
+        "correct": true,
+        "atomId": "elb-deregistration-delay",
+        "why": "処理時間に合わせて短くすると速く入れ替えられる"
+      },
+      {
+        "id": "b",
+        "text": "処理中のリクエストが切断される",
+        "correct": false,
+        "why": "300 秒は待つので、切断されない"
+      },
+      {
+        "id": "c",
+        "text": "ヘルスチェックが無効になる",
+        "correct": false,
+        "atomId": "elb-health-checks",
+        "why": "ヘルスチェックとは別の設定"
+      },
+      {
+        "id": "d",
+        "text": "新しいターゲットが追加できない",
+        "correct": false,
+        "why": "追加はできる"
+      }
+    ],
+    "explanation": "登録解除の遅延は処理時間に合わせて調整する。",
+    "keywords": [
+      "数秒",
+      "300 秒"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-tls-termination:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "elb-tls-termination"
+    ],
+    "prompt": "ALB で TLS を終端するとき、ACM の公開証明書を使う利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "無料で発行でき、更新も自動で行われる",
+        "correct": true,
+        "atomId": "elb-tls-termination",
+        "why": "ELB や CloudFront に付けて使う"
+      },
+      {
+        "id": "b",
+        "text": "証明書を EC2 にインストールできる",
+        "correct": false,
+        "why": "ACM の公開証明書は秘密鍵を取り出せず、EC2 に直接入れられない"
+      },
+      {
+        "id": "c",
+        "text": "通信の暗号化が不要になる",
+        "correct": false,
+        "why": "暗号化のための証明書"
+      },
+      {
+        "id": "d",
+        "text": "HTTP でも暗号化される",
+        "correct": false,
+        "why": "HTTPS のリスナーで使う"
+      }
+    ],
+    "explanation": "ACM の公開証明書 = 無料・自動更新。ELB、CloudFront、API Gateway などで使う。",
+    "keywords": [
+      "ACM"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-tls-termination:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elb-tls-termination"
+    ],
+    "prompt": "規制で「サーバーまでの通信をすべて暗号化」が求められるのに、ALB で TLS を終端し、ALB から EC2 は HTTP にした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ALB から EC2 の間が暗号化されていない",
+        "correct": true,
+        "atomId": "elb-tls-termination",
+        "why": "ターゲットへの通信も HTTPS にする"
+      },
+      {
+        "id": "b",
+        "text": "ALB は TLS を終端できない",
+        "correct": false,
+        "why": "終端できる"
+      },
+      {
+        "id": "c",
+        "text": "ALB と EC2 の間は自動で暗号化される",
+        "correct": false,
+        "why": "HTTP にすれば暗号化されない"
+      },
+      {
+        "id": "d",
+        "text": "ACM の証明書は ALB に付けられない",
+        "correct": false,
+        "why": "付けられる"
+      }
+    ],
+    "explanation": "エンドツーエンドの暗号化 = ALB でも終端し、ターゲットへも HTTPS で再暗号化する（または NLB の TCP パススルー）。",
+    "keywords": [
+      "すべて暗号化"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elb-nlb:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "elb-nlb"
+    ],
+    "prompt": "TLS の復号をロードバランサーではなくサーバー側で行う必要がある（エンドツーエンドの暗号化）。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "NLB の TCP リスナーでそのまま転送する",
+        "correct": true,
+        "atomId": "elb-nlb",
+        "why": "TLS を終端せずに、暗号化されたまま転送できる"
+      },
+      {
+        "id": "b",
+        "text": "ALB の HTTPS リスナーで終端する",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "ロードバランサーで復号されてしまう"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront で TLS を終端する",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "エッジで復号される"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway で終端する",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "API Gateway で復号される"
+      }
+    ],
+    "explanation": "ロードバランサーで復号しない = NLB の TCP（TLS パススルー）。",
+    "keywords": [
+      "サーバー側で復号"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

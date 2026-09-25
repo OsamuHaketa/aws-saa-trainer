@@ -445,5 +445,533 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-warm-pool:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-warm-pool"
+    ],
+    "prompt": "アプリの初期化に 8 分かかり、急なアクセスに間に合わない。常に余分なインスタンスを動かすコストは避けたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ウォームプール",
+        "correct": true,
+        "atomId": "autoscaling-warm-pool",
+        "why": "初期化済みのインスタンスを停止状態で待機させる"
+      },
+      {
+        "id": "b",
+        "text": "最小台数を大きくする",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "常に余分な台数分を払う"
+      },
+      {
+        "id": "c",
+        "text": "ステップスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "増やし方の話で、初期化の時間は短くならない"
+      },
+      {
+        "id": "d",
+        "text": "登録解除の遅延を長くする",
+        "correct": false,
+        "atomId": "elb-deregistration-delay",
+        "why": "外すときの設定"
+      }
+    ],
+    "explanation": "初期化が遅い + 待機のコストを抑える = ウォームプール（停止状態）。",
+    "keywords": [
+      "初期化に 8 分"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-instance-refresh:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-instance-refresh"
+    ],
+    "prompt": "Auto Scaling グループの起動テンプレートを、パッチ済みの新しい AMI に更新した。既存のインスタンスも、止めずに順番に入れ替えたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスの更新を開始する",
+        "correct": true,
+        "atomId": "autoscaling-instance-refresh",
+        "why": "正常な割合を保ちながら、少しずつ置き換える"
+      },
+      {
+        "id": "b",
+        "text": "何もしなくても既存のインスタンスが自動で置き換わる",
+        "correct": false,
+        "why": "新しく起動する分にだけ反映される"
+      },
+      {
+        "id": "c",
+        "text": "グループを削除して作り直す",
+        "correct": false,
+        "why": "サービスが止まる"
+      },
+      {
+        "id": "d",
+        "text": "最大台数を 0 にしてから戻す",
+        "correct": false,
+        "why": "すべて止まってしまう"
+      }
+    ],
+    "explanation": "起動テンプレートの変更を既存のインスタンスに反映 = インスタンスの更新。",
+    "keywords": [
+      "既存のインスタンスも"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-instance-refresh:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-instance-refresh"
+    ],
+    "prompt": "起動テンプレートの AMI を新しくしたので、Auto Scaling グループのすべてのインスタンスが新しい AMI で動いていると考えた。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "既存のインスタンスは古い AMI のまま",
+        "correct": true,
+        "atomId": "autoscaling-instance-refresh",
+        "why": "入れ替えるにはインスタンスの更新を使う"
+      },
+      {
+        "id": "b",
+        "text": "起動テンプレートは AMI を指定できない",
+        "correct": false,
+        "atomId": "autoscaling-launch-template",
+        "why": "AMI を指定する"
+      },
+      {
+        "id": "c",
+        "text": "新しい AMI は別のリージョンでしか使えない",
+        "correct": false,
+        "atomId": "ec2-ami",
+        "why": "同じリージョンで使える"
+      },
+      {
+        "id": "d",
+        "text": "起動テンプレートを変えると ASG が削除される",
+        "correct": false,
+        "why": "削除はされない"
+      }
+    ],
+    "explanation": "テンプレートの変更は新しく起動するインスタンスから。既存分はインスタンスの更新で入れ替える。",
+    "keywords": [
+      "すべてのインスタンスが"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-termination-policy:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-termination-policy"
+    ],
+    "prompt": "デフォルトの終了ポリシーで、スケールイン時にまず考慮されることは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスが最も多い AZ から選ぶ",
+        "correct": true,
+        "atomId": "autoscaling-termination-policy",
+        "why": "AZ 間の台数を均等に保つ"
+      },
+      {
+        "id": "b",
+        "text": "最も新しいインスタンスから選ぶ",
+        "correct": false,
+        "why": "デフォルトではまず AZ のバランスを見る"
+      },
+      {
+        "id": "c",
+        "text": "CPU 使用率が最も高いものを選ぶ",
+        "correct": false,
+        "why": "負荷では選ばない"
+      },
+      {
+        "id": "d",
+        "text": "ランダムに選ぶ",
+        "correct": false,
+        "why": "決まった規則で選ぶ"
+      }
+    ],
+    "explanation": "デフォルト = AZ のバランス → 古い起動テンプレート → 次の課金時間に近いもの。",
+    "keywords": [
+      "デフォルト"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-termination-policy:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-termination-policy"
+    ],
+    "prompt": "長時間のジョブを処理中のインスタンスが、スケールインで終了されないようにしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスのスケールイン保護",
+        "correct": true,
+        "atomId": "autoscaling-termination-policy",
+        "why": "保護したインスタンスはスケールインで選ばれない"
+      },
+      {
+        "id": "b",
+        "text": "クロスゾーン負荷分散",
+        "correct": false,
+        "atomId": "elb-cross-zone",
+        "why": "振り分けの設定"
+      },
+      {
+        "id": "c",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "日時で台数を変える"
+      },
+      {
+        "id": "d",
+        "text": "EC2 の自動復旧",
+        "correct": false,
+        "atomId": "ec2-auto-recovery",
+        "why": "ハードウェア障害からの復旧"
+      }
+    ],
+    "explanation": "スケールインで終了させない = スケールイン保護（終了時の後処理ならライフサイクルフック）。",
+    "keywords": [
+      "終了されないように"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-launch-template:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-launch-template"
+    ],
+    "prompt": "起動テンプレートについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バージョンを管理できる",
+        "correct": true,
+        "atomId": "autoscaling-launch-template",
+        "why": "古い起動設定は新機能に対応しない"
+      },
+      {
+        "id": "b",
+        "text": "一度作ると変更できない",
+        "correct": false,
+        "why": "新しいバージョンを作って変更できる"
+      },
+      {
+        "id": "c",
+        "text": "1 つのインスタンスタイプしか使えない",
+        "correct": false,
+        "why": "混合インスタンスポリシーで複数のタイプを使える"
+      },
+      {
+        "id": "d",
+        "text": "起動設定より機能が少ない",
+        "correct": false,
+        "why": "起動設定より多機能で、推奨されている"
+      }
+    ],
+    "explanation": "起動テンプレート = バージョン付き・推奨。起動設定（Launch Configuration）は古い方式。",
+    "keywords": [
+      "バージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-step-scaling:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-step-scaling",
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "ターゲット追跡スケーリングとステップスケーリングの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は目標値、後者は段階ごとの台数を決める",
+        "correct": true,
+        "atomId": "autoscaling-target-tracking",
+        "why": "迷ったら前者が推奨"
+      },
+      {
+        "id": "b",
+        "text": "前者は日時で、後者は負荷の予測で増やす",
+        "correct": false,
+        "why": "日時はスケジュール、予測は予測スケーリング"
+      },
+      {
+        "id": "c",
+        "text": "後者はアラームを使わない",
+        "correct": false,
+        "why": "ステップスケーリングは CloudWatch アラームを使う"
+      },
+      {
+        "id": "d",
+        "text": "前者はスケールインしない",
+        "correct": false,
+        "why": "スケールインもする"
+      }
+    ],
+    "explanation": "目標値を保つ = ターゲット追跡、段階ごとに細かく決める = ステップ。",
+    "keywords": [
+      "目標値",
+      "超過の大きさ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-target-tracking:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-target-tracking"
+    ],
+    "prompt": "ターゲット追跡スケーリングで指定するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "指標と目標値",
+        "correct": true,
+        "atomId": "autoscaling-target-tracking",
+        "why": "台数の増減は自動で計算される"
+      },
+      {
+        "id": "b",
+        "text": "増減させる日時",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "スケジュールされたスケーリング"
+      },
+      {
+        "id": "c",
+        "text": "アラームの段階ごとの追加台数",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "ステップスケーリング"
+      },
+      {
+        "id": "d",
+        "text": "過去 14 日の負荷のパターン",
+        "correct": false,
+        "atomId": "autoscaling-predictive",
+        "why": "予測スケーリングが自動で分析する"
+      }
+    ],
+    "explanation": "ターゲット追跡 = 指標と目標値だけ。",
+    "keywords": [
+      "目標値"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-elb-health-check:antipattern:2",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "autoscaling-elb-health-check"
+    ],
+    "prompt": "Auto Scaling の ELB ヘルスチェックを有効にしたが、起動したばかりのインスタンスがアプリの準備中に異常と判定され、置き換えが繰り返される。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ヘルスチェックの猶予期間を延ばす",
+        "correct": true,
+        "atomId": "autoscaling-elb-health-check",
+        "why": "猶予期間中は異常と判定しても置き換えない"
+      },
+      {
+        "id": "b",
+        "text": "ELB ヘルスチェックを無効にする",
+        "correct": false,
+        "why": "アプリの異常を検知できなくなる"
+      },
+      {
+        "id": "c",
+        "text": "最大台数を増やす",
+        "correct": false,
+        "atomId": "autoscaling-group",
+        "why": "置き換えの繰り返しは止まらない"
+      },
+      {
+        "id": "d",
+        "text": "ステップスケーリングに変える",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "スケーリングの方法は関係ない"
+      }
+    ],
+    "explanation": "起動直後の誤判定 = ヘルスチェックの猶予期間で防ぐ。",
+    "keywords": [
+      "起動したばかり",
+      "置き換えが繰り返される"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-lifecycle-hooks:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-lifecycle-hooks"
+    ],
+    "prompt": "「インスタンスの終了前にログを退避」「起動後、サービス開始前に設定を実行」→ Auto Scaling の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ライフサイクルフック",
+        "correct": true,
+        "atomId": "autoscaling-lifecycle-hooks",
+        "why": "起動時・終了時に一時停止し、独自の処理を実行できる"
+      },
+      {
+        "id": "b",
+        "text": "ユーザーデータ",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時のスクリプトで、終了時の処理はできない"
+      },
+      {
+        "id": "c",
+        "text": "スケールイン保護",
+        "correct": false,
+        "atomId": "autoscaling-termination-policy",
+        "why": "終了させない設定"
+      },
+      {
+        "id": "d",
+        "text": "ウォームプール",
+        "correct": false,
+        "atomId": "autoscaling-warm-pool",
+        "why": "待機させるインスタンスの仕組み"
+      }
+    ],
+    "explanation": "起動・終了の途中で処理を挟む = ライフサイクルフック。",
+    "keywords": [
+      "終了前",
+      "起動後"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-scheduled:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-scheduled"
+    ],
+    "prompt": "突発的に起きる SNS でのバズによるアクセス急増に、スケジュールされたスケーリングで備えようとした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "いつ起きるか分からない急増は、日時では予定できない",
+        "correct": true,
+        "atomId": "autoscaling-scheduled",
+        "why": "動的スケーリング（ターゲット追跡など）を使う"
+      },
+      {
+        "id": "b",
+        "text": "スケジュールは 1 日 1 回しか設定できない",
+        "correct": false,
+        "why": "複数設定できる"
+      },
+      {
+        "id": "c",
+        "text": "スケジュールでは台数を減らせない",
+        "correct": false,
+        "why": "減らすこともできる"
+      },
+      {
+        "id": "d",
+        "text": "スケジュールは ALB と組み合わせられない",
+        "correct": false,
+        "why": "組み合わせられる"
+      }
+    ],
+    "explanation": "予測できる時刻 = スケジュール、予測できない急増 = 動的スケーリング。",
+    "keywords": [
+      "突発的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "autoscaling-predictive:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "autoscaling-predictive"
+    ],
+    "prompt": "「過去の日次・週次のパターン」「負荷が来る前に自動で増やす」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "予測スケーリング",
+        "correct": true,
+        "atomId": "autoscaling-predictive",
+        "why": "機械学習で負荷を予測し、前もって台数を増やす"
+      },
+      {
+        "id": "b",
+        "text": "スケジュールされたスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-scheduled",
+        "why": "人が日時を決める"
+      },
+      {
+        "id": "c",
+        "text": "ターゲット追跡スケーリング",
+        "correct": false,
+        "atomId": "autoscaling-target-tracking",
+        "why": "負荷が上がってから反応する"
+      },
+      {
+        "id": "d",
+        "text": "ステップスケーリング",
+        "correct": false,
+        "atomId": "autoscaling-step-scaling",
+        "why": "アラームの超過に応じて反応する"
+      }
+    ],
+    "explanation": "過去のパターンから先回り = 予測スケーリング。",
+    "keywords": [
+      "パターン",
+      "前に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

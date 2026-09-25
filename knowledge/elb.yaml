@@ -178,3 +178,71 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: elb-sni
+    category: load-balancing
+    concept: SNI（複数の証明書）
+    summary: 1 つの ALB / NLB のリスナーに複数のドメインの証明書を付け、ホスト名で使い分ける
+    facts:
+      - クライアントが TLS の接続時に送るホスト名（SNI）で、使う証明書を選ぶ
+      - 1 つのリスナーに複数の証明書を付けられる（ALB と NLB が対応）
+      - 複数のドメインを 1 つのロードバランサーでまとめて HTTPS 化できる
+    triggers:
+      - 複数のドメインを 1 つのロードバランサーで HTTPS 化したい
+      - ドメインごとに別の証明書を使いたい
+    pitfalls:
+      - ドメインごとにロードバランサーを分けると、コストと管理が増える
+    relations:
+      - type: used_with
+        target: elb-tls-termination
+    examDomains: [secure, cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html
+
+  - id: elb-x-forwarded-for
+    category: load-balancing
+    concept: X-Forwarded-For ヘッダー（クライアント IP の取得）
+    summary: ALB 経由ではターゲットから見た送信元が ALB になるので、元のクライアント IP はヘッダーで受け取る
+    facts:
+      - ALB は X-Forwarded-For ヘッダーに、元のクライアントの IP アドレスを入れて転送する
+      - ターゲットから見た接続元の IP アドレスは、ALB のプライベート IP になる
+      - NLB はターゲットタイプなどの条件により、クライアントの IP をそのまま保持できる
+    triggers:
+      - ALB の後ろのサーバーで、アクセス元の IP をログに残したい
+      - サーバーのログの送信元がすべてロードバランサーの IP になっている
+    pitfalls:
+      - ALB の後ろのサーバーで、接続元の IP アドレスでアクセス制御やログ記録をすると、すべて ALB の IP になる
+    relations:
+      - type: part_of
+        target: elb-alb
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html
+
+  - id: elb-alb-authentication
+    category: load-balancing
+    concept: ALB のユーザー認証（Cognito / OIDC）
+    summary: ALB のリスナールールで、Cognito や OIDC の IdP によるログインをアプリの前で行う
+    facts:
+      - ALB がユーザーを認証してから、認証済みのリクエストだけをターゲットに送る
+      - Amazon Cognito ユーザープール、または OIDC 対応の IdP を使える
+      - アプリに認証のコードを書かずに済む
+    triggers:
+      - アプリを変えずにログインを追加したい
+      - 社内の IdP でログインした人だけにアクセスさせたい
+    pitfalls:
+      - HTTPS のリスナーで設定する必要がある
+    relations:
+      - type: used_with
+        target: cognito-user-pool
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html

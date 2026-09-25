@@ -169,3 +169,72 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: autoscaling-warm-pool
+    category: scaling
+    concept: ウォームプール
+    summary: 初期化済みのインスタンスを停止状態などで待機させ、スケールアウトを速くする
+    facts:
+      - 起動や初期化に時間がかかるアプリのために、あらかじめ準備したインスタンスを待機させる
+      - 待機中のインスタンスは停止・休止・実行中の状態から選べ、停止中ならインスタンスの料金はかからない（EBS の料金はかかる）
+      - スケールアウト時は、待機中のインスタンスをすぐに使い始められる
+    triggers:
+      - 起動からサービス開始までに数分以上かかる
+      - スケールアウトを速くしたいが、常に多めに動かしたくない
+    pitfalls:
+      - 最小台数を増やして常に余分に動かすと、使わない時間も料金がかかる
+    relations:
+      - type: part_of
+        target: autoscaling-group
+    examDomains: [performance, cost]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html
+
+  - id: autoscaling-instance-refresh
+    category: scaling
+    concept: インスタンスの更新（Instance Refresh）
+    summary: 新しい起動テンプレートや AMI に、一定の割合ずつインスタンスを入れ替える
+    facts:
+      - Auto Scaling グループのインスタンスを、少しずつ新しい設定のものに置き換える（ローリング更新）
+      - 正常なインスタンスの最低割合を決めて、サービスを止めずに更新できる
+      - 問題があれば自動でロールバックする設定もできる
+    triggers:
+      - Auto Scaling グループの AMI を、止めずに新しいものへ入れ替えたい
+      - OS のパッチを当てた AMI に順番に切り替えたい
+    pitfalls:
+      - 起動テンプレートを更新しただけでは、既存のインスタンスは置き換わらない
+    relations:
+      - type: used_with
+        target: autoscaling-launch-template
+    examDomains: [resilient]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html
+
+  - id: autoscaling-termination-policy
+    category: scaling
+    concept: 終了ポリシー（スケールイン時にどれを終了するか）
+    summary: スケールインで終了するインスタンスを選ぶ規則。デフォルトはまず AZ 間の台数を均等にする
+    facts:
+      - デフォルトでは、インスタンスが最も多い AZ から終了するインスタンスを選ぶ
+      - その AZ の中では、古い起動テンプレートや起動設定のインスタンス、次の課金時間に近いものなどが選ばれる
+      - 最も古いインスタンスから終了するなど、ポリシーを変更できる
+      - スケールイン保護を設定したインスタンスは、スケールインで終了されない
+    triggers:
+      - スケールインでどのインスタンスが終了されるか
+      - 特定のインスタンスをスケールインで終了させたくない
+    pitfalls:
+      - スケールイン保護があっても、ヘルスチェックの失敗による置き換えや手動の終了は防げない
+    relations:
+      - type: part_of
+        target: autoscaling-group
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html
