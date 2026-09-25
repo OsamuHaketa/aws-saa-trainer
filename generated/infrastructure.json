@@ -485,5 +485,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "infrastructure-region-az:compare:1",
+    "type": "compare",
+    "level": 2,
+    "atomIds": [
+      "infrastructure-region-az",
+      "cloudfront-distribution"
+    ],
+    "prompt": "リージョン、AZ、エッジロケーションの関係として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "リージョンの中に複数の AZ がある",
+        "correct": true,
+        "atomId": "infrastructure-region-az",
+        "why": "エッジロケーションは別に世界中に多数あり、CloudFront や Route 53 などが使う"
+      },
+      {
+        "id": "b",
+        "text": "AZ の中に複数のリージョンがある",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "エッジロケーションはリージョンと同じ数だけある",
+        "correct": false,
+        "why": "エッジロケーションの方がずっと多い"
+      },
+      {
+        "id": "d",
+        "text": "エッジロケーションで EC2 を自由に起動できる",
+        "correct": false,
+        "why": "EC2 はリージョンの AZ で起動する"
+      }
+    ],
+    "explanation": "リージョン ⊃ AZ。エッジロケーションは世界中にあり、CDN や DNS などに使われる。",
+    "keywords": [
+      "エッジロケーション"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

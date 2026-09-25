@@ -355,5 +355,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-spectrum:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "redshift-spectrum"
+    ],
+    "prompt": "「Redshift から S3 のデータを外部テーブルとして問い合わせる」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Redshift Spectrum",
+        "correct": true,
+        "atomId": "redshift-spectrum",
+        "why": "S3 のデータを Redshift の中のテーブルと結合できる"
+      },
+      {
+        "id": "b",
+        "text": "Amazon Athena",
+        "correct": false,
+        "atomId": "athena-query",
+        "why": "単独で S3 に SQL を実行する"
+      },
+      {
+        "id": "c",
+        "text": "Redshift Serverless",
+        "correct": false,
+        "atomId": "redshift-serverless",
+        "why": "容量を自動で調整する Redshift"
+      },
+      {
+        "id": "d",
+        "text": "AWS Glue の ETL",
+        "correct": false,
+        "atomId": "glue-etl",
+        "why": "データの変換"
+      }
+    ],
+    "explanation": "Redshift × S3 の外部テーブル = Spectrum。",
+    "keywords": [
+      "外部テーブル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "redshift-cluster:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "redshift-cluster"
+    ],
+    "prompt": "Redshift のクラスターを別のリージョンの障害にも備えて保護したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "スナップショットを別のリージョンに自動コピーする",
+        "correct": true,
+        "atomId": "redshift-cluster",
+        "why": "リージョン障害時にそこから復元できる"
+      },
+      {
+        "id": "b",
+        "text": "Redshift をマルチ AZ にするだけ",
+        "correct": false,
+        "why": "リージョンの障害には対応しない"
+      },
+      {
+        "id": "c",
+        "text": "RDS のリードレプリカを作る",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "Redshift ではない"
+      },
+      {
+        "id": "d",
+        "text": "DynamoDB のグローバルテーブルにデータを移す",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "分析のデータウェアハウスではなくなる"
+      }
+    ],
+    "explanation": "Redshift のリージョン間の DR = スナップショットのクロスリージョンコピー。",
+    "keywords": [
+      "別のリージョンの障害"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

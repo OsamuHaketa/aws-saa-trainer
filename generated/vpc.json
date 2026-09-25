@@ -3239,5 +3239,268 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-internet-gateway:definition:2",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "vpc-internet-gateway"
+    ],
+    "prompt": "インターネットゲートウェイについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "冗長化は AWS が行う",
+        "correct": true,
+        "atomId": "vpc-internet-gateway",
+        "why": "VPC に 1 つ付け、AZ ごとに作ったり帯域を管理したりしなくてよい"
+      },
+      {
+        "id": "b",
+        "text": "AZ ごとに 1 つずつ作る必要がある",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "それは NAT ゲートウェイ"
+      },
+      {
+        "id": "c",
+        "text": "通信量に応じて台数を自分で増やす",
+        "correct": false,
+        "why": "自動でスケールする"
+      },
+      {
+        "id": "d",
+        "text": "プライベートサブネット専用",
+        "correct": false,
+        "why": "パブリックサブネットのルートの宛先"
+      }
+    ],
+    "explanation": "IGW = VPC に 1 つ、冗長・スケールは AWS が管理。NAT GW = AZ ごとに作る。",
+    "keywords": [
+      "VPC に 1 つ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-security-group:definition:2",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "vpc-security-group"
+    ],
+    "prompt": "新しく作ったセキュリティグループのデフォルトのルールは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "受信はすべて拒否、送信はすべて許可",
+        "correct": true,
+        "atomId": "vpc-security-group",
+        "why": "必要な受信のルールを追加する"
+      },
+      {
+        "id": "b",
+        "text": "受信も送信もすべて許可",
+        "correct": false,
+        "why": "受信は拒否"
+      },
+      {
+        "id": "c",
+        "text": "受信も送信もすべて拒否",
+        "correct": false,
+        "atomId": "vpc-nacl",
+        "why": "それはカスタム NACL のデフォルト"
+      },
+      {
+        "id": "d",
+        "text": "受信はすべて許可、送信はすべて拒否",
+        "correct": false,
+        "why": "逆"
+      }
+    ],
+    "explanation": "SG のデフォルト = 受信なし（拒否）・送信は全許可。カスタム NACL = 全拒否。",
+    "keywords": [
+      "デフォルトのルール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nacl:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-nacl"
+    ],
+    "prompt": "「サブネット単位」「ステートレス」「許可と拒否の両方」「番号の小さいルールから評価」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ネットワーク ACL",
+        "correct": true,
+        "atomId": "vpc-nacl",
+        "why": "サブネットの出入口で通信を制御する"
+      },
+      {
+        "id": "b",
+        "text": "セキュリティグループ",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "ENI 単位・ステートフル・許可のみ"
+      },
+      {
+        "id": "c",
+        "text": "AWS WAF",
+        "correct": false,
+        "atomId": "waf-web-acl",
+        "why": "HTTP のリクエストの検査"
+      },
+      {
+        "id": "d",
+        "text": "AWS Network Firewall",
+        "correct": false,
+        "atomId": "vpc-network-firewall",
+        "why": "VPC の出入口のマネージドなファイアウォール"
+      }
+    ],
+    "explanation": "サブネット・ステートレス・番号順 = NACL。",
+    "keywords": [
+      "ステートレス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-peering:antipattern:2",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "vpc-peering"
+    ],
+    "prompt": "VPC A と B をピアリングし、B は VPN でオンプレミスとつながっている。A から B 経由でオンプレミスに出ようとしたが通信できない。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "相手の VPN を経由できない",
+        "correct": true,
+        "atomId": "vpc-peering",
+        "why": "ピアリングは推移的でなく、相手の VPC の VPN などを経由しない。Transit Gateway を使う"
+      },
+      {
+        "id": "b",
+        "text": "ピアリングはリージョン内でしか作れない",
+        "correct": false,
+        "why": "リージョン間でも作れる"
+      },
+      {
+        "id": "c",
+        "text": "ピアリングは暗号化されない",
+        "correct": false,
+        "why": "暗号化の問題ではない"
+      },
+      {
+        "id": "d",
+        "text": "VPN はピアリングと同時に使えない",
+        "correct": false,
+        "why": "使えるが、相手経由の通信は通らない"
+      }
+    ],
+    "explanation": "ピアリング = 推移的でない（相手の IGW・NAT・VPN・DX を経由できない）。",
+    "keywords": [
+      "B 経由でオンプレミス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-transit-gateway:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-transit-gateway"
+    ],
+    "prompt": "「多数の VPC とオンプレミスのハブ」「推移的なルーティング」「ルートテーブルで分離」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Transit Gateway",
+        "correct": true,
+        "atomId": "vpc-transit-gateway",
+        "why": "ハブ＆スポーク型で VPC とオンプレミスをつなぐ"
+      },
+      {
+        "id": "b",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "1 対 1 で推移的ではない"
+      },
+      {
+        "id": "c",
+        "text": "AWS PrivateLink",
+        "correct": false,
+        "atomId": "vpc-privatelink",
+        "why": "特定のサービスの公開"
+      },
+      {
+        "id": "d",
+        "text": "VPN CloudHub",
+        "correct": false,
+        "atomId": "vpc-vpn-cloudhub",
+        "why": "拠点同士の VPN"
+      }
+    ],
+    "explanation": "多数の VPC のハブ = Transit Gateway。",
+    "keywords": [
+      "ハブ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-site-to-site-vpn:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "vpc-site-to-site-vpn"
+    ],
+    "prompt": "「IPsec」「インターネット経由」「すぐに作れて安い」「DX のバックアップ」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Site-to-Site VPN",
+        "correct": true,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "オンプレミスと VPC を暗号化してつなぐ"
+      },
+      {
+        "id": "b",
+        "text": "AWS Direct Connect",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "専用線で、開通に時間がかかる"
+      },
+      {
+        "id": "c",
+        "text": "AWS Client VPN",
+        "correct": false,
+        "atomId": "vpc-client-vpn",
+        "why": "個人の端末からの接続"
+      },
+      {
+        "id": "d",
+        "text": "VPC ピアリング",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "VPC 同士の接続"
+      }
+    ],
+    "explanation": "IPsec × インターネット = Site-to-Site VPN。",
+    "keywords": [
+      "IPsec"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

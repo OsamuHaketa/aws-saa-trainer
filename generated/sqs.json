@@ -1113,5 +1113,48 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-fifo:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "sqs-fifo"
+    ],
+    "prompt": "SQS FIFO キューの重複排除について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "5 分間の重複を 1 つにまとめる",
+        "correct": true,
+        "atomId": "sqs-fifo",
+        "why": "同じ重複排除 ID（または内容のハッシュ）のメッセージを 1 つにする"
+      },
+      {
+        "id": "b",
+        "text": "永久に同じメッセージを受け付けない",
+        "correct": false,
+        "why": "期間は 5 分"
+      },
+      {
+        "id": "c",
+        "text": "標準キューでも同じ重複排除が使える",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "FIFO キューの機能"
+      },
+      {
+        "id": "d",
+        "text": "重複排除すると順序が保証されなくなる",
+        "correct": false,
+        "why": "順序は保証される"
+      }
+    ],
+    "explanation": "FIFO = 5 分間の重複排除（重複排除 ID または内容のハッシュ）+ グループ内の順序。",
+    "keywords": [
+      "重複排除"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

@@ -569,5 +569,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-scp:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "organizations-scp"
+    ],
+    "prompt": "「組織のアカウントで使える操作の上限」「アカウントの管理者でも外せない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SCP",
+        "correct": true,
+        "atomId": "organizations-scp",
+        "why": "サービスコントロールポリシー。OU やアカウントに付け、権限の上限を決める"
+      },
+      {
+        "id": "b",
+        "text": "アクセス許可の境界",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "ユーザーやロールの上限"
+      },
+      {
+        "id": "c",
+        "text": "IAM グループ",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "ユーザーのまとまり"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config のルール",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "違反の検出"
+      }
+    ],
+    "explanation": "アカウント単位の上限 = SCP。",
+    "keywords": [
+      "管理者でも外せない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

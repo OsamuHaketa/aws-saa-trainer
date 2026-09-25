@@ -2542,5 +2542,356 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "iam-root-user:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-root-user"
+    ],
+    "prompt": "組織のメンバーアカウントのルートユーザーが使われたら、すぐに気付きたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge でルートのサインインを検知して通知",
+        "correct": true,
+        "atomId": "iam-root-user",
+        "why": "CloudTrail に記録されたルートの操作をイベントで拾う"
+      },
+      {
+        "id": "b",
+        "text": "ルートユーザーを削除する",
+        "correct": false,
+        "why": "削除はできない"
+      },
+      {
+        "id": "c",
+        "text": "ルートのパスワードをチームで共有する",
+        "correct": false,
+        "why": "共有すべきではなく、検知にもならない"
+      },
+      {
+        "id": "d",
+        "text": "Trusted Advisor を月に 1 回見る",
+        "correct": false,
+        "atomId": "trustedadvisor-checks",
+        "why": "すぐには気付けない"
+      }
+    ],
+    "explanation": "ルートの使用の検知 = CloudTrail + EventBridge（またはメトリクスフィルター + アラーム）。",
+    "keywords": [
+      "すぐに気付きたい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-role:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "iam-role"
+    ],
+    "prompt": "IAM ロールを「引き受ける」ことができるものとして正しくないのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM グループ",
+        "correct": true,
+        "atomId": "iam-group",
+        "why": "グループはロールを引き受ける主体になれない"
+      },
+      {
+        "id": "b",
+        "text": "同じアカウントの IAM ユーザー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "信頼ポリシーで許可すれば引き受けられる"
+      },
+      {
+        "id": "c",
+        "text": "EC2 や Lambda などの AWS サービス",
+        "correct": false,
+        "why": "サービスロールとして引き受けられる"
+      },
+      {
+        "id": "d",
+        "text": "別のアカウントの IAM ロール",
+        "correct": false,
+        "atomId": "iam-cross-account-role",
+        "why": "クロスアカウントで引き受けられる"
+      }
+    ],
+    "explanation": "ロールを引き受けるのは、ユーザー・ロール・AWS サービス・フェデレーションしたユーザー。グループは不可。",
+    "keywords": [
+      "引き受ける"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-cross-account-role:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-cross-account-role"
+    ],
+    "prompt": "本番アカウントのロールの信頼ポリシーで、開発アカウント全体（ルート）を許可した。開発アカウントの誰でも本番に入れてしまう心配がある。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "開発側で AssumeRole できる人を IAM で絞る",
+        "correct": true,
+        "atomId": "iam-cross-account-role",
+        "why": "信頼ポリシーで特定のロールだけを指定することもできる"
+      },
+      {
+        "id": "b",
+        "text": "本番のロールを削除し、開発者に本番の IAM ユーザーを作る",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報が増え、管理も分散する"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーで本番の作業を行う",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も危険な方法"
+      },
+      {
+        "id": "d",
+        "text": "本番と開発の VPC をピアリングする",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "IAM の権限とは関係ない"
+      }
+    ],
+    "explanation": "アカウント全体を信頼した場合、実際に引き受けられるのは相手のアカウントで sts:AssumeRole を許可された ID だけ。さらに絞るなら Principal を特定のロールにする。",
+    "keywords": [
+      "開発アカウント全体"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-least-privilege:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "iam-least-privilege",
+      "iam-permissions-boundary"
+    ],
+    "prompt": "最小権限を守るための仕組みとして、アクセス許可の境界と SCP をどう使い分ける？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "境界は個々のユーザーやロール、SCP はアカウントや OU の上限",
+        "correct": true,
+        "atomId": "iam-permissions-boundary",
+        "why": "どちらも権限を与えず、上限を決める"
+      },
+      {
+        "id": "b",
+        "text": "境界は権限を与え、SCP は拒否だけを書く",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "どちらも権限は与えない"
+      },
+      {
+        "id": "c",
+        "text": "境界は Organizations が必要、SCP は不要",
+        "correct": false,
+        "why": "逆。SCP には Organizations が必要"
+      },
+      {
+        "id": "d",
+        "text": "どちらも同じもので、名前が違うだけ",
+        "correct": false,
+        "why": "適用の範囲が違う"
+      }
+    ],
+    "explanation": "上限の仕組み = 境界（ID 単位）・SCP（アカウント単位）。実際の許可は IAM ポリシーで与える。",
+    "keywords": [
+      "境界",
+      "SCP"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-identity-center:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "iam-identity-center"
+    ],
+    "prompt": "IAM Identity Center の「権限セット」とは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウントに割り当てる権限の定義",
+        "correct": true,
+        "atomId": "iam-identity-center",
+        "why": "割り当てたアカウントに IAM ロールとして作られる"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーのパスワードのルール",
+        "correct": false,
+        "why": "パスワードポリシーとは別のもの"
+      },
+      {
+        "id": "c",
+        "text": "SCP の別名",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP はアカウントの上限"
+      },
+      {
+        "id": "d",
+        "text": "Cognito のユーザーのグループ",
+        "correct": false,
+        "atomId": "cognito-user-pool",
+        "why": "アプリの利用者の管理"
+      }
+    ],
+    "explanation": "権限セット = ユーザー / グループ × アカウントに割り当てる権限（各アカウントにロールが作られる）。",
+    "keywords": [
+      "権限セット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-instance-profile:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-instance-profile"
+    ],
+    "prompt": "「EC2 に IAM ロールを渡す入れ物」「アプリはメタデータから一時的な認証情報を取得」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インスタンスプロファイル",
+        "correct": true,
+        "atomId": "iam-instance-profile",
+        "why": "EC2 にロールを付けると使われる"
+      },
+      {
+        "id": "b",
+        "text": "アクセス許可の境界",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "権限の上限"
+      },
+      {
+        "id": "c",
+        "text": "IAM のユーザーグループ",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "ユーザーのまとまり"
+      },
+      {
+        "id": "d",
+        "text": "EC2 のキーペア",
+        "correct": false,
+        "why": "SSH の鍵"
+      }
+    ],
+    "explanation": "EC2 のロール = インスタンスプロファイル。",
+    "keywords": [
+      "入れ物"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-resource-based-policy:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-resource-based-policy"
+    ],
+    "prompt": "SQS のキューに、どのアカウントからでも送信できるアクセスポリシー（Principal が \"*\"、条件なし）を付けた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "誰でもメッセージを送れてしまう",
+        "correct": true,
+        "atomId": "iam-resource-based-policy",
+        "why": "送信元のアカウントや組織を Principal や条件で絞る"
+      },
+      {
+        "id": "b",
+        "text": "SQS にはアクセスポリシーを付けられない",
+        "correct": false,
+        "why": "付けられる"
+      },
+      {
+        "id": "c",
+        "text": "Principal を指定するとキューが削除される",
+        "correct": false,
+        "why": "削除はされない"
+      },
+      {
+        "id": "d",
+        "text": "アクセスポリシーは SNS にしか使えない",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "SQS でも使える"
+      }
+    ],
+    "explanation": "リソースベースのポリシーで全員を許可しない。aws:PrincipalOrgID や aws:SourceArn などで絞る。",
+    "keywords": [
+      "どのアカウントからでも"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-conditions:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-conditions"
+    ],
+    "prompt": "バケットポリシーで aws:SourceIp に社内の IP を指定したが、VPC エンドポイント経由のアクセスがすべて拒否された。なぜ？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エンドポイント経由では送信元がプライベート IP になる",
+        "correct": true,
+        "atomId": "iam-policy-conditions",
+        "why": "VPC エンドポイント経由なら aws:SourceVpce や aws:SourceVpc を使う"
+      },
+      {
+        "id": "b",
+        "text": "VPC エンドポイントは S3 に使えない",
+        "correct": false,
+        "atomId": "s3-gateway-endpoint",
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "aws:SourceIp は IAM ポリシーでしか使えない",
+        "correct": false,
+        "why": "バケットポリシーでも使える"
+      },
+      {
+        "id": "d",
+        "text": "社内の IP は IPv6 でしか指定できない",
+        "correct": false,
+        "why": "IPv4 でも指定できる"
+      }
+    ],
+    "explanation": "aws:SourceIp はパブリック IP の条件。VPC エンドポイント経由は aws:SourceVpce / aws:SourceVpc。",
+    "keywords": [
+      "VPC エンドポイント経由"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

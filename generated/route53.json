@@ -1503,5 +1503,92 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "route53-weighted:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "route53-weighted"
+    ],
+    "prompt": "ブルー/グリーンデプロイで、DNS を使って新しい環境に少しずつトラフィックを移したい。問題があればすぐ戻したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "加重ルーティングで重みを少しずつ変える",
+        "correct": true,
+        "atomId": "route53-weighted",
+        "why": "戻すときは重みを元に戻す（TTL は短くしておく）"
+      },
+      {
+        "id": "b",
+        "text": "フェイルオーバールーティングにする",
+        "correct": false,
+        "atomId": "route53-failover",
+        "why": "障害時の切り替えで、少しずつ移す仕組みではない"
+      },
+      {
+        "id": "c",
+        "text": "位置情報ルーティングにする",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "国ごとの振り分け"
+      },
+      {
+        "id": "d",
+        "text": "シンプルルーティングで一度に切り替える",
+        "correct": false,
+        "atomId": "route53-simple",
+        "why": "少しずつ移せない"
+      }
+    ],
+    "explanation": "段階的な移行 = 加重ルーティング（DNS のキャッシュを考えて TTL を短く）。",
+    "keywords": [
+      "少しずつ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-alias:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "route53-alias"
+    ],
+    "prompt": "「ゾーンの頂点に使える」「AWS のリソースを指す」「問い合わせは無料」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "エイリアスレコード",
+        "correct": true,
+        "atomId": "route53-alias",
+        "why": "ELB や CloudFront などを名前で指す"
+      },
+      {
+        "id": "b",
+        "text": "CNAME レコード",
+        "correct": false,
+        "why": "ゾーンの頂点には作れない"
+      },
+      {
+        "id": "c",
+        "text": "MX レコード",
+        "correct": false,
+        "why": "メールの配送先"
+      },
+      {
+        "id": "d",
+        "text": "TXT レコード",
+        "correct": false,
+        "why": "テキストの情報"
+      }
+    ],
+    "explanation": "頂点 × AWS リソース = エイリアス。",
+    "keywords": [
+      "ゾーンの頂点"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

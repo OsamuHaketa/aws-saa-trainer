@@ -176,5 +176,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "macie-job:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "macie-job"
+    ],
+    "prompt": "Macie が S3 で個人情報を見つけたら、自動でセキュリティチームに通知したい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EventBridge で受けて SNS で通知",
+        "correct": true,
+        "atomId": "macie-job",
+        "why": "検出結果はイベントとして送られる"
+      },
+      {
+        "id": "b",
+        "text": "Macie の画面を毎日目で確認する",
+        "correct": false,
+        "why": "自動の通知にならない"
+      },
+      {
+        "id": "c",
+        "text": "CloudTrail のデータイベントを有効にする",
+        "correct": false,
+        "atomId": "cloudtrail-data-events",
+        "why": "操作の記録で、検出結果の通知ではない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のライフサイクルで古いファイルを削除する",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "通知の仕組みではない"
+      }
+    ],
+    "explanation": "セキュリティサービスの検出結果 → EventBridge → 通知・自動対応（Security Hub に集約も可）。",
+    "keywords": [
+      "自動でセキュリティチームに通知"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

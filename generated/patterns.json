@@ -1704,5 +1704,218 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-rpo-rto:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-rpo-rto"
+    ],
+    "prompt": "RPO 5 分の要件なのに、DB のバックアップを 1 日 1 回だけ取っている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "障害時に最大 1 日分のデータを失う",
+        "correct": true,
+        "atomId": "patterns-rpo-rto",
+        "why": "RPO 5 分なら、継続的な複製やログのバックアップが必要"
+      },
+      {
+        "id": "b",
+        "text": "バックアップは 1 日 1 回しか取れない",
+        "correct": false,
+        "why": "もっと頻繁に取れる"
+      },
+      {
+        "id": "c",
+        "text": "RPO はバックアップと関係ない",
+        "correct": false,
+        "why": "RPO はデータの損失の許容範囲で、バックアップの頻度に関係する"
+      },
+      {
+        "id": "d",
+        "text": "RTO が長くなるだけで、RPO は満たせる",
+        "correct": false,
+        "why": "失うデータの量が RPO を超える"
+      }
+    ],
+    "explanation": "RPO = バックアップや複製の間隔で決まる。",
+    "keywords": [
+      "RPO 5 分",
+      "1 日 1 回"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-backup-restore:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "patterns-backup-restore"
+    ],
+    "prompt": "DR 戦略を、コストの低い順に並べると？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バックアップと復元 → パイロットライト → ウォームスタンバイ → マルチサイト",
+        "correct": true,
+        "atomId": "patterns-backup-restore",
+        "why": "RTO・RPO が短くなるほどコストは高い"
+      },
+      {
+        "id": "b",
+        "text": "マルチサイト → ウォームスタンバイ → パイロットライト → バックアップと復元",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "c",
+        "text": "パイロットライト → バックアップと復元 → マルチサイト → ウォームスタンバイ",
+        "correct": false,
+        "why": "順序が違う"
+      },
+      {
+        "id": "d",
+        "text": "どの戦略もコストは同じ",
+        "correct": false,
+        "why": "DR 側で動かすものが多いほど高い"
+      }
+    ],
+    "explanation": "DR 戦略 = コストと RTO / RPO のトレードオフ。",
+    "keywords": [
+      "コストの低い順"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-pilot-light:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "patterns-pilot-light"
+    ],
+    "prompt": "パイロットライトの DR で、DB の複製だけを用意し、アプリのサーバーを作る手順はなく、障害時に手作業で作ればよいと考えている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "手作業では時間がかかりミスも起き、RTO を守れない",
+        "correct": true,
+        "atomId": "patterns-pilot-light",
+        "why": "AMI や IaC を用意し、すぐに起動できるようにしておく"
+      },
+      {
+        "id": "b",
+        "text": "パイロットライトでは DB を複製しない",
+        "correct": false,
+        "why": "DB などの中核は複製しておく"
+      },
+      {
+        "id": "c",
+        "text": "パイロットライトではサーバーを常に全台動かす",
+        "correct": false,
+        "why": "それはマルチサイト"
+      },
+      {
+        "id": "d",
+        "text": "パイロットライトは RPO を気にしなくてよい",
+        "correct": false,
+        "why": "RPO はデータの複製で守る"
+      }
+    ],
+    "explanation": "パイロットライト = 中核の複製 + すぐに起動できる準備（AMI・CloudFormation）。",
+    "keywords": [
+      "手作業で作ればよい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-site:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "patterns-multi-site"
+    ],
+    "prompt": "マルチサイト（アクティブ/アクティブ）で特に注意が必要なことは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複数のリージョンでの書き込みの競合",
+        "correct": true,
+        "atomId": "patterns-multi-site",
+        "why": "同じデータの同時更新の扱いを設計する"
+      },
+      {
+        "id": "b",
+        "text": "DR 側でサーバーを起動する時間",
+        "correct": false,
+        "why": "両方が常に動いている"
+      },
+      {
+        "id": "c",
+        "text": "バックアップだけを別リージョンに置くこと",
+        "correct": false,
+        "why": "それはバックアップと復元"
+      },
+      {
+        "id": "d",
+        "text": "DR 側を縮小して動かすこと",
+        "correct": false,
+        "why": "それはウォームスタンバイ"
+      }
+    ],
+    "explanation": "マルチサイト = 常に両方で処理。データの複製と書き込みの競合の設計が要点。",
+    "keywords": [
+      "注意が必要"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "patterns-multi-az:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "patterns-multi-az",
+      "patterns-multi-site"
+    ],
+    "prompt": "マルチ AZ とマルチリージョンの構成の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "備える障害の範囲が違う",
+        "correct": true,
+        "atomId": "patterns-multi-az",
+        "why": "マルチ AZ は AZ の障害、マルチリージョンはリージョンの障害に備える。後者の方がコストと複雑さが大きい"
+      },
+      {
+        "id": "b",
+        "text": "前者の方がリージョンの障害に強い",
+        "correct": false,
+        "why": "リージョンの障害にはマルチリージョン"
+      },
+      {
+        "id": "c",
+        "text": "後者は同期レプリケーションが基本",
+        "correct": false,
+        "why": "リージョン間は距離があり、非同期が基本"
+      },
+      {
+        "id": "d",
+        "text": "どちらも同じ障害に備え、コストも同じ",
+        "correct": false,
+        "why": "備える障害の範囲とコストが違う"
+      }
+    ],
+    "explanation": "AZ 障害 = マルチ AZ（同期レプリケーションも可）、リージョン障害 = マルチリージョン（非同期が基本）。",
+    "keywords": [
+      "マルチ AZ",
+      "マルチリージョン"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

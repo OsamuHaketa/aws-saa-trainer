@@ -2173,51 +2173,6 @@
     "generatedBy": "manual"
   },
   {
-    "id": "redshift-spectrum:trigger:1",
-    "type": "trigger",
-    "level": 3,
-    "atomIds": [
-      "redshift-spectrum"
-    ],
-    "prompt": "「Redshift から S3 のデータを外部テーブルとして問い合わせる」→ 何？",
-    "choices": [
-      {
-        "id": "a",
-        "text": "Redshift Spectrum",
-        "correct": true,
-        "atomId": "redshift-spectrum",
-        "why": "S3 のデータを Redshift の中のテーブルと結合できる"
-      },
-      {
-        "id": "b",
-        "text": "Amazon Athena",
-        "correct": false,
-        "atomId": "athena-query",
-        "why": "単独で S3 に SQL を実行する"
-      },
-      {
-        "id": "c",
-        "text": "Redshift Serverless",
-        "correct": false,
-        "atomId": "redshift-serverless",
-        "why": "容量を自動で調整する Redshift"
-      },
-      {
-        "id": "d",
-        "text": "AWS Glue の ETL",
-        "correct": false,
-        "atomId": "glue-etl",
-        "why": "データの変換"
-      }
-    ],
-    "explanation": "Redshift × S3 の外部テーブル = Spectrum。",
-    "keywords": [
-      "外部テーブル"
-    ],
-    "status": "draft",
-    "generatedBy": "manual"
-  },
-  {
     "id": "rds-blue-green:trigger:1",
     "type": "trigger",
     "level": 3,
@@ -2348,6 +2303,133 @@
     "explanation": "別リージョンへの複製（RDS）= クロスリージョンリードレプリカ。",
     "keywords": [
       "大阪"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-automated-backups:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "rds-automated-backups"
+    ],
+    "prompt": "RDS を削除するときに「自動バックアップを残す」を選ばなかった。あとで、そのバックアップから復元しようとした。何が起きる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "自動バックアップは DB と一緒に削除され、復元できない",
+        "correct": true,
+        "atomId": "rds-automated-backups",
+        "why": "残したいなら、削除前に手動スナップショットを取る"
+      },
+      {
+        "id": "b",
+        "text": "自動バックアップは 35 日間必ず残る",
+        "correct": false,
+        "why": "残す設定をしないと削除される"
+      },
+      {
+        "id": "c",
+        "text": "自動バックアップは別のリージョンに自動で残る",
+        "correct": false,
+        "why": "自動では残らない"
+      },
+      {
+        "id": "d",
+        "text": "DB を削除すると最終スナップショットが必ず作られる",
+        "correct": false,
+        "atomId": "rds-snapshots",
+        "why": "作るかどうかを選ぶ"
+      }
+    ],
+    "explanation": "DB の削除時は最終スナップショットを取るか、自動バックアップを残す設定を選ぶ。",
+    "keywords": [
+      "残すを選ばなかった"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora:definition:2",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "rds-aurora"
+    ],
+    "prompt": "Aurora のストレージの容量について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "使った分に応じて自動で拡張し、事前の割り当ては不要",
+        "correct": true,
+        "atomId": "rds-aurora",
+        "why": "データが増えると自動で大きくなる"
+      },
+      {
+        "id": "b",
+        "text": "作成時に決めた容量から変えられない",
+        "correct": false,
+        "why": "自動で拡張する"
+      },
+      {
+        "id": "c",
+        "text": "容量を増やすたびに DB の再起動が必要",
+        "correct": false,
+        "why": "再起動は不要"
+      },
+      {
+        "id": "d",
+        "text": "容量はインスタンスのサイズと同じに固定される",
+        "correct": false,
+        "why": "ストレージはインスタンスと分かれている"
+      }
+    ],
+    "explanation": "Aurora = インスタンスとストレージが分かれ、ストレージは自動で拡張する（上限はエンジンのバージョンによる）。",
+    "keywords": [
+      "自動で拡張"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "rds-aurora-global-database:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "rds-aurora-global-database"
+    ],
+    "prompt": "Aurora グローバルデータベースのセカンダリリージョンについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "読み取りに使え、障害時はプライマリに昇格できる",
+        "correct": true,
+        "atomId": "rds-aurora-global-database",
+        "why": "書き込みは通常プライマリで行う"
+      },
+      {
+        "id": "b",
+        "text": "どのリージョンでも同時に書き込める",
+        "correct": false,
+        "why": "書き込みはプライマリ（書き込み転送の機能はある）"
+      },
+      {
+        "id": "c",
+        "text": "読み取りにも使えない待機専用",
+        "correct": false,
+        "why": "読み取りに使える"
+      },
+      {
+        "id": "d",
+        "text": "同じリージョンの別の AZ にしか置けない",
+        "correct": false,
+        "why": "別のリージョンに置く"
+      }
+    ],
+    "explanation": "グローバル DB = プライマリで書き込み、セカンダリで低レイテンシの読み取り、DR 時に昇格。",
+    "keywords": [
+      "セカンダリリージョン"
     ],
     "status": "draft",
     "generatedBy": "manual"
