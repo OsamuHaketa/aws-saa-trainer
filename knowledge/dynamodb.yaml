@@ -203,3 +203,142 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: dynamodb-lsi
+    category: database
+    concept: ローカルセカンダリインデックス（LSI）
+    summary: テーブルと同じパーティションキーで、別のソートキーで検索できるようにするインデックス
+    facts:
+      - パーティションキーはテーブルと同じで、ソートキーだけを別の属性にする
+      - テーブルの作成時にしか作れない
+      - 強い整合性の読み込みができる（GSI は結果整合性のみ）
+    triggers:
+      - 同じパーティションキーの中で、別の属性で並べ替えて検索したい
+      - インデックスでも強い整合性が必要
+    pitfalls:
+      - テーブル作成後に追加したい場合や、別のパーティションキーで検索したい場合は GSI を使う
+    relations:
+      - type: confused_with
+        target: dynamodb-gsi
+        distinction: LSI はパーティションキーがテーブルと同じでソートキーだけ別、作成時にしか作れない。GSI はパーティションキーも別にでき、あとから追加できる
+    examDomains: [performance]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html
+
+  - id: dynamodb-consistency
+    category: database
+    concept: 結果整合性の読み込み / 強い整合性の読み込み
+    summary: デフォルトは結果整合性。強い整合性の読み込みは最新の書き込みを必ず返すが、2 倍の読み込み容量を使う
+    facts:
+      - デフォルトは結果整合性の読み込みで、書き込み直後は古い値が返ることがある
+      - 強い整合性の読み込みは、成功した直前までの書き込みをすべて反映した値を返す
+      - 強い整合性の読み込みは、結果整合性の 2 倍の読み込み容量（RCU）を使う
+      - GSI からの読み込みは結果整合性だけ
+    triggers:
+      - 書き込み直後の最新の値を必ず読みたい
+      - 読み込みのコストを下げたい（古い値でもよい）
+    pitfalls:
+      - 最新の値が必要な処理を、GSI からの読み込みで行うと古い値を読むことがある
+    relations:
+      - type: part_of
+        target: dynamodb-table
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html
+
+  - id: dynamodb-export-s3
+    category: analytics
+    concept: DynamoDB の S3 へのエクスポート
+    summary: PITR のデータから、テーブルの読み込み容量を使わずにデータを S3 にエクスポートする
+    facts:
+      - ポイントインタイムリカバリ（PITR）の有効化が必要
+      - テーブルの読み込み容量を消費せず、本番の性能に影響しない
+      - DynamoDB JSON や Amazon Ion 形式で S3 に出力し、Athena などで分析できる
+    triggers:
+      - DynamoDB のデータを分析したいが、本番のテーブルに負荷をかけたくない
+      - DynamoDB のデータを Athena で分析したい
+    pitfalls:
+      - 分析のためにテーブルをスキャンすると、読み込み容量を大量に使い本番に影響する
+    relations:
+      - type: requires
+        target: dynamodb-pitr
+      - type: used_with
+        target: athena-query
+    examDomains: [performance, cost]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/S3DataExport.HowItWorks.html
+
+  - id: dynamodb-transactions
+    category: database
+    concept: DynamoDB トランザクション
+    summary: 複数の項目やテーブルへの書き込みを、すべて成功かすべて失敗（ACID）にする
+    facts:
+      - TransactWriteItems / TransactGetItems で、複数の項目をまとめて処理する
+      - 1 つのリージョン内の複数のテーブルにまたがってもよい
+      - 通常の書き込みより多くの容量を使う（1 項目あたり 2 倍）
+    triggers:
+      - 在庫を減らす処理と注文の追加を、必ず両方成功させたい
+      - DynamoDB で ACID が必要
+    pitfalls:
+      - トランザクションが必要ないのに使うと、容量のコストが増える
+    relations:
+      - type: part_of
+        target: dynamodb-table
+    examDomains: [resilient]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transactions.html
+
+  - id: dynamodb-partition-key-design
+    category: performance
+    concept: パーティションキーの設計（ホットパーティション）
+    summary: 値の種類が多く、アクセスが均等に分散するパーティションキーを選ぶ
+    facts:
+      - データはパーティションキーの値でパーティションに分散される
+      - 特定のキーにアクセスが集中すると、そのパーティションがスロットリングされる（ホットパーティション）
+      - ユーザー ID など、値の種類（カーディナリティ）が多い属性をキーにする
+      - 集中しやすいキーには、末尾に乱数などのサフィックスを付けて分散する（書き込みシャーディング）
+    triggers:
+      - テーブル全体の容量は足りているのにスロットリングが起きる
+      - 特定のキーにアクセスが集中する
+    pitfalls:
+      - 日付やステータスなど値の種類が少ない属性をパーティションキーにすると、アクセスが偏る
+    relations:
+      - type: part_of
+        target: dynamodb-table
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html
+
+  - id: dynamodb-item-size
+    category: database
+    concept: DynamoDB の項目サイズの上限（400 KB）
+    summary: 1 つの項目は最大 400 KB。大きなデータは S3 に置き、DynamoDB にはキーやメタデータを保存する
+    facts:
+      - 1 つの項目（属性名と値の合計）の最大サイズは 400 KB
+      - 画像や大きな文書は S3 に保存し、DynamoDB にはその S3 のキーを保存する
+      - 大きな項目は読み書きの容量も多く使う
+    triggers:
+      - 数 MB のデータを DynamoDB に保存したい
+      - 画像と、そのメタデータを一緒に管理したい
+    pitfalls:
+      - 400 KB を超えるデータを 1 つの項目に入れようとすると、書き込みが失敗する
+    relations:
+      - type: used_with
+        target: s3-standard
+    examDomains: [performance]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ServiceQuotas.html

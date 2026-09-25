@@ -223,5 +223,179 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-memcached:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "elasticache-memcached"
+    ],
+    "prompt": "DB の前に置く単純なキャッシュが欲しい。データが消えても DB から読み直せばよく、マルチスレッドでノードを増やして性能を上げたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ElastiCache（Memcached）",
+        "correct": true,
+        "atomId": "elasticache-memcached",
+        "why": "シンプルでマルチスレッド。レプリケーションや永続化はない"
+      },
+      {
+        "id": "b",
+        "text": "ElastiCache（Valkey / Redis OSS）",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "レプリケーションなど高機能だが、要件には不要"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Accelerator",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DynamoDB 専用のキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "RDS リードレプリカ",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "DB の複製で、インメモリのキャッシュではない"
+      }
+    ],
+    "explanation": "シンプル・マルチスレッド・消えてよい = Memcached。永続化・レプリケーション・データ構造 = Valkey / Redis OSS。",
+    "keywords": [
+      "消えても",
+      "マルチスレッド"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-memcached:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elasticache-memcached"
+    ],
+    "prompt": "ログインのセッション情報をノード障害でも失わないよう、Memcached のクラスターに保存した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複製がなく、ノード障害で消える",
+        "correct": true,
+        "atomId": "elasticache-memcached",
+        "why": "失いたくないなら Valkey / Redis OSS のレプリカを使う"
+      },
+      {
+        "id": "b",
+        "text": "Memcached はセッションの保存に使えない",
+        "correct": false,
+        "why": "使えるが、ノード障害で消える"
+      },
+      {
+        "id": "c",
+        "text": "Memcached は 1 ノードしか作れない",
+        "correct": false,
+        "why": "複数ノードで分散できる"
+      },
+      {
+        "id": "d",
+        "text": "Memcached は暗号化に対応していない",
+        "correct": false,
+        "why": "通信の暗号化などには対応している。問題は複製がないこと"
+      }
+    ],
+    "explanation": "失いたくないキャッシュ = レプリケーションと自動フェイルオーバーのある Valkey / Redis OSS。",
+    "keywords": [
+      "失わない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-caching-strategies:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "elasticache-caching-strategies"
+    ],
+    "prompt": "キャッシュにあるデータが古いまま残るのを避けたい。DB に書き込むたびにキャッシュも最新にしたい。どのキャッシュ戦略？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "書き込みスルー",
+        "correct": true,
+        "atomId": "elasticache-caching-strategies",
+        "why": "書き込み時にキャッシュも更新するので、古いデータが残りにくい"
+      },
+      {
+        "id": "b",
+        "text": "遅延読み込みだけ",
+        "correct": false,
+        "why": "キャッシュミス時にだけ読み込むので、古いデータが残りうる"
+      },
+      {
+        "id": "c",
+        "text": "キャッシュを使わない",
+        "correct": false,
+        "why": "DB の負荷が下がらない"
+      },
+      {
+        "id": "d",
+        "text": "TTL を無期限にする",
+        "correct": false,
+        "why": "古いデータがずっと残る"
+      }
+    ],
+    "explanation": "最新性 = 書き込みスルー、必要なものだけキャッシュ = 遅延読み込み。TTL と組み合わせることが多い。",
+    "keywords": [
+      "書き込むたびに"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "elasticache-caching-strategies:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "elasticache-caching-strategies"
+    ],
+    "prompt": "遅延読み込みでキャッシュしているが、TTL を設定していない。DB の値を更新してもキャッシュの値が変わらない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TTL を設定するか、書き込み時にキャッシュを更新する",
+        "correct": true,
+        "atomId": "elasticache-caching-strategies",
+        "why": "古いデータを一定時間で消すか、書き込みスルーにする"
+      },
+      {
+        "id": "b",
+        "text": "キャッシュのノードを増やす",
+        "correct": false,
+        "why": "古いデータの問題は解決しない"
+      },
+      {
+        "id": "c",
+        "text": "Memcached から Redis に変えるだけで解決する",
+        "correct": false,
+        "atomId": "elasticache-redis",
+        "why": "エンジンではなく戦略の問題"
+      },
+      {
+        "id": "d",
+        "text": "DB のリードレプリカを増やす",
+        "correct": false,
+        "atomId": "rds-read-replica",
+        "why": "キャッシュの古さは直らない"
+      }
+    ],
+    "explanation": "遅延読み込みの弱点 = データが古くなる。TTL や書き込みスルーで補う。",
+    "keywords": [
+      "TTL を設定していない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

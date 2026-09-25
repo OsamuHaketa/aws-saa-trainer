@@ -634,5 +634,932 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-lsi:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-lsi",
+      "dynamodb-gsi"
+    ],
+    "prompt": "DynamoDB の LSI と GSI の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "LSI は作成時のみ、GSI は後から追加もできる",
+        "correct": true,
+        "atomId": "dynamodb-lsi",
+        "why": "GSI はパーティションキーも変えられる"
+      },
+      {
+        "id": "b",
+        "text": "LSI は後から追加でき、GSI は作成時にしか作れない",
+        "correct": false,
+        "why": "逆。LSI が作成時のみ"
+      },
+      {
+        "id": "c",
+        "text": "GSI は強い整合性で読めるが、LSI は結果整合性だけ",
+        "correct": false,
+        "why": "逆。GSI が結果整合性のみ"
+      },
+      {
+        "id": "d",
+        "text": "どちらもパーティションキーはテーブルと同じ",
+        "correct": false,
+        "why": "GSI は別のパーティションキーにできる"
+      }
+    ],
+    "explanation": "LSI = 同じパーティションキー・別のソートキー・作成時のみ・強い整合性 OK。GSI = 別のキー・後から追加・結果整合性。",
+    "keywords": [
+      "LSI",
+      "GSI"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-lsi:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-lsi"
+    ],
+    "prompt": "顧客 ID がパーティションキーの注文テーブル。同じ顧客の注文を金額順に、強い整合性で取得したい。テーブルはこれから作る。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "金額をソートキーにした LSI",
+        "correct": true,
+        "atomId": "dynamodb-lsi",
+        "why": "同じパーティションキーで別のソートキー、強い整合性も使える"
+      },
+      {
+        "id": "b",
+        "text": "金額をパーティションキーにした GSI",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "顧客ごとの検索にならず、強い整合性も使えない"
+      },
+      {
+        "id": "c",
+        "text": "テーブルをスキャンしてアプリで並べ替える",
+        "correct": false,
+        "why": "読み込み容量を大量に使う"
+      },
+      {
+        "id": "d",
+        "text": "DAX を使う",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュで、並べ替えの検索はできない"
+      }
+    ],
+    "explanation": "同じパーティションキーの中で別の並び順 + 強い整合性 + 作成時 = LSI。",
+    "keywords": [
+      "同じ顧客",
+      "強い整合性",
+      "これから作る"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-consistency:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-consistency"
+    ],
+    "prompt": "残高を更新した直後に、必ず更新後の残高を DynamoDB のテーブルから読みたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "強い整合性の読み込みを指定する",
+        "correct": true,
+        "atomId": "dynamodb-consistency",
+        "why": "直前までの書き込みをすべて反映した値を返す"
+      },
+      {
+        "id": "b",
+        "text": "デフォルトの読み込みのまま、何度か読み直す",
+        "correct": false,
+        "why": "結果整合性では最新になる保証はない"
+      },
+      {
+        "id": "c",
+        "text": "GSI から読み込む",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "GSI は結果整合性だけ"
+      },
+      {
+        "id": "d",
+        "text": "DAX から読み込む",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュの値が古い可能性がある"
+      }
+    ],
+    "explanation": "書き込み直後の最新値が必要 = 強い整合性の読み込み（RCU は 2 倍）。",
+    "keywords": [
+      "必ず更新後"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-consistency:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-consistency"
+    ],
+    "prompt": "強い整合性の読み込みの読み込み容量は、結果整合性と比べてどうなる？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "2 倍の RCU を使う",
+        "correct": true,
+        "atomId": "dynamodb-consistency",
+        "why": "4 KB あたり、結果整合性は 0.5 RCU、強い整合性は 1 RCU"
+      },
+      {
+        "id": "b",
+        "text": "同じ RCU を使う",
+        "correct": false,
+        "why": "強い整合性の方が多く使う"
+      },
+      {
+        "id": "c",
+        "text": "半分の RCU で済む",
+        "correct": false,
+        "why": "逆"
+      },
+      {
+        "id": "d",
+        "text": "RCU を使わない",
+        "correct": false,
+        "why": "読み込みには RCU を使う"
+      }
+    ],
+    "explanation": "強い整合性 = 結果整合性の 2 倍のコスト。古い値でよい読み込みは結果整合性で安くする。",
+    "keywords": [
+      "2 倍"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-export-s3:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-export-s3"
+    ],
+    "prompt": "本番の DynamoDB のデータを毎日 Athena で分析したい。本番のテーブルの性能に影響を与えたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "PITR を有効にし、S3 へのエクスポートを使う",
+        "correct": true,
+        "atomId": "dynamodb-export-s3",
+        "why": "読み込み容量を使わずに S3 に出力できる"
+      },
+      {
+        "id": "b",
+        "text": "毎日テーブルをフルスキャンして S3 に書き出す",
+        "correct": false,
+        "why": "読み込み容量を大量に使い、本番に影響する"
+      },
+      {
+        "id": "c",
+        "text": "DAX を作って分析のクエリを流す",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "キャッシュで、分析のためのものではない"
+      },
+      {
+        "id": "d",
+        "text": "GSI を追加して分析する",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "書き込みのたびに更新され、分析の集計には向かない"
+      }
+    ],
+    "explanation": "DynamoDB を本番に影響させず分析 = S3 エクスポート（PITR が必要）+ Athena。",
+    "keywords": [
+      "性能に影響を与えたくない",
+      "Athena"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-export-s3:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-export-s3"
+    ],
+    "prompt": "DynamoDB の S3 へのエクスポートを設定しようとしたが、選択できない。考えられる原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "PITR が無効になっている",
+        "correct": true,
+        "atomId": "dynamodb-pitr",
+        "why": "S3 へのエクスポートには PITR が必要"
+      },
+      {
+        "id": "b",
+        "text": "テーブルがオンデマンドモードである",
+        "correct": false,
+        "atomId": "dynamodb-on-demand",
+        "why": "キャパシティモードは関係ない"
+      },
+      {
+        "id": "c",
+        "text": "テーブルに GSI がない",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "GSI は関係ない"
+      },
+      {
+        "id": "d",
+        "text": "TTL が有効になっている",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "TTL は関係ない"
+      }
+    ],
+    "explanation": "エクスポートは PITR のバックアップデータから行う。",
+    "keywords": [
+      "エクスポート"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-transactions:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-transactions"
+    ],
+    "prompt": "DynamoDB で、在庫テーブルの数量を減らす処理と、注文テーブルへの追加を、必ず両方成功か両方失敗にしたい。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "トランザクション",
+        "correct": true,
+        "atomId": "dynamodb-transactions",
+        "why": "複数テーブルへの書き込みを ACID で処理する"
+      },
+      {
+        "id": "b",
+        "text": "BatchWriteItem",
+        "correct": false,
+        "why": "まとめて書き込むが、一部だけ失敗することがある"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更を後から処理するもので、原子性はない"
+      },
+      {
+        "id": "d",
+        "text": "強い整合性の読み込み",
+        "correct": false,
+        "atomId": "dynamodb-consistency",
+        "why": "読み込みの話で、書き込みの原子性ではない"
+      }
+    ],
+    "explanation": "複数の書き込みの all-or-nothing = トランザクション。BatchWriteItem は原子的ではない。",
+    "keywords": [
+      "両方成功か両方失敗"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-partition-key-design:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-partition-key-design"
+    ],
+    "prompt": "テーブル全体の容量には余裕があるのに、スロットリングが起きる。パーティションキーは「注文ステータス」（3 種類）。原因と対策は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キーの種類が少なくアクセスが偏る。種類の多い属性をキーにする",
+        "correct": true,
+        "atomId": "dynamodb-partition-key-design",
+        "why": "ホットパーティションを避ける設計にする"
+      },
+      {
+        "id": "b",
+        "text": "容量が足りない。オンデマンドにすれば必ず解決する",
+        "correct": false,
+        "atomId": "dynamodb-on-demand",
+        "why": "偏りが原因で、キーの設計を直す必要がある"
+      },
+      {
+        "id": "c",
+        "text": "DAX がない。DAX を追加すれば書き込みも速くなる",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DAX は読み取りのキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "TTL が無効。TTL を有効にすれば解決する",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "古い項目の削除で、偏りは直らない"
+      }
+    ],
+    "explanation": "容量は足りているのにスロットリング = ホットパーティション。カーディナリティの高いキーにする。",
+    "keywords": [
+      "容量には余裕",
+      "3 種類"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-partition-key-design:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-partition-key-design"
+    ],
+    "prompt": "「特定のキーにアクセスが集中」「一部のパーティションだけスロットリング」→ 何の問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ホットパーティション",
+        "correct": true,
+        "atomId": "dynamodb-partition-key-design",
+        "why": "値の種類が多いキーや、書き込みシャーディングで分散する"
+      },
+      {
+        "id": "b",
+        "text": "項目サイズの上限超過",
+        "correct": false,
+        "atomId": "dynamodb-item-size",
+        "why": "400 KB を超えると書き込みが失敗するが、偏りの問題ではない"
+      },
+      {
+        "id": "c",
+        "text": "結果整合性",
+        "correct": false,
+        "atomId": "dynamodb-consistency",
+        "why": "読み込みの整合性の問題"
+      },
+      {
+        "id": "d",
+        "text": "TTL の削除遅延",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "期限切れの項目の削除のタイミングの話"
+      }
+    ],
+    "explanation": "アクセスの偏り = ホットパーティション。",
+    "keywords": [
+      "集中"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-item-size:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-item-size"
+    ],
+    "prompt": "ユーザーがアップロードする 5 MB の画像と、そのタグや撮影日時を管理したい。検索は DynamoDB で行う。どう保存する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "画像は S3、DynamoDB には S3 のキーとメタデータ",
+        "correct": true,
+        "atomId": "dynamodb-item-size",
+        "why": "DynamoDB の項目は最大 400 KB"
+      },
+      {
+        "id": "b",
+        "text": "画像を Base64 にして DynamoDB の属性に入れる",
+        "correct": false,
+        "why": "400 KB を超えるので保存できない"
+      },
+      {
+        "id": "c",
+        "text": "画像を分割して GSI に入れる",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "GSI はインデックスで、画像の保存場所ではない"
+      },
+      {
+        "id": "d",
+        "text": "画像を DAX に保存する",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "DAX はキャッシュで、永続的な保存先ではない"
+      }
+    ],
+    "explanation": "大きなデータ = S3、検索用の情報 = DynamoDB。",
+    "keywords": [
+      "5 MB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-item-size:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "dynamodb-item-size"
+    ],
+    "prompt": "DynamoDB の 1 つの項目の最大サイズは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "400 KB",
+        "correct": true,
+        "atomId": "dynamodb-item-size",
+        "why": "属性名と値の合計"
+      },
+      {
+        "id": "b",
+        "text": "4 KB",
+        "correct": false,
+        "why": "4 KB は RCU の計算単位"
+      },
+      {
+        "id": "c",
+        "text": "1 MB",
+        "correct": false,
+        "why": "1 MB は Query や Scan の 1 回の結果の上限"
+      },
+      {
+        "id": "d",
+        "text": "5 TB",
+        "correct": false,
+        "atomId": "s3-multipart-upload",
+        "why": "S3 のオブジェクトの最大サイズ"
+      }
+    ],
+    "explanation": "項目 400 KB、RCU の単位 4 KB（WCU は 1 KB）、1 回の Query の結果 1 MB。",
+    "keywords": [
+      "400 KB"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-streams:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-streams"
+    ],
+    "prompt": "DynamoDB Streams に記録されるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "項目の追加・更新・削除の変更（24 時間保持）",
+        "correct": true,
+        "atomId": "dynamodb-streams",
+        "why": "変更の順番どおりに記録され、Lambda などで処理できる"
+      },
+      {
+        "id": "b",
+        "text": "テーブルへのすべての API 呼び出しの記録",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "API の記録は CloudTrail"
+      },
+      {
+        "id": "c",
+        "text": "テーブルのバックアップ（35 日保持）",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "それは PITR"
+      },
+      {
+        "id": "d",
+        "text": "読み込みのクエリの結果",
+        "correct": false,
+        "why": "読み込みは記録されない"
+      }
+    ],
+    "explanation": "Streams = 項目の変更のログ（24 時間）。Lambda のトリガーやレプリケーションに使う。",
+    "keywords": [
+      "変更"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-streams:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-streams",
+      "kinesis-data-streams"
+    ],
+    "prompt": "DynamoDB の変更を処理するのに、DynamoDB Streams ではなく Kinesis Data Streams を使う利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "保持期間を長く（最大 365 日）でき、多くのアプリで同時に読める",
+        "correct": true,
+        "atomId": "kinesis-data-streams",
+        "why": "DynamoDB Streams は 24 時間保持で、読み手の数も限られる"
+      },
+      {
+        "id": "b",
+        "text": "Lambda から読めるのは Kinesis だけ",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "どちらも Lambda で処理できる"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Streams は変更の順番が保証されない",
+        "correct": false,
+        "why": "項目ごとの順番は保証される"
+      },
+      {
+        "id": "d",
+        "text": "Kinesis を使うと DynamoDB の書き込み料金が無料になる",
+        "correct": false,
+        "why": "料金は無料にならない"
+      }
+    ],
+    "explanation": "長期保持・多くの読み手 = Kinesis Data Streams for DynamoDB。シンプルな Lambda トリガーなら DynamoDB Streams。",
+    "keywords": [
+      "保持期間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-ttl:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-ttl"
+    ],
+    "prompt": "TTL の期限を過ぎた項目は、その瞬間にクエリの結果から消えると考えて、アプリで期限の確認をしていない。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TTL の削除は数日遅れることがあり、期限切れの項目が返りうる",
+        "correct": true,
+        "atomId": "dynamodb-ttl",
+        "why": "アプリ側でも期限の属性でフィルタする"
+      },
+      {
+        "id": "b",
+        "text": "TTL の削除には書き込み料金がかかる",
+        "correct": false,
+        "why": "TTL による削除は無料"
+      },
+      {
+        "id": "c",
+        "text": "TTL は 1 テーブルに 1 項目しか設定できない",
+        "correct": false,
+        "why": "項目ごとに期限を設定できる"
+      },
+      {
+        "id": "d",
+        "text": "TTL で削除した項目は Streams に記録されない",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "削除は Streams に記録される"
+      }
+    ],
+    "explanation": "TTL の削除はバックグラウンドで行われ、即時ではない。",
+    "keywords": [
+      "その瞬間に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-ttl:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-ttl"
+    ],
+    "prompt": "「期限の過ぎたセッションを自動削除」「削除の料金なし」→ DynamoDB の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "TTL",
+        "correct": true,
+        "atomId": "dynamodb-ttl",
+        "why": "期限の属性を指定すると、期限切れの項目を無料で削除する"
+      },
+      {
+        "id": "b",
+        "text": "Streams",
+        "correct": false,
+        "atomId": "dynamodb-streams",
+        "why": "変更の記録"
+      },
+      {
+        "id": "c",
+        "text": "PITR",
+        "correct": false,
+        "atomId": "dynamodb-pitr",
+        "why": "任意の時点への復元"
+      },
+      {
+        "id": "d",
+        "text": "DAX",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "インメモリのキャッシュ"
+      }
+    ],
+    "explanation": "自動削除 = TTL。",
+    "keywords": [
+      "自動削除"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-pitr:definition:1",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "dynamodb-pitr"
+    ],
+    "prompt": "DynamoDB の PITR で復元できる範囲と、復元先は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "過去 35 日の任意の時点に、新しいテーブルとして",
+        "correct": true,
+        "atomId": "dynamodb-pitr",
+        "why": "元のテーブルは上書きされない"
+      },
+      {
+        "id": "b",
+        "text": "過去 7 日の任意の時点に、元のテーブルを上書き",
+        "correct": false,
+        "why": "期間は最大 35 日で、新しいテーブルに復元する"
+      },
+      {
+        "id": "c",
+        "text": "過去 1 年の任意の時点に、新しいテーブルとして",
+        "correct": false,
+        "why": "期間は最大 35 日"
+      },
+      {
+        "id": "d",
+        "text": "最後のバックアップの時点だけに、元のテーブルに",
+        "correct": false,
+        "why": "任意の時点に復元できる"
+      }
+    ],
+    "explanation": "PITR = 35 日・秒単位・新しいテーブルに復元。長期保管はオンデマンドバックアップや AWS Backup。",
+    "keywords": [
+      "35 日",
+      "新しいテーブル"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-gsi:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-gsi"
+    ],
+    "prompt": "GSI について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "テーブル作成後にも追加でき、読み込みは結果整合性",
+        "correct": true,
+        "atomId": "dynamodb-gsi",
+        "why": "独自の読み書き容量を持つ"
+      },
+      {
+        "id": "b",
+        "text": "テーブル作成時にしか作れない",
+        "correct": false,
+        "atomId": "dynamodb-lsi",
+        "why": "それは LSI"
+      },
+      {
+        "id": "c",
+        "text": "強い整合性の読み込みができる",
+        "correct": false,
+        "atomId": "dynamodb-consistency",
+        "why": "GSI は結果整合性だけ"
+      },
+      {
+        "id": "d",
+        "text": "パーティションキーはテーブルと同じでなければならない",
+        "correct": false,
+        "why": "別のパーティションキーにできる"
+      }
+    ],
+    "explanation": "GSI = 別のキー・後から追加可・結果整合性。",
+    "keywords": [
+      "後から追加"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-provisioned:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-provisioned"
+    ],
+    "prompt": "プロビジョンドモードの DynamoDB で、昼のピークにスロットリングが起きるのに、容量は夜の少ない量に固定している。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オートスケーリングを有効にする",
+        "correct": true,
+        "atomId": "dynamodb-provisioned",
+        "why": "負荷に合わせて RCU/WCU が増減する"
+      },
+      {
+        "id": "b",
+        "text": "TTL を有効にする",
+        "correct": false,
+        "atomId": "dynamodb-ttl",
+        "why": "項目の削除で、容量は増えない"
+      },
+      {
+        "id": "c",
+        "text": "強い整合性の読み込みに変える",
+        "correct": false,
+        "atomId": "dynamodb-consistency",
+        "why": "容量の消費が増えて悪化する"
+      },
+      {
+        "id": "d",
+        "text": "GSI をすべて削除する",
+        "correct": false,
+        "atomId": "dynamodb-gsi",
+        "why": "根本的な容量不足は解決しない"
+      }
+    ],
+    "explanation": "予測できる変動 = プロビジョンド + オートスケーリング。予測できない急増 = オンデマンド。",
+    "keywords": [
+      "ピーク",
+      "固定"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-on-demand:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-on-demand"
+    ],
+    "prompt": "「トラフィックが予測できない」「容量の計画をしたくない」「リクエスト単位の課金」→ DynamoDB の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "オンデマンドキャパシティモード",
+        "correct": true,
+        "atomId": "dynamodb-on-demand",
+        "why": "リクエスト数に応じて払い、容量の設定が不要"
+      },
+      {
+        "id": "b",
+        "text": "プロビジョンドキャパシティモード",
+        "correct": false,
+        "atomId": "dynamodb-provisioned",
+        "why": "容量を事前に決める"
+      },
+      {
+        "id": "c",
+        "text": "DynamoDB Accelerator",
+        "correct": false,
+        "atomId": "dynamodb-dax",
+        "why": "読み取りのキャッシュ"
+      },
+      {
+        "id": "d",
+        "text": "グローバルテーブル",
+        "correct": false,
+        "atomId": "dynamodb-global-tables",
+        "why": "マルチリージョンの複製"
+      }
+    ],
+    "explanation": "予測できない = オンデマンド。",
+    "keywords": [
+      "予測できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-dax:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "dynamodb-dax"
+    ],
+    "prompt": "書き込みが多く、読み取りはほとんどない DynamoDB のテーブルを速くするため、DAX を導入した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "DAX は書き込みを速くしない",
+        "correct": true,
+        "atomId": "dynamodb-dax",
+        "why": "書き込みの性能は容量やキーの設計で改善する"
+      },
+      {
+        "id": "b",
+        "text": "DAX は DynamoDB に対応していない",
+        "correct": false,
+        "why": "DAX は DynamoDB 専用"
+      },
+      {
+        "id": "c",
+        "text": "DAX を使うとデータが暗号化されない",
+        "correct": false,
+        "why": "暗号化できる"
+      },
+      {
+        "id": "d",
+        "text": "DAX はマイクロ秒ではなく秒単位の応答になる",
+        "correct": false,
+        "why": "読み取りはマイクロ秒になる"
+      }
+    ],
+    "explanation": "DAX = 読み取りが多いワークロード向けのキャッシュ。",
+    "keywords": [
+      "書き込みが多く"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "dynamodb-global-tables:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "dynamodb-global-tables"
+    ],
+    "prompt": "DynamoDB グローバルテーブルの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "複数のリージョンのどこでも読み書きでき、互いに複製される",
+        "correct": true,
+        "atomId": "dynamodb-global-tables",
+        "why": "マルチアクティブで、リージョン障害にも強い"
+      },
+      {
+        "id": "b",
+        "text": "1 つのリージョンだけが書き込め、他は読み取り専用",
+        "correct": false,
+        "why": "どのリージョンでも書き込める"
+      },
+      {
+        "id": "c",
+        "text": "同じリージョン内の 3 つの AZ に複製するだけ",
+        "correct": false,
+        "atomId": "dynamodb-table",
+        "why": "それは通常の DynamoDB テーブル"
+      },
+      {
+        "id": "d",
+        "text": "1 日 1 回のバッチで他のリージョンにコピーする",
+        "correct": false,
+        "why": "通常 1 秒程度で非同期に複製される"
+      }
+    ],
+    "explanation": "グローバルテーブル = マルチリージョン・マルチアクティブ。",
+    "keywords": [
+      "どこでも読み書き"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
