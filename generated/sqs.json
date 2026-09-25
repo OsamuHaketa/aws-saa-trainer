@@ -850,5 +850,49 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sqs-fifo:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sqs-fifo"
+    ],
+    "prompt": "毎秒数万件の注文を処理したいが、順序は必要ない。念のため FIFO キューにした。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "FIFO はスループットに上限がある",
+        "correct": true,
+        "atomId": "sqs-fifo",
+        "why": "順序が不要なら標準キュー（ほぼ無制限）"
+      },
+      {
+        "id": "b",
+        "text": "FIFO はメッセージを保持しない",
+        "correct": false,
+        "why": "保持する"
+      },
+      {
+        "id": "c",
+        "text": "FIFO は Lambda から読めない",
+        "correct": false,
+        "atomId": "lambda-event-source-mapping",
+        "why": "読める"
+      },
+      {
+        "id": "d",
+        "text": "FIFO は暗号化できない",
+        "correct": false,
+        "why": "暗号化できる"
+      }
+    ],
+    "explanation": "順序・重複排除が必要 = FIFO、大量・順序不要 = 標準。",
+    "keywords": [
+      "順序は必要ない",
+      "念のため"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

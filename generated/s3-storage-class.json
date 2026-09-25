@@ -1636,5 +1636,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-standard:trigger:1",
+    "type": "trigger",
+    "level": 1,
+    "atomIds": [
+      "s3-standard"
+    ],
+    "prompt": "「頻繁にアクセス」「ミリ秒で取り出し」「最低保存期間なし」→ どのストレージクラス？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 Standard",
+        "correct": true,
+        "atomId": "s3-standard",
+        "why": "アクセスの多いデータのデフォルトのクラス"
+      },
+      {
+        "id": "b",
+        "text": "S3 Standard-IA",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "アクセスの少ないデータ向けで、30 日の最低保存期間がある"
+      },
+      {
+        "id": "c",
+        "text": "S3 Glacier Deep Archive",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "取り出しに数時間かかる"
+      },
+      {
+        "id": "d",
+        "text": "S3 Glacier Flexible Retrieval",
+        "correct": false,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "取り出しに数分〜数時間かかる"
+      }
+    ],
+    "explanation": "頻繁・すぐ = Standard。",
+    "keywords": [
+      "頻繁にアクセス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-glacier-flexible-retrieval:definition:2",
+    "type": "definition",
+    "level": 4,
+    "atomIds": [
+      "s3-glacier-flexible-retrieval"
+    ],
+    "prompt": "S3 Glacier Flexible Retrieval の最低保存期間は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "90 日",
+        "correct": true,
+        "atomId": "s3-glacier-flexible-retrieval",
+        "why": "それより早く削除すると 90 日分が課金される"
+      },
+      {
+        "id": "b",
+        "text": "30 日",
+        "correct": false,
+        "atomId": "s3-standard-ia",
+        "why": "30 日は Standard-IA や One Zone-IA"
+      },
+      {
+        "id": "c",
+        "text": "180 日",
+        "correct": false,
+        "atomId": "s3-glacier-deep-archive",
+        "why": "180 日は Deep Archive"
+      },
+      {
+        "id": "d",
+        "text": "なし",
+        "correct": false,
+        "why": "最低保存期間がある"
+      }
+    ],
+    "explanation": "最低保存期間 = IA 系 30 日、Glacier Instant / Flexible 90 日、Deep Archive 180 日。",
+    "keywords": [
+      "最低保存期間"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

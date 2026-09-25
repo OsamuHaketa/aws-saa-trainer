@@ -1196,5 +1196,223 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "route53-weighted:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "route53-weighted"
+    ],
+    "prompt": "加重ルーティングで、2 つのレコードの重みを 3 と 1 にした。トラフィックの割合は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "75% と 25%",
+        "correct": true,
+        "atomId": "route53-weighted",
+        "why": "重み ÷ 重みの合計の割合で返す"
+      },
+      {
+        "id": "b",
+        "text": "3% と 1%",
+        "correct": false,
+        "why": "割合は重みの合計に対する比"
+      },
+      {
+        "id": "c",
+        "text": "50% と 50%",
+        "correct": false,
+        "why": "重みが違うので均等にはならない"
+      },
+      {
+        "id": "d",
+        "text": "100% と 0%",
+        "correct": false,
+        "why": "重み 0 のレコードだけが返されなくなる"
+      }
+    ],
+    "explanation": "重み 3 対 1 → 3/4 と 1/4。重み 0 にするとそのレコードには流れない。",
+    "keywords": [
+      "重み"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-latency:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "route53-latency"
+    ],
+    "prompt": "規制で、EU の利用者は必ず EU のリージョンで処理する必要がある。レイテンシーベースルーティングで振り分けた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "通信の状況次第で EU 以外に振り分けられうる",
+        "correct": true,
+        "atomId": "route53-geolocation",
+        "why": "国や大陸で固定するなら位置情報ルーティング"
+      },
+      {
+        "id": "b",
+        "text": "レイテンシーベースは EU のリージョンでは使えない",
+        "correct": false,
+        "why": "使える"
+      },
+      {
+        "id": "c",
+        "text": "レイテンシーベースはヘルスチェックを使えない",
+        "correct": false,
+        "atomId": "route53-health-checks",
+        "why": "使える"
+      },
+      {
+        "id": "d",
+        "text": "レイテンシーベースは 2 つのリージョンまでしか使えない",
+        "correct": false,
+        "why": "制限はない"
+      }
+    ],
+    "explanation": "速さで選ぶ = レイテンシー、場所で必ず固定 = 位置情報。",
+    "keywords": [
+      "規制",
+      "必ず EU"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-latency:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "route53-latency"
+    ],
+    "prompt": "「複数のリージョン」「ユーザーを最も応答の速いリージョンへ」→ Route 53 の何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "レイテンシーベース",
+        "correct": true,
+        "atomId": "route53-latency",
+        "why": "測定したレイテンシが最も低いリージョンを返す"
+      },
+      {
+        "id": "b",
+        "text": "位置情報ルーティング",
+        "correct": false,
+        "atomId": "route53-geolocation",
+        "why": "ユーザーの国や大陸で振り分ける"
+      },
+      {
+        "id": "c",
+        "text": "地理的近接性ルーティング",
+        "correct": false,
+        "atomId": "route53-geoproximity",
+        "why": "距離とバイアスで振り分ける"
+      },
+      {
+        "id": "d",
+        "text": "複数値回答ルーティング",
+        "correct": false,
+        "atomId": "route53-multivalue",
+        "why": "複数の値をランダムに返す"
+      }
+    ],
+    "explanation": "最も速いリージョン = レイテンシーベース。",
+    "keywords": [
+      "最も応答の速い"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-failover:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "route53-failover"
+    ],
+    "prompt": "フェイルオーバールーティングのプライマリのレコードの TTL を 1 日にしている。障害時の切り替えについて何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キャッシュが切れるまで古い宛先に接続され続ける",
+        "correct": true,
+        "atomId": "route53-failover",
+        "why": "切り替えを速くするには TTL を短くする"
+      },
+      {
+        "id": "b",
+        "text": "TTL が長いとヘルスチェックが無効になる",
+        "correct": false,
+        "atomId": "route53-health-checks",
+        "why": "ヘルスチェックは動く"
+      },
+      {
+        "id": "c",
+        "text": "TTL が長いとセカンダリのレコードが削除される",
+        "correct": false,
+        "why": "削除はされない"
+      },
+      {
+        "id": "d",
+        "text": "TTL は 1 分以上に設定できない",
+        "correct": false,
+        "why": "短くも長くも設定できる"
+      }
+    ],
+    "explanation": "DNS の切り替えは TTL の分だけ遅れる。エイリアスレコードの TTL は宛先に従う。",
+    "keywords": [
+      "TTL を 1 日"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "route53-alias:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "route53-alias"
+    ],
+    "prompt": "Route 53 のエイリアスレコードで指せないものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "EC2 インスタンス（の DNS 名）",
+        "correct": true,
+        "why": "EC2 には A レコードで IP を指定するか、ELB を使う"
+      },
+      {
+        "id": "b",
+        "text": "Application Load Balancer",
+        "correct": false,
+        "atomId": "elb-alb",
+        "why": "指せる"
+      },
+      {
+        "id": "c",
+        "text": "CloudFront ディストリビューション",
+        "correct": false,
+        "atomId": "cloudfront-distribution",
+        "why": "指せる"
+      },
+      {
+        "id": "d",
+        "text": "S3 の静的ウェブサイトのエンドポイント",
+        "correct": false,
+        "atomId": "s3-static-website-hosting",
+        "why": "指せる"
+      }
+    ],
+    "explanation": "エイリアス = ELB、CloudFront、S3 ウェブサイト、API Gateway、同じゾーンの別レコードなど（EC2 の DNS 名は不可）。",
+    "keywords": [
+      "指せないもの"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

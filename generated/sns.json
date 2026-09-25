@@ -350,5 +350,93 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "sns-fanout:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "sns-fanout"
+    ],
+    "prompt": "3 つのシステムで処理するとき、SNS から直接 Lambda を呼ぶより SNS → SQS → Lambda が良い理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "処理側が止まってもキューにたまり、失われにくい",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "処理の速さを各システムが自分で調整できる"
+      },
+      {
+        "id": "b",
+        "text": "SNS は Lambda を呼び出せない",
+        "correct": false,
+        "atomId": "lambda-function",
+        "why": "呼び出せる"
+      },
+      {
+        "id": "c",
+        "text": "SQS を挟むと処理の順序が必ず保証される",
+        "correct": false,
+        "atomId": "sqs-standard",
+        "why": "標準キューは順序を保証しない"
+      },
+      {
+        "id": "d",
+        "text": "SQS を挟むと料金が無料になる",
+        "correct": false,
+        "why": "料金はかかる"
+      }
+    ],
+    "explanation": "ファンアウト + キュー = バッファ・再試行・処理のペースの独立。",
+    "keywords": [
+      "SNS → SQS → Lambda"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "sns-fanout:antipattern:1",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "sns-fanout"
+    ],
+    "prompt": "SNS から 3 つの SQS キューにファンアウトしようとしたが、キューにメッセージが届かない。考えられる原因は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キューのポリシーで SNS を許可していない",
+        "correct": true,
+        "atomId": "sns-fanout",
+        "why": "キューのポリシーでトピックからの SendMessage を許可する"
+      },
+      {
+        "id": "b",
+        "text": "SNS は SQS に配信できない",
+        "correct": false,
+        "atomId": "sns-topic",
+        "why": "配信できる"
+      },
+      {
+        "id": "c",
+        "text": "キューが 3 つ以上あると配信されない",
+        "correct": false,
+        "why": "数の制限ではない"
+      },
+      {
+        "id": "d",
+        "text": "キューのロングポーリングを有効にしていない",
+        "correct": false,
+        "atomId": "sqs-long-polling",
+        "why": "受信側の設定で、配信の失敗の原因ではない"
+      }
+    ],
+    "explanation": "SNS → SQS = 購読の作成 + キューのアクセスポリシーでトピックを許可（暗号化なら鍵ポリシーも）。",
+    "keywords": [
+      "届かない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

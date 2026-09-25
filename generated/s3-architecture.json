@@ -968,5 +968,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-static-website-hosting:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-static-website-hosting"
+    ],
+    "prompt": "「HTML と画像だけのサイト」「サーバー不要」「最も安く」「HTTP でよい」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 の静的ウェブサイトホスティング",
+        "correct": true,
+        "atomId": "s3-static-website-hosting",
+        "why": "バケットのウェブサイトエンドポイントで公開する"
+      },
+      {
+        "id": "b",
+        "text": "EC2 に Web サーバーを立てる",
+        "correct": false,
+        "why": "サーバーの管理と料金がかかる"
+      },
+      {
+        "id": "c",
+        "text": "Elastic Beanstalk",
+        "correct": false,
+        "atomId": "beanstalk-environment",
+        "why": "アプリの実行環境で、静的サイトには過剰"
+      },
+      {
+        "id": "d",
+        "text": "API Gateway と Lambda",
+        "correct": false,
+        "atomId": "apigateway-api",
+        "why": "動的な処理向けで、静的サイトには過剰"
+      }
+    ],
+    "explanation": "静的サイト × 最安 × HTTP = S3 ウェブサイト（HTTPS なら CloudFront を前に置く）。",
+    "keywords": [
+      "サーバー不要",
+      "HTTP でよい"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

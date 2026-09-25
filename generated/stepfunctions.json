@@ -265,5 +265,50 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "stepfunctions-state-machine:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "stepfunctions-state-machine"
+    ],
+    "prompt": "Step Functions のステートマシンで定義できるものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "順次・分岐・並列・待機・再試行・エラー処理",
+        "correct": true,
+        "atomId": "stepfunctions-state-machine",
+        "why": "Amazon States Language で定義する"
+      },
+      {
+        "id": "b",
+        "text": "EC2 のインスタンスタイプと台数",
+        "correct": false,
+        "atomId": "autoscaling-launch-template",
+        "why": "それは Auto Scaling や起動テンプレート"
+      },
+      {
+        "id": "c",
+        "text": "VPC のサブネットとルートテーブル",
+        "correct": false,
+        "atomId": "vpc-route-table",
+        "why": "それは VPC の設定"
+      },
+      {
+        "id": "d",
+        "text": "S3 のライフサイクルとストレージクラス",
+        "correct": false,
+        "atomId": "s3-lifecycle",
+        "why": "それは S3 のライフサイクル"
+      }
+    ],
+    "explanation": "Step Functions = ワークフローの制御（Choice・Parallel・Map・Wait・Retry・Catch）。",
+    "keywords": [
+      "定義できるもの"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

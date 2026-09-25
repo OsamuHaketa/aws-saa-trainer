@@ -313,5 +313,94 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-session-manager:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "ssm-session-manager"
+    ],
+    "prompt": "「SSH のポートを開けない」「踏み台なし」「操作のログを記録」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Session Manager",
+        "correct": true,
+        "atomId": "ssm-session-manager",
+        "why": "IAM で認証し、ブラウザや CLI からシェルに接続する"
+      },
+      {
+        "id": "b",
+        "text": "EC2 Instance Connect",
+        "correct": false,
+        "why": "SSH を使うので、ポートの開放が必要"
+      },
+      {
+        "id": "c",
+        "text": "踏み台サーバー",
+        "correct": false,
+        "atomId": "vpc-bastion-host",
+        "why": "サーバーの管理と SSH のポートが必要"
+      },
+      {
+        "id": "d",
+        "text": "Site-to-Site VPN",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "ネットワークの接続で、シェルの接続ではない"
+      }
+    ],
+    "explanation": "ポートを開けずにシェル = Session Manager。",
+    "keywords": [
+      "ポートを開けない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "ssm-session-manager:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "ssm-session-manager"
+    ],
+    "prompt": "Session Manager の操作のログを残すために設定するものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "セッションのログの出力の設定",
+        "correct": true,
+        "atomId": "ssm-session-manager",
+        "why": "S3 や CloudWatch Logs に、誰がどんなコマンドを実行したかを残せる"
+      },
+      {
+        "id": "b",
+        "text": "VPC フローログを有効にする設定",
+        "correct": false,
+        "atomId": "vpc-flow-logs",
+        "why": "通信の記録で、コマンドの内容は残らない"
+      },
+      {
+        "id": "c",
+        "text": "EC2 のユーザーデータにログのスクリプトを書く設定",
+        "correct": false,
+        "atomId": "ec2-user-data",
+        "why": "起動時の処理で、セッションの記録ではない"
+      },
+      {
+        "id": "d",
+        "text": "セキュリティグループで 22 番を開ける設定",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "Session Manager にポートの開放は不要"
+      }
+    ],
+    "explanation": "Session Manager = IAM で接続制御 + セッションのログ（S3 / CloudWatch Logs）+ 開始の記録（CloudTrail）。",
+    "keywords": [
+      "操作のログ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

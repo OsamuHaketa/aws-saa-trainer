@@ -1621,5 +1621,96 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "s3-iam-policy:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "s3-iam-policy"
+    ],
+    "prompt": "同じアカウントの 10 個の IAM ロールに、それぞれ違うバケットへの読み取りを許可したい。バケットは 50 個ある。管理しやすいのは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "各ロールの IAM ポリシーで、必要なバケットを許可",
+        "correct": true,
+        "atomId": "s3-iam-policy",
+        "why": "誰が何をできるかをロールの側でまとめて管理できる"
+      },
+      {
+        "id": "b",
+        "text": "50 個のバケットすべてにバケットポリシーを書く",
+        "correct": false,
+        "atomId": "s3-bucket-policy",
+        "why": "同じアカウント内の権限の管理が分散して複雑になる"
+      },
+      {
+        "id": "c",
+        "text": "全バケットを公開して、ロールの権限は付けない",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも読めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "ACL で各ロールに権限を付ける",
+        "correct": false,
+        "atomId": "s3-object-ownership",
+        "why": "ACL は推奨されず、ロールを指定する管理には向かない"
+      }
+    ],
+    "explanation": "同じアカウントのユーザー・ロール中心の管理 = IAM ポリシー、バケット中心・クロスアカウント = バケットポリシー。",
+    "keywords": [
+      "10 個の IAM ロール",
+      "50 個"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "s3-object-lock-compliance:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "s3-object-lock-compliance"
+    ],
+    "prompt": "「ルートユーザーも含め誰も削除できない」「保持期間中は短縮もできない」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Object Lock のコンプライアンスモード",
+        "correct": true,
+        "atomId": "s3-object-lock-compliance",
+        "why": "規制で求められる WORM の保存"
+      },
+      {
+        "id": "b",
+        "text": "Object Lock のガバナンスモード",
+        "correct": false,
+        "atomId": "s3-object-lock-governance",
+        "why": "特別な権限があれば解除できる"
+      },
+      {
+        "id": "c",
+        "text": "MFA Delete",
+        "correct": false,
+        "atomId": "s3-mfa-delete",
+        "why": "削除に MFA を求めるだけで、保持期間はない"
+      },
+      {
+        "id": "d",
+        "text": "S3 のバージョニングだけ",
+        "correct": false,
+        "atomId": "s3-versioning",
+        "why": "古いバージョンは削除できる"
+      }
+    ],
+    "explanation": "誰も消せない = コンプライアンスモード。",
+    "keywords": [
+      "誰も削除できない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

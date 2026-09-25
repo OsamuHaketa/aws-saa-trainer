@@ -2747,5 +2747,182 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-internet-gateway:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "vpc-internet-gateway"
+    ],
+    "prompt": "新しい VPC のパブリックサブネットに置いた EC2 を、インターネットから使えるようにするために必要なものの組み合わせは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IGW・0.0.0.0/0 の経路・パブリック IP・SG の許可",
+        "correct": true,
+        "atomId": "vpc-internet-gateway",
+        "why": "どれか 1 つでも欠けると、インターネットから届かない"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイとプライベート IP だけ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "NAT は外向き専用で、外からの接続は受けない"
+      },
+      {
+        "id": "c",
+        "text": "VPC ピアリングと Elastic IP だけ",
+        "correct": false,
+        "atomId": "vpc-peering",
+        "why": "ピアリングは VPC 同士の接続"
+      },
+      {
+        "id": "d",
+        "text": "Direct Connect とセキュリティグループだけ",
+        "correct": false,
+        "atomId": "vpc-direct-connect",
+        "why": "Direct Connect はオンプレミスとの専用線"
+      }
+    ],
+    "explanation": "インターネットから届く条件 = IGW + ルート + パブリック IP + SG / NACL の許可。",
+    "keywords": [
+      "インターネットから使える"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-internet-gateway:trigger:1",
+    "type": "trigger",
+    "level": 1,
+    "atomIds": [
+      "vpc-internet-gateway"
+    ],
+    "prompt": "「VPC とインターネットの出入口」「パブリックサブネットのルートの宛先」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "インターネットゲートウェイ（IGW）",
+        "correct": true,
+        "atomId": "vpc-internet-gateway",
+        "why": "VPC に 1 つ付け、双方向の通信を可能にする"
+      },
+      {
+        "id": "b",
+        "text": "NAT ゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-nat-gateway",
+        "why": "プライベートサブネットからの外向きの通信用"
+      },
+      {
+        "id": "c",
+        "text": "仮想プライベートゲートウェイ",
+        "correct": false,
+        "atomId": "vpc-site-to-site-vpn",
+        "why": "VPN や Direct Connect の AWS 側の出入口"
+      },
+      {
+        "id": "d",
+        "text": "Transit Gateway",
+        "correct": false,
+        "atomId": "vpc-transit-gateway",
+        "why": "VPC とオンプレミスをつなぐハブ"
+      }
+    ],
+    "explanation": "インターネットの出入口 = IGW。",
+    "keywords": [
+      "出入口"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-nacl:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "vpc-nacl"
+    ],
+    "prompt": "新しく作ったカスタムのネットワーク ACL のデフォルトのルールは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "受信も送信もすべて拒否",
+        "correct": true,
+        "atomId": "vpc-nacl",
+        "why": "必要な通信の許可ルールを追加する"
+      },
+      {
+        "id": "b",
+        "text": "受信も送信もすべて許可",
+        "correct": false,
+        "why": "それは VPC のデフォルトの NACL"
+      },
+      {
+        "id": "c",
+        "text": "受信は許可、送信は拒否",
+        "correct": false,
+        "why": "どちらも拒否"
+      },
+      {
+        "id": "d",
+        "text": "受信は拒否、送信は許可",
+        "correct": false,
+        "atomId": "vpc-security-group",
+        "why": "どちらも拒否（SG のデフォルトと混同しやすい）"
+      }
+    ],
+    "explanation": "デフォルト NACL = 全許可、カスタム NACL = 全拒否、SG のデフォルト = 受信拒否・送信許可。",
+    "keywords": [
+      "カスタムのネットワーク ACL"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "vpc-peering:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "vpc-peering",
+      "vpc-privatelink"
+    ],
+    "prompt": "VPC ピアリングと PrivateLink の違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は VPC 全体、後者はサービス単位",
+        "correct": true,
+        "atomId": "vpc-peering",
+        "why": "PrivateLink は CIDR の重複も問題にならない"
+      },
+      {
+        "id": "b",
+        "text": "前者は CIDR が重複していてもよい",
+        "correct": false,
+        "why": "重複しているとピアリングできない"
+      },
+      {
+        "id": "c",
+        "text": "後者は VPC 全体をつなぐ",
+        "correct": false,
+        "why": "特定のサービスだけを公開する"
+      },
+      {
+        "id": "d",
+        "text": "前者はリージョンをまたげない",
+        "correct": false,
+        "why": "リージョン間のピアリングもできる"
+      }
+    ],
+    "explanation": "VPC 全体 = ピアリング / TGW、サービス単位 = PrivateLink。",
+    "keywords": [
+      "VPC 全体",
+      "特定のサービス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
