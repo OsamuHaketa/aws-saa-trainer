@@ -1,6 +1,6 @@
 # AWS Decision Trainer
 
-AWS SAA の知識を **Knowledge Atom**（最小の知識単位）に分解し、そこから作った 4 択問題を FSRS の間隔反復で回す学習アプリ。Google でログインし、学習記録はユーザーごとに保存する。クラウド化の設計は [docs/design.md](docs/design.md)。
+AWS SAA の知識を **Knowledge Atom**（最小の知識単位）に分解し、そこから作った 4 択問題を FSRS の間隔反復で回す学習アプリ。Google でログインし、学習記録はユーザーごとに保存する。クラウド化の設計は [docs/design.md](docs/design.md)、公開の手順は [docs/setup.md](docs/setup.md)。
 
 ## 使い方
 
