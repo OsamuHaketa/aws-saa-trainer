@@ -322,10 +322,11 @@ Google の OAuth クライアントを作る前でも、今までどおりロー
 今の `local.db` にある学習記録を本番に持っていく。
 
 1. 本番に一度ログインして、自分の `user.id` を作る。**移行が終わるまで、本番では学習しない**（`review_logs` と `followups` を空のままにしておくため）
-2. `scripts/import-local.ts` を実行する。`local.db` の `cards`・`review_logs`・`followups` を読み、`user_id` を付けて本番の Turso に書き込む
+2. `npm run backup` で `local.db` を書き出し、`npm run import-records -- --from backups/<日時> --to-email <自分>`（`DATABASE_URL` は本番の Turso）で取り込む。記録は `local-owner` から自分のユーザーに付け替わる
    - `review_logs.id` と `followups.id` は**振り直さず、そのまま入れる**。`followups.source_log_id` と `review_logs.followup_id` の対応がそのまま保たれる
-   - 書き込む前に、本番の `review_logs` と `followups` が空であること（ID がぶつからないこと）を確認し、空でなければ中止する
-   - 1 つのトランザクションで書き込み、途中で失敗したらすべて取り消す
+   - 取り込み先のユーザーに記録がすでにある、または ID が既存の行とぶつかる場合は、何も書かずに中止する（二重の取り込みを防ぐ）
+   - 1 回の batch（トランザクション）で書き込み、途中で失敗したらすべて取り消す
+   - `--dry-run` で、書き込まずに件数だけ確認できる
 3. 移行後に、次がローカルと一致することを確認する（スクリプトの最後で件数は自動で比べる）
    - `cards`・`review_logs`・`followups` の件数
    - ホームの復習待ちの件数、分析画面の回答の総数と正答率、未解決のフォローアップの数
@@ -337,9 +338,9 @@ Google の OAuth クライアントを作る前でも、今までどおりロー
 | 項目 | 内容 |
 |---|---|
 | コマンド | `npm run backup`（`scripts/backup.ts`）。`DATABASE_URL` の DB から、3 つのテーブルと `user` を JSON で書き出す |
-| 出力先 | `backups/<日付>/cards.json`・`review_logs.json`・`followups.json`・`users.json`。`backups/` は Git に入れない |
+| 出力先 | `backups/<日時>/user.json`・`cards.json`・`review_logs.json`・`followups.json`（列名も値も DB のまま）。`backups/` は Git に入れない |
 | 頻度 | Phase 1: 週 1 回（手動）と、本番のマイグレーションの直前。Phase 2: 利用人数に応じて見直す（GitHub Actions などで定期実行するかどうかも含めて） |
-| 復元 | 9 章の移行スクリプトと同じ形式で読み込めるようにして、バックアップからの復元にも使えるようにする |
+| 復元 | 9 章と同じ `npm run import-records` で、バックアップからユーザー単位で戻せる |
 | Turso の PITR | 無料プランで何日前まで戻せるかを確認し、この章に書き足す |
 
 ## 11. Phase 2: 社内テスト公開
@@ -364,7 +365,7 @@ Google の OAuth クライアントを作る前でも、今までどおりロー
 | 4 | アクセス制御: `validateUserInfo`、`isAllowed()`（`ALLOWED_EMAILS` / `ALLOWED_DOMAINS`）、`proxy.ts`、`requireUser()` | Claude |
 | 5 | コンテンツをビルド時にまとめる（`npm run build-content`）。本番ではそれを読む | Claude |
 | 6 | PWA（マニフェスト、アイコン）とスマホ向けの画面の調整 | Claude |
-| 7 | バックアップ（`npm run backup`）と移行スクリプト（`scripts/import-local.ts`） | Claude |
+| 7 | バックアップ（`npm run backup`）と取り込み（`npm run import-records`） | Claude |
 | 8 | Turso の DB（dev / prod）を作り、トークンを発行する | ユーザー |
 | 9 | Google Cloud で OAuth クライアントを作る（リダイレクト URI: ローカル、プレビュー、本番） | ユーザー |
 | 10 | Vercel にリポジトリをつなぎ、関数リージョンを `hnd1` にし、環境変数を登録する。develop をプレビューで確認 → main にマージして本番に出す | 両方 |

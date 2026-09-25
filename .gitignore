@@ -6,3 +6,4 @@ local.db*
 .env*
 !.env.example
 .generated/
+backups/

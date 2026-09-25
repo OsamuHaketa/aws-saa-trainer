@@ -26,6 +26,8 @@ npm run dev        # http://localhost:3000
 |---|---|
 | `npm run validate` | Atom と問題の検証（スキーマ、参照切れ、正解だけ長い選択肢、問題文に答えが含まれる など） |
 | `npm run build-content` | Atom と問題を `.generated/content.json` にまとめる。本番のアプリはこのファイルだけを読む（`npm run build` の前に validate と一緒に自動で実行される） |
+| `npm run backup` | 学習記録（user・cards・review_logs・followups）を `backups/<日時>/` に JSON で書き出す。Turso なら `DATABASE_URL` と `DATABASE_AUTH_TOKEN` を指定する |
+| `npm run import-records -- --from backups/<日時> --to-email <メール>` | バックアップから 1 人分の記録を、別の DB のユーザーに取り込む（移行・復元用。`--dry-run` あり） |
 | `npm test` | 出題ロジックのテスト |
 | `npm run typecheck` | 型チェック |
 | `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（ローカルの DB には起動時に自動適用） |

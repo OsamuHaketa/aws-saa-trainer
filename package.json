@@ -12,7 +12,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "build-content": "tsx scripts/build-content.ts",
-    "prebuild": "npm run validate && npm run build-content"
+    "prebuild": "npm run validate && npm run build-content",
+    "backup": "tsx scripts/backup.ts",
+    "import-records": "tsx scripts/import-records.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
