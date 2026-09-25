@@ -50,19 +50,22 @@ app/                    画面と API（/api/next, /api/review）
 
 ## コンテンツの状態
 
-50 サービス・Atom 222 個・問題 451 問。**すべて `status: draft`（未レビュー）**。
+71 サービス・Atom 341 個・問題 1,180 問。**すべて `status: draft`（未レビュー）**。
 
 | まとまり | サービス |
 |---|---|
-| 企画書の MVP | S3（Atom 42・問題 154） |
+| 企画書の MVP | S3（Atom 42・問題 170） |
 | 企画書の Phase 7 | EC2、VPC、IAM、Organizations、RDS/Aurora、DynamoDB、ElastiCache、ELB、Auto Scaling、CloudFront、Global Accelerator、Route 53、Lambda、API Gateway、SQS、SNS、EventBridge、Kinesis、EBS、EFS、FSx、CloudWatch、CloudTrail、AWS Config |
 | 追加（SAA で頻出） | KMS、Secrets Manager、Systems Manager、WAF、Shield、GuardDuty、Macie、Inspector、Cognito、ECS/Fargate、EKS、Step Functions、Batch、Elastic Beanstalk、Storage Gateway、DataSync、Snowball、DMS、AWS Backup、Athena、Redshift、Glue、EMR、QuickSight、OpenSearch |
-| 設計パターン | DR 戦略（バックアップと復元 / パイロットライト / ウォームスタンバイ / マルチサイト）、RPO と RTO、ステートレス、疎結合 |
+| 追加（2 回目） | グローバルインフラ（リージョン・AZ、Local Zones、Wavelength、Outposts）、CloudFormation、コスト管理（Cost Explorer、Budgets、コスト配分タグ、Cost Anomaly Detection）、Trusted Advisor、X-Ray、Security Hub、Detective、MemoryDB、DocumentDB、Neptune、Keyspaces、Timestream、AppSync、Amazon MQ、MSK、Transfer Family、Application Migration Service、Elastic Disaster Recovery、Lake Formation、AI / ML サービス（Rekognition、Textract、Comprehend、Transcribe、Polly、Translate、Lex、Kendra、Personalize、SageMaker AI、Bedrock） |
+| 設計パターン | DR 戦略（バックアップと復元 / パイロットライト / ウォームスタンバイ / マルチサイト）、RPO と RTO、ステートレス、疎結合、冪等性、バックオフとジッター、責任共有モデル、Well-Architected、マルチ AZ |
 
-問題タイプの内訳: 条件→用語 224、比較 64、アンチパターン 52、用語→意味 47、トリガー 34、本番型 21、関連 5、シナリオ 4。
+Atom の重要度ごとの問題数は、high は 4 問以上、medium は 3 問以上、low は 2 問以上（主の Atom として数えた場合）。
+
+問題タイプの内訳: 条件→用語 407、トリガー 199、アンチパターン 174、用語→意味 159、比較 136、本番型 71、関連 24、シナリオ 10。
 
 - ファイルは `knowledge/<service>.yaml` と `generated/<service>.json`（S3 だけ `generated/s3-*.json` に分割、サービス横断の本番型は `generated/exam-cross.json`）
-- 新しい問題は `lib/config.ts` の `serviceOrder`（S3 → EC2 → VPC → …）の順に、サービスごとに出る
+- 新しい問題は `lib/config.ts` の `serviceOrder`（S3 → EC2 → VPC → …）の順に、サービスごとに出る。2 回目に追加したサービスは最後（設計パターンのあと）
 - 学習画面の「範囲」で、特定のサービスだけに絞って学習できる（`/study?service=s3`）
 - 企画書の比較例（SQS vs SNS、ALB vs NLB、EBS vs EFS、Multi-AZ vs Read Replica、CloudFront vs Global Accelerator、Gateway vs Interface Endpoint、SG vs NACL、RDS vs DynamoDB、Kinesis vs SQS）は、すべて `confused_with` と比較問題にしてある
 
@@ -77,3 +80,11 @@ app/                    画面と API（/api/next, /api/review）
 4. **「正解だけ長い選択肢」の警告基準** — 正解が 12 字以上かつ、誤答の最長の 1.2 倍を超えたら警告
 5. **問題の内容** — 私（Claude）が書いたもので、公式ドキュメントとの照合はまだ。サービスの提供状況が変わりやすいもの（Snowball Edge など）も確認してほしい。特に数値（S3 の 30 / 90 / 180 日、5 GB / 5 TB、3,500 / 5,500 リクエスト、取り出し時間、RDS の 35 日、スプレッドの 7 個/AZ、gp3 の 3,000 IOPS など）を確認してほしい
 6. **企画書の Phase 7 の一覧にないサービスも追加した** — セキュリティ、コンテナ、移行、分析、DR 戦略など。不要なら該当する `knowledge/*.yaml` と `generated/*.json` を削除する（学習前なら問題ない）
+7. **2 回目の追加（2026-09-26）** — S3 以外のサービスの問題が少なかったので、既存のサービスに Atom を 119 個、全体で問題を 729 問追加した。2 回目に追加した数値で、特に確認してほしいもの:
+   - SQS の保持期間（デフォルト 4 日・最大 14 日）、Kinesis の 1 シャードあたり 1 MB/秒・1,000 レコード/秒（読み取り 2 MB/秒）、保持期間の最大 365 日
+   - Lambda のメモリ 128 MB〜10,240 MB、非同期呼び出しの再試行 2 回、KMS の Encrypt API の 4 KB、DynamoDB の項目の 400 KB
+   - IAM データベース認証のトークン 15 分、マルチ AZ DB クラスターのフェイルオーバー 35 秒程度、パーティションプレイスメントグループの 7 パーティション/AZ
+   - API Gateway のキャッシュのデフォルト TTL 300 秒、ELB の登録解除の遅延のデフォルト 300 秒、CloudTrail のイベント履歴の 90 日
+   - CloudHSM の FIPS 140-3 レベル 3、Trusted Advisor の全チェックに必要なサポートプラン、EBS マルチアタッチの 16 台
+   - SQS のメッセージサイズの上限は最近変わった可能性があるので、数値は書かずに「上限を超えたら S3 に置く」とした
+8. **本番型（exam）の問題** — サービスをまたぐ問題は主の Atom のサービスとして扱われ、`generated/exam-cross.json` に置いてある
