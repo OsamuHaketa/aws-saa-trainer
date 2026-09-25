@@ -306,5 +306,179 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-ou:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "organizations-ou"
+    ],
+    "prompt": "OU（組織単位）に SCP を付けると、どこまで適用される？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "配下の OU とアカウントすべて",
+        "correct": true,
+        "atomId": "organizations-ou",
+        "why": "上位の OU の SCP も合わせて適用される"
+      },
+      {
+        "id": "b",
+        "text": "その OU の直下のアカウントだけ",
+        "correct": false,
+        "why": "配下の OU にも継承される"
+      },
+      {
+        "id": "c",
+        "text": "管理アカウントにも適用される",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP は管理アカウントには影響しない"
+      },
+      {
+        "id": "d",
+        "text": "組織のすべてのアカウント",
+        "correct": false,
+        "why": "付けた OU の配下だけ"
+      }
+    ],
+    "explanation": "SCP は OU の階層で継承される。管理アカウントには効かない。",
+    "keywords": [
+      "継承"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-scp:antipattern:2",
+    "type": "antipattern",
+    "level": 3,
+    "atomIds": [
+      "organizations-scp"
+    ],
+    "prompt": "管理アカウントのユーザーの操作も制限するつもりで、ルートに SCP を付けた。何が誤り？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SCP は管理アカウントには影響しない",
+        "correct": true,
+        "atomId": "organizations-scp",
+        "why": "管理アカウントは日常のワークロードに使わず、別のアカウントを使う"
+      },
+      {
+        "id": "b",
+        "text": "SCP はルートに付けられない",
+        "correct": false,
+        "why": "ルートにも付けられる"
+      },
+      {
+        "id": "c",
+        "text": "SCP を付けると管理アカウントが組織から外れる",
+        "correct": false,
+        "why": "外れることはない"
+      },
+      {
+        "id": "d",
+        "text": "SCP はルートユーザーだけを制限する",
+        "correct": false,
+        "why": "メンバーアカウントのルートユーザーを含む全員が対象"
+      }
+    ],
+    "explanation": "SCP はメンバーアカウントの全員（ルートユーザーも）を制限するが、管理アカウントは対象外。",
+    "keywords": [
+      "管理アカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-consolidated-billing:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "organizations-consolidated-billing"
+    ],
+    "prompt": "一括請求で、利用量が合算されることの利点は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "割引を組織全体で共有できる",
+        "correct": true,
+        "atomId": "organizations-consolidated-billing",
+        "why": "請求も管理アカウントにまとまる"
+      },
+      {
+        "id": "b",
+        "text": "各アカウントの利用料金が無料になる",
+        "correct": false,
+        "why": "料金はかかる"
+      },
+      {
+        "id": "c",
+        "text": "各アカウントの権限の上限を決められる",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "それは SCP"
+      },
+      {
+        "id": "d",
+        "text": "各アカウントの CloudTrail が自動で有効になる",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "請求とは関係ない"
+      }
+    ],
+    "explanation": "一括請求 = 請求の集約 + 利用量の合算による割引の共有。",
+    "keywords": [
+      "合算"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "organizations-control-tower:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "organizations-control-tower"
+    ],
+    "prompt": "「ランディングゾーン」「ガードレール」「Account Factory」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS Control Tower",
+        "correct": true,
+        "atomId": "organizations-control-tower",
+        "why": "ベストプラクティスのマルチアカウント環境を自動で作り、統制する"
+      },
+      {
+        "id": "b",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "リソースの設定の評価"
+      },
+      {
+        "id": "c",
+        "text": "IAM Identity Center",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "シングルサインオンの管理"
+      },
+      {
+        "id": "d",
+        "text": "AWS Service Catalog",
+        "correct": false,
+        "why": "承認された製品のカタログで、ランディングゾーンは作らない"
+      }
+    ],
+    "explanation": "ランディングゾーン・ガードレール = Control Tower。",
+    "keywords": [
+      "ランディングゾーン",
+      "ガードレール"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]

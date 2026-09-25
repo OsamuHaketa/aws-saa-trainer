@@ -263,3 +263,125 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html
+
+  # --- 追加 ------------------------------------------------------------------
+
+  - id: iam-instance-profile
+    category: identity
+    concept: インスタンスプロファイル（EC2 の IAM ロール）
+    summary: EC2 に IAM ロールを渡す入れ物。インスタンス上のアプリが一時的な認証情報を自動で使える
+    facts:
+      - EC2 にロールを付けると、インスタンスプロファイルを通じてロールが渡される
+      - アプリはインスタンスメタデータから一時的な認証情報を取得し、SDK が自動で更新する
+      - 稼働中のインスタンスにも、ロールを付けたり差し替えたりできる
+    triggers:
+      - EC2 上のアプリから S3 や DynamoDB を使いたい
+      - サーバーにアクセスキーを置きたくない
+    pitfalls:
+      - アクセスキーを EC2 の設定ファイルやコードに保存すると、漏えいや更新の手間の原因になる
+    relations:
+      - type: part_of
+        target: iam-role
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html
+
+  - id: iam-resource-based-policy
+    category: access-control
+    concept: リソースベースのポリシー
+    summary: S3 バケットや SQS キュー、KMS キーなどのリソース側に付け、誰がアクセスできるかを決める
+    facts:
+      - S3 バケットポリシー、SQS のアクセスポリシー、KMS のキーポリシー、Lambda のリソースポリシーなどがある
+      - Principal（誰に許可するか）を指定し、別のアカウントのユーザーやロールも指定できる
+      - クロスアカウントで使うと、相手はロールを引き受けずに、自分の権限のままアクセスできる
+    triggers:
+      - 別のアカウントからこのバケット（キュー）にアクセスさせたい
+      - ロールを切り替えずにクロスアカウントでアクセスしたい
+    pitfalls:
+      - すべてのサービスがリソースベースのポリシーに対応しているわけではない。対応していなければクロスアカウントロールを使う
+    relations:
+      - type: confused_with
+        target: iam-cross-account-role
+        distinction: クロスアカウントロールは相手がロールを引き受け、その間は元の権限を使えない。リソースベースのポリシーは、相手が自分の権限のままリソースにアクセスできる（両方のアカウントのリソースを同時に扱える）
+      - type: used_with
+        target: s3-bucket-policy
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html
+
+  - id: iam-policy-conditions
+    category: access-control
+    concept: ポリシーの条件キー（Condition）
+    summary: 送信元 IP、リージョン、組織、MFA、HTTPS などの条件を満たすときだけ許可・拒否する
+    facts:
+      - aws:SourceIp で接続元の IP アドレスを制限できる
+      - aws:RequestedRegion で使えるリージョンを制限できる
+      - aws:PrincipalOrgID で、自分の組織（Organizations）のアカウントからのアクセスだけに絞れる
+      - aws:MultiFactorAuthPresent で MFA を、aws:SecureTransport で HTTPS を条件にできる
+    triggers:
+      - 特定の IP アドレスからだけ許可したい
+      - 自社の組織のアカウントからだけアクセスさせたい
+      - 特定のリージョンだけ使わせたい
+    pitfalls:
+      - 組織内のアカウントを 1 つずつ Principal に列挙すると、アカウントが増えるたびに更新が必要になる。aws:PrincipalOrgID を使う
+    relations:
+      - type: used_with
+        target: iam-policy-evaluation
+    examDomains: [secure]
+    importance: high
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
+
+  - id: iam-abac
+    category: access-control
+    concept: 属性ベースのアクセス制御（ABAC）
+    summary: ユーザーやリソースのタグを条件にして、タグが一致するときだけアクセスを許可する
+    facts:
+      - プリンシパルのタグ（aws:PrincipalTag）とリソースのタグ（aws:ResourceTag）を比べて許可する
+      - プロジェクトやチームが増えても、タグを付けるだけでポリシーを変えずに済む
+      - ロールごとにリソースを列挙する RBAC（ロールベース）より、変化に強い
+    triggers:
+      - プロジェクトごとにアクセスを分けたいが、プロジェクトが頻繁に増える
+      - タグでアクセスを制御したい
+    pitfalls:
+      - タグを誰でも変更できると、アクセス制御を回避されるおそれがある。タグの変更権限も制限する
+    relations:
+      - type: used_with
+        target: iam-policy-conditions
+    examDomains: [secure]
+    importance: low
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html
+
+  - id: iam-federation
+    category: identity
+    concept: ID フェデレーション（SAML 2.0 / OIDC）
+    summary: 社内の IdP や外部の ID で認証したユーザーに、IAM ユーザーを作らずに IAM ロールで AWS を使わせる
+    facts:
+      - SAML 2.0 に対応した社内の IdP（AD FS など）で認証し、IAM ロールを引き受けさせる
+      - OIDC に対応した IdP（GitHub Actions など）のトークンで、ロールを引き受けさせることもできる
+      - IAM ユーザーや長期のアクセスキーを作らずに済む
+      - 複数アカウントの従業員のアクセスには、IAM Identity Center を使うのが推奨される
+    triggers:
+      - 社内の ID で AWS にサインインさせたい
+      - CI/CD からアクセスキーなしで AWS を操作したい
+    pitfalls:
+      - 社員ごとに IAM ユーザーを作って社内 ID と二重管理すると、退職時の削除漏れなどが起きる
+    relations:
+      - type: used_with
+        target: iam-sts
+      - type: confused_with
+        target: iam-identity-center
+        distinction: IAM の SAML / OIDC フェデレーションはアカウントごとに IdP とロールを設定する。IAM Identity Center は複数のアカウントやアプリへのシングルサインオンを 1 か所で管理する
+    examDomains: [secure]
+    importance: medium
+    status: draft
+    sources:
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers.html

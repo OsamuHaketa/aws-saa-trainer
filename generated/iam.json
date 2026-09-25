@@ -792,5 +792,1270 @@
     ],
     "status": "draft",
     "generatedBy": "manual"
+  },
+  {
+    "id": "iam-instance-profile:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-instance-profile"
+    ],
+    "prompt": "EC2 上のアプリから S3 にファイルを保存したい。アクセスキーはサーバーに置きたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "S3 の権限を持つ IAM ロールを EC2 に付ける",
+        "correct": true,
+        "atomId": "iam-instance-profile",
+        "why": "インスタンスプロファイル経由で一時的な認証情報が自動で使われる"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーのアクセスキーを環境変数に入れる",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報をサーバーに置くことになる"
+      },
+      {
+        "id": "c",
+        "text": "S3 バケットを公開して誰でも書き込めるようにする",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも書き込めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーのアクセスキーを使う",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も危険な認証情報"
+      }
+    ],
+    "explanation": "EC2 → AWS サービス = EC2 に IAM ロール（インスタンスプロファイル）。",
+    "keywords": [
+      "アクセスキーは置きたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-instance-profile:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "iam-instance-profile"
+    ],
+    "prompt": "EC2 のアプリが DynamoDB を使うため、IAM ユーザーのアクセスキーをソースコードに埋め込んで Git に保存した。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "キーが漏れやすく更新も手間。EC2 にロールを付けるべき",
+        "correct": true,
+        "atomId": "iam-instance-profile",
+        "why": "ロールなら一時的な認証情報が自動で更新される"
+      },
+      {
+        "id": "b",
+        "text": "アクセスキーでは DynamoDB を操作できない",
+        "correct": false,
+        "why": "操作はできるが、安全ではない"
+      },
+      {
+        "id": "c",
+        "text": "アクセスキーは EC2 からは使えない",
+        "correct": false,
+        "why": "使えるが、推奨されない"
+      },
+      {
+        "id": "d",
+        "text": "ソースコードに書くと DynamoDB が遅くなる",
+        "correct": false,
+        "why": "性能の問題ではない"
+      }
+    ],
+    "explanation": "AWS 上のアプリは長期のアクセスキーではなく IAM ロールを使う。",
+    "keywords": [
+      "ソースコードに埋め込んで"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-instance-profile:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "iam-instance-profile"
+    ],
+    "prompt": "EC2 に付けた IAM ロールの認証情報について正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "一時的な認証情報で、有効期限前に自動で更新される",
+        "correct": true,
+        "atomId": "iam-instance-profile",
+        "why": "アプリは SDK を使えば更新を意識しなくてよい"
+      },
+      {
+        "id": "b",
+        "text": "一度発行されると無期限に使える",
+        "correct": false,
+        "why": "有効期限がある"
+      },
+      {
+        "id": "c",
+        "text": "インスタンスを作成するときにしか付けられない",
+        "correct": false,
+        "why": "稼働中のインスタンスにも付け替えられる"
+      },
+      {
+        "id": "d",
+        "text": "インスタンスのディスクにパスワードとして保存される",
+        "correct": false,
+        "why": "インスタンスメタデータから取得する"
+      }
+    ],
+    "explanation": "ロールの認証情報 = 一時的・自動更新。メタデータから取得する（IMDSv2 で保護）。",
+    "keywords": [
+      "一時的"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-resource-based-policy:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-resource-based-policy"
+    ],
+    "prompt": "アカウント A の Lambda が、自分のアカウントの DynamoDB を読みながら、アカウント B の S3 バケットに同時に書き込みたい。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "B のバケットポリシーで A の Lambda の実行ロールを許可する",
+        "correct": true,
+        "atomId": "iam-resource-based-policy",
+        "why": "ロールを引き受けずに、自分の権限のまま B のバケットに書ける"
+      },
+      {
+        "id": "b",
+        "text": "A の Lambda が B のロールを引き受ける",
+        "correct": false,
+        "atomId": "iam-cross-account-role",
+        "why": "引き受けている間は A の権限を使えず、A の DynamoDB を同時に扱いにくい"
+      },
+      {
+        "id": "c",
+        "text": "B のバケットを公開する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "誰でも書き込めてしまう"
+      },
+      {
+        "id": "d",
+        "text": "B に IAM ユーザーを作り、アクセスキーを Lambda に入れる",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期の認証情報を持たせることになる"
+      }
+    ],
+    "explanation": "両方のアカウントのリソースを同時に扱う = リソースベースのポリシーで相手を許可する。",
+    "keywords": [
+      "同時に"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-resource-based-policy:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "iam-resource-based-policy",
+      "iam-cross-account-role"
+    ],
+    "prompt": "クロスアカウントアクセスで、リソースベースのポリシーとクロスアカウントロールの違いは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "前者は自分の権限のまま、後者は権限を切り替える",
+        "correct": true,
+        "atomId": "iam-resource-based-policy",
+        "why": "ロールを引き受けると、その間は元の権限を使えない"
+      },
+      {
+        "id": "b",
+        "text": "前者はすべての AWS サービスで使える",
+        "correct": false,
+        "why": "対応しているサービス（S3、SQS、KMS など）だけ"
+      },
+      {
+        "id": "c",
+        "text": "後者は信頼する相手（Principal）を指定できない",
+        "correct": false,
+        "why": "ロールの信頼ポリシーで Principal を指定する"
+      },
+      {
+        "id": "d",
+        "text": "前者は同じアカウント内でしか使えない",
+        "correct": false,
+        "why": "別のアカウントの Principal を指定できる"
+      }
+    ],
+    "explanation": "リソース側で許可 = 権限を手放さない、ロールを引き受ける = 一時的にそのロールの権限に切り替わる。",
+    "keywords": [
+      "自分の権限のまま"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-resource-based-policy:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "iam-resource-based-policy"
+    ],
+    "prompt": "リソースベースのポリシーに必ず含まれ、アイデンティティベースのポリシーには書かない要素は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Principal（誰に許可するか）",
+        "correct": true,
+        "atomId": "iam-resource-based-policy",
+        "why": "リソースに付けるので、誰がアクセスできるかを書く"
+      },
+      {
+        "id": "b",
+        "text": "Effect（許可か拒否か）",
+        "correct": false,
+        "why": "どちらのポリシーにも書く"
+      },
+      {
+        "id": "c",
+        "text": "Action（どの操作か）",
+        "correct": false,
+        "why": "どちらのポリシーにも書く"
+      },
+      {
+        "id": "d",
+        "text": "Version（ポリシーの言語のバージョン）",
+        "correct": false,
+        "why": "どちらのポリシーにも書く"
+      }
+    ],
+    "explanation": "ユーザーやロールに付けるポリシーは「誰に」が自明なので Principal を書かない。リソース側は Principal を書く。",
+    "keywords": [
+      "Principal"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-conditions:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-conditions"
+    ],
+    "prompt": "S3 バケットを、自社の Organizations の組織内のアカウントからだけ読めるようにしたい。アカウントは今後も増える。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "バケットポリシーの条件に aws:PrincipalOrgID を指定する",
+        "correct": true,
+        "atomId": "iam-policy-conditions",
+        "why": "組織の ID で判定するので、アカウントが増えても変更不要"
+      },
+      {
+        "id": "b",
+        "text": "バケットポリシーの Principal に全アカウントの ID を並べる",
+        "correct": false,
+        "why": "アカウントが増えるたびに更新が必要"
+      },
+      {
+        "id": "c",
+        "text": "SCP でバケットへのアクセスを許可する",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP は権限を与えない。上限を決めるだけ"
+      },
+      {
+        "id": "d",
+        "text": "バケットを公開して URL を組織内に共有する",
+        "correct": false,
+        "atomId": "s3-block-public-access",
+        "why": "組織外からも読めてしまう"
+      }
+    ],
+    "explanation": "「自分の組織のアカウントだけ」= aws:PrincipalOrgID。",
+    "keywords": [
+      "組織内のアカウントからだけ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-conditions:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-policy-conditions"
+    ],
+    "prompt": "「社内の IP アドレスからの操作だけを許可」→ ポリシーのどの条件キー？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "aws:SourceIp",
+        "correct": true,
+        "atomId": "iam-policy-conditions",
+        "why": "リクエストの送信元 IP アドレスで判定する"
+      },
+      {
+        "id": "b",
+        "text": "aws:RequestedRegion",
+        "correct": false,
+        "why": "操作するリージョンで判定する"
+      },
+      {
+        "id": "c",
+        "text": "aws:MultiFactorAuthPresent",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "MFA の有無で判定する"
+      },
+      {
+        "id": "d",
+        "text": "aws:SecureTransport",
+        "correct": false,
+        "atomId": "s3-enforce-https",
+        "why": "HTTPS かどうかで判定する"
+      }
+    ],
+    "explanation": "送信元 IP = aws:SourceIp、リージョン = aws:RequestedRegion、組織 = aws:PrincipalOrgID。",
+    "keywords": [
+      "IP アドレス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-conditions:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-conditions"
+    ],
+    "prompt": "1 つのアカウント内で、開発者が東京リージョン以外にリソースを作れないようにしたい。Organizations は使っていない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM の条件キーで東京以外を拒否する",
+        "correct": true,
+        "atomId": "iam-policy-conditions",
+        "why": "条件キーでリージョンを制限する"
+      },
+      {
+        "id": "b",
+        "text": "SCP でリージョンを制限する",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP は Organizations が必要"
+      },
+      {
+        "id": "c",
+        "text": "VPC を東京リージョンにだけ作る",
+        "correct": false,
+        "why": "VPC 以外のサービスは他のリージョンで作れてしまう"
+      },
+      {
+        "id": "d",
+        "text": "東京以外のリージョンをアカウントから削除する",
+        "correct": false,
+        "why": "既定で有効なリージョンは無効にできない"
+      }
+    ],
+    "explanation": "単一アカウント = IAM の条件（aws:RequestedRegion）。組織全体 = SCP。",
+    "keywords": [
+      "東京リージョン以外",
+      "Organizations は使っていない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-abac:selection:1",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-abac"
+    ],
+    "prompt": "プロジェクトが毎月増える。開発者は、自分と同じ project タグが付いた EC2 だけを操作できるようにしたい。ポリシーを毎回書き換えたくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ユーザーとリソースのタグの一致を条件に許可する",
+        "correct": true,
+        "atomId": "iam-abac",
+        "why": "タグを付けるだけで、新しいプロジェクトにも対応できる"
+      },
+      {
+        "id": "b",
+        "text": "プロジェクトごとに IAM グループとポリシーを作る",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "プロジェクトが増えるたびに作業が必要"
+      },
+      {
+        "id": "c",
+        "text": "全員に EC2 の管理者権限を付ける",
+        "correct": false,
+        "why": "他のプロジェクトの EC2 も操作できてしまう"
+      },
+      {
+        "id": "d",
+        "text": "プロジェクトごとに別の AWS アカウントを毎月作る",
+        "correct": false,
+        "why": "要件に対して過剰で、管理が増える"
+      }
+    ],
+    "explanation": "増え続けるプロジェクトをタグで分ける = ABAC。",
+    "keywords": [
+      "タグ",
+      "毎回書き換えたくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-abac:antipattern:1",
+    "type": "antipattern",
+    "level": 4,
+    "atomIds": [
+      "iam-abac"
+    ],
+    "prompt": "ABAC で project タグによる制御をしたが、開発者が自分でリソースのタグを書き換えられる。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "タグを変えるだけで他のプロジェクトを操作できる",
+        "correct": true,
+        "atomId": "iam-abac",
+        "why": "タグの付け替えの権限も制限する"
+      },
+      {
+        "id": "b",
+        "text": "タグを書き換えるとリソースが削除される",
+        "correct": false,
+        "why": "削除はされない"
+      },
+      {
+        "id": "c",
+        "text": "タグは 1 つのリソースに 1 つしか付けられない",
+        "correct": false,
+        "why": "複数付けられる"
+      },
+      {
+        "id": "d",
+        "text": "タグを使うと CloudTrail に記録されなくなる",
+        "correct": false,
+        "atomId": "cloudtrail-trail",
+        "why": "操作は記録される"
+      }
+    ],
+    "explanation": "ABAC ではタグ自体が権限になるので、タグの変更を制御する。",
+    "keywords": [
+      "タグを書き換え"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-federation:selection:1",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-federation"
+    ],
+    "prompt": "GitHub Actions から AWS にデプロイしたい。長期のアクセスキーを GitHub に保存したくない。どうする？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "GitHub を OIDC の IdP として登録し、ロールを引き受けさせる",
+        "correct": true,
+        "atomId": "iam-federation",
+        "why": "実行ごとに一時的な認証情報を得られる"
+      },
+      {
+        "id": "b",
+        "text": "デプロイ用の IAM ユーザーのアクセスキーを GitHub のシークレットに入れる",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "長期のアクセスキーを保存することになる"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーのアクセスキーを使う",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "最も危険な認証情報"
+      },
+      {
+        "id": "d",
+        "text": "S3 バケットを公開してそこからデプロイする",
+        "correct": false,
+        "why": "認証の問題の解決にならない"
+      }
+    ],
+    "explanation": "外部のサービスから AWS へ、キーなしで = OIDC フェデレーション + IAM ロール。",
+    "keywords": [
+      "アクセスキーを保存したくない"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-federation:selection:2",
+    "type": "selection",
+    "level": 2,
+    "atomIds": [
+      "iam-federation"
+    ],
+    "prompt": "1 つの AWS アカウントに、社内の AD FS（SAML 2.0 対応）で認証した社員をサインインさせたい。IAM ユーザーは作りたくない。何を使う？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "SAML 2.0 フェデレーションと IAM ロール",
+        "correct": true,
+        "atomId": "iam-federation",
+        "why": "IdP で認証し、ロールを引き受けて一時的な認証情報で使う"
+      },
+      {
+        "id": "b",
+        "text": "社員ごとの IAM ユーザー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "IAM ユーザーは作りたくない要件に反する"
+      },
+      {
+        "id": "c",
+        "text": "Cognito ユーザープール",
+        "correct": false,
+        "atomId": "cognito-user-pool",
+        "why": "自社アプリのエンドユーザー向けの認証"
+      },
+      {
+        "id": "d",
+        "text": "AWS STS を使わずにアクセスキーを配る",
+        "correct": false,
+        "why": "長期の認証情報の配布になる"
+      }
+    ],
+    "explanation": "社内 IdP → AWS = SAML フェデレーション（複数アカウントなら IAM Identity Center）。",
+    "keywords": [
+      "AD FS",
+      "SAML 2.0"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-federation:compare:1",
+    "type": "compare",
+    "level": 3,
+    "atomIds": [
+      "iam-federation",
+      "iam-identity-center"
+    ],
+    "prompt": "40 個のアカウントへの従業員の SSO で、各アカウントに SAML を設定するより IAM Identity Center が良い理由は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アカウントごとの IdP やロールの設定が不要で、1 か所で権限を割り当てられる",
+        "correct": true,
+        "atomId": "iam-identity-center",
+        "why": "複数アカウントの従業員のアクセスには Identity Center が推奨"
+      },
+      {
+        "id": "b",
+        "text": "IAM Identity Center は IAM ロールを使わない",
+        "correct": false,
+        "why": "内部では各アカウントにロールが作られる"
+      },
+      {
+        "id": "c",
+        "text": "SAML は 1 つのアカウントでしか使えない",
+        "correct": false,
+        "why": "アカウントごとに設定すれば使えるが、手間が大きい"
+      },
+      {
+        "id": "d",
+        "text": "IAM Identity Center は MFA を使えない",
+        "correct": false,
+        "why": "MFA を使える"
+      }
+    ],
+    "explanation": "多数のアカウント × 従業員 = IAM Identity Center。",
+    "keywords": [
+      "40 個の AWS アカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-root-user:trigger:1",
+    "type": "trigger",
+    "level": 1,
+    "atomIds": [
+      "iam-root-user"
+    ],
+    "prompt": "「アカウントの作成に使ったメールアドレスでサインイン」「すべての権限」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "ルートユーザー",
+        "correct": true,
+        "atomId": "iam-root-user",
+        "why": "日常の作業には使わず、MFA で保護する"
+      },
+      {
+        "id": "b",
+        "text": "IAM 管理者ユーザー",
+        "correct": false,
+        "atomId": "iam-user",
+        "why": "IAM で作るユーザーで、SCP などで制限もできる"
+      },
+      {
+        "id": "c",
+        "text": "IAM ロール",
+        "correct": false,
+        "atomId": "iam-role",
+        "why": "一時的な認証情報を使う ID"
+      },
+      {
+        "id": "d",
+        "text": "IAM Identity Center の管理者",
+        "correct": false,
+        "atomId": "iam-identity-center",
+        "why": "複数アカウントの SSO を管理する"
+      }
+    ],
+    "explanation": "メールアドレスでサインインする唯一の特別なユーザー = ルートユーザー。",
+    "keywords": [
+      "メールアドレス"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-user:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "iam-user"
+    ],
+    "prompt": "IAM ユーザーの特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "パスワードやアクセスキーなど長期の認証情報を持つ",
+        "correct": true,
+        "atomId": "iam-user",
+        "why": "人ごとに作ると管理が増えるので、フェデレーションや Identity Center が推奨される"
+      },
+      {
+        "id": "b",
+        "text": "一時的な認証情報だけを持ち、引き受けて使う",
+        "correct": false,
+        "atomId": "iam-role",
+        "why": "IAM ロールの特徴"
+      },
+      {
+        "id": "c",
+        "text": "ユーザーをまとめてポリシーを適用する",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "IAM グループの特徴"
+      },
+      {
+        "id": "d",
+        "text": "組織のアカウントの権限の上限を決める",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP の特徴"
+      }
+    ],
+    "explanation": "IAM ユーザー = 長期の認証情報を持つ ID。",
+    "keywords": [
+      "長期の認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-user:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "iam-user"
+    ],
+    "prompt": "運用チームの 5 人が 1 つの IAM ユーザーのパスワードを共有して使っている。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "誰が操作したか区別できず、退職時もパスワード変更が必要",
+        "correct": true,
+        "atomId": "iam-user",
+        "why": "人ごとに ID を分け、MFA を付ける"
+      },
+      {
+        "id": "b",
+        "text": "IAM ユーザーは 1 人しかサインインできない",
+        "correct": false,
+        "why": "同時にサインインはできるが、共有はすべきでない"
+      },
+      {
+        "id": "c",
+        "text": "共有するとパスワードが自動で無効になる",
+        "correct": false,
+        "why": "無効にはならない"
+      },
+      {
+        "id": "d",
+        "text": "IAM ユーザーは運用作業に使えない",
+        "correct": false,
+        "why": "使えるが、共有しない"
+      }
+    ],
+    "explanation": "認証情報は共有しない。個人ごとの ID（Identity Center など）で、CloudTrail で誰が操作したか追えるようにする。",
+    "keywords": [
+      "共有"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-group:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "iam-group"
+    ],
+    "prompt": "IAM グループについて正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "グループに付けたポリシーが所属する全ユーザーに適用される",
+        "correct": true,
+        "atomId": "iam-group",
+        "why": "グループは入れ子にできず、ロールを引き受ける主体にもなれない"
+      },
+      {
+        "id": "b",
+        "text": "グループの中にグループを入れられる",
+        "correct": false,
+        "why": "入れ子にはできない"
+      },
+      {
+        "id": "c",
+        "text": "グループをポリシーの Principal に指定できる",
+        "correct": false,
+        "why": "グループは Principal に指定できない"
+      },
+      {
+        "id": "d",
+        "text": "グループには IAM ロールを所属させられる",
+        "correct": false,
+        "why": "所属させられるのは IAM ユーザーだけ"
+      }
+    ],
+    "explanation": "IAM グループ = ユーザーの集まりに権限をまとめて付けるだけ。入れ子不可・Principal 不可。",
+    "keywords": [
+      "グループ"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-sts:definition:2",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "iam-sts"
+    ],
+    "prompt": "STS の AssumeRole で得られる認証情報の特徴は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "有効期限があり、期限が切れると使えなくなる",
+        "correct": true,
+        "atomId": "iam-sts",
+        "why": "漏れても被害を期間内に限定できる"
+      },
+      {
+        "id": "b",
+        "text": "無期限に使えるアクセスキーが発行される",
+        "correct": false,
+        "why": "一時的な認証情報で、有効期限がある"
+      },
+      {
+        "id": "c",
+        "text": "パスワードだけが発行される",
+        "correct": false,
+        "why": "アクセスキー ID、シークレット、セッショントークンが発行される"
+      },
+      {
+        "id": "d",
+        "text": "同じアカウントのロールにしか使えない",
+        "correct": false,
+        "atomId": "iam-cross-account-role",
+        "why": "別のアカウントのロールも引き受けられる"
+      }
+    ],
+    "explanation": "STS = 期限付きの一時的な認証情報（アクセスキー ID + シークレット + セッショントークン）。",
+    "keywords": [
+      "有効期限"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-sts:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-sts"
+    ],
+    "prompt": "「ロールを引き受ける」「一時的な認証情報を発行」→ どのサービス？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "AWS STS",
+        "correct": true,
+        "atomId": "iam-sts",
+        "why": "AssumeRole などで期限付きの認証情報を発行する"
+      },
+      {
+        "id": "b",
+        "text": "AWS KMS",
+        "correct": false,
+        "atomId": "kms-customer-managed-key",
+        "why": "暗号化キーの管理"
+      },
+      {
+        "id": "c",
+        "text": "AWS Secrets Manager",
+        "correct": false,
+        "atomId": "secretsmanager-secret",
+        "why": "パスワードなどの秘密情報の保管とローテーション"
+      },
+      {
+        "id": "d",
+        "text": "Amazon Cognito ユーザープール",
+        "correct": false,
+        "atomId": "cognito-user-pool",
+        "why": "アプリのユーザーの認証"
+      }
+    ],
+    "explanation": "一時的な認証情報の発行 = STS。",
+    "keywords": [
+      "一時的な認証情報"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-least-privilege:antipattern:1",
+    "type": "antipattern",
+    "level": 2,
+    "atomIds": [
+      "iam-least-privilege"
+    ],
+    "prompt": "設定が面倒なので、すべてのアプリのロールに AdministratorAccess を付けた。何が問題？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アプリが乗っ取られると、アカウント全体を操作されてしまう",
+        "correct": true,
+        "atomId": "iam-least-privilege",
+        "why": "必要な操作とリソースだけを許可する"
+      },
+      {
+        "id": "b",
+        "text": "AdministratorAccess はロールには付けられない",
+        "correct": false,
+        "why": "付けられるが、最小権限に反する"
+      },
+      {
+        "id": "c",
+        "text": "AdministratorAccess を付けるとアプリが遅くなる",
+        "correct": false,
+        "why": "性能には影響しない"
+      },
+      {
+        "id": "d",
+        "text": "AdministratorAccess では S3 を使えない",
+        "correct": false,
+        "why": "すべての操作ができてしまうのが問題"
+      }
+    ],
+    "explanation": "最小権限 = 必要な Action と Resource だけ。被害の範囲を小さくする。",
+    "keywords": [
+      "AdministratorAccess"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-least-privilege:definition:1",
+    "type": "definition",
+    "level": 1,
+    "atomIds": [
+      "iam-least-privilege"
+    ],
+    "prompt": "最小権限の原則として正しいものは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "作業に必要な操作とリソースだけを許可する",
+        "correct": true,
+        "atomId": "iam-least-privilege",
+        "why": "まず狭く付け、必要に応じて広げる"
+      },
+      {
+        "id": "b",
+        "text": "あとで困らないよう、最初に広い権限を付ける",
+        "correct": false,
+        "why": "最小権限の逆"
+      },
+      {
+        "id": "c",
+        "text": "権限は付けず、すべてルートユーザーで作業する",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "ルートユーザーは日常の作業に使わない"
+      },
+      {
+        "id": "d",
+        "text": "全員に同じ権限を付けて管理を簡単にする",
+        "correct": false,
+        "why": "必要な権限は人や役割ごとに違う"
+      }
+    ],
+    "explanation": "最小権限 = 必要なものだけ。Access Analyzer の未使用アクセスの検出やポリシー生成で絞り込む。",
+    "keywords": [
+      "必要な操作"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-mfa:definition:1",
+    "type": "definition",
+    "level": 2,
+    "atomIds": [
+      "iam-mfa"
+    ],
+    "prompt": "ルートユーザーのセキュリティとして最初にやるべきことは？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "MFA を設定し、アクセスキーは作らない",
+        "correct": true,
+        "atomId": "iam-mfa",
+        "why": "漏えい時の被害が最も大きいユーザーを守る"
+      },
+      {
+        "id": "b",
+        "text": "ルートユーザーのパスワードをチームで共有する",
+        "correct": false,
+        "why": "認証情報は共有しない"
+      },
+      {
+        "id": "c",
+        "text": "ルートユーザーのアクセスキーを作って安全な場所に保管する",
+        "correct": false,
+        "atomId": "iam-root-user",
+        "why": "ルートのアクセスキーは作らない"
+      },
+      {
+        "id": "d",
+        "text": "ルートユーザーを削除する",
+        "correct": false,
+        "why": "ルートユーザーは削除できない"
+      }
+    ],
+    "explanation": "ルートユーザー = MFA 必須、アクセスキーなし、日常の作業に使わない。",
+    "keywords": [
+      "ルートユーザー",
+      "MFA"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-identity-center:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-identity-center"
+    ],
+    "prompt": "「複数の AWS アカウント」「従業員のシングルサインオン」「権限セット」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Identity Center",
+        "correct": true,
+        "atomId": "iam-identity-center",
+        "why": "権限セットを各アカウントに割り当て、1 か所で SSO を管理する"
+      },
+      {
+        "id": "b",
+        "text": "Cognito ユーザープール",
+        "correct": false,
+        "atomId": "cognito-user-pool",
+        "why": "自社アプリのエンドユーザー向け"
+      },
+      {
+        "id": "c",
+        "text": "IAM グループ",
+        "correct": false,
+        "atomId": "iam-group",
+        "why": "1 つのアカウント内のユーザーのまとまり"
+      },
+      {
+        "id": "d",
+        "text": "AWS Control Tower",
+        "correct": false,
+        "atomId": "organizations-control-tower",
+        "why": "マルチアカウント環境の構築と統制で、SSO は Identity Center が担う"
+      }
+    ],
+    "explanation": "従業員 × 複数アカウント × SSO = IAM Identity Center（権限セット）。",
+    "keywords": [
+      "権限セット"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-access-analyzer:trigger:1",
+    "type": "trigger",
+    "level": 2,
+    "atomIds": [
+      "iam-access-analyzer"
+    ],
+    "prompt": "「外部のアカウントと共有されているリソースを検出」「未使用のアクセス」→ 何？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "IAM Access Analyzer",
+        "correct": true,
+        "atomId": "iam-access-analyzer",
+        "why": "リソースポリシーを分析し、外部への共有や未使用の権限を見つける"
+      },
+      {
+        "id": "b",
+        "text": "Amazon GuardDuty",
+        "correct": false,
+        "atomId": "guardduty-detector",
+        "why": "ログから脅威を検出する"
+      },
+      {
+        "id": "c",
+        "text": "Amazon Macie",
+        "correct": false,
+        "atomId": "macie-job",
+        "why": "S3 の機密データを検出する"
+      },
+      {
+        "id": "d",
+        "text": "AWS Config",
+        "correct": false,
+        "atomId": "config-rules",
+        "why": "設定の変更を記録し、ルールで評価する"
+      }
+    ],
+    "explanation": "外部アクセスの検出・未使用アクセス・ポリシー生成 = IAM Access Analyzer。",
+    "keywords": [
+      "外部のアカウントと共有"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-permissions-boundary:definition:1",
+    "type": "definition",
+    "level": 3,
+    "atomIds": [
+      "iam-permissions-boundary"
+    ],
+    "prompt": "アクセス許可の境界が設定されたロールで、実際に使える権限は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "アイデンティティベースのポリシーと境界の両方で許可された操作だけ",
+        "correct": true,
+        "atomId": "iam-permissions-boundary",
+        "why": "境界は上限で、権限は与えない"
+      },
+      {
+        "id": "b",
+        "text": "境界で許可された操作すべて",
+        "correct": false,
+        "why": "境界だけでは権限は与えられない"
+      },
+      {
+        "id": "c",
+        "text": "アイデンティティベースのポリシーで許可された操作すべて",
+        "correct": false,
+        "why": "境界の外の操作は使えない"
+      },
+      {
+        "id": "d",
+        "text": "境界かポリシーのどちらかで許可された操作",
+        "correct": false,
+        "why": "両方で許可されている必要がある"
+      }
+    ],
+    "explanation": "有効な権限 = ポリシー ∩ 境界（∩ SCP）。",
+    "keywords": [
+      "両方で許可"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-cross-account-role:trigger:1",
+    "type": "trigger",
+    "level": 3,
+    "atomIds": [
+      "iam-cross-account-role"
+    ],
+    "prompt": "「サードパーティーにロールを引き受けさせる」「混乱した代理の防止」→ 信頼ポリシーに何を指定する？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "外部 ID",
+        "correct": true,
+        "atomId": "iam-cross-account-role",
+        "why": "相手ごとに固有の ID を条件にして、他社による悪用を防ぐ"
+      },
+      {
+        "id": "b",
+        "text": "aws:SourceIp",
+        "correct": false,
+        "atomId": "iam-policy-conditions",
+        "why": "IP による制限で、混乱した代理の対策の定番ではない"
+      },
+      {
+        "id": "c",
+        "text": "アクセス許可の境界",
+        "correct": false,
+        "atomId": "iam-permissions-boundary",
+        "why": "権限の上限の設定で、信頼ポリシーの条件ではない"
+      },
+      {
+        "id": "d",
+        "text": "MFA の条件",
+        "correct": false,
+        "atomId": "iam-mfa",
+        "why": "サードパーティーのシステムからの引き受けには向かない"
+      }
+    ],
+    "explanation": "サードパーティーへのクロスアカウントロール = 外部 ID。",
+    "keywords": [
+      "混乱した代理"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-evaluation:selection:2",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-evaluation"
+    ],
+    "prompt": "同じアカウントのユーザーに、IAM ポリシーでは何も許可していないが、S3 バケットポリシーでそのユーザーに s3:GetObject を許可した。結果は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "許可される（同じアカウントならどちらかで許可されればよい）",
+        "correct": true,
+        "atomId": "iam-policy-evaluation",
+        "why": "明示的な拒否がなければ、リソースベースのポリシーの許可で足りる"
+      },
+      {
+        "id": "b",
+        "text": "拒否される（IAM ポリシーでの許可が必須）",
+        "correct": false,
+        "why": "同じアカウント内ではリソースベースのポリシーだけでも許可される"
+      },
+      {
+        "id": "c",
+        "text": "拒否される（バケットポリシーはユーザーを指定できない）",
+        "correct": false,
+        "atomId": "iam-resource-based-policy",
+        "why": "Principal にユーザーを指定できる"
+      },
+      {
+        "id": "d",
+        "text": "バケットの所有者が毎回承認すれば許可される",
+        "correct": false,
+        "why": "承認の仕組みはない"
+      }
+    ],
+    "explanation": "同じアカウント = どちらかのポリシーで許可（明示的な拒否なし）。別のアカウント = 両方で許可が必要。",
+    "keywords": [
+      "同じアカウント"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
+  },
+  {
+    "id": "iam-policy-evaluation:selection:3",
+    "type": "selection",
+    "level": 3,
+    "atomIds": [
+      "iam-policy-evaluation"
+    ],
+    "prompt": "アカウント B のユーザーがアカウント A の S3 バケットを読む。A のバケットポリシーでは B のユーザーを許可したが、B の IAM ポリシーでは何も許可していない。結果は？",
+    "choices": [
+      {
+        "id": "a",
+        "text": "拒否される（別のアカウントでは両側の許可が必要）",
+        "correct": true,
+        "atomId": "iam-policy-evaluation",
+        "why": "B の IAM ポリシーでも s3:GetObject を許可する必要がある"
+      },
+      {
+        "id": "b",
+        "text": "許可される（バケットポリシーの許可だけで足りる）",
+        "correct": false,
+        "why": "クロスアカウントでは呼び出し側のアカウントの許可も必要"
+      },
+      {
+        "id": "c",
+        "text": "許可される（B のルートユーザーが許可したとみなされる）",
+        "correct": false,
+        "why": "そのような扱いはない"
+      },
+      {
+        "id": "d",
+        "text": "A の SCP で許可されていれば許可される",
+        "correct": false,
+        "atomId": "organizations-scp",
+        "why": "SCP は権限を与えない"
+      }
+    ],
+    "explanation": "クロスアカウント = リソース側（A）と呼び出し側（B）の両方で許可。",
+    "keywords": [
+      "アカウント B",
+      "両側"
+    ],
+    "status": "draft",
+    "generatedBy": "manual"
   }
 ]
