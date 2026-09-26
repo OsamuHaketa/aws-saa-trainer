@@ -1,0 +1,94 @@
+# Lambda の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: lambda
+lead: サーバーを用意せずに、イベントをきっかけにコードを実行するサービス。実行した回数と時間だけ課金され、同時に来たリクエストの数だけ自動で並列に動く
+decisions:
+  - Lambda で動かせる処理か（最大 15 分・メモリ 10 GB まで）
+  - 呼び出し方（同期・非同期・ポーリング）ごとの、失敗したときの扱い
+  - 同時実行数とコールドスタートの調整
+  - VPC 内のリソースにアクセスするときの注意
+sections:
+  - title: 呼び出し方は 3 種類
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: apigw
+          label: API Gateway
+          icon: apigateway
+          at: [0, 0]
+        - id: s3
+          label: "S3 イベント・SNS\n・EventBridge"
+          icon: s3
+          at: [0, 1]
+        - id: sqs
+          label: "SQS・Kinesis\n・DynamoDB Streams"
+          icon: sqs
+          atom: lambda-event-source-mapping
+          at: [0, 2.1]
+        - id: fn
+          label: Lambda 関数
+          icon: lambda-function
+          atom: lambda-function
+          at: [2.8, 1]
+        - id: dlq
+          label: "失敗時の送信先\n（SQS・SNS など）"
+          icon: sqs-queue
+          atom: lambda-async-failure
+          at: [4.8, 1]
+      edges:
+        - { from: apigw, to: fn, label: 同期（応答を待つ） }
+        - { from: s3, to: fn, label: 非同期 }
+        - { from: fn, to: sqs, label: ポーリング }
+        - { from: fn, to: dlq, label: 2 回再試行しても失敗, dashed: true }
+      caption: SQS やストリームは、Lambda の側から取りに行く（イベントソースマッピング）
+    points:
+      - 同期の呼び出しでは Lambda は自動で再試行しない。呼び出し元がエラーを受け取って対応する
+      - 非同期の呼び出しは、失敗すると自動で 2 回まで再試行し、それでも失敗したら DLQ や失敗時の送信先に送れる
+      - SQS から読むときは、可視性タイムアウトを関数のタイムアウトより長くする
+
+  - title: 主な上限
+    diagram:
+      type: table
+      columns:
+        - { label: 値 }
+        - { label: 超えるなら }
+      rows:
+        - label: 1 回の実行時間
+          cells: [最大 15 分, ECS（Fargate）・AWS Batch・Step Functions で分割]
+        - label: メモリ
+          cells: [128 MB〜10 GB（CPU はメモリに比例）, EC2・コンテナ]
+        - label: 同時実行数
+          cells: [アカウント全体で上限がある, 予約同時実行で関数ごとに確保・制限]
+    points:
+      - メモリを増やすと CPU も増え、実行時間が短くなって合計の料金が下がることもある
+
+  - title: 困りごとと機能
+    diagram:
+      type: decision
+      tree:
+        question: 何に困っている？
+        branches:
+          - when: 最初の呼び出しが遅い（コールドスタート）
+            atom: lambda-concurrency
+          - when: 1 つの関数が同時実行数を使い切り、ほかの関数が動かない
+            atom: lambda-concurrency
+          - when: 処理が遅い・CPU が足りない
+            atom: lambda-memory
+          - when: 非同期のイベントが失敗して消えてしまう
+            atom: lambda-async-failure
+          - when: プライベートサブネットの RDS に接続したい
+            atom: lambda-vpc
+          - when: Lambda から大量に DB へ接続して、接続数が足りなくなる
+            atom: rds-proxy
+    points:
+      - VPC に接続した Lambda がインターネットに出るには NAT ゲートウェイが必要。S3・DynamoDB へは VPC エンドポイントでよい
+status: draft
+sources:
+  - https://docs.aws.amazon.com/lambda/latest/dg/welcome.html
+  - https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html
+  - https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+  - https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html

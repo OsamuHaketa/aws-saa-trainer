@@ -1,0 +1,85 @@
+# EventBridge の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: eventbridge
+lead: AWS のサービス・SaaS・自作アプリから届くイベントを受け、ルールのパターンに合うものをターゲット（Lambda・Step Functions・SQS など）に送るイベントバス
+decisions:
+  - AWS のサービスで起きたことをきっかけに、処理を自動で動かす
+  - 決まった時刻や間隔で処理を動かす
+  - SNS・SQS との使い分け
+sections:
+  - title: イベントの流れ
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: aws
+          label: "AWS のサービス\n（EC2 の状態変化など）"
+          icon: ec2
+          at: [0, 0]
+        - id: saas
+          label: SaaS
+          icon: g-globe
+          at: [0, 1]
+        - id: app
+          label: 自作アプリ
+          icon: g-app
+          at: [0, 2.1]
+        - id: bus
+          label: イベントバス
+          icon: event-bus
+          atom: eventbridge-bus
+          at: [1.7, 1]
+        - id: rule
+          label: "ルール\n（パターン）"
+          icon: event-rule
+          atom: eventbridge-bus
+          at: [3, 1]
+        - id: lambda
+          label: Lambda
+          icon: lambda
+          at: [4.7, 0]
+        - id: sfn
+          label: Step Functions
+          icon: stepfunctions
+          at: [4.7, 1]
+        - id: sqs
+          label: SQS
+          icon: sqs
+          at: [4.7, 2.1]
+      edges:
+        - { from: aws, to: bus }
+        - { from: saas, to: bus }
+        - { from: app, to: bus }
+        - { from: bus, to: rule }
+        - { from: rule, to: lambda }
+        - { from: rule, to: sfn }
+        - { from: rule, to: sqs }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - 1 つのルールに複数のターゲットを付けられる
+      - 届いたイベントをアーカイブしておき、あとで流し直せる（リプレイ）
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: AWS のサービスや SaaS のイベントで処理を動かしたい
+            atom: eventbridge-bus
+          - when: 毎日 3 時など、決まった時刻や間隔で処理を動かしたい
+            atom: eventbridge-scheduler
+          - when: 過去のイベントをあとで流し直したい（障害からの復旧・テスト）
+            atom: eventbridge-archive-replay
+          - when: 1 つのメッセージを、多数の購読者に高いスループットで配りたい
+            atom: sns-topic
+          - when: 処理の依頼をためて、処理側のペースで取り出したい
+            atom: sqs-standard
+status: draft
+sources:
+  - https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html
+  - https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html
+  - https://docs.aws.amazon.com/decision-guides/latest/sns-or-sqs-or-eventbridge/sns-or-sqs-or-eventbridge.html

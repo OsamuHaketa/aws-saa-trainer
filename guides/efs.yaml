@@ -1,0 +1,82 @@
+# EFS の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: efs
+lead: 複数のインスタンスから同時にマウントできる、Linux 向けの共有ファイルストレージ（NFS）。容量は自動で増減し、データは複数の AZ に保存される
+decisions:
+  - ブロック（EBS）・ファイル（EFS・FSx）・オブジェクト（S3）のどれを使うか
+  - アクセスの少ないファイルのコストをどう下げるか
+sections:
+  - title: 複数の AZ から共有する
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: VPC
+          kind: vpc
+          at: [0, 0, 6, 3]
+        - label: AZ a
+          kind: az
+          at: [0, 0, 2, 3]
+        - label: AZ c
+          kind: az
+          at: [4, 0, 2, 3]
+      nodes:
+        - id: ec2a
+          label: EC2（Linux）
+          icon: instance
+          at: [0.5, 0.8]
+        - id: mta
+          label: マウントターゲット
+          icon: eni
+          at: [1, 2]
+        - id: efs
+          label: EFS
+          icon: efs
+          atom: efs-filesystem
+          at: [2.5, 1.3]
+        - id: ec2c
+          label: EC2（Linux）
+          icon: instance
+          at: [4.5, 0.8]
+        - id: mtc
+          label: マウントターゲット
+          icon: eni
+          at: [4, 2]
+      edges:
+        - { from: ec2a, to: mta, label: NFS }
+        - { from: mta, to: efs }
+        - { from: ec2c, to: mtc, label: NFS }
+        - { from: mtc, to: efs }
+      caption: AZ ごとにマウントターゲットを作り、各 AZ のインスタンスはそこからマウントする
+    points:
+      - ECS のタスクや Lambda からもマウントできる
+      - 一定期間アクセスされないファイルは、ライフサイクル管理で IA やアーカイブのクラスへ自動で移せる
+      - 1 つの AZ だけに保存する EFS One Zone は安いが、その AZ の障害に弱い
+
+  - title: ストレージの種類の使い分け
+    diagram:
+      type: table
+      columns:
+        - { label: EBS, atom: ec2-ebs-volume, icon: ebs }
+        - { label: EFS, atom: efs-filesystem, icon: efs }
+        - { label: FSx, atom: fsx-windows, icon: fsx }
+        - { label: S3, atom: s3-standard, icon: s3 }
+      rows:
+        - label: 種類
+          cells: [ブロック, ファイル（NFS）, ファイル（SMB・Lustre・NFS など）, オブジェクト]
+        - label: 使い方
+          cells: [1 台の EC2 のディスク, OS からマウント, OS からマウント, HTTPS の API で読み書き]
+        - label: 同時に使える台数
+          cells: [基本は 1 台, 多数（Linux）, 多数, 制限なし]
+        - label: 範囲
+          cells: [1 つの AZ, 複数の AZ（リージョン）, 構成による（シングル AZ / マルチ AZ）, リージョン]
+        - label: 向いている使い方
+          cells: [OS・DB のディスク, Linux の共有フォルダ・コンテンツ管理, Windows のファイルサーバー・HPC, 大量のファイルの保存・配信・データレイク]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html
+  - https://docs.aws.amazon.com/efs/latest/ug/storage-classes.html
+  - https://docs.aws.amazon.com/decision-guides/latest/storage-on-aws-how-to-choose/choosing-aws-storage-service.html

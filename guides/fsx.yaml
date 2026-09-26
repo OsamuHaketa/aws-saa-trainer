@@ -1,0 +1,45 @@
+# FSx の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: fsx
+lead: 定番のファイルシステム（Windows File Server・Lustre・NetApp ONTAP・OpenZFS）を、そのままマネージドで使えるサービス。用途に合わせて種類を選ぶ
+decisions:
+  - Windows・HPC・NetApp からの移行など、要件に合う FSx の種類を選ぶ
+  - EFS と FSx のどちらを使うか
+sections:
+  - title: FSx の種類
+    diagram:
+      type: table
+      columns:
+        - { label: FSx for Windows File Server, atom: fsx-windows, icon: fsx }
+        - { label: FSx for Lustre, atom: fsx-lustre, icon: fsx }
+        - { label: FSx for NetApp ONTAP, atom: fsx-ontap, icon: fsx }
+      rows:
+        - label: プロトコル
+          cells: [SMB, Lustre（Linux）, NFS・SMB・iSCSI]
+        - label: 強み
+          cells: [Active Directory と Windows の ACL, 数百 GB/秒・サブミリ秒の高性能・S3 との連携, 1 つのデータに複数のプロトコル・スナップショットや重複排除]
+        - label: 向いている使い方
+          cells: [Windows のファイルサーバーの移行, HPC・機械学習・動画処理, オンプレミスの NetApp からの移行]
+
+  - title: 判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: どんなファイル共有が必要？
+        branches:
+          - when: Linux から NFS で共有したい（シンプルに）
+            atom: efs-filesystem
+          - when: Windows から SMB で、Active Directory と連携したい
+            atom: fsx-windows
+          - when: HPC・機械学習で、S3 のデータを高速に処理したい
+            atom: fsx-lustre
+          - when: Linux と Windows から同じデータを使いたい・NetApp から移行したい
+            atom: fsx-ontap
+          - when: オンプレミスのサーバーから、S3 をファイル共有として使いたい
+            atom: storagegateway-file
+status: draft
+sources:
+  - https://docs.aws.amazon.com/fsx/
+  - https://docs.aws.amazon.com/decision-guides/latest/fsx-or-efs/fsx-or-efs.html

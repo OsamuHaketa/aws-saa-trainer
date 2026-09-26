@@ -1,0 +1,80 @@
+# SNS の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: sns
+lead: トピックに送ったメッセージを、購読しているすべての相手（SQS・Lambda・HTTP・メール・SMS など）に同時に届ける Pub/Sub サービス
+decisions:
+  - 1 つのイベントを複数の処理に配るとき、SNS と SQS をどう組み合わせるか
+  - 購読者ごとに、受け取るメッセージをどう絞るか
+sections:
+  - title: ファンアウト
+    body: SNS のトピックから複数の SQS キューに配ると、それぞれの処理が独立して、自分のペースで並列に進む。1 つの処理が止まっても、ほかの処理やメッセージに影響しない。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: s3
+          label: "S3 へのアップロード\n（イベント）"
+          icon: s3
+          at: [0, 1]
+        - id: topic
+          label: SNS トピック
+          icon: sns-topic
+          atom: sns-fanout
+          at: [1.7, 1]
+        - id: q1
+          label: SQS（サムネイル作成）
+          icon: sqs-queue
+          at: [3.5, 0]
+        - id: q2
+          label: SQS（メタデータ登録）
+          icon: sqs-queue
+          at: [3.5, 1]
+        - id: mail
+          label: "メール\n（画像だけ）"
+          icon: g-email
+          atom: sns-message-filtering
+          at: [3.5, 2.1]
+        - id: w1
+          label: Lambda
+          icon: lambda
+          at: [5, 0]
+        - id: w2
+          label: EC2
+          icon: instance
+          at: [5, 1]
+      edges:
+        - { from: s3, to: topic }
+        - { from: topic, to: q1 }
+        - { from: topic, to: q2 }
+        - { from: topic, to: mail, label: フィルタ, dashed: true }
+        - { from: q1, to: w1 }
+        - { from: q2, to: w2 }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - SNS はメッセージを保存しない。購読者が受け取れなかったときに備えて、SQS を挟む
+      - 購読ごとのフィルタポリシーで、条件に合うメッセージだけを受け取れる
+      - 順序と重複排除が必要なら、SNS FIFO トピックから SQS FIFO キューへ配る
+
+  - title: SNS と SQS の違い
+    diagram:
+      type: table
+      columns:
+        - { label: SNS, atom: sns-topic, icon: sns }
+        - { label: SQS, atom: sqs-standard, icon: sqs }
+      rows:
+        - label: 届け方
+          cells: [プッシュ（SNS が送る）, プル（処理側が取りに行く）]
+        - label: 受け取る相手
+          cells: [すべての購読者, 1 つのメッセージを 1 つの処理側]
+        - label: メッセージを保存
+          cells:
+            - { text: しない, tone: warn }
+            - { text: する（最大 14 日）, tone: good }
+status: draft
+sources:
+  - https://docs.aws.amazon.com/sns/latest/dg/welcome.html
+  - https://docs.aws.amazon.com/sns/latest/dg/sns-common-scenarios.html
+  - https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html

@@ -1,0 +1,29 @@
+# OSS 互換のメッセージングの図解（Amazon MQ のページが本体。MSK のページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: mq
+alsoShowOn: [msk]
+topic: OSS 互換のメッセージングと AWS 独自のサービス
+lead: Apache ActiveMQ と RabbitMQ のマネージドなメッセージブローカー。MQTT・AMQP・STOMP などの標準のプロトコルのまま、既存のアプリを AWS に移せる
+decisions:
+  - 既存の OSS 互換のサービスと、AWS 独自のサービスのどちらを使うか
+sections:
+  - title: 既存のアプリを移すか、作り直すか
+    body: 既存のアプリが使っているプロトコルやライブラリを変えたくないなら、互換のマネージドサービス。新しく作るなら、スケールと運用の手間の少ない AWS 独自のサービスが基本。
+    diagram:
+      type: table
+      columns:
+        - { label: Amazon MQ, atom: mq-broker, icon: mq }
+        - { label: SQS・SNS, atom: sqs-standard, icon: sqs }
+        - { label: Amazon MSK, atom: msk-cluster, icon: msk }
+        - { label: Kinesis Data Streams, atom: kinesis-data-streams, icon: kds }
+      rows:
+        - label: 種類
+          cells: [メッセージブローカー（ActiveMQ・RabbitMQ）, キュー・Pub/Sub（AWS 独自）, ストリーミング（Apache Kafka）, ストリーミング（AWS 独自）]
+        - label: 向いている使い方
+          cells: [MQTT・AMQP・JMS を使う既存のアプリの移行, 新しく作るアプリ, Kafka のアプリ・ツールをそのまま使う, 新しく作るストリーミング処理]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html
+  - https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html

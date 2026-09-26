@@ -1,0 +1,67 @@
+# Auto Scaling の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: autoscaling
+lead: EC2 の台数を、負荷や時刻に合わせて自動で増減させる。異常なインスタンスは自動で置き換えるので、台数を保つ（自己修復）ためにも使う
+decisions:
+  - 負荷の特徴から、スケーリングの方法（ターゲット追跡・ステップ・スケジュール・予測）を選ぶ
+  - 異常なインスタンスを、何の情報で判定して置き換えるか
+  - 起動に時間がかかる場合に、どう速くスケールアウトするか
+sections:
+  - title: スケールアウトの流れ
+    diagram:
+      type: flow
+      steps:
+        - { label: CloudWatch のメトリクス, icon: cloudwatch, note: 平均 CPU 使用率 75% }
+        - { label: スケーリングポリシー, icon: autoscaling, atom: autoscaling-target-tracking, note: 目標の 50% を超えた, via: アラーム }
+        - { label: 希望台数を変更, icon: grp-asg, atom: autoscaling-group, note: 2 台 → 3 台（最大 6 台まで） }
+        - { label: 起動テンプレートから起動, icon: instance, atom: autoscaling-launch-template, note: 台数が少ない AZ に追加 }
+        - { label: ロードバランサーに登録, icon: alb, atom: elb-health-checks, note: ヘルスチェックに合格したら振り分け開始 }
+    points:
+      - Auto Scaling グループは、最小・希望・最大の台数と、使う AZ（サブネット）を決める
+      - スケールインでは、デフォルトでインスタンスが最も多い AZ から終了するものを選ぶ
+
+  - title: スケーリングの方法
+    diagram:
+      type: table
+      columns:
+        - { label: ターゲット追跡, atom: autoscaling-target-tracking }
+        - { label: ステップ, atom: autoscaling-step-scaling }
+        - { label: スケジュール, atom: autoscaling-scheduled }
+        - { label: 予測, atom: autoscaling-predictive }
+      rows:
+        - label: きっかけ
+          cells: [指標が目標値からずれた, アラームのしきい値を超えた, 決めた日時になった, 過去のパターンから予測した]
+        - label: 設定すること
+          cells: [目標値だけ（例 CPU 50%）, 超過の大きさごとの増減の台数, 日時と台数, 予測に使う指標]
+        - label: 向いている負荷
+          cells: [ほとんどの場合（推奨）, 超過の度合いで増やす量を変えたい, 増える時刻が分かっている, 日次・週次の周期がある]
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: 指標を一定に保ちたい（とくに理由がなければこれ）
+            atom: autoscaling-target-tracking
+          - when: 毎朝 9 時など、決まった時刻に備えたい
+            atom: autoscaling-scheduled
+          - when: 周期的な負荷に、来る前から備えたい
+            atom: autoscaling-predictive
+          - when: アプリが応答しないインスタンスも置き換えたい
+            atom: autoscaling-elb-health-check
+          - when: 起動・初期化が遅く、スケールアウトが間に合わない
+            atom: autoscaling-warm-pool
+          - when: 起動時や終了時に、独自の処理（ログの退避など）を挟みたい
+            atom: autoscaling-lifecycle-hooks
+          - when: 新しい AMI に、少しずつ入れ替えたい
+            atom: autoscaling-instance-refresh
+          - when: スケールインで、どのインスタンスを終了するかを決めたい
+            atom: autoscaling-termination-policy
+status: draft
+sources:
+  - https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html
+  - https://docs.aws.amazon.com/autoscaling/ec2/userguide/scale-your-group.html
+  - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html

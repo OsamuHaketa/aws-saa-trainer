@@ -1,0 +1,170 @@
+# IAM の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: iam
+lead: AWS の「誰が・何に・何をしてよいか」を決めるサービス。ID（ユーザー・ロール）にポリシーを付けて権限を与える。グローバルなサービスで、料金はかからない
+decisions:
+  - 人とアプリに、長期の認証情報（IAM ユーザー）と一時的な認証情報（IAM ロール）のどちらを使わせるか
+  - 別アカウント・社内の ID・EC2 のアプリに、どうやって権限を渡すか
+  - ポリシーが重なったとき、最終的に許可されるか拒否されるか
+  - 権限の上限（境界・SCP）で、与えすぎをどう防ぐか
+sections:
+  - title: ロールで一時的な権限を渡す
+    body: IAM ロールは、引き受けた人やサービスに STS が一時的な認証情報を発行する仕組み。アクセスキーを配らずに済むので、アプリ・別アカウント・社内の ID には原則ロールを使う。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: 自分の AWS アカウント
+          kind: account
+          at: [1.5, 0, 4.5, 3]
+      nodes:
+        - id: emp
+          label: "社員\n（社内の IdP）"
+          icon: g-users
+          atom: iam-federation
+          at: [0, 0.2]
+        - id: other
+          label: "別アカウント\nのユーザー"
+          icon: grp-account
+          atom: iam-cross-account-role
+          at: [0, 1.2]
+        - id: ec2
+          label: EC2 のアプリ
+          icon: instance
+          atom: iam-instance-profile
+          at: [0, 2.2]
+        - id: sts
+          label: STS
+          icon: sts
+          atom: iam-sts
+          at: [2, 1.2]
+        - id: role
+          label: IAM ロール
+          icon: iam-role
+          atom: iam-role
+          at: [3.2, 1.2]
+        - id: s3
+          label: S3
+          icon: s3
+          at: [5, 0.4]
+        - id: ddb
+          label: DynamoDB
+          icon: dynamodb
+          at: [5, 2]
+      edges:
+        - { from: emp, to: sts, label: SAML / OIDC }
+        - { from: other, to: sts, label: AssumeRole }
+        - { from: ec2, to: sts }
+        - { from: sts, to: role, label: 一時的な認証情報 }
+        - { from: role, to: s3 }
+        - { from: role, to: ddb }
+      caption: ロールの信頼ポリシーで「誰が引き受けられるか」、アクセス許可ポリシーで「何ができるか」を決める
+    points:
+      - 別アカウントのバケットなどへのアクセスは、自分側の IAM ポリシーと相手側のリソースベースのポリシーの両方で許可が必要
+      - 複数のアカウントを使う社員には、IAM ユーザーを作らずに IAM Identity Center でシングルサインオンさせる
+
+  - title: ID の種類
+    diagram:
+      type: table
+      columns:
+        - { label: ルートユーザー, atom: iam-root-user, icon: g-authenticated-user }
+        - { label: IAM ユーザー, atom: iam-user, icon: g-user }
+        - { label: IAM グループ, atom: iam-group, icon: g-users }
+        - { label: IAM ロール, atom: iam-role, icon: iam-role }
+      rows:
+        - label: 認証情報
+          cells:
+            - メールアドレスとパスワード
+            - { text: 長期（パスワード・アクセスキー）, tone: warn }
+            - なし（ユーザーをまとめるだけ）
+            - { text: 一時的（STS が発行）, tone: good }
+        - label: 使う場面
+          cells: [ルートユーザーでしかできない作業だけ, ロールを使えない場合だけ, 同じ権限のユーザーにまとめて付ける, アプリ・AWS のサービス・別アカウント・フェデレーション]
+        - label: 守り方
+          cells: [MFA を付け、アクセスキーは作らない, MFA とアクセスキーのローテーション, 最小権限のポリシー, 信頼ポリシーで引き受ける相手を絞る]
+    points:
+      - グループは入れ子にできず、ポリシーの対象（プリンシパル）にもできない
+
+  - title: 許可されるか拒否されるか
+    body: 同じアカウント内のリクエストの判定を簡略化したもの。1 つでも明示的な Deny があれば、ほかにどれだけ Allow があっても拒否される。
+    diagram:
+      type: decision
+      tree:
+        question: どこかのポリシーに、明示的な Deny がある？
+        branches:
+          - when: ある（SCP・境界・アイデンティティ・リソースのどれでも）
+            answer: 拒否
+            atom: iam-policy-evaluation
+          - when: ない
+            next:
+              question: SCP とアクセス許可の境界で許可されている範囲か？
+              branches:
+                - when: 範囲の外
+                  answer: 拒否（暗黙的な拒否）
+                  atom: iam-permissions-boundary
+                - when: 範囲の中
+                  next:
+                    question: アイデンティティベースかリソースベースのポリシーに Allow がある？
+                    branches:
+                      - when: ある
+                        answer: 許可
+                        atom: iam-policy-evaluation
+                      - when: ない
+                        answer: 拒否（暗黙的な拒否）
+                        atom: iam-least-privilege
+    points:
+      - SCP とアクセス許可の境界は「上限」を決めるだけで、それ自体は権限を与えない
+      - 何も許可されていなければ拒否（デフォルトは暗黙的な拒否）
+
+  - title: 権限を決めるポリシーの種類
+    diagram:
+      type: table
+      columns:
+        - { label: アイデンティティベース, atom: iam-least-privilege, icon: iam-permissions }
+        - { label: リソースベース, atom: iam-resource-based-policy, icon: bucket }
+        - { label: アクセス許可の境界, atom: iam-permissions-boundary, icon: g-shield }
+        - { label: SCP, atom: organizations-scp, icon: organizations }
+      rows:
+        - label: 付ける場所
+          cells: [ユーザー・グループ・ロール, S3 バケット・SQS・KMS キーなど, ユーザー・ロール, Organizations の OU・アカウント]
+        - label: 役割
+          cells:
+            - { text: 権限を与える, tone: good }
+            - { text: 権限を与える（別アカウントにも）, tone: good }
+            - { text: 上限を決める, tone: warn }
+            - { text: 上限を決める, tone: warn }
+        - label: よくある使い方
+          cells: [開発者に S3 の読み取りを許可, 別アカウントにバケットを公開, 開発者が作るロールの権限を制限, 組織全体で特定リージョン以外を禁止]
+    points:
+      - Condition（条件キー）で、送信元 IP・MFA の有無・タグなどを条件にできる
+      - タグが一致するときだけ許可するのが ABAC。人やリソースが増えてもポリシーを書き換えずに済む
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: EC2 のアプリから AWS の API を呼ぶ
+            atom: iam-instance-profile
+          - when: 別のアカウントのユーザーに、自分のアカウントを操作させる
+            atom: iam-cross-account-role
+          - when: 社内の ID（Active Directory など）で AWS を使わせる
+            atom: iam-federation
+          - when: 多数のアカウントに、社員をシングルサインオンさせる
+            atom: iam-identity-center
+          - when: 外部と共有されているリソースや、使われていない権限を見つける
+            atom: iam-access-analyzer
+          - when: 部署などのタグで、アクセスできる範囲を分ける
+            atom: iam-abac
+          - when: 開発者にロールを作らせるが、権限を広げさせない
+            atom: iam-permissions-boundary
+status: draft
+sources:
+  - https://docs.aws.amazon.com/IAM/latest/UserGuide/id.html
+  - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html
+  - https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html
+  - https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html

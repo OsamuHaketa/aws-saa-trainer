@@ -1,0 +1,141 @@
+# 設計パターンの図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: patterns
+alsoShowOn: [backup, drs]
+topic: 災害対策（DR）と設計の原則
+lead: 特定のサービスではなく、試験の多くの問題で前提になる設計の考え方。災害対策（DR）の 4 つの戦略、疎結合・ステートレス、責任共有モデルをまとめる
+decisions:
+  - 求められる RPO・RTO とコストから、DR の戦略を選ぶ
+  - 障害や負荷の急増に強くするため、どこを疎結合・ステートレスにするか
+  - セキュリティの対策が、AWS と利用者のどちらの責任か
+sections:
+  - title: RPO と RTO
+    body: RPO は「どれだけ前の時点までのデータに戻るか（失うデータの量）」、RTO は「止まってから復旧するまでの時間」。どちらも短くするほど費用が上がる。
+    diagram:
+      type: flow
+      steps:
+        - { label: 最後のバックアップ・複製, icon: backup, atom: patterns-rpo-rto }
+        - { label: 障害の発生, icon: g-alert, note: ここまでのデータが失われうる, via: RPO }
+        - { label: 復旧, icon: g-recover, note: この間はサービスが止まる, via: RTO }
+
+  - title: DR の 4 つの戦略
+    body: 左ほど安いが復旧に時間がかかり、右ほど高いが速く復旧できる。DR 用のリージョンで、ふだん何を動かしておくかが違う。
+    diagram:
+      type: table
+      axis: { left: 安い・復旧が遅い, right: 高い・復旧が速い }
+      columns:
+        - { label: バックアップと復元, atom: patterns-backup-restore, icon: backup }
+        - { label: パイロットライト, atom: patterns-pilot-light, icon: g-database }
+        - { label: ウォームスタンバイ, atom: patterns-warm-standby, icon: instance }
+        - { label: マルチサイト, atom: patterns-multi-site, icon: instances }
+      rows:
+        - label: DR 側でふだん動いているもの
+          cells: [なし（バックアップだけ）, DB の複製などの中核だけ, システム全体（縮小した規模）, システム全体（フルの規模）]
+        - label: RPO・RTO の目安
+          cells:
+            - { text: 数時間, tone: bad }
+            - { text: 数十分, tone: warn }
+            - { text: 数分, tone: good }
+            - { text: ほぼゼロ, tone: good }
+        - label: 障害時にやること
+          cells: [環境を作り直してデータを復元, 残りのリソースを起動・拡大して切り替え, 規模を拡大して切り替え, トラフィックを寄せるだけ]
+        - label: 費用
+          cells:
+            - { text: 最も安い, tone: good }
+            - 安い
+            - 中くらい
+            - { text: 最も高い, tone: bad }
+    points:
+      - 切り替えには Route 53 のフェイルオーバールーティングやヘルスチェックを使うことが多い
+      - パイロットライトとウォームスタンバイの違いは、DR 側でアプリのサーバーも動いているかどうか
+
+  - title: DR 戦略の判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: 障害時に、どのくらいで復旧する必要がある？
+        branches:
+          - when: 数時間〜1 日かかってもよい。とにかく安く
+            atom: patterns-backup-restore
+          - when: 数十分で。DB はリアルタイムに複製しておきたい
+            atom: patterns-pilot-light
+          - when: 数分で。すぐに処理を引き継げる状態にしておきたい
+            atom: patterns-warm-standby
+          - when: ほぼ止めない。データの損失もほぼ許されない
+            atom: patterns-multi-site
+
+  - title: 疎結合でステートレスな構成
+    body: Web 層がセッションを自分のメモリに持たず、重い処理をキューに渡すと、どのサーバーが落ちても・負荷が急に増えても影響が小さくなる。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 4
+      groups:
+        - label: Auto Scaling
+          kind: asg
+          at: [1.55, 0.25, 1.4, 1.95]
+        - label: Auto Scaling
+          kind: asg
+          at: [4.5, 0.25, 1.5, 1.95]
+      nodes:
+        - id: users
+          label: ユーザー
+          icon: g-users
+          at: [0, 1]
+        - id: alb
+          label: ALB
+          icon: alb
+          atom: patterns-multi-az
+          at: [0.9, 1]
+        - id: web
+          label: "Web サーバー\n（ステートレス）"
+          icon: instances
+          atom: patterns-stateless
+          at: [1.75, 1]
+        - id: session
+          label: "セッション\n（DynamoDB など）"
+          icon: dynamodb
+          atom: patterns-stateless
+          at: [1.75, 2.9]
+        - id: sqs
+          label: SQS キュー
+          icon: sqs
+          atom: patterns-loose-coupling
+          at: [3.3, 1]
+        - id: worker
+          label: "ワーカー\n（キューの長さで増減）"
+          icon: instances
+          atom: sqs-queue-based-scaling
+          at: [4.8, 1]
+      edges:
+        - { from: users, to: alb }
+        - { from: alb, to: web }
+        - { from: web, to: session, both: true }
+        - { from: web, to: sqs, label: 依頼 }
+        - { from: sqs, to: worker, label: 取り出す }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - 同じメッセージが 2 回届いても困らないように、処理を冪等に作る
+      - 呼び出しが失敗したら、エクスポネンシャルバックオフとジッターで間隔を空けて再試行する
+
+  - title: 責任共有モデル
+    body: AWS は「クラウドそのもの」、利用者は「クラウドの中」のセキュリティに責任を持つ。マネージドなサービスほど、AWS の責任の範囲が広い。
+    diagram:
+      type: table
+      columns:
+        - { label: AWS の責任, atom: patterns-shared-responsibility }
+        - { label: 利用者の責任, atom: patterns-shared-responsibility }
+      rows:
+        - label: EC2
+          cells: [データセンター・ハードウェア・ハイパーバイザー, OS のパッチ・ミドルウェア・アプリ・セキュリティグループ・データ]
+        - label: RDS
+          cells: [上に加えて、OS と DB エンジンのパッチ, DB の設定・ユーザー・ネットワークのアクセス制御・データ]
+        - label: S3・DynamoDB・Lambda
+          cells: [基盤・OS・ランタイムまで, アクセス制御・暗号化の設定・コード・データ]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+  - https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html
+  - https://aws.amazon.com/compliance/shared-responsibility-model/

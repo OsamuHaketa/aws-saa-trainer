@@ -1,0 +1,112 @@
+# 監視・監査の図解（CloudWatch のページが本体。関係するサービスのページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: cloudwatch
+alsoShowOn: [cloudtrail, config, xray, trustedadvisor]
+topic: 監視・監査のサービスの使い分け
+lead: AWS のリソースとアプリの状態を数値（メトリクス）とログで集め、しきい値を超えたらアラームで通知や自動の対応を行う監視サービス
+decisions:
+  - CloudWatch・CloudTrail・Config・X-Ray のどれで調べるか
+  - EC2 のメモリやディスクの使用率をどう集めるか
+  - アラームをきっかけに、どんな対応を自動で行うか
+sections:
+  - title: 何を記録するサービスか
+    diagram:
+      type: table
+      columns:
+        - { label: CloudWatch, atom: cloudwatch-metrics, icon: cloudwatch }
+        - { label: CloudTrail, atom: cloudtrail-trail, icon: cloudtrail }
+        - { label: AWS Config, atom: config-rules, icon: config }
+        - { label: X-Ray, atom: xray-tracing, icon: xray }
+      rows:
+        - label: 記録するもの
+          cells: [性能の数値（メトリクス）とログ, API の呼び出し（操作の履歴）, リソースの設定とその変更の履歴, リクエストの経路（トレース）]
+        - label: 答えられる質問
+          cells: [いま何が起きている？（CPU が高い・エラーが多い）, 誰が・いつ・何をした？, 設定はどう変わった？ルールに沿っている？, どのサービスで遅い・失敗している？]
+        - label: 例
+          cells: [CPU 使用率が 80% を超えたら通知, セキュリティグループを変更した人を調べる, 暗号化されていない EBS を見つける, マイクロサービスのどこが遅いかを見つける]
+    points:
+      - ベストプラクティスとの差（コスト・セキュリティ・上限など）をまとめて示すのは Trusted Advisor
+
+  - title: CloudWatch の仕組み
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: ec2
+          label: "EC2\n（エージェント）"
+          icon: instance
+          atom: cloudwatch-agent
+          at: [0, 0.3]
+        - id: aws
+          label: AWS のサービス
+          icon: rds
+          at: [0, 1.9]
+        - id: metrics
+          label: メトリクス
+          icon: g-metrics
+          atom: cloudwatch-metrics
+          at: [1.7, 0.3]
+        - id: logs
+          label: Logs
+          icon: g-logs
+          atom: cloudwatch-logs
+          at: [1.7, 1.9]
+        - id: alarm
+          label: アラーム
+          icon: g-alert
+          atom: cloudwatch-alarms
+          at: [3.3, 0.3]
+        - id: sns
+          label: "通知（SNS）\nAuto Scaling・EC2 の復旧"
+          icon: sns
+          at: [5, 0.3]
+        - id: sub
+          label: "Lambda・Firehose\n・OpenSearch"
+          icon: lambda
+          atom: cloudwatch-logs-subscription
+          at: [4.2, 1.9]
+      edges:
+        - { from: ec2, to: metrics }
+        - { from: ec2, to: logs }
+        - { from: aws, to: metrics }
+        - { from: aws, to: logs }
+        - { from: logs, to: metrics, label: メトリクスフィルター }
+        - { from: metrics, to: alarm }
+        - { from: alarm, to: sns }
+        - { from: logs, to: sub, label: サブスクリプション }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - EC2 のメモリとディスクの使用率は標準では集まらない。CloudWatch エージェントを入れる
+      - 複数のアラームを AND / OR で組み合わせる複合アラームで、余計な通知を減らせる
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何を知りたい・したい？
+        branches:
+          - when: EC2 のメモリやディスクの使用率を監視したい
+            atom: cloudwatch-agent
+          - when: ログの中の特定のエラーの数を監視したい
+            atom: cloudwatch-logs
+          - when: ログをその場で検索・集計したい
+            atom: cloudwatch-logs-insights
+          - when: 誰がリソースを削除したか調べたい
+            atom: cloudtrail-trail
+          - when: S3 のオブジェクトの読み書きも記録したい
+            atom: cloudtrail-data-events
+          - when: 設定がルールに沿っているかを継続的に確認したい
+            atom: config-rules
+          - when: 複数のアカウントの設定の状況をまとめて見たい
+            atom: config-aggregator
+          - when: 分散したアプリのどこで遅延しているか知りたい
+            atom: xray-tracing
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html
+  - https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html
+  - https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html
+  - https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html

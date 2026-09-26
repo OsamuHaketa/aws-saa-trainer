@@ -1,0 +1,57 @@
+# 目的別データベースの図解（DocumentDB のページが本体。関係するサービスのページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: documentdb
+alsoShowOn: [neptune, keyspaces, timestream, memorydb]
+topic: 目的別データベースの使い分け
+lead: MongoDB 互換の API を持つ、JSON のドキュメントを保存するマネージドなデータベース。既存の MongoDB のアプリやツールをほぼそのまま使える
+decisions:
+  - データの形とアクセスのしかたから、目的別のデータベースを選ぶ
+  - 既存の OSS のデータベースを、互換のマネージドサービスに移す
+sections:
+  - title: データの形で選ぶ
+    diagram:
+      type: table
+      columns:
+        - { label: RDS・Aurora, atom: rds-aurora, icon: rds }
+        - { label: DynamoDB, atom: dynamodb-table, icon: dynamodb }
+        - { label: DocumentDB, atom: documentdb-cluster, icon: documentdb }
+        - { label: Neptune, atom: neptune-graph, icon: neptune }
+        - { label: Keyspaces, atom: keyspaces-table, icon: keyspaces }
+        - { label: Timestream, atom: timestream-db, icon: timestream }
+        - { label: MemoryDB, atom: memorydb-cluster, icon: memorydb }
+      rows:
+        - label: データの形
+          cells: [表（リレーショナル）, キーと値, JSON のドキュメント, ノードと関係（グラフ）, ワイドカラム, 時刻付きの値, インメモリのキーと値]
+        - label: 互換
+          cells: [MySQL・PostgreSQL など, "-", MongoDB, Gremlin・openCypher・SPARQL, Apache Cassandra, "-", Valkey・Redis OSS]
+        - label: 向いている使い方
+          cells: [複雑な結合・トランザクション, 大規模で予測できるアクセス・サーバーレス, カタログ・コンテンツ管理, SNS の友達関係・不正検知・レコメンド, 既存の Cassandra の移行, IoT のセンサー値・メトリクス, 高速で耐久性も必要な主データベース]
+    points:
+      - ElastiCache はキャッシュ（消えてもよい）、MemoryDB は複数 AZ のログに永続化する主データベース
+
+  - title: 判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: どんなデータを扱う？
+        branches:
+          - when: 表の形で、結合やトランザクションが必要
+            atom: rds-aurora
+          - when: キーで引くだけで、どんな規模でも 1 桁ミリ秒
+            atom: dynamodb-table
+          - when: MongoDB で書かれたアプリの JSON のドキュメント
+            atom: documentdb-cluster
+          - when: 人やモノの複雑なつながり（関係をたどる検索）
+            atom: neptune-graph
+          - when: Cassandra で書かれたアプリのデータ
+            atom: keyspaces-table
+          - when: 時系列のセンサー値やメトリクス
+            atom: timestream-db
+          - when: マイクロ秒の読み取りと耐久性の両方が必要
+            atom: memorydb-cluster
+status: draft
+sources:
+  - https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html
+  - https://docs.aws.amazon.com/decision-guides/latest/databases-on-aws-how-to-choose/databases-on-aws-how-to-choose.html

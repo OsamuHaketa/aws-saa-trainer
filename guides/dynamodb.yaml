@@ -1,0 +1,151 @@
+# DynamoDB の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: dynamodb
+lead: サーバーレスのキーバリュー型 NoSQL データベース。サーバーの管理が不要で、どんな規模でも 1 桁ミリ秒で応答する。データはリージョン内の 3 つの AZ に自動で複製される
+decisions:
+  - リレーショナル DB（RDS）ではなく DynamoDB を選ぶ場面か
+  - キャパシティモード（オンデマンド / プロビジョンド）の選び方
+  - 検索の要件に合わせたキーとインデックス（GSI / LSI）の設計
+  - キャッシュ・複数リージョン・変更の連携などの周辺機能
+sections:
+  - title: DynamoDB を中心にした構成
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: リージョン A
+          kind: region
+          at: [1.7, 0, 3.3, 3]
+        - label: リージョン B
+          kind: region
+          at: [5, 0, 1, 3]
+      nodes:
+        - id: app
+          label: アプリ
+          icon: lambda
+          at: [0, 1.2]
+        - id: dax
+          label: "DAX\n（キャッシュ）"
+          icon: elasticache
+          atom: dynamodb-dax
+          at: [1.1, 1.2]
+        - id: table
+          label: テーブル
+          icon: dynamodb-table
+          atom: dynamodb-table
+          at: [2.8, 1.2]
+        - id: stream
+          label: "Streams →\nLambda"
+          icon: lambda-function
+          atom: dynamodb-streams
+          at: [4, 1.9]
+        - id: s3
+          label: "S3 へ\nエクスポート"
+          icon: s3
+          atom: dynamodb-export-s3
+          at: [4, 0.3]
+        - id: replica
+          label: レプリカ
+          icon: dynamodb-table
+          atom: dynamodb-global-tables
+          at: [5, 1.2]
+      edges:
+        - { from: app, to: dax }
+        - { from: dax, to: table }
+        - { from: table, to: stream, label: 変更 }
+        - { from: table, to: s3 }
+        - { from: table, to: replica, both: true, label: グローバルテーブル }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+
+  - title: キーの考え方
+    body: 項目（行）はパーティションキーで保存先が決まり、ソートキーで並ぶ。キーを指定する検索（Query）は速いが、キー以外の条件で探すにはインデックスが必要。
+    diagram:
+      type: table
+      columns:
+        - { label: "パーティションキー（UserId）" }
+        - { label: "ソートキー（OrderDate）" }
+        - { label: 属性（Total） }
+        - { label: 属性（Status） }
+      rows:
+        - label: 項目 1
+          cells: [user-001, 2026-09-01, "3,200", 発送済み]
+        - label: 項目 2
+          cells: [user-001, 2026-09-15, "1,800", 準備中]
+        - label: 項目 3
+          cells: [user-002, 2026-09-03, "5,400", 発送済み]
+      caption: 「user-001 の 9 月の注文」はキーで Query できる。「Status が準備中の注文」を探すには、Status をキーにした GSI を作る
+    points:
+      - パーティションキーは値の種類が多く、アクセスが均等に分かれるものを選ぶ（偏るとホットパーティション）
+      - 1 つの項目は最大 400 KB。大きなデータは S3 に置き、DynamoDB には S3 のキーを保存する
+
+  - title: GSI と LSI
+    diagram:
+      type: table
+      columns:
+        - { label: グローバルセカンダリインデックス（GSI）, atom: dynamodb-gsi }
+        - { label: ローカルセカンダリインデックス（LSI）, atom: dynamodb-lsi }
+      rows:
+        - label: キー
+          cells: [別のパーティションキー（+ ソートキー）, 同じパーティションキー + 別のソートキー]
+        - label: 作れるタイミング
+          cells:
+            - { text: いつでも追加できる, tone: good }
+            - { text: テーブルの作成時だけ, tone: bad }
+        - label: 読み込みの整合性
+          cells:
+            - { text: 結果整合性だけ, tone: warn }
+            - { text: 強い整合性も選べる, tone: good }
+        - label: 容量
+          cells: [テーブルとは別に持つ, テーブルと共有]
+
+  - title: キャパシティモード
+    diagram:
+      type: table
+      columns:
+        - { label: オンデマンド, atom: dynamodb-on-demand }
+        - { label: プロビジョンド, atom: dynamodb-provisioned }
+      rows:
+        - label: 容量の計画
+          cells:
+            - { text: 不要, tone: good }
+            - 読み込み（RCU）・書き込み（WCU）を決める
+        - label: 急な増加
+          cells:
+            - { text: 自動で対応, tone: good }
+            - { text: 超えるとスロットリング（オートスケーリングで緩和）, tone: warn }
+        - label: 料金
+          cells: [リクエストの数に応じて, 設定した容量に応じて（一定の負荷なら安い）]
+        - label: 向いている使い方
+          cells: [新しいアプリ・予測できない負荷, 予測できる一定の負荷]
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: 読み取りをマイクロ秒にしたい
+            atom: dynamodb-dax
+          - when: 複数のリージョンで読み書きしたい
+            atom: dynamodb-global-tables
+          - when: 項目の変更をきっかけに処理を動かしたい
+            atom: dynamodb-streams
+          - when: 古くなった項目を自動で消したい
+            atom: dynamodb-ttl
+          - when: 誤って消したデータを、秒単位の時点に戻したい
+            atom: dynamodb-pitr
+          - when: テーブルに負荷をかけずに S3 で分析したい
+            atom: dynamodb-export-s3
+          - when: 複数の項目をまとめて成功・失敗させたい
+            atom: dynamodb-transactions
+          - when: 書き込み直後の値を必ず読みたい
+            atom: dynamodb-consistency
+status: draft
+sources:
+  - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html
+  - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html
+  - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html
+  - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html

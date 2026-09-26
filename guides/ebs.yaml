@@ -1,0 +1,92 @@
+# EBS の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: ebs
+lead: EC2 に付けるブロックストレージ（仮想のディスク）。1 つの AZ の中にあり、インスタンスを止めてもデータが残る。スナップショットで S3 にバックアップする
+decisions:
+  - 性能とコストから、ボリュームタイプ（gp3・io2・st1・sc1）を選ぶ
+  - スナップショットで、別の AZ・リージョン・アカウントにどう移すか
+  - 既存のボリュームを暗号化する方法
+sections:
+  - title: ボリュームタイプ
+    diagram:
+      type: table
+      axis: { left: 速い・高い, right: 遅い・安い }
+      columns:
+        - { label: io2（プロビジョンド IOPS SSD）, atom: ebs-io2, icon: ebs }
+        - { label: gp3（汎用 SSD）, atom: ebs-gp3, icon: ebs }
+        - { label: st1（スループット最適化 HDD）, atom: ebs-st1, icon: ebs }
+        - { label: sc1（Cold HDD）, atom: ebs-sc1, icon: ebs }
+      rows:
+        - label: 得意なこと
+          cells: [小さな読み書きを大量に（IOPS）, バランス, 大きなデータを順番に（スループット）, ほとんど読まない大きなデータ]
+        - label: 性能の目安
+          cells: ["最大 256,000 IOPS（Block Express）", "基本 3,000 IOPS。最大 80,000 IOPS まで追加できる", 大きな連続の読み書き, 最も低い]
+        - label: ブートボリューム
+          cells:
+            - { text: 使える, tone: good }
+            - { text: 使える, tone: good }
+            - { text: 使えない, tone: bad }
+            - { text: 使えない, tone: bad }
+        - label: 向いている使い方
+          cells: [重要な DB（高い IOPS を安定して）, ほとんどのワークロード, ビッグデータ・ログ処理, アーカイブ的なデータ]
+    points:
+      - io1 / io2 だけが、同じ AZ の複数のインスタンスに同時に付けられる（マルチアタッチ）
+      - 付けたまま、容量・タイプ・IOPS を変更できる（Elastic Volumes）。容量は減らせない
+
+  - title: スナップショットで移す
+    body: EBS は 1 つの AZ の中にしかないので、別の AZ・リージョン・アカウントへはスナップショット経由で移す。スナップショットは前回からの変更分だけを保存する（増分）。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: リージョン A
+          kind: region
+          at: [0, 0, 4, 3]
+        - label: AZ a
+          kind: az
+          at: [0, 0, 1.6, 3]
+        - label: AZ b
+          kind: az
+          at: [2.4, 0, 1.6, 3]
+        - label: リージョン B
+          kind: region
+          at: [4.3, 0, 1.7, 3]
+      nodes:
+        - id: vol
+          label: ボリューム
+          icon: ebs
+          at: [0.3, 1]
+        - id: snap
+          label: スナップショット
+          icon: s3
+          atom: ebs-snapshots
+          at: [1.5, 2]
+        - id: vol2
+          label: 新しいボリューム
+          icon: ebs
+          at: [2.7, 1]
+        - id: copy
+          label: コピー
+          icon: s3
+          at: [4.65, 2]
+        - id: vol3
+          label: 新しいボリューム
+          icon: ebs
+          at: [4.65, 0.7]
+      edges:
+        - { from: vol, to: snap, label: 取得 }
+        - { from: snap, to: vol2, label: 復元 }
+        - { from: snap, to: copy, label: コピー }
+        - { from: copy, to: vol3, label: 復元 }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - 暗号化されていないボリュームを暗号化するには、スナップショットを暗号化してコピーし、そこから作り直す
+      - 取得と削除の自動化は Data Lifecycle Manager か AWS Backup。誤って消したスナップショットはゴミ箱から戻せる
+status: draft
+sources:
+  - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html
+  - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html
+  - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html

@@ -1,0 +1,41 @@
+# Step Functions の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: stepfunctions
+lead: 複数の Lambda や AWS のサービスを、順番・分岐・並列・再試行・待機でつなぐワークフローを、サーバーなしで作るサービス。処理の状態は Step Functions が覚えている
+decisions:
+  - 処理のつなぎ方を、コードではなくワークフローで管理する場面か
+  - 標準ワークフローと Express ワークフローのどちらにするか
+sections:
+  - title: ワークフローの例（注文処理）
+    diagram:
+      type: flow
+      steps:
+        - { label: 在庫を確認, icon: lambda, note: Lambda }
+        - { label: 決済, icon: lambda, note: 失敗したら 3 回まで再試行 }
+        - { label: 上長の承認を待つ, icon: g-user, atom: stepfunctions-callback, note: タスクトークンで一時停止 }
+        - { label: 発送を依頼, icon: sqs, note: SQS に送る }
+      caption: 各ステップの再試行・エラー時の分岐・待機をワークフローに書けるので、Lambda のコードは処理だけに集中できる
+
+  - title: 標準と Express
+    diagram:
+      type: table
+      columns:
+        - { label: 標準ワークフロー, atom: stepfunctions-standard-express, icon: stepfunctions }
+        - { label: Express ワークフロー, atom: stepfunctions-standard-express, icon: stepfunctions }
+      rows:
+        - label: 最大の実行時間
+          cells:
+            - { text: 1 年, tone: good }
+            - 5 分
+        - label: 実行のされ方
+          cells: [1 回だけ（Exactly-Once）, 非同期の実行は少なくとも 1 回（At-Least-Once）]
+        - label: 料金
+          cells: [状態の遷移の数, 実行の回数と時間]
+        - label: 向いている使い方
+          cells: [長時間の業務フロー・人の承認, 大量のイベント処理・IoT のデータの取り込み]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html
+  - https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html

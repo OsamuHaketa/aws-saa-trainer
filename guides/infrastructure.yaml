@@ -1,0 +1,80 @@
+# グローバルインフラの図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: infrastructure
+lead: AWS の設備の地理的な単位。リージョンの中に複数の AZ があり、さらにエッジロケーション・Local Zones・Wavelength・Outposts で、利用者の近くや自社の中まで AWS を広げられる
+decisions:
+  - 障害に備えて、マルチ AZ とマルチリージョンのどちらまで冗長化するか
+  - レイテンシやデータの置き場所の要件から、Local Zones・Wavelength・Outposts を選ぶ
+sections:
+  - title: リージョンと AZ
+    body: リージョンは地理的に離れた独立した地域で、データは明示的にコピーしない限りリージョンの外に出ない。AZ はリージョン内の、電源とネットワークが独立した 1 つ以上のデータセンター。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: リージョン（東京）
+          kind: region
+          at: [0, 0, 4.2, 3]
+        - label: AZ a
+          kind: az
+          at: [0, 0.6, 1.4, 2.4]
+        - label: AZ c
+          kind: az
+          at: [1.4, 0.6, 1.4, 2.4]
+        - label: AZ d
+          kind: az
+          at: [2.8, 0.6, 1.4, 2.4]
+      nodes:
+        - id: a
+          label: データセンター
+          icon: g-servers
+          atom: infrastructure-region-az
+          at: [0.2, 1.5]
+        - id: c
+          label: データセンター
+          icon: g-servers
+          atom: infrastructure-region-az
+          at: [1.6, 1.5]
+        - id: d
+          label: データセンター
+          icon: g-servers
+          atom: infrastructure-region-az
+          at: [3, 1.5]
+        - id: edge
+          label: "エッジロケーション\n（CloudFront など）"
+          icon: edge-location
+          atom: cloudfront-distribution
+          at: [5, 0.3]
+        - id: users
+          label: ユーザー
+          icon: g-users
+          at: [5, 1.9]
+      edges:
+        - { from: a, to: c, both: true, label: 低遅延の専用線 }
+        - { from: c, to: d, both: true }
+        - { from: users, to: edge }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+
+  - title: AWS を利用者の近くに広げる
+    diagram:
+      type: table
+      columns:
+        - { label: Local Zones, atom: infrastructure-local-zones, icon: localzones }
+        - { label: Wavelength, atom: infrastructure-wavelength, icon: wavelength }
+        - { label: Outposts, atom: infrastructure-outposts, icon: outposts }
+      rows:
+        - label: 置き場所
+          cells: [大都市の近く（AWS の設備）, 通信事業者の 5G ネットワークの中, 自社のデータセンター]
+        - label: 目的
+          cells: [その地域のユーザーに 1 桁ミリ秒のレイテンシ, モバイル端末に超低レイテンシ, データを社内に置いたまま AWS の API で使う]
+        - label: 向いている使い方
+          cells: [映像の制作・ゲーム・リアルタイムの処理, 自動運転・AR/VR・スマートファクトリー, データの所在の規制・工場などの低レイテンシ]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/regions.html
+  - https://aws.amazon.com/about-aws/global-infrastructure/localzones/
+  - https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html
+  - https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html

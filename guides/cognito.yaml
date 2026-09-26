@@ -1,0 +1,37 @@
+# Cognito の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: cognito
+lead: Web・モバイルアプリの利用者の認証（サインアップ・サインイン）と、利用者に AWS の一時的な権限を渡す仕組みを提供するサービス
+decisions:
+  - ユーザープールと ID プールの役割の違い
+  - アプリの利用者に、S3 などへ直接アクセスさせる方法
+sections:
+  - title: サインインから AWS へのアクセスまで
+    diagram:
+      type: flow
+      steps:
+        - { label: アプリの利用者, icon: g-mobile, note: メール・Google などでサインイン }
+        - { label: ユーザープール, icon: cognito, atom: cognito-user-pool, note: 認証して JWT のトークンを返す, via: サインイン }
+        - { label: ID プール, icon: cognito, atom: cognito-identity-pool, note: トークンを IAM ロールの一時的な認証情報に交換, via: トークン }
+        - { label: S3・DynamoDB, icon: s3, note: 一時的な認証情報で直接アクセス, via: 一時的な権限 }
+      caption: API Gateway や ALB の前で認証するだけなら、ユーザープールのトークンを確認させれば足りる（ID プールは不要）
+
+  - title: ユーザープールと ID プール
+    diagram:
+      type: table
+      columns:
+        - { label: ユーザープール, atom: cognito-user-pool, icon: cognito }
+        - { label: ID プール, atom: cognito-identity-pool, icon: cognito }
+      rows:
+        - label: 役割
+          cells: [誰かを確かめる（認証）, AWS の権限を渡す（認可）]
+        - label: 渡すもの
+          cells: [JWT のトークン, AWS の一時的な認証情報（IAM ロール）]
+        - label: よくある使い方
+          cells: [アプリのログイン画面・ソーシャルログイン・MFA, アプリから S3 に直接アップロード・ゲストのアクセス]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html
+  - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-scenarios.html

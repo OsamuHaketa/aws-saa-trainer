@@ -1,0 +1,74 @@
+# KMS の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: kms
+lead: 暗号化の鍵を作成・保管・管理するサービス。鍵そのものは KMS の外に出ず、S3・EBS・RDS などの暗号化の裏側で使われる。鍵の使用は CloudTrail に記録される
+decisions:
+  - AWS マネージドキーとカスタマーマネージドキーのどちらを使うか
+  - 別アカウント・別リージョンで鍵を使う方法
+  - KMS と CloudHSM のどちらにするか
+sections:
+  - title: エンベロープ暗号化
+    body: KMS が直接暗号化できるのは 4 KB まで。大きなデータは、KMS が作るデータキーで手元で暗号化し、データキー自体は KMS の鍵で暗号化して一緒に保存する。
+    diagram:
+      type: flow
+      steps:
+        - { label: データキーを依頼, icon: kms, note: GenerateDataKey, atom: kms-envelope-encryption }
+        - { label: 平文と暗号化済みのデータキー, icon: data-key, note: KMS の鍵で暗号化したものも一緒に届く, via: 返す }
+        - { label: データを暗号化, icon: encrypted-data, note: 平文のデータキーはすぐ捨てる, via: 手元で }
+        - { label: 一緒に保存, icon: bucket, note: 暗号化したデータ + 暗号化したデータキー }
+      caption: 復号するときは、暗号化したデータキーを KMS に送って平文に戻してもらい、それでデータを復号する
+
+  - title: 鍵の種類
+    diagram:
+      type: table
+      columns:
+        - { label: AWS マネージドキー, atom: kms-aws-managed-key, icon: kms }
+        - { label: カスタマーマネージドキー, atom: kms-customer-managed-key, icon: kms }
+        - { label: CloudHSM, atom: kms-cloudhsm, icon: cloudhsm }
+      rows:
+        - label: 作る人
+          cells: [AWS のサービスが自動で, 利用者, 利用者（専用の HSM）]
+        - label: 鍵ポリシーの変更
+          cells:
+            - { text: できない, tone: bad }
+            - { text: できる, tone: good }
+            - "-"
+        - label: ローテーション
+          cells: [自動（毎年）, "自動（90〜2,560 日）・手動もできる", 利用者が管理]
+        - label: 別アカウントでの利用
+          cells:
+            - { text: できない, tone: bad }
+            - { text: 鍵ポリシーで許可できる, tone: good }
+            - 利用者が管理
+        - label: 選ぶ場面
+          cells: [手軽に暗号化したい, 鍵のアクセス制御・監査・無効化を自分でしたい, 鍵を AWS にも触らせない・FIPS 140-3 レベル 3]
+    points:
+      - 別アカウントに鍵を使わせるには、鍵ポリシーで相手のアカウントを許可し、相手側の IAM ポリシーでも許可する
+      - 別リージョンでもそのまま復号したいなら、マルチリージョンキー
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: とくに要件はなく、手軽に暗号化したい
+            atom: kms-aws-managed-key
+          - when: 誰が鍵を使えるかを制御し、使用を監査したい
+            atom: kms-customer-managed-key
+          - when: 別アカウントに暗号化したデータ（スナップショットなど）を共有したい
+            atom: kms-key-policy
+          - when: 別リージョンに複製したデータを、同じ鍵で復号したい
+            atom: kms-multi-region-keys
+          - when: 鍵を専用のハードウェアで、利用者だけが管理したい
+            atom: kms-cloudhsm
+          - when: 4 KB を超えるデータを暗号化したい
+            atom: kms-envelope-encryption
+status: draft
+sources:
+  - https://docs.aws.amazon.com/kms/latest/developerguide/overview.html
+  - https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html
+  - https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html
+  - https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html

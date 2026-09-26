@@ -1,0 +1,46 @@
+# コスト管理の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: cost
+lead: AWS の料金を「見える化する・予算で見張る・異常に気づく・部署ごとに分ける」ためのツール群。削減そのものは、購入オプションやサイズの見直しで行う
+decisions:
+  - 過去の分析・予算の監視・異常の検出・部署ごとの集計に、どのツールを使うか
+  - 削減の候補（サイズの見直し・購入オプション）をどう見つけるか
+sections:
+  - title: ツールの役割
+    diagram:
+      type: table
+      columns:
+        - { label: Cost Explorer, atom: cost-explorer, icon: cost }
+        - { label: Budgets, atom: cost-budgets, icon: budgets }
+        - { label: Cost Anomaly Detection, atom: cost-anomaly-detection, icon: g-alert }
+        - { label: コスト配分タグ, atom: cost-allocation-tags, icon: g-table }
+      rows:
+        - label: 役割
+          cells: [過去のコストを分析・将来を予測, 予算を決めて超えそうなら通知, いつもと違う増加を検出, 部署・プロジェクトごとに集計]
+        - label: 使う場面
+          cells: [どのサービスが高いか調べる・RI や Savings Plans の推奨, 月の予算を超えそうなときに知らせる・自動で止める, 設定ミスによる急な増加にすぐ気づく, 部門ごとに請求を分ける]
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: 過去のコストの内訳を見て、来月の予測もしたい
+            atom: cost-explorer
+          - when: 予算を超えそうなら通知したい
+            atom: cost-budgets
+          - when: 予想外のコストの急増に、しきい値を決めずに気づきたい
+            atom: cost-anomaly-detection
+          - when: 部署ごとにコストを分けて集計したい
+            atom: cost-allocation-tags
+          - when: 使われていない・大きすぎるリソースを見つけたい
+            atom: ec2-compute-optimizer
+          - when: コスト・セキュリティなどの改善点をまとめて知りたい
+            atom: trustedadvisor-checks
+status: draft
+sources:
+  - https://docs.aws.amazon.com/cost-management/latest/userguide/what-is-costmanagement.html
+  - https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html

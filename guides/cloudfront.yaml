@@ -1,0 +1,128 @@
+# CloudFront の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: cloudfront
+alsoShowOn: [globalaccelerator]
+topic: エッジからの配信（CloudFront と Global Accelerator）
+lead: 世界中のエッジロケーションでコンテンツをキャッシュして配信する CDN。静的なファイルも動的な API も、ユーザーの近くで受けて AWS のネットワークでオリジンへ運ぶ
+decisions:
+  - オリジン（S3・ALB）への直接アクセスをどう防ぐか
+  - 限定のコンテンツへのアクセスをどう制御するか
+  - キャッシュの効き方（キャッシュキー・TTL・無効化）の調整
+  - CloudFront と Global Accelerator のどちらを使うか
+sections:
+  - title: 配信の構成
+    body: パスごとに別のオリジンを指定できる。S3 は OAC で CloudFront からだけ読めるようにし、ALB はカスタムヘッダーやプレフィックスリストで直接のアクセスを防ぐ。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: リージョン
+          kind: region
+          at: [3.6, 0, 2.4, 3]
+      nodes:
+        - id: users
+          label: ユーザー
+          icon: g-users
+          at: [0, 1.1]
+        - id: edge
+          label: "エッジロケーション\n（キャッシュ）"
+          icon: cloudfront
+          atom: cloudfront-distribution
+          at: [1.6, 1.1]
+        - id: waf
+          label: WAF
+          icon: waf
+          at: [1.6, 2.2]
+        - id: acm
+          label: "ACM の証明書\n（us-east-1）"
+          icon: acm
+          atom: cloudfront-viewer-https
+          at: [1.6, 0]
+        - id: s3
+          label: "S3\n（OAC）"
+          icon: s3
+          atom: s3-origin-access-control
+          at: [4.6, 0.3]
+        - id: alb
+          label: ALB
+          icon: alb
+          atom: cloudfront-alb-origin
+          at: [4.6, 1.9]
+      edges:
+        - { from: users, to: edge, label: HTTPS }
+        - { from: waf, to: edge, dashed: true }
+        - { from: acm, to: edge, dashed: true }
+        - { from: edge, to: s3, label: "/static/*" }
+        - { from: edge, to: alb, label: "/api/*" }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - CloudFront に付ける独自ドメインの証明書は、米国東部（バージニア北部）の ACM で発行する
+      - キャッシュキーに含める要素（クエリ文字列・ヘッダー・Cookie）が多いほど、キャッシュヒット率は下がる
+
+  - title: エッジで動かすコード
+    diagram:
+      type: table
+      columns:
+        - { label: CloudFront Functions, atom: cloudfront-functions, icon: cloudfront-functions }
+        - { label: Lambda@Edge, atom: cloudfront-functions, icon: lambda }
+      rows:
+        - label: 実行時間
+          cells:
+            - { text: 1 ミリ秒未満, tone: good }
+            - 数秒（ビューワー側 5 秒・オリジン側 30 秒まで）
+        - label: 言語
+          cells: [JavaScript, Node.js・Python]
+        - label: 動くタイミング
+          cells: [ビューワーのリクエスト・レスポンス, ビューワー・オリジンのリクエスト・レスポンス]
+        - label: 向いている処理
+          cells: [ヘッダーの書き換え・URL のリダイレクト・簡単な認証, ネットワークを使う処理・重い処理]
+
+  - title: 困りごとと機能
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: 有料会員だけに、期限付きで配信したい
+            atom: cloudfront-signed-urls
+          - when: 更新したファイルを、TTL を待たずに配信したい
+            atom: cloudfront-invalidation
+          - when: 特定の国からのアクセスを拒否したい
+            atom: cloudfront-geo-restriction
+          - when: オリジンが落ちたら、別のオリジンから配信したい
+            atom: cloudfront-origin-failover
+          - when: ALB に CloudFront を経由せずアクセスされるのを防ぎたい
+            atom: cloudfront-alb-origin
+          - when: S3 バケットを非公開のまま配信したい
+            atom: s3-origin-access-control
+          - when: キャッシュヒット率を上げたい
+            atom: cloudfront-cache-key
+          - when: 使うエッジの地域を絞って料金を下げたい
+            atom: cloudfront-price-class
+
+  - title: CloudFront と Global Accelerator
+    diagram:
+      type: table
+      columns:
+        - { label: CloudFront, atom: cloudfront-distribution, icon: cloudfront }
+        - { label: Global Accelerator, atom: globalaccelerator-accelerator, icon: globalaccelerator }
+      rows:
+        - label: 対象
+          cells: [HTTP・HTTPS（WebSocket を含む）, TCP・UDP（HTTP 以外も）]
+        - label: キャッシュ
+          cells:
+            - { text: する, tone: good }
+            - { text: しない, tone: bad }
+        - label: 入口の IP
+          cells: [固定ではない（DNS 名で使う）, 固定のエニーキャスト IP が 2 つ]
+        - label: 向いている使い方
+          cells: [Web サイト・動画・API の配信, ゲーム・IoT・固定 IP が必要な API・リージョン間の高速なフェイルオーバー]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html
+  - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+  - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html
+  - https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html

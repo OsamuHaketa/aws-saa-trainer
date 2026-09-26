@@ -1,0 +1,205 @@
+# RDS の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: rds
+lead: マネージドのリレーショナルデータベース。MySQL・PostgreSQL・Oracle・SQL Server などを、バックアップ・パッチ・フェイルオーバーを AWS に任せて使う。Aurora は AWS が作った高性能版
+decisions:
+  - 可用性のためのマルチ AZ と、読み取り性能のためのリードレプリカを使い分ける
+  - RDS と Aurora のどちらにするか、Aurora のどの機能を使うか
+  - バックアップ（自動 / 手動スナップショット）と、別リージョンへの備え
+  - 大量の接続や、変動する負荷への対応
+sections:
+  - title: 可用性と読み取り性能の構成
+    body: マルチ AZ のスタンバイは障害に備えるためのもので、読み取りには使えない。読み取りを分散したいならリードレプリカを使う。
+    diagram:
+      type: architecture
+      cols: 7
+      rows: 3
+      groups:
+        - label: リージョン
+          kind: region
+          at: [2.1, 0, 4.9, 3]
+        - label: AZ a
+          kind: az
+          at: [2.1, 0, 1.6, 3]
+        - label: AZ b
+          kind: az
+          at: [3.7, 0, 1.6, 3]
+        - label: AZ c
+          kind: az
+          at: [5.3, 0, 1.7, 3]
+      nodes:
+        - id: app
+          label: アプリ
+          icon: instances
+          at: [0, 1.2]
+        - id: proxy
+          label: RDS Proxy
+          icon: rds-proxy
+          atom: rds-proxy
+          at: [1, 1.2]
+        - id: primary
+          label: プライマリ
+          icon: rds-instance
+          at: [2.4, 1.2]
+        - id: standby
+          label: "スタンバイ\n（読めない）"
+          icon: rds-instance
+          atom: rds-multi-az
+          at: [4, 0.8]
+        - id: replica
+          label: リードレプリカ
+          icon: rds-instance
+          atom: rds-read-replica
+          at: [5.65, 2]
+      edges:
+        - { from: app, to: proxy }
+        - { from: proxy, to: primary, label: 書き込み・読み取り }
+        - { from: primary, to: standby, label: 同期 }
+        - { from: primary, to: replica, label: 非同期 }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+
+  - title: マルチ AZ とリードレプリカの違い
+    diagram:
+      type: table
+      columns:
+        - { label: マルチ AZ（スタンバイ 1 台）, atom: rds-multi-az, icon: rds-multi-az }
+        - { label: マルチ AZ DB クラスター, atom: rds-multi-az-cluster, icon: rds-multi-az-cluster }
+        - { label: リードレプリカ, atom: rds-read-replica, icon: rds-instance }
+      rows:
+        - label: 目的
+          cells: [高可用性, 高可用性 + 読み取り, 読み取りの負荷分散]
+        - label: レプリケーション
+          cells: [同期, 半同期（2 台のうち 1 台の書き込み完了を待つ）, 非同期]
+        - label: 読み取り
+          cells:
+            - { text: 使えない, tone: bad }
+            - { text: 使える, tone: good }
+            - { text: 使える, tone: good }
+        - label: フェイルオーバー
+          cells:
+            - 自動（エンドポイントは同じ）
+            - { text: 自動（通常 35 秒程度）, tone: good }
+            - { text: 手動で昇格, tone: warn }
+        - label: 別のリージョン
+          cells:
+            - { text: 置けない, tone: bad }
+            - { text: 置けない, tone: bad }
+            - { text: 置ける, tone: good }
+    points:
+      - マルチ AZ DB クラスターは RDS for MySQL と RDS for PostgreSQL で使える
+      - リードレプリカはアプリ側で読み取りの接続先を分ける必要がある
+
+  - title: Aurora の仕組み
+    body: Aurora はストレージとコンピューティングが分かれている。データは 3 つの AZ に 6 つのコピーで保存され、ライターと最大 15 台のレプリカが同じストレージを共有する。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: AZ a
+          kind: az
+          at: [1.5, 0, 1.5, 3]
+        - label: AZ b
+          kind: az
+          at: [3, 0, 1.5, 3]
+        - label: AZ c
+          kind: az
+          at: [4.5, 0, 1.5, 3]
+        - label: 共有ストレージ（3 AZ × 2 = 6 コピー）
+          kind: generic
+          at: [1.6, 1.85, 4.3, 1.05]
+      nodes:
+        - id: app
+          label: アプリ
+          icon: instances
+          at: [0, 0.6]
+        - id: writer
+          label: ライター
+          icon: aurora-instance
+          atom: rds-aurora
+          at: [1.75, 0.6]
+        - id: r1
+          label: レプリカ
+          icon: aurora-instance
+          atom: rds-aurora-endpoints
+          at: [3.25, 0.6]
+        - id: r2
+          label: レプリカ
+          icon: aurora-instance
+          atom: rds-aurora-endpoints
+          at: [4.75, 0.6]
+        - id: d1
+          label: コピー ×2
+          icon: ebs-volumes
+          at: [1.75, 2.1]
+        - id: d2
+          label: コピー ×2
+          icon: ebs-volumes
+          at: [3.25, 2.1]
+        - id: d3
+          label: コピー ×2
+          icon: ebs-volumes
+          at: [4.75, 2.1]
+      edges:
+        - { from: app, to: writer, label: クラスターエンドポイント }
+        - { from: writer, to: d1 }
+        - { from: r1, to: d2, dashed: true }
+        - { from: r2, to: d3, dashed: true }
+      caption: 読み取りはリーダーエンドポイントに接続すると、レプリカに分散される
+    points:
+      - ライターに障害が起きると、レプリカが自動で昇格する
+      - 別リージョンへは Aurora グローバルデータベース（遅延は通常 1 秒未満、最大 10 のセカンダリリージョン）
+
+  - title: バックアップと復元
+    diagram:
+      type: table
+      columns:
+        - { label: 自動バックアップ, atom: rds-automated-backups, icon: backup }
+        - { label: 手動スナップショット, atom: rds-snapshots, icon: g-disk }
+      rows:
+        - label: 取得のタイミング
+          cells: [毎日 + トランザクションログ, 自分で好きなときに]
+        - label: 保持
+          cells: [保持期間（最大 35 日）, 削除するまで無期限]
+        - label: 復元できる時点
+          cells:
+            - { text: 保持期間内の任意の時点, tone: good }
+            - スナップショットを取った時点
+        - label: 別リージョン・別アカウント
+          cells: [別リージョンへのレプリケーションは可, コピー・共有ができる]
+    points:
+      - どちらから復元しても、新しい DB インスタンスとして作られる（エンドポイントが変わる）
+      - 暗号化されていない DB を暗号化するには、スナップショットを暗号化してコピーし、そこから復元する
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何に備える・何を改善したい？
+        branches:
+          - when: AZ の障害で止まらないようにしたい
+            atom: rds-multi-az
+          - when: 読み取りの負荷が高い
+            atom: rds-read-replica
+          - when: Lambda などから大量の接続が来る
+            atom: rds-proxy
+          - when: リージョンの障害に備える・世界中で低レイテンシに読む
+            atom: rds-aurora-global-database
+          - when: 負荷が大きく変動して予測できない
+            atom: rds-aurora-serverless
+          - when: 本番と同じデータのテスト環境をすぐ作りたい
+            atom: rds-aurora-cloning
+          - when: メジャーバージョンアップを短いダウンタイムで
+            atom: rds-blue-green
+          - when: DB のパスワードをアプリに持たせたくない
+            atom: rds-iam-authentication
+          - when: OS や DB の設定を自分で変えたい
+            atom: rds-custom
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
+  - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
+  - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html
+  - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html

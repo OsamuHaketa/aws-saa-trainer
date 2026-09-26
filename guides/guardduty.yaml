@@ -1,0 +1,138 @@
+# セキュリティサービスの図解（GuardDuty のページが本体。関係するサービスのページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: guardduty
+alsoShowOn: [inspector, macie, securityhub, detective, shield, waf]
+topic: セキュリティサービスの使い分け
+lead: CloudTrail・VPC フローログ・DNS のログなどを機械学習で分析し、不審な動きや脅威を継続的に検出するサービス。有効にするだけで使え、エージェントは不要
+decisions:
+  - 名前の似たセキュリティサービス（GuardDuty・Inspector・Macie・Security Hub・Detective）の役割の違い
+  - DDoS と Web の攻撃を、Shield・WAF・Network Firewall のどれで防ぐか
+  - 検出したあと、どうやって自動で対応するか
+sections:
+  - title: 見つける・まとめる・調べる
+    diagram:
+      type: table
+      columns:
+        - { label: GuardDuty, atom: guardduty-detector, icon: guardduty }
+        - { label: Inspector, atom: inspector-scan, icon: inspector }
+        - { label: Macie, atom: macie-job, icon: macie }
+        - { label: Security Hub, atom: securityhub-findings, icon: securityhub }
+        - { label: Detective, atom: detective-investigation, icon: detective }
+      rows:
+        - label: 役割
+          cells: [脅威を検出, 脆弱性をスキャン, 機密データを発見, 検出結果を集約・基準をチェック, 原因を調査]
+        - label: 見るもの
+          cells: [CloudTrail・VPC フローログ・DNS のログなど, EC2・コンテナイメージ・Lambda, S3 のオブジェクト, 各サービスの検出結果, ログから作ったリソースと行動のつながり]
+        - label: 見つかるものの例
+          cells: [不審な API の呼び出し・暗号資産のマイニング・悪性の IP との通信, 古いパッケージの脆弱性（CVE）・意図しないポートの公開, 個人情報やカード番号を含むファイル, CIS などのベストプラクティスに沿っていない設定, 誰がいつどこから何をしたか]
+
+  - title: 検出から自動対応まで
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: gd
+          label: GuardDuty
+          icon: guardduty
+          atom: guardduty-detector
+          at: [0, 0]
+        - id: insp
+          label: Inspector
+          icon: inspector
+          atom: inspector-scan
+          at: [0, 1]
+        - id: macie
+          label: Macie
+          icon: macie
+          atom: macie-job
+          at: [0, 2.1]
+        - id: hub
+          label: Security Hub
+          icon: securityhub
+          atom: securityhub-findings
+          at: [1.8, 1]
+        - id: det
+          label: Detective
+          icon: detective
+          atom: detective-investigation
+          at: [1.8, 2.2]
+        - id: eb
+          label: EventBridge
+          icon: eventbridge
+          atom: eventbridge-bus
+          at: [3.3, 1]
+        - id: fn
+          label: "自動対応\n（Lambda）"
+          icon: lambda
+          at: [5, 0.3]
+        - id: sns
+          label: "通知\n（SNS）"
+          icon: sns
+          at: [5, 1.9]
+      edges:
+        - { from: gd, to: hub }
+        - { from: insp, to: hub }
+        - { from: macie, to: hub }
+        - { from: hub, to: det, label: 調査, dashed: true }
+        - { from: hub, to: eb, label: 検出結果 }
+        - { from: eb, to: fn }
+        - { from: eb, to: sns }
+      caption: 例として、不審な通信をしているインスタンスのセキュリティグループを Lambda で自動的に隔離する
+    points:
+      - 複数のアカウントの検出結果は、Organizations と連携して 1 つの管理アカウントに集められる
+
+  - title: 攻撃から守るサービス
+    diagram:
+      type: table
+      columns:
+        - { label: Shield Standard, atom: shield-standard, icon: shield }
+        - { label: Shield Advanced, atom: shield-advanced, icon: shield }
+        - { label: WAF, atom: waf-web-acl, icon: waf }
+        - { label: Network Firewall, atom: vpc-network-firewall, icon: networkfirewall }
+      rows:
+        - label: 防ぐもの
+          cells: [一般的な DDoS（L3・L4）, 大規模な DDoS（L7 を含む）, SQL インジェクション・XSS・大量のリクエスト, VPC を出入りする通信全般]
+        - label: 料金
+          cells:
+            - { text: 無料（自動で有効）, tone: good }
+            - { text: 有料（攻撃による料金の増加を補償）, tone: warn }
+            - ルールとリクエストの数に応じて
+            - 時間と処理量に応じて
+        - label: 付ける場所
+          cells: [すべての AWS 利用者, CloudFront・Route 53・ALB・Global Accelerator・Elastic IP, CloudFront・ALB・API Gateway・AppSync・Cognito, VPC の専用のサブネット]
+    points:
+      - Shield Advanced では、攻撃中に AWS の DDoS 対応チーム（SRT）の支援を受けられる
+      - 組織の全アカウントに WAF や Shield Advanced のルールをまとめて適用するなら Firewall Manager
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: アカウントで起きている不審な動きを見つけたい
+            atom: guardduty-detector
+          - when: EC2 やコンテナのソフトウェアの脆弱性を見つけたい
+            atom: inspector-scan
+          - when: S3 に個人情報が置かれていないか調べたい
+            atom: macie-job
+          - when: 複数のサービスの検出結果を 1 か所で見て、基準に沿っているか確認したい
+            atom: securityhub-findings
+          - when: 検出された問題の原因や影響の範囲を調べたい
+            atom: detective-investigation
+          - when: SQL インジェクションや特定の IP・国からのアクセスを防ぎたい
+            atom: waf-web-acl
+          - when: 大規模な DDoS に備え、専門チームの支援と料金の補償がほしい
+            atom: shield-advanced
+          - when: 多数のアカウントに、同じ防御のルールを強制したい
+            atom: waf-firewall-manager
+status: draft
+sources:
+  - https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html
+  - https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html
+  - https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html
+  - https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html
+  - https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html

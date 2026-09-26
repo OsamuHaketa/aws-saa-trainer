@@ -1,0 +1,77 @@
+# 分析サービスの図解（Athena のページが本体。関係するサービスのページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: athena
+alsoShowOn: [glue, redshift, emr, quicksight, opensearch, lakeformation]
+topic: 分析サービスの使い分け
+lead: S3 に置いたデータに、サーバーを用意せずにそのまま SQL を実行するサービス。スキャンしたデータ量で課金されるので、圧縮・列指向の形式・パーティション分割で安く速くなる
+decisions:
+  - データレイク（S3）を中心に、どのサービスで取り込み・整形・分析・可視化するか
+  - Athena・Redshift・EMR・OpenSearch のどれで分析するか
+  - 分析のコストをどう下げるか
+sections:
+  - title: S3 のデータレイクを中心にした構成
+    diagram:
+      type: flow
+      steps:
+        - { label: 取り込む, icon: firehose, note: Data Firehose・DMS・DataSync, atom: kinesis-firehose }
+        - { label: S3 に貯める, icon: s3, note: データレイク }
+        - { label: カタログに登録, icon: glue, note: Glue クローラーがスキーマを推定, atom: glue-crawler }
+        - { label: 分析する, icon: athena, note: Athena・Redshift Spectrum・EMR, atom: athena-query }
+        - { label: 可視化する, icon: quicksight, note: QuickSight のダッシュボード, atom: quicksight-dashboard }
+      caption: 誰がどのテーブル・列・行を見られるかは、Lake Formation でまとめて管理する
+    points:
+      - Athena は Parquet などの列指向の形式に変換し、パーティションで分けると、スキャン量が減って安く速くなる
+
+  - title: 分析サービスの違い
+    diagram:
+      type: table
+      columns:
+        - { label: Athena, atom: athena-query, icon: athena }
+        - { label: Redshift, atom: redshift-cluster, icon: redshift }
+        - { label: EMR, atom: emr-cluster, icon: emr }
+        - { label: OpenSearch, atom: opensearch-domain, icon: opensearch }
+        - { label: Glue, atom: glue-etl, icon: glue }
+      rows:
+        - label: 得意なこと
+          cells: [S3 のデータにその場で SQL, 大量の構造化データの高速な集計（DWH）, Spark・Hadoop での大規模な処理, 全文検索・ログの分析, データの変換（ETL）とカタログ]
+        - label: サーバーの管理
+          cells:
+            - { text: 不要, tone: good }
+            - クラスター（Serverless もある）
+            - クラスター（Serverless もある）
+            - ドメイン（Serverless もある）
+            - { text: 不要, tone: good }
+        - label: 向いている使い方
+          cells: [ときどき行うアドホックな分析, BI の定型レポート・複雑な結合, 既存の Spark の処理を移す, アプリの検索・ログのダッシュボード, データを分析しやすい形に整える]
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: S3 のログに、サーバーなしでときどき SQL を実行したい
+            atom: athena-query
+          - when: 大量のデータで BI のレポートを高速に集計したい
+            atom: redshift-cluster
+          - when: Redshift から、ロードせずに S3 のデータも問い合わせたい
+            atom: redshift-spectrum
+          - when: Hadoop や Spark の処理をそのまま動かしたい
+            atom: emr-cluster
+          - when: データの形式を変換して、分析用に整えたい
+            atom: glue-etl
+          - when: S3 のデータのスキーマを自動で調べて登録したい
+            atom: glue-crawler
+          - when: キーワードでの全文検索や、ログのダッシュボードがほしい
+            atom: opensearch-domain
+          - when: データレイクのアクセス権限を、列や行の単位で管理したい
+            atom: lakeformation-permissions
+          - when: 経営陣向けのダッシュボードを作って共有したい
+            atom: quicksight-dashboard
+status: draft
+sources:
+  - https://docs.aws.amazon.com/athena/latest/ug/what-is.html
+  - https://docs.aws.amazon.com/athena/latest/ug/performance-tuning.html
+  - https://docs.aws.amazon.com/decision-guides/latest/analytics-on-aws-how-to-choose/analytics-on-aws-how-to-choose.html

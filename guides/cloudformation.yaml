@@ -1,0 +1,35 @@
+# CloudFormation の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: cloudformation
+lead: インフラの構成をテンプレート（YAML・JSON）に書き、スタックとしてまとめて作成・更新・削除するサービス（Infrastructure as Code）。同じ環境を何度でも同じように作れる
+decisions:
+  - 同じ構成を、複数のアカウント・リージョンにどう展開するか
+  - 手作業の変更で、テンプレートと実際の構成がずれていないかをどう確かめるか
+sections:
+  - title: テンプレートからスタックへ
+    diagram:
+      type: flow
+      steps:
+        - { label: テンプレート, icon: g-json, note: VPC・EC2・RDS などを YAML で定義 }
+        - { label: スタック, icon: cloudformation, atom: cloudformation-stack, note: まとめて作成・更新・削除, via: 作成 }
+        - { label: リソース, icon: instances, note: 失敗したら自動でロールバック }
+      caption: 更新の前には変更セットで、何が変わるか（置き換えが起きるか）を確認できる
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: 環境をコードで管理し、同じ構成を何度でも作りたい
+            atom: cloudformation-stack
+          - when: 組織の全アカウント・全リージョンに同じ構成を展開したい
+            atom: cloudformation-stacksets
+          - when: 手作業で変えられた設定を見つけたい
+            atom: cloudformation-drift
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html
+  - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html

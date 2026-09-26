@@ -1,0 +1,134 @@
+# Route 53 の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: route53
+lead: AWS の DNS サービス。ドメイン名を IP アドレスや AWS のリソースに変換する。ルーティングポリシーとヘルスチェックで、どの宛先を返すかを制御できる
+decisions:
+  - 要件に合うルーティングポリシーを選ぶ
+  - ヘルスチェックとフェイルオーバーで、障害時に宛先を切り替える
+  - エイリアスレコードと CNAME の使い分け
+  - VPC とオンプレミスの間の名前解決
+sections:
+  - title: フェイルオーバーの構成
+    body: Route 53 がプライマリをヘルスチェックし、異常になったらセカンダリの宛先を返す。DR の切り替えによく使う。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: リージョン A（プライマリ）
+          kind: region
+          at: [3.5, 0, 2.5, 1.45]
+        - label: リージョン B（セカンダリ）
+          kind: region
+          at: [3.5, 1.55, 2.5, 1.45]
+      nodes:
+        - id: users
+          label: ユーザー
+          icon: g-users
+          at: [0, 1]
+        - id: r53
+          label: Route 53
+          icon: route53
+          atom: route53-failover
+          at: [1.6, 1]
+        - id: primary
+          label: ALB
+          icon: alb
+          at: [4.5, 0.55]
+        - id: secondary
+          label: ALB
+          icon: alb
+          at: [4.5, 2.1]
+      edges:
+        - { from: users, to: r53, label: 名前を問い合わせ }
+        - { from: r53, to: primary, label: ふだん }
+        - { from: r53, to: secondary, label: プライマリが異常なとき, dashed: true }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - ヘルスチェックはエンドポイントのほか、CloudWatch アラームや他のヘルスチェックの結果でも判定できる
+      - ALB や CloudFront を指すときはエイリアスレコードを使う
+
+  - title: ルーティングポリシー
+    diagram:
+      type: table
+      columns:
+        - { label: シンプル, atom: route53-simple }
+        - { label: 加重, atom: route53-weighted }
+        - { label: レイテンシー, atom: route53-latency }
+        - { label: フェイルオーバー, atom: route53-failover }
+        - { label: 位置情報, atom: route53-geolocation }
+        - { label: 地理的近接性, atom: route53-geoproximity }
+        - { label: 複数値回答, atom: route53-multivalue }
+      rows:
+        - label: 何で決める
+          cells: [1 つの宛先, 重みの割合, 最もレイテンシが低いリージョン, ヘルスチェックの結果, ユーザーの国・大陸, 距離とバイアス, ランダム（最大 8 つ）]
+        - label: ヘルスチェック
+          cells:
+            - { text: 使えない, tone: bad }
+            - 使える
+            - 使える
+            - { text: 必須（プライマリ）, tone: warn }
+            - 使える
+            - 使える
+            - 使える
+        - label: よくある使い方
+          cells: [単一のサーバー, 新しい版に 10% だけ流す, 世界中のユーザーを速い方へ, DR の切り替え, 国ごとの言語・法規制, 地域の範囲を広げたり狭めたり, 簡易的な負荷分散]
+
+  - title: ルーティングポリシーの判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: どう振り分けたい？
+        branches:
+          - when: 割合を決めて分ける（カナリアリリース・A/B テスト）
+            atom: route53-weighted
+          - when: ユーザーにとって一番速いリージョンへ
+            atom: route53-latency
+          - when: ふだんはプライマリ、障害時だけセカンダリへ
+            atom: route53-failover
+          - when: 国によって宛先を変える（コンテンツの権利・言語）
+            atom: route53-geolocation
+          - when: 地理的な距離で振り分け、範囲を調整したい
+            atom: route53-geoproximity
+          - when: 正常な複数の IP をまとめて返したい
+            atom: route53-multivalue
+
+  - title: エイリアスレコードと CNAME
+    diagram:
+      type: table
+      columns:
+        - { label: エイリアスレコード, atom: route53-alias }
+        - { label: CNAME }
+      rows:
+        - label: ゾーンの頂点（example.com）
+          cells:
+            - { text: 使える, tone: good }
+            - { text: 使えない, tone: bad }
+        - label: 指せる先
+          cells: [ALB・CloudFront・S3 のウェブサイト・API Gateway など AWS のリソース, 任意のドメイン名]
+        - label: クエリの料金
+          cells:
+            - { text: AWS のリソースを指すなら無料, tone: good }
+            - かかる
+
+  - title: VPC とオンプレミスの名前解決
+    diagram:
+      type: table
+      columns:
+        - { label: インバウンドエンドポイント, atom: route53-resolver, icon: r53-resolver }
+        - { label: アウトバウンドエンドポイント, atom: route53-resolver, icon: r53-resolver }
+      rows:
+        - label: 向き
+          cells: [オンプレミス → VPC, VPC → オンプレミス]
+        - label: 使う場面
+          cells: [社内のサーバーから、VPC のプライベートホストゾーンの名前を引く, VPC の EC2 から、社内の DNS にある名前を引く]
+    points:
+      - プライベートホストゾーンは、関連付けた VPC の中でだけ名前解決できる
+status: draft
+sources:
+  - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html
+  - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html
+  - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html
+  - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html

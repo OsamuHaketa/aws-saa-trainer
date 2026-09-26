@@ -1,0 +1,65 @@
+# 移行サービスの図解（DataSync のページが本体。関係するサービスのページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: datasync
+alsoShowOn: [snow, dms, transfer, mgn, drs, storagegateway]
+topic: 移行・ハイブリッドのサービスの使い分け
+lead: オンプレミスと AWS の間（や AWS のストレージ同士）で、大量のファイルをネットワーク経由で高速に移動・同期するサービス。暗号化・検証・スケジュール実行を自動で行う
+decisions:
+  - 移すもの（ファイル・DB・サーバー）と、ネットワークの帯域から、移行のサービスを選ぶ
+  - 一度きりの移行か、オンプレミスと AWS を併用し続けるか
+sections:
+  - title: 何を移すか
+    diagram:
+      type: table
+      columns:
+        - { label: DataSync, atom: datasync-task, icon: datasync }
+        - { label: Snowball Edge, atom: snow-snowball, icon: snow }
+        - { label: DMS, atom: dms-replication, icon: dms }
+        - { label: MGN, atom: mgn-replication, icon: mgn }
+        - { label: Transfer Family, atom: transfer-sftp, icon: transfer }
+        - { label: Storage Gateway, atom: storagegateway-file, icon: storagegateway }
+      rows:
+        - label: 移すもの
+          cells: [ファイル（NFS・SMB など）, 大量のデータ（物理デバイスで運ぶ）, データベース, サーバー丸ごと, SFTP などで受け渡すファイル, ファイル・ボリューム・テープ]
+        - label: 経路
+          cells: [ネットワーク, 配送, ネットワーク, ネットワーク, ネットワーク, ネットワーク]
+        - label: 使い方
+          cells: [一度の移行・定期的な同期, 回線が細い・数十 TB 以上, 移行元を動かしたまま移行・継続的な複製, そのまま EC2 に移す（リホスト）, 取引先とのファイルの受け渡し, オンプレミスから AWS を使い続ける（ハイブリッド）]
+
+  - title: 判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: DB を止めずに AWS に移したい
+            next:
+              question: 移行先の DB エンジンは同じ？
+              branches:
+                - when: 同じ（MySQL から RDS for MySQL など）
+                  atom: dms-replication
+                - when: 違う（Oracle から Aurora PostgreSQL など）
+                  atom: dms-schema-conversion
+          - when: サーバーを、手を加えずにそのまま EC2 に移したい
+            atom: mgn-replication
+          - when: 大量のファイルをネットワークで移したい・定期的に同期したい
+            atom: datasync-task
+          - when: ネットワークでは何週間もかかる量を移したい
+            atom: snow-snowball
+          - when: 取引先と SFTP でファイルを受け渡し、S3 に保存したい
+            atom: transfer-sftp
+          - when: オンプレミスのサーバーから、S3 をファイル共有として使い続けたい
+            atom: storagegateway-file
+          - when: オンプレミスのサーバーの障害に備えて、AWS 上ですぐに復旧できるようにしたい
+            atom: drs-recovery
+    points:
+      - 1 Gbps の回線を使い切っても、100 TB を送るには 9 日以上かかる。回線が細い・共用なら Snowball Edge を検討する
+status: draft
+sources:
+  - https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html
+  - https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html
+  - https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html
+  - https://docs.aws.amazon.com/mgn/latest/ug/what-is-application-migration-service.html
+  - https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html

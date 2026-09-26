@@ -1,0 +1,338 @@
+# VPC の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: vpc
+lead: AWS の中に作る、自分専用の仮想ネットワーク。リージョンごとに作り、AZ ごとのサブネットに分けて、ルートテーブルとファイアウォールで通信を制御する
+decisions:
+  - パブリックサブネットとプライベートサブネットのどちらに置くか、外への出口をどう作るか
+  - セキュリティグループとネットワーク ACL のどちらで制御するか
+  - VPC 同士をピアリング・Transit Gateway・PrivateLink のどれでつなぐか
+  - オンプレミスと VPN・Direct Connect のどちらでつなぐか
+  - AWS のサービスへ、インターネットを通らずにどう接続するか
+sections:
+  - title: 基本の構成
+    body: 高可用性のため、2 つ以上の AZ に同じ構成を作る。パブリックサブネットには IGW へのルートがあり、プライベートサブネットは NAT ゲートウェイ経由で外に出る。
+    diagram:
+      type: architecture
+      cols: 7
+      rows: 5
+      groups:
+        - label: VPC（10.0.0.0/16）
+          kind: vpc
+          at: [0, 1.2, 6, 3.8]
+        - label: AZ a
+          kind: az
+          at: [0, 2, 3, 3]
+        - label: AZ c
+          kind: az
+          at: [3, 2, 3, 3]
+        - label: パブリックサブネット
+          kind: public
+          at: [0, 2.25, 3, 1.2]
+        - label: プライベートサブネット
+          kind: private
+          at: [0, 3.55, 3, 1.45]
+        - label: パブリックサブネット
+          kind: public
+          at: [3, 2.25, 3, 1.2]
+        - label: プライベートサブネット
+          kind: private
+          at: [3, 3.55, 3, 1.45]
+      nodes:
+        - id: internet
+          label: インターネット
+          icon: g-internet
+          at: [2.5, 0]
+        - id: igw
+          label: "インターネット\nゲートウェイ"
+          icon: igw
+          atom: vpc-internet-gateway
+          at: [2.5, 1]
+        - id: nat-a
+          label: NAT ゲートウェイ
+          icon: nat
+          atom: vpc-nat-gateway
+          at: [1.4, 2.47]
+        - id: nat-c
+          label: NAT ゲートウェイ
+          icon: nat
+          atom: vpc-nat-gateway
+          at: [4.6, 2.47]
+        - id: ec2-a
+          label: EC2
+          icon: instance
+          at: [1.4, 3.77]
+        - id: ec2-c
+          label: EC2
+          icon: instance
+          at: [4.6, 3.77]
+        - id: gwe
+          label: "ゲートウェイ\nエンドポイント"
+          icon: vpc-endpoint
+          atom: s3-gateway-endpoint
+          at: [5.4, 3.77]
+        - id: s3
+          label: S3
+          icon: s3
+          at: [6, 2.5]
+      edges:
+        - { from: internet, to: igw, both: true }
+        - { from: nat-a, to: igw }
+        - { from: nat-c, to: igw }
+        - { from: ec2-a, to: nat-a }
+        - { from: ec2-c, to: nat-c }
+        - { from: ec2-c, to: gwe }
+        - { from: gwe, to: s3 }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - サブネットは 1 つの AZ に属する。AZ をまたぐサブネットは作れない
+      - NAT ゲートウェイ（ゾーン NAT）は AZ ごとのリソース。片方の AZ の障害で外に出られなくならないよう、AZ ごとに置く
+      - 各サブネットでは 5 つの IP アドレスが AWS に予約される
+
+  - title: ルートテーブルで「パブリック」が決まる
+    body: パブリックかプライベートかは、サブネットの設定ではなく、関連付けたルートテーブルに IGW へのルートがあるかで決まる。宛先に最も具体的に一致するルート（最長一致）が使われる。
+    diagram:
+      type: table
+      columns:
+        - { label: パブリックサブネット, icon: grp-public }
+        - { label: プライベートサブネット, icon: grp-private }
+      rows:
+        - label: 10.0.0.0/16（VPC 内）
+          cells: [local, local]
+        - label: 0.0.0.0/0（それ以外すべて）
+          cells:
+            - { text: インターネットゲートウェイ, tone: good }
+            - { text: NAT ゲートウェイ, tone: warn }
+        - label: S3 のプレフィックスリスト
+          cells: [ゲートウェイエンドポイント, ゲートウェイエンドポイント]
+      caption: ルートテーブルの例。S3 へのルートは 0.0.0.0/0 より具体的なので、S3 宛ての通信はエンドポイントを通る
+    points:
+      - インスタンスがインターネットと直接通信するには、IGW へのルートに加えてパブリック IP アドレスが必要
+      - IPv6 で外向きの通信だけを許可するなら、NAT ではなく Egress-Only インターネットゲートウェイ
+
+  - title: インターネットへの出入口
+    diagram:
+      type: table
+      columns:
+        - { label: インターネットゲートウェイ, atom: vpc-internet-gateway, icon: igw }
+        - { label: NAT ゲートウェイ, atom: vpc-nat-gateway, icon: nat }
+        - { label: Egress-Only IGW, atom: vpc-egress-only-igw, icon: igw }
+      rows:
+        - label: 外から始まる接続
+          cells:
+            - { text: 受け付ける, tone: warn }
+            - { text: 受け付けない, tone: good }
+            - { text: 受け付けない, tone: good }
+        - label: IP のバージョン
+          cells: [IPv4 / IPv6, IPv4, IPv6]
+        - label: 置き場所
+          cells: [VPC に 1 つアタッチ, パブリックサブネット（AZ ごと）, VPC にアタッチ]
+        - label: 料金
+          cells:
+            - { text: なし, tone: good }
+            - { text: 時間 + 処理したデータ量, tone: warn }
+            - { text: なし, tone: good }
+
+  - title: セキュリティグループとネットワーク ACL
+    body: 通信はサブネットの入口で NACL、インスタンスの入口でセキュリティグループの順に検査される。
+    diagram:
+      type: table
+      columns:
+        - { label: セキュリティグループ, atom: vpc-security-group, icon: g-shield }
+        - { label: ネットワーク ACL, atom: vpc-nacl, icon: nacl }
+      rows:
+        - label: 適用する単位
+          cells: [インスタンス（ENI）, サブネット]
+        - label: 状態
+          cells:
+            - { text: ステートフル（戻りは自動で許可）, tone: good }
+            - { text: ステートレス（戻りも明示的に許可）, tone: warn }
+        - label: 書けるルール
+          cells: [許可だけ, 許可と拒否]
+        - label: 評価のしかた
+          cells: [すべてのルールを評価, 番号の小さい順に評価し、最初に一致したルールを適用]
+        - label: 送信元の指定
+          cells: [IP の範囲、または他のセキュリティグループ, IP の範囲だけ]
+    points:
+      - 特定の IP アドレスを拒否（ブロック）したいなら NACL。セキュリティグループには拒否ルールがない
+      - NACL で戻りの通信を許可し忘れると、エフェメラルポート（1024〜65535）宛ての応答が落ちる
+      - 通信の許可・拒否の記録は VPC フローログで確認する（パケットの中身は記録しない）
+
+  - title: VPC 同士をつなぐ
+    body: ピアリングは 1 対 1 で推移しない。つなぐ VPC が増えると組み合わせの数だけ接続が要るので、多数の VPC は Transit Gateway のハブにまとめる。
+    diagram:
+      type: architecture
+      cols: 7
+      rows: 3
+      groups:
+        - label: VPC ピアリング
+          kind: generic
+          at: [0, 0, 3, 3]
+        - label: Transit Gateway
+          kind: generic
+          at: [3.5, 0, 3.5, 3]
+      nodes:
+        - id: pa
+          label: VPC A
+          icon: vpc
+          at: [1, 0.35]
+        - id: pb
+          label: VPC B
+          icon: vpc
+          at: [0.2, 1.85]
+        - id: pc
+          label: VPC C
+          icon: vpc
+          at: [1.8, 1.85]
+        - id: tgw
+          label: Transit Gateway
+          icon: transitgateway
+          atom: vpc-transit-gateway
+          at: [5.25, 1.1]
+        - id: ta
+          label: VPC A
+          icon: vpc
+          at: [4, 0.35]
+        - id: tb
+          label: VPC B
+          icon: vpc
+          at: [6, 0.35]
+        - id: tc
+          label: VPC C
+          icon: vpc
+          at: [4, 1.85]
+        - id: tvpn
+          label: "オンプレミス\n（VPN / DX）"
+          icon: g-office
+          at: [6, 1.85]
+      edges:
+        - { from: pa, to: pb, both: true, label: ピアリング }
+        - { from: pa, to: pc, both: true, label: ピアリング }
+        - { from: pb, to: pc, both: true, label: 必要 }
+        - { from: tgw, to: ta, both: true }
+        - { from: tgw, to: tb, both: true }
+        - { from: tgw, to: tc, both: true }
+        - { from: tgw, to: tvpn, both: true }
+      caption: ピアリングでは A-B と A-C をつないでも B-C は通信できない。Transit Gateway ならハブ経由で推移的に通信できる
+
+  - title: 接続方法の判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: 何と何をつなぐ？
+        branches:
+          - when: VPC 同士
+            next:
+              question: どうつなぐ？
+              branches:
+                - when: 2 つの VPC を 1 対 1 で（CIDR が重複していない）
+                  atom: vpc-peering
+                - when: 多数の VPC とオンプレミスを、ハブでまとめて
+                  atom: vpc-transit-gateway
+                - when: 自分のサービスの一部だけを公開する（CIDR が重複していてもよい）
+                  atom: vpc-privatelink
+                - when: 同じ組織の別アカウントに、同じサブネットを使わせる
+                  atom: vpc-sharing
+          - when: オンプレミスと VPC
+            next:
+              question: 何を優先する？
+              branches:
+                - when: すぐに・安く始めたい（インターネット経由の暗号化）
+                  atom: vpc-site-to-site-vpn
+                - when: 安定した帯域と低いレイテンシ（専用線、開通まで数週間）
+                  atom: vpc-direct-connect
+                - when: 1 つの Direct Connect から、複数リージョンの VPC へ
+                  atom: vpc-direct-connect-gateway
+                - when: 複数の拠点同士も AWS 経由で通信させたい
+                  atom: vpc-vpn-cloudhub
+          - when: 社員の PC と VPC
+            atom: vpc-client-vpn
+          - when: VPC と AWS のサービス（S3・SQS など）
+            next:
+              question: 対象のサービスは？
+              branches:
+                - when: S3 か DynamoDB で、VPC の中からだけ使う
+                  atom: s3-gateway-endpoint
+                - when: それ以外のサービス、またはオンプレミスからも使う
+                  atom: vpc-interface-endpoint
+
+  - title: オンプレミスとの接続
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: オンプレミス
+          kind: onprem
+          at: [0, 0, 2, 3]
+        - label: VPC
+          kind: vpc
+          at: [4, 0, 2, 3]
+      nodes:
+        - id: office
+          label: 社内のサーバー
+          icon: g-servers
+          at: [0, 1.1]
+        - id: cgw
+          label: "カスタマー\nゲートウェイ"
+          icon: cgw
+          at: [1, 1.1]
+        - id: vpn
+          label: "Site-to-Site VPN\n（インターネット経由）"
+          icon: vpn-connection
+          atom: vpc-site-to-site-vpn
+          at: [2.5, 0.2]
+        - id: dx
+          label: "Direct Connect\n（専用線）"
+          icon: directconnect
+          atom: vpc-direct-connect
+          at: [2.5, 1.9]
+        - id: vgw
+          label: "仮想プライベート\nゲートウェイ"
+          icon: vgw
+          at: [4, 1.1]
+        - id: ec2
+          label: EC2
+          icon: instance
+          at: [5, 1.1]
+      edges:
+        - { from: office, to: cgw }
+        - { from: cgw, to: vpn, both: true }
+        - { from: vpn, to: vgw, both: true, label: IPsec }
+        - { from: cgw, to: dx, both: true }
+        - { from: dx, to: vgw, both: true }
+        - { from: vgw, to: ec2 }
+    points:
+      - Direct Connect はそのままでは暗号化されない。暗号化するなら VPN を重ねるか MACsec を使う
+      - Direct Connect の障害に備えて、2 本目の Direct Connect か Site-to-Site VPN をバックアップにする
+      - AWS 側は、仮想プライベートゲートウェイの代わりに Transit Gateway でも受けられる
+
+  - title: VPC エンドポイントの違い
+    diagram:
+      type: table
+      columns:
+        - { label: ゲートウェイエンドポイント, atom: s3-gateway-endpoint, icon: vpc-endpoint }
+        - { label: インターフェイスエンドポイント, atom: vpc-interface-endpoint, icon: privatelink }
+      rows:
+        - label: 対応サービス
+          cells: [S3 と DynamoDB だけ, 多くの AWS サービス（S3 も可）]
+        - label: 仕組み
+          cells: [ルートテーブルに経路を追加, サブネットにプライベート IP の ENI を作る]
+        - label: オンプレミス・他の VPC から
+          cells:
+            - { text: 使えない, tone: bad }
+            - { text: 使える（DX / VPN 経由）, tone: good }
+        - label: セキュリティグループ
+          cells: [付けられない（エンドポイントポリシーで制御）, 付けられる]
+        - label: 料金
+          cells:
+            - { text: 無料, tone: good }
+            - { text: 時間 + データ処理量, tone: warn }
+status: draft
+sources:
+  - https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html
+  - https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html
+  - https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html
+  - https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/introduction.html
+  - https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html

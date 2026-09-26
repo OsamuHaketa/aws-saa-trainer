@@ -1,0 +1,86 @@
+# API Gateway の図解（AppSync のページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: apigateway
+alsoShowOn: [appsync]
+topic: API を公開するサービス（API Gateway と AppSync）
+lead: REST・HTTP・WebSocket の API を作って公開するマネージドなサービス。Lambda などのバックエンドの前に置き、認証・スロットリング・キャッシュを API Gateway 側で行う
+decisions:
+  - API の呼び出し元をどう認証・認可するか
+  - 大量のリクエストからバックエンドをどう守るか
+  - 利用者の場所に合わせたエンドポイントタイプ
+  - REST の API（API Gateway）と GraphQL（AppSync）の使い分け
+sections:
+  - title: サーバーレスの API
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: client
+          label: クライアント
+          icon: g-mobile
+          at: [0, 1]
+        - id: cognito
+          label: Cognito
+          icon: cognito
+          atom: apigateway-authorizers
+          at: [1.7, 2.2]
+        - id: apigw
+          label: API Gateway
+          icon: apigateway
+          atom: apigateway-api
+          at: [1.7, 1]
+        - id: fn
+          label: Lambda
+          icon: lambda
+          at: [3.4, 1]
+        - id: ddb
+          label: DynamoDB
+          icon: dynamodb
+          at: [5, 1]
+      edges:
+        - { from: client, to: apigw }
+        - { from: cognito, to: apigw, label: トークンを確認, dashed: true }
+        - { from: apigw, to: fn }
+        - { from: fn, to: ddb }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - 決めたレートを超えたリクエストには 429 を返し、バックエンドを守る（スロットリング）
+      - ステージにキャッシュを有効にすると、同じリクエストにはバックエンドを呼ばずに応答する
+
+  - title: エンドポイントタイプ
+    diagram:
+      type: table
+      columns:
+        - { label: エッジ最適化, atom: apigateway-endpoint-types }
+        - { label: リージョン, atom: apigateway-endpoint-types }
+        - { label: プライベート, atom: apigateway-endpoint-types }
+      rows:
+        - label: 入口
+          cells: [CloudFront のエッジ, リージョンのエンドポイント, VPC のインターフェイスエンドポイント]
+        - label: 向いている利用者
+          cells: [世界中に散らばった利用者, 同じリージョンの利用者・自分で CloudFront を置く, VPC の中だけ]
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: アプリにログインした利用者だけに API を使わせたい
+            atom: apigateway-authorizers
+          - when: 急増したリクエストからバックエンドを守りたい
+            atom: apigateway-throttling
+          - when: 同じリクエストへの応答を速くし、バックエンドの負荷を減らしたい
+            atom: apigateway-caching
+          - when: VPC の中からだけ呼べる API にしたい
+            atom: apigateway-endpoint-types
+          - when: 複数のデータソースを GraphQL でまとめ、リアルタイムに更新を届けたい
+            atom: appsync-graphql
+status: draft
+sources:
+  - https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html
+  - https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html
+  - https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html

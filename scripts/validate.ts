@@ -1,5 +1,5 @@
 /**
- * knowledge/*.yaml と generated/*.json を検証する。
+ * knowledge/*.yaml・generated/*.json・guides/*.yaml を検証する。
  *   エラー: スキーマ違反、ID 重複、存在しない Atom への参照 → exit 1
  *   警告:   品質上の注意点（文字数超過、正解だけ長い選択肢、問題文に答えが含まれる など）
  *
@@ -10,7 +10,7 @@ import { parseContent } from "../lib/content";
 import { PROMPT_SOFT_LIMIT } from "../lib/schema/question";
 
 const ROOT = join(import.meta.dirname, "..");
-const { atoms, questions, errors } = parseContent(ROOT);
+const { atoms, questions, guides, errors } = parseContent(ROOT);
 const warnings: string[] = [];
 
 // --- Knowledge Atoms ---------------------------------------------------------
@@ -64,6 +64,12 @@ for (const q of questions.values()) {
   }
 }
 
+// --- Guides ------------------------------------------------------------------
+
+for (const guide of guides.values()) {
+  if (guide.status === "reviewed" && !guide.lastVerified) warnings.push(`guides/${guide.service}.yaml reviewed なのに lastVerified がない`);
+}
+
 // --- Coverage ----------------------------------------------------------------
 
 const covered = new Set([...questions.values()].flatMap((q) => q.atomIds));
@@ -78,6 +84,7 @@ console.log(`Atoms:     ${atoms.size}（reviewed ${count(atoms.values(), "review
 console.log(
   `Questions: ${questions.size}（reviewed ${count(questions.values(), "reviewed")} / draft ${count(questions.values(), "draft")} / retired ${count(questions.values(), "retired")}）`,
 );
+console.log(`Guides:    ${guides.size}（reviewed ${count(guides.values(), "reviewed")} / draft ${count(guides.values(), "draft")}）`);
 for (const w of warnings) console.log(`⚠ ${w}`);
 for (const e of errors) console.log(`✖ ${e}`);
 console.log(errors.length ? `\n${errors.length} errors` : "\nOK");

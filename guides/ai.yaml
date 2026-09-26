@@ -1,0 +1,53 @@
+# AI / ML サービスの図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: ai
+lead: 学習済みのモデルを API で呼ぶだけの AI サービスと、独自のモデルを作る SageMaker AI、生成 AI の基盤モデルを使う Bedrock がある。試験では「入力と出力」でサービスを選ばせる
+decisions:
+  - 入力（画像・書類・文章・音声）と、ほしい結果から、AI サービスを選ぶ
+  - 学習済みのサービスで足りるか、独自のモデルを作るか
+sections:
+  - title: 入力と出力で選ぶ
+    diagram:
+      type: decision
+      tree:
+        question: 何から、何を得たい？
+        branches:
+          - when: 画像・動画から、物体・顔・不適切なコンテンツを見つけたい
+            atom: ai-rekognition
+          - when: スキャンした書類から、文字・表・フォームの項目を取り出したい
+            atom: ai-textract
+          - when: 文章から、感情・キーフレーズ・個人情報を見つけたい
+            atom: ai-comprehend
+          - when: 音声を文字にしたい
+            atom: ai-transcribe
+          - when: 文字を音声で読み上げたい
+            atom: ai-polly
+          - when: 文章を別の言語に翻訳したい
+            atom: ai-translate
+          - when: 会話するチャットボットを作りたい
+            atom: ai-lex
+          - when: 社内の文書から、質問の答えを探したい
+            atom: ai-kendra
+          - when: 行動の履歴から、おすすめを出したい
+            atom: ai-personalize
+          - when: 独自のデータで、独自のモデルを作って学習させたい
+            atom: ai-sagemaker
+          - when: 生成 AI の基盤モデルを、自社のデータと組み合わせて使いたい
+            atom: ai-bedrock
+    points:
+      - 学習済みの AI サービスは、機械学習の知識がなくても API を呼ぶだけで使える
+
+  - title: 組み合わせの例（コールセンターの分析）
+    diagram:
+      type: flow
+      steps:
+        - { label: 通話の録音, icon: g-multimedia, note: S3 に保存 }
+        - { label: 文字にする, icon: g-document, atom: ai-transcribe, note: Transcribe }
+        - { label: 日本語に翻訳, icon: g-document, atom: ai-translate, note: Translate }
+        - { label: 感情を分析, icon: g-metrics, atom: ai-comprehend, note: Comprehend }
+status: draft
+sources:
+  - https://docs.aws.amazon.com/decision-guides/latest/machine-learning-on-aws-how-to-choose/guide.html
+  - https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html

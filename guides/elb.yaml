@@ -1,0 +1,117 @@
+# ELB の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: elb
+lead: 複数のターゲット（EC2・コンテナ・Lambda など）にリクエストを振り分けるマネージドなロードバランサー。ヘルスチェックで異常なターゲットを外し、複数の AZ にまたがって動く
+decisions:
+  - ALB・NLB・GWLB のどれを使うか
+  - HTTPS の終端や証明書をどこで扱うか
+  - セッション・クライアント IP・スケールインなど、振り分けに関わる困りごとをどの機能で解決するか
+sections:
+  - title: ALB の振り分け
+    body: ALB はリスナーのルールで、URL のパスやホスト名ごとに別のターゲットグループへ送る。1 つの ALB で複数のアプリをまとめられる。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: VPC
+          kind: vpc
+          at: [1.5, 0, 4.5, 3]
+      nodes:
+        - id: users
+          label: ユーザー
+          icon: g-users
+          at: [0, 1.1]
+        - id: alb
+          label: ALB
+          icon: alb
+          atom: elb-alb
+          at: [2, 1.1]
+        - id: acm
+          label: ACM の証明書
+          icon: acm
+          atom: elb-tls-termination
+          at: [2, 2.2]
+        - id: api
+          label: "ターゲットグループ A\n/api/*"
+          icon: instances
+          at: [4.3, 0.3]
+        - id: web
+          label: "ターゲットグループ B\nそれ以外"
+          icon: instances
+          at: [4.3, 1.9]
+      edges:
+        - { from: users, to: alb, label: HTTPS }
+        - { from: acm, to: alb, dashed: true }
+        - { from: alb, to: api, label: パスで振り分け }
+        - { from: alb, to: web }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - ターゲットが異常かどうかはヘルスチェックで判定し、正常なターゲットにだけ送る
+      - ターゲットから見た送信元は ALB になるので、元のクライアント IP は X-Forwarded-For ヘッダーで受け取る
+
+  - title: 3 種類のロードバランサー
+    diagram:
+      type: table
+      columns:
+        - { label: Application Load Balancer, atom: elb-alb, icon: alb }
+        - { label: Network Load Balancer, atom: elb-nlb, icon: nlb }
+        - { label: Gateway Load Balancer, atom: elb-gwlb, icon: gwlb }
+      rows:
+        - label: レイヤー
+          cells: [7（アプリケーション）, 4（トランスポート）, 3（ネットワーク）]
+        - label: プロトコル
+          cells: [HTTP・HTTPS・gRPC, TCP・UDP・TLS, IP パケット（GENEVE 6081）]
+        - label: 振り分けの基準
+          cells: [パス・ホスト名・ヘッダー・クエリ, ポート, 仮想アプライアンスへ透過的に]
+        - label: 固定 IP
+          cells:
+            - { text: なし（DNS 名で使う）, tone: bad }
+            - { text: AZ ごとに固定・Elastic IP も可, tone: good }
+            - "-"
+        - label: 得意なこと
+          cells: [Web アプリ・マイクロサービス・認証・WAF, 超低レイテンシ・大量の接続・PrivateLink, ファイアウォールや IDS/IPS の挿入]
+        - label: クロスゾーン負荷分散
+          cells: [デフォルトで有効, デフォルトで無効（有効にすると AZ 間の転送料金）, デフォルトで無効]
+
+  - title: どのロードバランサーを使うか
+    diagram:
+      type: decision
+      tree:
+        question: 何を振り分ける？
+        branches:
+          - when: HTTP/HTTPS を、URL のパスやホスト名で振り分けたい
+            atom: elb-alb
+          - when: TCP/UDP を超低レイテンシで。固定 IP が必要
+            atom: elb-nlb
+          - when: 通信をサードパーティのファイアウォール製品に通したい
+            atom: elb-gwlb
+          - when: 世界中のユーザーに固定の IP で、AWS のネットワーク経由で届けたい
+            atom: globalaccelerator-accelerator
+
+  - title: 困りごとと機能
+    diagram:
+      type: decision
+      tree:
+        question: 何に困っている？
+        branches:
+          - when: セッションをサーバーのメモリに持っていて、同じサーバーに送りたい
+            atom: elb-sticky-sessions
+          - when: スケールインやデプロイで、処理中のリクエストが切れる
+            atom: elb-deregistration-delay
+          - when: アプリでクライアントの IP アドレスを知りたい
+            atom: elb-x-forwarded-for
+          - when: 複数のドメインを 1 つのロードバランサーで HTTPS にしたい
+            atom: elb-sni
+          - when: AZ ごとのターゲット数が違い、負荷が偏る
+            atom: elb-cross-zone
+          - when: アプリに認証のコードを書かずにログインさせたい
+            atom: elb-alb-authentication
+status: draft
+sources:
+  - https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html
+  - https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html
+  - https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html
+  - https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html

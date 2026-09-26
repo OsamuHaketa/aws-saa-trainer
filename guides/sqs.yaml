@@ -1,0 +1,108 @@
+# SQS の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: sqs
+lead: メッセージをためておくキュー。送る側と処理する側の間に挟むと、処理側が遅い・止まっている・急に負荷が増えた、という場合でもメッセージを失わずに済む（疎結合）
+decisions:
+  - 標準キューと FIFO キューのどちらにするか
+  - 処理に失敗したメッセージや、重複をどう扱うか
+  - 処理側の台数を、キューの長さでどう調整するか
+  - SQS・SNS・EventBridge・Kinesis のどれを使うか
+sections:
+  - title: キューを挟んだ構成
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: Auto Scaling グループ
+          kind: asg
+          at: [3.6, 0, 2.4, 2.1]
+      nodes:
+        - id: producer
+          label: "送る側\n（Web サーバーなど）"
+          icon: instances
+          at: [0, 0.8]
+        - id: queue
+          label: SQS キュー
+          icon: sqs-queue
+          atom: sqs-standard
+          at: [1.9, 0.8]
+        - id: dlq
+          label: デッドレターキュー
+          icon: sqs-queue
+          atom: sqs-dlq
+          at: [1.9, 2.2]
+        - id: worker
+          label: "処理する側\n（台数を増減）"
+          icon: instances
+          atom: sqs-queue-based-scaling
+          at: [4.3, 0.8]
+      edges:
+        - { from: producer, to: queue, label: 送信 }
+        - { from: queue, to: worker, label: 受信・削除 }
+        - { from: queue, to: dlq, label: 何度も失敗したら, dashed: true }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - SQS はプル型。処理する側がキューを見に行って（ポーリングして）受け取る
+      - メッセージの上限は 1 MiB。それより大きなデータは S3 に置き、メッセージには S3 のキーを入れる
+
+  - title: メッセージが処理されるまで
+    diagram:
+      type: flow
+      steps:
+        - { label: キューに入る, icon: sqs-message, note: 保持期間はデフォルト 4 日・最大 14 日, atom: sqs-retention }
+        - { label: 受信, icon: instance, note: ほかの処理側からは見えなくなる, via: ポーリング, atom: sqs-visibility-timeout }
+        - { label: 処理が終わったら削除, icon: g-recover, note: 削除しないと、タイムアウト後にまた見えるようになる }
+        - { label: デッドレターキュー, icon: sqs-queue, note: 最大受信回数を超えたら移す, via: 失敗が続いたら, atom: sqs-dlq }
+      caption: 受信したメッセージは、可視性タイムアウト（デフォルト 30 秒、最大 12 時間）の間ほかの処理側に見えない
+    points:
+      - 可視性タイムアウトは、処理にかかる時間より長くする。短いと同じメッセージが二重に処理される
+      - ロングポーリング（最大 20 秒待つ）にすると、空の応答と料金が減る
+
+  - title: 標準キューと FIFO キュー
+    diagram:
+      type: table
+      columns:
+        - { label: 標準キュー, atom: sqs-standard, icon: sqs }
+        - { label: FIFO キュー, atom: sqs-fifo, icon: sqs }
+      rows:
+        - label: 順序
+          cells:
+            - { text: ベストエフォート（入れ替わることがある）, tone: warn }
+            - { text: メッセージグループの中で送った順, tone: good }
+        - label: 重複
+          cells:
+            - { text: まれに重複して届く（少なくとも 1 回）, tone: warn }
+            - { text: 重複を排除（1 回だけ）, tone: good }
+        - label: スループット
+          cells:
+            - { text: ほぼ無制限, tone: good }
+            - 標準より制限がある
+        - label: キューの名前
+          cells: [自由, .fifo で終わる]
+
+  - title: キュー・トピック・イベントバス・ストリームの使い分け
+    diagram:
+      type: table
+      columns:
+        - { label: SQS, atom: sqs-standard, icon: sqs }
+        - { label: SNS, atom: sns-topic, icon: sns }
+        - { label: EventBridge, atom: eventbridge-bus, icon: eventbridge }
+        - { label: Kinesis Data Streams, atom: kinesis-data-streams, icon: kds }
+      rows:
+        - label: 届け方
+          cells: [処理側が取りに行く（プル）, 購読者に送る（プッシュ）, ルールに合うターゲットに送る, 処理側が読みに行く]
+        - label: 受け取る相手
+          cells: [1 つのメッセージを 1 つの処理側, すべての購読者に同時に, ルールごとに複数のターゲット, 複数のアプリが同じデータを読む]
+        - label: 残るか
+          cells: [処理して削除するまで（最大 14 日）, 残らない, 残らない（アーカイブは可）, 保持期間中は何度でも読める]
+        - label: 向いている使い方
+          cells: [処理の依頼をためて平準化, 1 つの通知を多数に配る, AWS や SaaS のイベントで処理を動かす, リアルタイムの大量のデータを順番に処理]
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html
+  - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html
+  - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-types.html
+  - https://docs.aws.amazon.com/decision-guides/latest/sns-or-sqs-or-eventbridge/sns-or-sqs-or-eventbridge.html

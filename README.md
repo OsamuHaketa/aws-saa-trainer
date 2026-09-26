@@ -18,17 +18,17 @@ npm run dev        # http://localhost:3000
 | `/` | 今日の復習待ち・新規の残り・正答率 |
 | `/study` | 学習。キーボード: `1`〜`4` 回答 / `Enter` 次へ / `G` 勘だった / `Q W E R T` 間違えた理由 |
 | `/dashboard` | カテゴリ別・問題タイプ別の正答率、混同ペア、苦手な Atom |
-| `/knowledge` | Atom の一覧（facts、キーワード、関係、各問題の最新結果） |
+| `/knowledge` | サービスの一覧。サービスを選ぶと、図解（構成図・比較表・判断フロー・流れ図）、見分け方・キーワード早見表・関係（Atom から自動で作る）、用語カード（facts、各問題の最新結果）を 1 ページで見られる |
 
 ## コマンド
 
 | コマンド | 内容 |
 |---|---|
-| `npm run validate` | Atom と問題の検証（スキーマ、参照切れ、正解だけ長い選択肢、問題文に答えが含まれる など） |
-| `npm run build-content` | Atom と問題を `.generated/content.json` にまとめる。本番のアプリはこのファイルだけを読む（`npm run build` の前に validate と一緒に自動で実行される） |
+| `npm run validate` | Atom・問題・図解の検証（スキーマ、参照切れ、正解だけ長い選択肢、問題文に答えが含まれる、図のはみ出し など） |
+| `npm run build-content` | Atom・問題・図解を `.generated/content.json` にまとめる。本番のアプリはこのファイルだけを読む（`npm run build` の前に validate と一緒に自動で実行される） |
 | `npm run backup` | 学習記録（user・cards・review_logs・followups）を `backups/<日時>/` に JSON で書き出す。Turso なら `DATABASE_URL` と `DATABASE_AUTH_TOKEN` を指定する |
 | `npm run import-records -- --from backups/<日時> --to-email <メール>` | バックアップから 1 人分の記録を、別の DB のユーザーに取り込む（移行・復元用。`--dry-run` あり） |
-| `npm test` | 出題ロジックのテスト |
+| `npm test` | 出題ロジックと図解の検証のテスト |
 | `npm run typecheck` | 型チェック |
 | `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（ローカルの DB には起動時に自動適用） |
 | `npm run db:migrate` | マイグレーションを適用する。Turso に適用するときは `DATABASE_URL` と `DATABASE_AUTH_TOKEN` を指定する |
@@ -38,6 +38,10 @@ npm run dev        # http://localhost:3000
 ```text
 knowledge/*.yaml        Knowledge Atom（正本）      スキーマ: lib/schema/atom.ts
 generated/*.json        4 択問題                    スキーマ: lib/schema/question.ts
+guides/*.yaml           サービスの図解               スキーマ: lib/schema/guide.ts
+public/aws-icons/       図解に使う AWS 公式の Architecture Icons（2026-07-31 版から、使う分だけ）
+lib/services.ts         知識ページのサービスの分類とアイコン
+app/knowledge/          知識ページ。diagrams/ に図の部品（構成図・比較表・流れ図・判断フロー）
 lib/scheduler.ts        次に出す問題を決める（純粋関数）
 lib/study.ts            出題・回答の記録（DB）
 lib/fsrs.ts             4 択の結果 → FSRS の評価
@@ -59,7 +63,7 @@ app/                    画面と API（/api/next, /api/review, /api/auth/*）
 
 ## コンテンツの状態
 
-71 サービス・Atom 341 個・問題 1,322 問。**すべて `status: draft`（未レビュー）**。
+71 サービス・Atom 341 個・問題 1,322 問・図解 38 ファイル。**すべて `status: draft`（未レビュー）**。
 
 | まとまり | サービス |
 |---|---|
@@ -77,6 +81,22 @@ Atom の重要度ごとの問題数（主の Atom として数えた場合）は
 - 新しい問題は `lib/config.ts` の `serviceOrder`（S3 → EC2 → VPC → …）の順に、サービスごとに出る。2 回目に追加したサービスは最後（設計パターンのあと）
 - 学習画面の「範囲」で、特定のサービスだけに絞って学習できる（`/study?service=s3`）
 - 企画書の比較例（SQS vs SNS、ALB vs NLB、EBS vs EFS、Multi-AZ vs Read Replica、CloudFront vs Global Accelerator、Gateway vs Interface Endpoint、SG vs NACL、RDS vs DynamoDB、Kinesis vs SQS）は、すべて `confused_with` と比較問題にしてある
+
+### 図解（`guides/*.yaml`）
+
+知識ページの上部に出す、サービスの全体像の解説。1 ファイルに「試験で問われる判断」と、いくつかのセクション（説明文・図・箇条書き）を書く。図は 4 種類で、図の要素に `atom` を付けると、その用語カードへのリンクになる。
+
+| 図の種類 | 使う場面 | 例 |
+|---|---|---|
+| `architecture` | 構成図。グリッドの上にグループ（リージョン・VPC・サブネットなど）とアイコンを置き、矢印でつなぐ | VPC の基本構成、S3 の全体像 |
+| `table` | 比較表。`axis` で「左ほど〜・右ほど〜」の帯、`tone` でセルの色（good / bad / warn） | S3 のストレージクラス、SG と NACL |
+| `flow` | 左から右への流れ（スマホでは縦） | ライフサイクル、エンベロープ暗号化 |
+| `decision` | 条件から答えを選ぶ判断フロー（入れ子にできる） | どのロードバランサーを使うか |
+
+- 比較の図解は `alsoShowOn` で関係するサービスのページにも出せる（例: `guides/guardduty.yaml` のセキュリティサービスの比較は、Inspector・Macie などのページにも出る）。そのときの見出しは `topic`。全 71 サービスに、自分か共有の図解がある
+- 見分け方・キーワード早見表・関係は、図解ではなく Atom の `confused_with`・`triggers`・`relations` から自動で作る
+- YAML の注意: `[a, b]` の中の半角カンマは区切りになるので、`3,000` のような数字を含む値は `"` で囲む。ラベルの改行 `\n` も `"` で囲んだときだけ効く。知らないキーはエラーになる（書き間違いに気づけるように）
+- アイコンは `public/aws-icons/<名前>.svg`。`g-` で始まる汎用アイコンは黒一色なので、ダークモードでは反転して表示する
 
 問題を直すときは `generated/*.json` を編集して `npm run validate`。開発サーバーは再起動しなくても反映される。
 問題を使わなくする場合は削除せず `"status": "retired"` にする（学習履歴とのつながりを残すため）。**問題 ID は変えない。**
@@ -99,3 +119,10 @@ Atom の重要度ごとの問題数（主の Atom として数えた場合）は
    - SQS のメッセージサイズの上限は 1 MiB（2025 年 8 月に拡大）と確認できたので、数値を書いた
    - Trusted Advisor の全チェックは Business Support+ 以上に直した（従来の Business と Enterprise On-Ramp は 2027 年 1 月に終了）
 8. **本番型（exam）の問題** — サービスをまたぐ問題は主の Atom のサービスとして扱われ、`generated/exam-cross.json` に置いてある
+9. **図解（2026-09-27 に追加）** — 内容は私（Claude）が既存の Atom と公式ドキュメントの知識をもとに書いたもので、すべて `draft`。数値や目安で特に確認してほしいもの:
+   - Savings Plans・RI の割引「最大 72%」、スポットの「最大 90%」
+   - DR 戦略の RPO・RTO の目安（バックアップと復元: 数時間 / パイロットライト: 数十分 / ウォームスタンバイ: 数分 / マルチサイト: ほぼゼロ）
+   - Lambda@Edge の実行時間（ビューワー側 5 秒・オリジン側 30 秒）、Step Functions の Express の最大 5 分・標準の最大 1 年
+   - KMS の AWS マネージドキーの自動ローテーション（毎年）
+   - アイコンは AWS 公式の Architecture Icons（構成図の作成に使ってよい素材）を使っている
+   - 知識ページのサービスの分類（ストレージ・コンピューティングなど）は `lib/services.ts` で変えられる

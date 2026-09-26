@@ -1,0 +1,73 @@
+# Storage Gateway の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: storagegateway
+lead: オンプレミスに置くゲートウェイ（仮想マシンなど）を通して、社内のサーバーから AWS のストレージを使うハイブリッドのサービス。よく使うデータはゲートウェイにキャッシュする
+decisions:
+  - ファイル・ボリューム・テープのどのゲートウェイを使うか
+  - 一度きりの移行（DataSync・Snowball）と、使い続けるハイブリッド（Storage Gateway）の違い
+sections:
+  - title: 構成
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: オンプレミス
+          kind: onprem
+          at: [0, 0, 2.6, 3]
+        - label: AWS
+          kind: cloud
+          at: [3.4, 0, 2.6, 3]
+      nodes:
+        - id: server
+          label: 社内のサーバー
+          icon: g-servers
+          at: [0.1, 1]
+        - id: gw
+          label: "ゲートウェイ\n（キャッシュ）"
+          icon: storagegateway
+          at: [1.5, 1]
+        - id: s3
+          label: S3
+          icon: s3
+          atom: storagegateway-file
+          at: [4.2, 0.2]
+        - id: ebs
+          label: EBS スナップショット
+          icon: ebs
+          atom: storagegateway-volume
+          at: [4.2, 1.2]
+        - id: glacier
+          label: "S3 Glacier\n（仮想テープ）"
+          icon: s3-glacier-da
+          atom: storagegateway-tape
+          at: [4.2, 2.05]
+      edges:
+        - { from: server, to: gw, label: NFS・SMB・iSCSI }
+        - { from: gw, to: s3, label: ファイル }
+        - { from: gw, to: ebs, label: ボリューム }
+        - { from: gw, to: glacier, label: テープ }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+
+  - title: 3 種類のゲートウェイ
+    diagram:
+      type: table
+      columns:
+        - { label: S3 File Gateway, atom: storagegateway-file, icon: sgw-file }
+        - { label: Volume Gateway, atom: storagegateway-volume, icon: sgw-volume }
+        - { label: Tape Gateway, atom: storagegateway-tape, icon: sgw-tape }
+      rows:
+        - label: 社内のサーバーから見ると
+          cells: [ファイル共有（NFS・SMB）, ディスク（iSCSI）, テープ装置（仮想テープライブラリ）]
+        - label: AWS 側の保存先
+          cells: [S3 のオブジェクト, S3（EBS スナップショットとして復元できる）, S3・S3 Glacier]
+        - label: 向いている使い方
+          cells: [ファイルを S3 に置き、AWS 側の分析にも使う, オンプレミスのディスクのバックアップ・容量の拡張, 既存のバックアップソフトのテープを置き換える]
+    points:
+      - Volume Gateway のキャッシュ型はデータを AWS に置いてよく使う分だけ手元に、保管型はデータをすべて手元に置いて AWS に非同期でバックアップする
+status: draft
+sources:
+  - https://docs.aws.amazon.com/storagegateway/latest/userguide/WhatIsStorageGateway.html
+  - https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html

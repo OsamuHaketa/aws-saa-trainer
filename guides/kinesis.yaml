@@ -1,0 +1,99 @@
+# Kinesis の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: kinesis
+lead: クリックの履歴・IoT のセンサー値・ログなど、絶え間なく届く大量のデータ（ストリーミングデータ）を取り込み、リアルタイムに処理するためのサービス群
+decisions:
+  - Kinesis Data Streams・Data Firehose・Managed Service for Apache Flink のどれを使うか
+  - SQS と Kinesis Data Streams の使い分け
+  - シャードの数と、キャパシティモードの選び方
+sections:
+  - title: ストリーミングの構成
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: src
+          label: "アプリ・IoT\n・ログ"
+          icon: g-data-stream
+          at: [0, 1]
+        - id: kds
+          label: Kinesis Data Streams
+          icon: kds
+          atom: kinesis-data-streams
+          at: [1.6, 1]
+        - id: fn
+          label: Lambda
+          icon: lambda
+          atom: lambda-event-source-mapping
+          at: [3.3, 0]
+        - id: flink
+          label: "Managed Service\nfor Apache Flink"
+          icon: flink
+          atom: kinesis-flink
+          at: [3.3, 1]
+        - id: fh
+          label: Data Firehose
+          icon: firehose
+          atom: kinesis-firehose
+          at: [3.3, 2.1]
+        - id: s3
+          label: "S3・Redshift\n・OpenSearch"
+          icon: s3
+          at: [5, 2.1]
+      edges:
+        - { from: src, to: kds }
+        - { from: kds, to: fn }
+        - { from: kds, to: flink }
+        - { from: kds, to: fh }
+        - { from: fh, to: s3, label: まとめて届ける }
+      caption: 1 つのストリームを、複数のアプリがそれぞれ自分のペースで読める
+    points:
+      - 1 つのシャードは、書き込み 1 MB/秒または 1,000 レコード/秒。オンデマンドモードならシャードの管理は不要
+      - 同じパーティションキーのレコードは同じシャードに入り、順番が保たれる
+
+  - title: 3 つのサービスの違い
+    diagram:
+      type: table
+      columns:
+        - { label: Kinesis Data Streams, atom: kinesis-data-streams, icon: kds }
+        - { label: Data Firehose, atom: kinesis-firehose, icon: firehose }
+        - { label: Managed Service for Apache Flink, atom: kinesis-flink, icon: flink }
+      rows:
+        - label: 役割
+          cells: [データを取り込んで保持する, 保存先まで届ける, リアルタイムに集計・分析する]
+        - label: 遅延
+          cells: [リアルタイム（ミリ秒〜）, ほぼリアルタイム（バッファしてまとめて）, リアルタイム]
+        - label: データの保持と再読み込み
+          cells:
+            - { text: 保持期間中は何度でも読める, tone: good }
+            - { text: 保持しない, tone: bad }
+            - "-"
+        - label: 自分で書くもの
+          cells: [読み取る側のアプリ, ほぼ不要（設定だけ・変換は Lambda）, SQL・Java などの処理]
+    points:
+      - 届いた順に複数のアプリで同じデータを処理するなら Kinesis、1 つの処理を 1 回ずつ行う作業の依頼なら SQS
+
+  - title: 判断フロー
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: ストリーミングデータを、コードを書かずに S3 や Redshift に保存したい
+            atom: kinesis-firehose
+          - when: 複数のアプリで、同じデータを順番どおりにリアルタイムに処理したい
+            atom: kinesis-data-streams
+          - when: 流れてくるデータを、その場で集計・異常検知したい
+            atom: kinesis-flink
+          - when: 書き込みがシャードの上限を超えてエラーになる
+            atom: kinesis-shards
+          - when: 既存の Kafka のアプリを移したい
+            atom: msk-cluster
+status: draft
+sources:
+  - https://docs.aws.amazon.com/streams/latest/dev/introduction.html
+  - https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html
+  - https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html

@@ -1,0 +1,85 @@
+# ElastiCache の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: elasticache
+lead: マネージドなインメモリのキャッシュ。DB の前に置いてよく読むデータをメモリから返し、読み取りを速くして DB の負荷を下げる。セッションの保存場所にも使う
+decisions:
+  - Valkey / Redis OSS と Memcached のどちらにするか
+  - キャッシュをいつ更新するか（遅延読み込み・書き込みスルー）
+  - ElastiCache・DAX・MemoryDB・CloudFront のどこでキャッシュするか
+sections:
+  - title: キャッシュの置き場所
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      nodes:
+        - id: app
+          label: アプリ
+          icon: instances
+          at: [0, 1]
+        - id: cache
+          label: ElastiCache
+          icon: elasticache
+          atom: elasticache-redis
+          at: [2.2, 0.2]
+        - id: db
+          label: RDS
+          icon: rds
+          at: [2.2, 1.9]
+        - id: session
+          label: "セッション\n（ステートレス化）"
+          icon: g-credentials
+          atom: patterns-stateless
+          at: [4.5, 0.2]
+      edges:
+        - { from: app, to: cache, label: まず見る }
+        - { from: app, to: db, label: なければ DB, dashed: true }
+        - { from: cache, to: session, dashed: true }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+
+  - title: Valkey / Redis OSS と Memcached
+    diagram:
+      type: table
+      columns:
+        - { label: Valkey / Redis OSS, atom: elasticache-redis, icon: elasticache }
+        - { label: Memcached, atom: elasticache-memcached, icon: elasticache }
+      rows:
+        - label: レプリケーション・自動フェイルオーバー
+          cells:
+            - { text: できる（マルチ AZ）, tone: good }
+            - { text: できない, tone: bad }
+        - label: バックアップ・復元
+          cells:
+            - { text: できる, tone: good }
+            - { text: できない, tone: bad }
+        - label: データ構造
+          cells: [リスト・セット・ソート済みセットなど, 単純なキーと値]
+        - label: 向いている使い方
+          cells: [可用性が必要・ランキング・セッション・Pub/Sub, 単純なキャッシュを多数のスレッドで]
+
+  - title: キャッシュの更新のしかた
+    diagram:
+      type: table
+      columns:
+        - { label: 遅延読み込み（Lazy Loading）, atom: elasticache-caching-strategies }
+        - { label: 書き込みスルー（Write-Through）, atom: elasticache-caching-strategies }
+      rows:
+        - label: キャッシュに入れるタイミング
+          cells: [読んだときにキャッシュになければ DB から入れる, DB に書くたびにキャッシュも更新]
+        - label: 古いデータ
+          cells:
+            - { text: 残ることがある（TTL で期限を付ける）, tone: warn }
+            - { text: 常に最新, tone: good }
+        - label: 無駄
+          cells:
+            - { text: 読まれるデータだけが入る, tone: good }
+            - { text: 読まれないデータも入る, tone: warn }
+    points:
+      - DynamoDB の読み取りを速くするなら DAX、耐久性のあるインメモリの主データベースなら MemoryDB
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html
+  - https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html
+  - https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html

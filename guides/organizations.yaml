@@ -1,0 +1,85 @@
+# Organizations の図解
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: organizations
+lead: 複数の AWS アカウントを 1 つの組織にまとめ、OU（組織単位）ごとにポリシーを適用し、請求を 1 つにまとめるサービス
+decisions:
+  - アカウントを OU に分け、SCP で使える権限の上限を決める
+  - 請求をまとめて、ボリューム割引や RI・Savings Plans の割引を共有する
+  - マルチアカウントの環境をどう作り、統制するか
+sections:
+  - title: 組織の構造
+    body: SCP は OU やアカウントに付け、その下のすべてのアカウントに効く。管理アカウントには SCP が効かない。
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 4
+      groups:
+        - label: "OU: 本番"
+          kind: generic
+          at: [0.2, 1.5, 2.6, 2.5]
+        - label: "OU: 開発"
+          kind: generic
+          at: [3.2, 1.5, 2.6, 2.5]
+      nodes:
+        - id: mgmt
+          label: "管理アカウント\n（請求をまとめる）"
+          icon: organizations
+          atom: organizations-consolidated-billing
+          at: [2.5, 0]
+        - id: scp1
+          label: "SCP\n（東京以外は禁止）"
+          icon: iam-permissions
+          atom: organizations-scp
+          at: [0.4, 2.2]
+        - id: a1
+          label: アカウント A
+          icon: grp-account
+          atom: organizations-ou
+          at: [1.6, 2.2]
+        - id: a2
+          label: アカウント B
+          icon: grp-account
+          at: [1.6, 3.2]
+        - id: scp2
+          label: "SCP\n（高価なサービスを禁止）"
+          icon: iam-permissions
+          atom: organizations-scp
+          at: [3.4, 2.2]
+        - id: a3
+          label: アカウント C
+          icon: grp-account
+          at: [4.6, 2.2]
+      edges:
+        - { from: mgmt, to: a1 }
+        - { from: mgmt, to: a3 }
+        - { from: a1, to: a2, dashed: true, label: 同じ OU }
+      caption: 図のアイコンをタップすると、その用語のカードに移動する
+    points:
+      - SCP は権限を与えない。IAM で許可していても、SCP で許可されていない操作はできない
+      - 組織の全アカウントの利用量を合算するので、ボリューム割引が効きやすくなる
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: 何をしたい？
+        branches:
+          - when: 組織の全アカウントで、特定の操作やリージョンを禁止したい
+            atom: organizations-scp
+          - when: 部門や環境ごとに、アカウントをまとめてポリシーを当てたい
+            atom: organizations-ou
+          - when: 請求を 1 つにまとめ、割引を共有したい
+            atom: organizations-consolidated-billing
+          - when: ベストプラクティスに沿ったマルチアカウント環境をすぐ作りたい
+            atom: organizations-control-tower
+          - when: 社員に、多数のアカウントへシングルサインオンさせたい
+            atom: iam-identity-center
+          - when: 1 つのテンプレートを、全アカウント・全リージョンに展開したい
+            atom: cloudformation-stacksets
+status: draft
+sources:
+  - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html
+  - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html
+  - https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html

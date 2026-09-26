@@ -1,0 +1,100 @@
+# コンテナ・コンピューティングの図解（ECS のページが本体。関係するサービスのページにも出す）
+# スキーマ: lib/schema/guide.ts / 検証: npm run validate
+# status: draft は未確認。公式ドキュメントで確認したら reviewed にして lastVerified を付ける
+
+service: ecs
+alsoShowOn: [eks, batch, beanstalk]
+topic: コンピューティングの選び方
+lead: AWS 独自のコンテナのオーケストレーションサービス。コンテナを動かす場所として、自分で管理する EC2 か、サーバーの管理が要らない Fargate を選ぶ
+decisions:
+  - EC2・Lambda・ECS・EKS・Batch・Beanstalk のどれで動かすか
+  - コンテナを EC2 と Fargate のどちらで動かすか
+  - コンテナに AWS の権限をどう渡すか
+sections:
+  - title: コンピューティングの選び方
+    diagram:
+      type: table
+      axis: { left: 自分で管理する範囲が広い, right: AWS に任せる範囲が広い }
+      columns:
+        - { label: EC2, atom: ec2-on-demand, icon: ec2 }
+        - { label: ECS on EC2, atom: ecs-ec2-launch-type, icon: ecs }
+        - { label: Fargate, atom: ecs-fargate, icon: fargate }
+        - { label: Lambda, atom: lambda-function, icon: lambda }
+      rows:
+        - label: 管理するもの
+          cells: [OS から上すべて, EC2 のクラスターとコンテナ, コンテナだけ, コードだけ]
+        - label: 実行時間
+          cells: [無制限, 無制限, 無制限, 最大 15 分]
+        - label: 向いている使い方
+          cells: [OS の設定が必要・特殊なソフト, GPU・特定のインスタンスタイプ・コストの最適化, サーバーを管理せずにコンテナを動かす, イベント駆動の短い処理]
+    points:
+      - Kubernetes をそのまま使いたい（既存のマニフェストやツール）なら EKS。EKS も Fargate で動かせる
+      - 大量のバッチジョブをキューに入れて実行するなら AWS Batch、コードを置くだけで Web アプリの環境を作るなら Elastic Beanstalk
+
+  - title: ECS に渡す 2 つの IAM ロール
+    diagram:
+      type: architecture
+      cols: 6
+      rows: 3
+      groups:
+        - label: ECS のタスク
+          kind: generic
+          at: [1.5, 0.3, 2, 2.4]
+      nodes:
+        - id: ecr
+          label: ECR
+          icon: ecr
+          atom: ecs-ecr
+          at: [0, 0.4]
+        - id: logs
+          label: CloudWatch Logs
+          icon: cloudwatch
+          at: [0, 2]
+        - id: agent
+          label: "タスク実行ロール\n（ECS が使う）"
+          icon: iam-role
+          atom: ecs-task-role
+          at: [2, 1.2]
+        - id: app
+          label: "タスクロール\n（アプリが使う）"
+          icon: iam-role
+          atom: ecs-task-role
+          at: [3.2, 1.2]
+        - id: s3
+          label: S3
+          icon: s3
+          at: [5, 0.4]
+        - id: ddb
+          label: DynamoDB
+          icon: dynamodb
+          at: [5, 2]
+      edges:
+        - { from: agent, to: ecr, label: イメージの取得 }
+        - { from: agent, to: logs, label: ログの送信 }
+        - { from: app, to: s3 }
+        - { from: app, to: ddb }
+      caption: アプリのコードが AWS を呼ぶ権限はタスクロール。イメージの取得やログの送信は ECS がタスク実行ロールで行う
+
+  - title: 場面ごとの選び方
+    diagram:
+      type: decision
+      tree:
+        question: どう動かしたい？
+        branches:
+          - when: サーバーを管理せずにコンテナを動かしたい
+            atom: ecs-fargate
+          - when: GPU や特定のインスタンスでコンテナを動かし、費用を細かく調整したい
+            atom: ecs-ec2-launch-type
+          - when: 既存の Kubernetes のワークロードを移したい
+            atom: eks-cluster
+          - when: 大量のバッチジョブを、キューで順番に実行したい
+            atom: batch-jobs
+          - when: コードを置くだけで、ロードバランサーや Auto Scaling の環境を作りたい
+            atom: beanstalk-environment
+          - when: コンテナイメージを保存し、脆弱性をスキャンしたい
+            atom: ecs-ecr
+status: draft
+sources:
+  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html
+  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
+  - https://docs.aws.amazon.com/decision-guides/latest/containers-on-aws-how-to-choose/choosing-aws-container-service.html
