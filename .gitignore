@@ -7,3 +7,4 @@ local.db*
 !.env.example
 .generated/
 backups/
+.vercel
