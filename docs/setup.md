@@ -44,6 +44,9 @@ DATABASE_URL=<dev の URL> DATABASE_AUTH_TOKEN=<dev のトークン> npm run db:
 DATABASE_URL=<prod の URL> DATABASE_AUTH_TOKEN=<prod のトークン> npm run db:migrate
 ```
 
+DATABASE_URL=libsql://saa-trainer-dev-osamuhaketa.aws-ap-northeast-1.turso.io DATABASE_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTAzODE3MjksImlkIjoiMDFhMGRiMGQtOGQwMS03ZTRlLTllYWQtNTc3YjUzNGRlYjA5Iiwia2lkIjoiUldKVVU2TFktaWY0M2pzWDRYWEFZbHRoNC1MVU5GU1l4Zy1pRW45SXFuUSIsInJpZCI6IjIxZDMyZTczLWEzM2MtNDMyZS05OWE0LTA2Y2E0YmVmM2NjYSJ9.rQ3Ci0wUpR_oo3OyF24vu5eoztkOhYvmMnp2LbOJVHKgpwxK_NmoApIWjSjfxT88zi0yRS-rIUNgHaWnUdeNAA npm run db:migrate
+DATABASE_URL=libsql://saa-trainer-prod-osamuhaketa.aws-ap-northeast-1.turso.io DATABASE_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTAzODE4MzEsImlkIjoiMDFhMGRiMGUtMzkwMS03ZTFiLThkYzQtOGQ0MWExNmQ5ZjEwIiwia2lkIjoiUldKVVU2TFktaWY0M2pzWDRYWEFZbHRoNC1MVU5GU1l4Zy1pRW45SXFuUSIsInJpZCI6ImQ2MTQ3YjQ3LTRiOTYtNDQwYy1hNTI3LTQ4OWRkMmJiMTQzYiJ9.BB2RWBX9nmFDZ8_C1YTFa3WWKw4_-B3T8EKIPR9i9jP5GGLQOa21T5eC8cyaFlXqH_jVjkiBCPsIS3SF7u5MCA npm run db:migrate
+
 外部キーが効くかを確認する（設計書 6.2 の未確認事項）。`1` なら問題ない。`0` なら教えてほしい。
 
 ```bash
@@ -57,10 +60,10 @@ turso db shell saa-trainer-prod "pragma foreign_keys"
 3. Framework は Next.js のまま。環境変数はまだ入れずに「Deploy」（ここでの初回のデプロイは、ログインできなくても構わない）
 4. プロジェクトの Settings で次を設定する
    - **Git → Production Branch**: `main`
-   - **Functions → Function Region**: `Tokyo, Japan (hnd1)`
+   - 関数のリージョン（東京 `hnd1`）は、リポジトリの `vercel.json` で指定してあるので設定不要
 5. URL を控える
    - 本番: Settings → Domains に出ている `https://<プロジェクト名>.vercel.app`
-   - プレビュー（develop 用の固定の URL）: `https://<プロジェクト名>-git-develop-<チーム名>.vercel.app`。develop に push したあと、Deployments の develop のデプロイに表示される
+   - プレビュー（develop 用の固定の URL）: `https://<プロジェクト名>-git-develop-<チーム名>.vercel.app`。develop に push したあと、Deployments で Branch が develop のデプロイを開くと「Domains」に表示される（ランダムな文字が入っていない方）。Google Cloud にはあとから追加してよい
 
 ## 3. Google Cloud（ログイン）
 
