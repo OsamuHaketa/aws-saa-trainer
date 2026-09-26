@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "AWS Decision Trainer",
     short_name: "SAA Trainer",
     description: "AWS SAA の設計判断を 4 択で高速に回す学習ツール",
-    start_url: "/study",
+    start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait",
