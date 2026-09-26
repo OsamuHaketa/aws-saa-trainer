@@ -10,7 +10,7 @@ atoms:
     summary: 自分で作成・管理する KMS の鍵。鍵ポリシー、ローテーション、無効化を制御できる
     facts:
       - 鍵ポリシーで、誰が鍵を使えるか・管理できるかを細かく決められる
-      - 自動ローテーション（毎年など）を有効にできる
+      - 自動ローテーションを有効にでき（期間は 90〜2,560 日、デフォルト 365 日）、必要なときにすぐローテーションすることもできる
       - 鍵を無効化・削除（待機期間あり）できる
       - 別のアカウントに鍵の使用を許可できる
     triggers:
@@ -28,6 +28,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html
+      - https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html
 
   - id: kms-aws-managed-key
     category: encryption

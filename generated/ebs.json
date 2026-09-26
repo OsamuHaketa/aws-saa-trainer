@@ -95,21 +95,21 @@
     "atomIds": [
       "ebs-io2"
     ],
-    "prompt": "ミッションクリティカルな Oracle DB を EC2 で動かす。常に 5 万 IOPS 以上を安定して必要とする。どのボリュームを使う？",
+    "prompt": "ミッションクリティカルな Oracle DB を EC2 で動かす。常に 10 万 IOPS 以上を安定して必要とする。どのボリュームを使う？",
     "choices": [
       {
         "id": "a",
         "text": "プロビジョンド IOPS SSD（io2）",
         "correct": true,
         "atomId": "ebs-io2",
-        "why": "必要な IOPS を確保でき、耐久性も高い"
+        "why": "io2 Block Express なら最大 256,000 IOPS を確保でき、耐久性も高い"
       },
       {
         "id": "b",
         "text": "汎用 SSD（gp3）",
         "correct": false,
         "atomId": "ebs-gp3",
-        "why": "IOPS を追加できるが、このレベルの安定した高 IOPS には io2 が向く"
+        "why": "gp3 の上限は 80,000 IOPS で足りない（2025 年 9 月に 16,000 から拡大）"
       },
       {
         "id": "c",
@@ -126,7 +126,7 @@
         "why": "停止や故障でデータが消え、DB の永続的な保存先にならない"
       }
     ],
-    "explanation": "高 IOPS・重要な DB = io2。",
+    "explanation": "高 IOPS・重要な DB = io2。gp3 は最大 80,000 IOPS、io2 Block Express は最大 256,000 IOPS。",
     "keywords": [
       "5 万 IOPS",
       "ミッションクリティカル"

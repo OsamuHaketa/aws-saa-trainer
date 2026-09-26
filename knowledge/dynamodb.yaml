@@ -109,18 +109,20 @@ atoms:
       - 複数のリージョンにテーブルのレプリカを作り、自動で複製する
       - どのリージョンのレプリカにも書き込める（マルチリージョン・マルチアクティブ）
       - 世界中のユーザーに低レイテンシで読み書きさせたり、リージョン障害に備えたりできる
+      - デフォルトはマルチリージョンの結果整合性（MREC）で非同期に複製する。RPO ゼロが必要なら、3 リージョンで同期的に複製するマルチリージョンの強い整合性（MRSC）も選べる
     triggers:
       - 複数リージョンで読み書きしたい
       - グローバルなアプリで低レイテンシ
       - リージョン障害に備える NoSQL
     pitfalls:
-      - 同じ項目を複数のリージョンで同時に更新すると、最後の書き込みが勝つ
+      - MREC で同じ項目を複数のリージョンで同時に更新すると、最後の書き込みが勝つ
     relations: []
     examDomains: [resilient, performance]
     importance: high
     status: draft
     sources:
       - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html
 
   - id: dynamodb-streams
     category: database
@@ -166,10 +168,10 @@ atoms:
   - id: dynamodb-pitr
     category: backup
     concept: DynamoDB ポイントインタイムリカバリ（PITR）
-    summary: 継続的にバックアップし、過去 35 日の任意の時点に復元できる
+    summary: 継続的にバックアップし、過去最大 35 日の任意の時点に復元できる
     facts:
       - 有効にすると、継続的にバックアップされる
-      - 過去 35 日以内の任意の秒の時点に復元できる
+      - 復元できる期間（1〜35 日、デフォルト 35 日）の中の任意の秒の時点に復元できる
       - 復元は新しいテーブルとして作られる
       - 長期保管したい場合は、オンデマンドバックアップを使う
     triggers:
@@ -182,6 +184,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery.html
+      - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery_Howitworks.html
 
   - id: dynamodb-gsi
     category: database

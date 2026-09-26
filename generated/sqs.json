@@ -549,7 +549,7 @@
     "atomIds": [
       "sqs-large-messages"
     ],
-    "prompt": "SQS のメッセージで、上限を超える数 MB の JSON を処理側に渡したい。どうする？",
+    "prompt": "SQS のメッセージの上限（1 MiB）を超える数 MB の JSON を処理側に渡したい。どうする？",
     "choices": [
       {
         "id": "a",
@@ -579,7 +579,7 @@
         "why": "受信の方法で、サイズの上限は変わらない"
       }
     ],
-    "explanation": "大きなデータ = S3 に置き、キューには参照を流す。",
+    "explanation": "SQS の上限は 1 MiB（2025 年 8 月に 256 KiB から拡大）。大きなデータ = S3 に置き、キューには参照を流す。",
     "keywords": [
       "上限を超える"
     ],

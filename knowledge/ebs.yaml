@@ -13,6 +13,7 @@ atoms:
       - IOPS とスループットを、容量とは別に追加で設定できる
       - gp2 より安く、多くのワークロードの標準の選択肢
       - ブートボリュームに使える
+      - 上限は 80,000 IOPS・2,000 MiB/秒・64 TiB（2025 年 9 月に 16,000 IOPS・1,000 MiB/秒・16 TiB から拡大）
     triggers:
       - 一般的なアプリや開発環境のボリューム
       - IOPS のために容量を増やしたくない
@@ -26,6 +27,7 @@ atoms:
     importance: high
     status: draft
     sources:
+      - https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html
       - https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html
 
   - id: ebs-io2
@@ -146,7 +148,7 @@ atoms:
       - インスタンスを止めずに、容量を増やしたり、gp2 から gp3 にタイプを変えたりできる
       - 容量を増やしたあとは、OS 側でファイルシステムを拡張する
       - 容量を減らすことはできない
-      - 同じボリュームへの変更は、一定の間隔（6 時間）をあける必要がある
+      - 同じボリュームは 24 時間に 4 回まで変更できる（前の変更が終わっていれば続けて変更できる）
     triggers:
       - 止めずにディスクの容量を増やしたい
       - gp2 から gp3 に移行してコストを下げたい
@@ -160,6 +162,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html
+      - https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-ebs-up-to-four-volume-modifications/
 
   - id: ebs-multi-attach
     category: block-storage

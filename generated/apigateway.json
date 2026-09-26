@@ -25,7 +25,7 @@
       },
       {
         "id": "c",
-        "text": "Amazon Kinesis Data Firehose",
+        "text": "Amazon Data Firehose",
         "correct": false,
         "atomId": "kinesis-firehose",
         "why": "データの配信サービスで、API の処理はしない"

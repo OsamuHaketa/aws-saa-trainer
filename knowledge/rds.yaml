@@ -109,7 +109,7 @@ atoms:
       - 毎日の自動バックアップとトランザクションログを保存する
       - 保持期間（最大 35 日）の中の任意の時点に復元できる（ポイントインタイムリカバリ）
       - 復元すると、新しい DB インスタンスが作られる
-      - DB を削除すると、自動バックアップも削除される（最終スナップショットは残せる）
+      - DB を削除するとき、自動バックアップを残す設定を選ばなければ一緒に削除される（最終スナップショットも残せる）
     triggers:
       - 誤ったデータ更新の直前に戻したい
       - 任意の時点に復元したい
@@ -197,7 +197,7 @@ atoms:
   - id: rds-aurora-global-database
     category: database
     concept: Aurora グローバルデータベース
-    summary: 1 つのプライマリリージョンから、最大 5 つのセカンダリリージョンへ低遅延でレプリケーションする
+    summary: 1 つのプライマリリージョンから、最大 10 のセカンダリリージョンへ低遅延でレプリケーションする
     facts:
       - リージョン間のレプリケーションの遅延は通常 1 秒未満
       - セカンダリリージョンは読み取りに使え、世界中のユーザーに低レイテンシで読み取らせられる
@@ -215,6 +215,7 @@ atoms:
     importance: high
     status: draft
     sources:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html
       - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html
 
   - id: rds-aurora-serverless
@@ -269,7 +270,7 @@ atoms:
     concept: IAM データベース認証
     summary: DB のパスワードの代わりに、IAM で発行した有効期限 15 分の認証トークンで接続する
     facts:
-      - RDS for MySQL、RDS for PostgreSQL、Aurora で使える
+      - RDS for MySQL、RDS for MariaDB、RDS for PostgreSQL、Aurora で使える
       - IAM ロールの権限で認証トークンを発行し、パスワードとして使う
       - トークンの有効期限は 15 分で、接続は SSL/TLS で暗号化される
       - DB のパスワードをアプリに保存しなくてよい
@@ -363,7 +364,7 @@ atoms:
     facts:
       - 通常の RDS では OS にログインできないが、RDS Custom では OS や DB の設定にアクセスできる
       - 独自のパッチや、特定のソフトウェアのインストールが必要な場合に使う
-      - 対応エンジンは Oracle と SQL Server
+      - 対応エンジンは Oracle と SQL Server。ただし RDS Custom for Oracle は 2027 年 3 月 31 日にサポートが終了する（AWS は EC2 への移行を推奨）
       - バックアップなどの自動化は RDS が行う
     triggers:
       - OS へのアクセスが必要な Oracle / SQL Server
@@ -376,3 +377,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-custom.html
+      - https://aws.amazon.com/rds/custom/faqs/

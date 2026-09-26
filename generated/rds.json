@@ -1388,18 +1388,18 @@
     "atomIds": [
       "rds-custom"
     ],
-    "prompt": "Oracle の DB で、ベンダー指定のエージェントを DB サーバーの OS に入れる必要がある。バックアップなどはマネージドにしたい。何を使う？",
+    "prompt": "SQL Server の DB で、ベンダー指定のエージェントを DB サーバーの OS に入れる必要がある。バックアップなどはマネージドにしたい。何を使う？",
     "choices": [
       {
         "id": "a",
-        "text": "Amazon RDS Custom for Oracle",
+        "text": "Amazon RDS Custom for SQL Server",
         "correct": true,
         "atomId": "rds-custom",
         "why": "OS にアクセスでき、自動化の多くは RDS が行う"
       },
       {
         "id": "b",
-        "text": "通常の Amazon RDS for Oracle",
+        "text": "通常の Amazon RDS for SQL Server",
         "correct": false,
         "why": "OS にはログインできず、エージェントを入れられない"
       },
@@ -1408,7 +1408,7 @@
         "text": "Amazon Aurora",
         "correct": false,
         "atomId": "rds-aurora",
-        "why": "Oracle 互換ではない"
+        "why": "SQL Server 互換ではない"
       },
       {
         "id": "d",
@@ -1418,7 +1418,7 @@
         "why": "リレーショナル DB ではない"
       }
     ],
-    "explanation": "OS へのアクセスが必要なマネージド DB（Oracle / SQL Server）= RDS Custom。",
+    "explanation": "OS へのアクセスが必要なマネージド DB = RDS Custom（SQL Server と Oracle。Oracle 版は 2027 年 3 月 31 日にサポート終了）。",
     "keywords": [
       "OS に入れる",
       "マネージド"
@@ -1452,7 +1452,7 @@
         "id": "c",
         "text": "RDS Custom はすべての DB エンジンで使える",
         "correct": false,
-        "why": "Oracle と SQL Server"
+        "why": "Oracle と SQL Server だけ（Oracle 版は 2027 年 3 月 31 日にサポート終了）"
       },
       {
         "id": "d",

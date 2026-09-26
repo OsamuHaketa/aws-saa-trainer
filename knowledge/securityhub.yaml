@@ -13,6 +13,7 @@ atoms:
       - AWS の基礎的なセキュリティのベストプラクティスや CIS などの基準で、設定を自動でチェックする
       - Organizations と連携し、組織全体の状況を管理者アカウントで確認できる
       - EventBridge と組み合わせて、検出結果への対応を自動化できる
+      - 2025 年 12 月から、基準によるチェック（CSPM）の従来の機能は AWS Security Hub CSPM という名前になり、新しい Security Hub は検出結果を関連付けてリスクの優先度を付ける
     triggers:
       - 複数のセキュリティサービスの検出結果をまとめて見たい
       - セキュリティ基準への準拠状況を一覧したい
@@ -28,3 +29,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html
+      - https://docs.aws.amazon.com/securityhub/latest/userguide/what-are-securityhub-services.html

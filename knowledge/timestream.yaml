@@ -10,8 +10,8 @@ atoms:
     summary: IoT のセンサー値やアプリのメトリクスなど、時刻付きのデータを保存・分析する時系列データベース
     facts:
       - 時刻ごとの大量のデータの保存と、時間の範囲での集計に向く
-      - 新しいデータはメモリ、古いデータは低コストのストレージに自動で移す
-      - InfluxDB 互換のマネージドサービスも提供している
+      - InfluxDB 互換の Timestream for InfluxDB と、サーバーレスの Timestream for LiveAnalytics がある
+      - LiveAnalytics は 2025 年 6 月 20 日に新規の顧客の受付を終了した。新しく使うなら Timestream for InfluxDB
     triggers:
       - IoT のセンサーのデータを時系列で分析したい
       - 時系列データベース
@@ -23,3 +23,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html
+      - https://docs.aws.amazon.com/timestream/latest/developerguide/AmazonTimestreamForLiveAnalytics-availability-change.html

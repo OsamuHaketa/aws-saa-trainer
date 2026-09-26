@@ -796,7 +796,7 @@
     "atomIds": [
       "patterns-multi-az"
     ],
-    "prompt": "EC2 と RDS は複数 AZ に分けたが、NAT ゲートウェイは AZ-a に 1 つだけ置いた。何が問題？",
+    "prompt": "EC2 と RDS は複数 AZ に分けたが、ゾーン NAT ゲートウェイは AZ-a に 1 つだけ置いた。何が問題？",
     "choices": [
       {
         "id": "a",
@@ -825,7 +825,7 @@
         "why": "できる"
       }
     ],
-    "explanation": "AZ に属するリソース（NAT GW、サブネット、EBS など）は、AZ ごとに用意する。",
+    "explanation": "AZ に属するリソース（NAT GW、サブネット、EBS など）は、AZ ごとに用意する。※ 2025 年 11 月からは、複数の AZ に自動で広がるリージョン NAT ゲートウェイも選べる。",
     "keywords": [
       "1 つだけ"
     ],

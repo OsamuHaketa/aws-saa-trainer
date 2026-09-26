@@ -283,7 +283,7 @@
         "why": "ファイルサーバーの用途に合わない"
       }
     ],
-    "explanation": "初回の大量移行（Snowball）と、継続的なハイブリッドの利用（File Gateway）を分けて考える。",
+    "explanation": "初回の大量移行（Snowball）と、継続的なハイブリッドの利用（File Gateway）を分けて考える。※ Snowball Edge は 2025 年 11 月 7 日から新規の顧客は注文できない（既存の顧客のみ）。新規の顧客なら、帯域を調整して DataSync で移すか、AWS Data Transfer Terminal でデータを持ち込む。",
     "keywords": [
       "200 TB",
       "帯域は限られる",
@@ -897,7 +897,7 @@
       },
       {
         "id": "d",
-        "text": "IAM Identity Center で利用者を管理し、権限セットを割り当てる",
+        "text": "IAM Identity Center で利用者を管理し、アクセス許可セットを割り当てる",
         "correct": false,
         "atomId": "iam-identity-center",
         "why": "従業員の AWS へのアクセス向けで、アプリの利用者向けではない"
@@ -1905,7 +1905,7 @@
         "text": "Route 53 の加重ルーティング（均等）+ ELB のヘルスチェック + S3 の CRR",
         "correct": false,
         "atomId": "route53-weighted",
-        "why": "速さで選ばず、ELB のヘルスチェックは DNS に反映されない"
+        "why": "均等に分けるだけで速さでは選ばず、S3 の CRR は DB の読み書きの複製にならない"
       }
     ],
     "explanation": "マルチリージョン・アクティブ/アクティブ = レイテンシールーティング + ヘルスチェック + グローバルテーブル（Global Accelerator も選択肢）。",
@@ -2097,7 +2097,7 @@
         "text": "サーバーは AMI をオンプレで作成、DB は RDS のリードレプリカ",
         "correct": false,
         "atomId": "ec2-ami",
-        "why": "オンプレのサーバーから AMI は作れず、リードレプリカは移行の仕組みではない"
+        "why": "VM Import/Export で AMI にはできるが、継続的な複製がなく切り替えの停止が長い。リードレプリカは Oracle から Aurora への移行に使えない"
       }
     ],
     "explanation": "サーバー = MGN、異種 DB = スキーマ変換 + DMS（フルロード + CDC）。",
@@ -2237,7 +2237,7 @@
       },
       {
         "id": "d",
-        "text": "Kinesis Firehose + Macie + Athena のクエリ結果を CSV で配布",
+        "text": "Data Firehose + Macie + Athena のクエリ結果を CSV で配布",
         "correct": false,
         "atomId": "macie-job",
         "why": "Macie は検出で、列を隠す制御ではない"

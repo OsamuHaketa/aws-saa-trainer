@@ -608,6 +608,7 @@ atoms:
       - S3 が暗号化・復号を行うが、鍵そのものは保存しない
       - HTTPS が必須
       - 鍵をなくすとオブジェクトを復号できなくなる
+      - 2026 年 4 月から、新しいバケットではデフォルトで SSE-C が無効。使うにはバケットの暗号化の設定で許可する
     triggers:
       - 鍵を AWS の外で自分で管理したい
       - 暗号化処理は S3 に任せたい
@@ -622,6 +623,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-s3-c-encryption-setting-faq.html
 
   - id: s3-client-side-encryption
     category: encryption
@@ -797,7 +799,7 @@ atoms:
       - 1 回の PUT でアップロードできるのは 5 GB まで。それを超えるならマルチパートアップロードが必須
       - 100 MB を超えるファイルでは使うことが推奨される
       - パートを並列にアップロードでき、失敗したパートだけ再送できる
-      - オブジェクトの最大サイズは 5 TB
+      - オブジェクトの最大サイズは 50 TB（2025 年 12 月に 5 TB から拡大）
     triggers:
       - 5 GB を超えるファイルをアップロードする
       - 大きなファイルのアップロードを速くしたい
@@ -816,6 +818,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html
+      - https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-s3-maximum-object-size-50-tb/
 
   - id: s3-transfer-acceleration
     category: performance

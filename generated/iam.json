@@ -1783,7 +1783,7 @@
         "id": "d",
         "text": "ルートユーザーを削除する",
         "correct": false,
-        "why": "ルートユーザーは削除できない"
+        "why": "ルートユーザー自体は削除できない（組織のメンバーアカウントなら、ルートの認証情報を削除する方法はある）"
       }
     ],
     "explanation": "ルートユーザー = MFA 必須、アクセスキーなし、日常の作業に使わない。",
@@ -1801,14 +1801,14 @@
     "atomIds": [
       "iam-identity-center"
     ],
-    "prompt": "「複数の AWS アカウント」「従業員のシングルサインオン」「権限セット」→ 何？",
+    "prompt": "「複数の AWS アカウント」「従業員のシングルサインオン」「アクセス許可セット」→ 何？",
     "choices": [
       {
         "id": "a",
         "text": "IAM Identity Center",
         "correct": true,
         "atomId": "iam-identity-center",
-        "why": "権限セットを各アカウントに割り当て、1 か所で SSO を管理する"
+        "why": "アクセス許可セットを各アカウントに割り当て、1 か所で SSO を管理する"
       },
       {
         "id": "b",
@@ -1832,9 +1832,9 @@
         "why": "マルチアカウント環境の構築と統制で、SSO は Identity Center が担う"
       }
     ],
-    "explanation": "従業員 × 複数アカウント × SSO = IAM Identity Center（権限セット）。",
+    "explanation": "従業員 × 複数アカウント × SSO = IAM Identity Center（アクセス許可セット）。",
     "keywords": [
-      "権限セット"
+      "アクセス許可セット"
     ],
     "status": "draft",
     "generatedBy": "manual"
@@ -2563,7 +2563,7 @@
         "id": "b",
         "text": "ルートユーザーを削除する",
         "correct": false,
-        "why": "削除はできない"
+        "why": "ルートユーザー自体は消せない。メンバーアカウントなら認証情報を削除できるが、それは予防で、使われたことの検知ではない"
       },
       {
         "id": "c",
@@ -2727,7 +2727,7 @@
     "atomIds": [
       "iam-identity-center"
     ],
-    "prompt": "IAM Identity Center の「権限セット」とは？",
+    "prompt": "IAM Identity Center の「アクセス許可セット」とは？",
     "choices": [
       {
         "id": "a",
@@ -2757,9 +2757,9 @@
         "why": "アプリの利用者の管理"
       }
     ],
-    "explanation": "権限セット = ユーザー / グループ × アカウントに割り当てる権限（各アカウントにロールが作られる）。",
+    "explanation": "アクセス許可セット = ユーザー / グループ × アカウントに割り当てる権限（各アカウントにロールが作られる）。",
     "keywords": [
-      "権限セット"
+      "アクセス許可セット"
     ],
     "status": "draft",
     "generatedBy": "manual"

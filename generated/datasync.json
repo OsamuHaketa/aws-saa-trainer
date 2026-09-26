@@ -82,7 +82,7 @@
         "why": "ファイル共有として使うのは Storage Gateway"
       }
     ],
-    "explanation": "オンライン（DataSync）か、オフライン（Snowball）か。",
+    "explanation": "オンライン（DataSync）か、オフライン（Snowball）か。※ Snowball Edge は 2025 年 11 月 7 日から新規の顧客は注文できない（既存の顧客のみ）。",
     "keywords": [
       "帯域"
     ],

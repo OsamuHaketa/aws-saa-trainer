@@ -165,7 +165,7 @@ atoms:
     concept: 大きなメッセージの扱い（S3 に本体を置く）
     summary: SQS のメッセージサイズの上限を超えるデータは S3 に置き、メッセージには S3 の参照だけを入れる
     facts:
-      - 1 つのメッセージのサイズには上限がある
+      - 1 つのメッセージのサイズの上限は 1 MiB（2025 年 8 月に 256 KiB から拡大）
       - 上限を超えるデータは S3 に保存し、メッセージにはそのキーを入れる
       - 拡張クライアントライブラリを使うと、S3 への保存と取得を自動で行える
     triggers:
@@ -181,3 +181,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-s3-messages.html
+      - https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html

@@ -354,7 +354,7 @@
         "why": "クライアント側暗号化の説明"
       }
     ],
-    "explanation": "SSE-C の C は Customer-provided keys。暗号化は S3、鍵は顧客。",
+    "explanation": "SSE-C の C は Customer-provided keys。暗号化は S3、鍵は顧客。※ 2026 年 4 月から、新しいバケットではデフォルトで SSE-C が無効。使うにはバケットの暗号化の設定で許可する。",
     "keywords": [
       "顧客が用意した鍵"
     ],

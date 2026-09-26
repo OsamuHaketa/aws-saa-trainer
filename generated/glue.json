@@ -164,7 +164,7 @@
       },
       {
         "id": "d",
-        "text": "Kinesis Data Firehose",
+        "text": "Amazon Data Firehose",
         "correct": false,
         "atomId": "kinesis-firehose",
         "why": "ストリームの配信"

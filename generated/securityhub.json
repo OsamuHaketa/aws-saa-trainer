@@ -37,7 +37,7 @@
         "why": "API の記録"
       }
     ],
-    "explanation": "セキュリティの検出結果の集約 + 基準のチェック = Security Hub。",
+    "explanation": "セキュリティの検出結果の集約 + 基準のチェック = Security Hub。※ 2025 年 12 月から、基準のチェックの機能は AWS Security Hub CSPM という名前になった。",
     "keywords": [
       "1 か所にまとめ"
     ],
@@ -124,7 +124,7 @@
         "why": "API の操作の記録"
       }
     ],
-    "explanation": "集約と基準のチェック = Security Hub。",
+    "explanation": "集約と基準のチェック = Security Hub。※ 2025 年 12 月から、基準のチェックの機能は AWS Security Hub CSPM という名前になった。",
     "keywords": [
       "1 か所に集約"
     ],

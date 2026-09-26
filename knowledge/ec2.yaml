@@ -321,7 +321,7 @@ atoms:
     relations:
       - type: confused_with
         target: ec2-ami
-        distinction: ユーザーデータは起動のたびに設定を実行する（起動に時間がかかる）。AMI はあらかじめ設定済みのイメージから起動する（起動が速い）
+        distinction: ユーザーデータは新しいインスタンスを起動するたびに初回の起動時に設定を実行する（起動に時間がかかる）。AMI はあらかじめ設定済みのイメージから起動する（起動が速い）
     examDomains: [performance]
     importance: medium
     status: draft

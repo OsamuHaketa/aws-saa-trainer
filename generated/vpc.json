@@ -225,14 +225,14 @@
     "atomIds": [
       "vpc-nat-gateway"
     ],
-    "prompt": "3 つの AZ のプライベートサブネットが、AZ-a にある 1 つの NAT ゲートウェイを共有している。何が問題？",
+    "prompt": "3 つの AZ のプライベートサブネットが、AZ-a にある 1 つのゾーン NAT ゲートウェイを共有している。何が問題？",
     "choices": [
       {
         "id": "a",
         "text": "AZ-a が障害になると、全 AZ から外に出られなくなる",
         "correct": true,
         "atomId": "vpc-nat-gateway",
-        "why": "NAT ゲートウェイは AZ ごとのリソース。AZ ごとに作り、各 AZ のルートで使う"
+        "why": "ゾーン NAT ゲートウェイは AZ ごとのリソース。AZ ごとに作り、各 AZ のルートで使う"
       },
       {
         "id": "b",
@@ -253,7 +253,7 @@
         "why": "NAT ゲートウェイはパブリックサブネットに置く"
       }
     ],
-    "explanation": "NAT ゲートウェイは AZ ごとに 1 つ。高可用性の典型的な出題ポイント。",
+    "explanation": "NAT ゲートウェイは AZ ごとに 1 つ。高可用性の典型的な出題ポイント。※ 2025 年 11 月からは、複数の AZ に自動で広がるリージョン NAT ゲートウェイも選べる。",
     "keywords": [
       "1 つの NAT ゲートウェイ"
     ],
@@ -267,7 +267,7 @@
     "atomIds": [
       "vpc-nat-gateway"
     ],
-    "prompt": "NAT ゲートウェイを置く場所と、必要なものの組み合わせは？",
+    "prompt": "従来のゾーン NAT ゲートウェイを置く場所と、必要なものの組み合わせは？",
     "choices": [
       {
         "id": "a",
@@ -296,7 +296,7 @@
         "why": "NAT ゲートウェイは VPC のサブネットに置く"
       }
     ],
-    "explanation": "NAT ゲートウェイ = パブリックサブネット + Elastic IP。",
+    "explanation": "NAT ゲートウェイ = パブリックサブネット + Elastic IP。※ 2025 年 11 月からのリージョン NAT ゲートウェイは、パブリックサブネットが不要。",
     "keywords": [
       "パブリックサブネット"
     ],
@@ -330,7 +330,7 @@
         "id": "c",
         "text": "NAT は VPC に 1 つ、IGW は AZ ごとに必要",
         "correct": false,
-        "why": "逆。IGW は VPC に 1 つ、NAT ゲートウェイは AZ ごとに作るのが推奨"
+        "why": "逆。IGW は VPC に 1 つ、ゾーン NAT ゲートウェイは AZ ごとに作るのが推奨"
       },
       {
         "id": "d",
@@ -1254,10 +1254,10 @@
       },
       {
         "id": "b",
-        "text": "1 つの NAT GW を共有し、S3 への通信も NAT GW を通す",
+        "text": "AZ-a の NAT GW 1 つを共有し、S3 への通信も NAT GW を通す",
         "correct": false,
         "atomId": "vpc-nat-gateway",
-        "why": "NAT が単一障害点になり、S3 への通信にデータ処理料金がかかる"
+        "why": "AZ-a の障害で全 AZ が外に出られず、S3 への通信にデータ処理料金がかかる"
       },
       {
         "id": "c",
@@ -1274,7 +1274,7 @@
         "why": "VPC 内からの通信なら無料のゲートウェイエンドポイントで足り、コストが高い"
       }
     ],
-    "explanation": "「直接アクセスさせない」→ プライベートサブネット、「外へ出る」→ NAT、「AZ 障害」→ AZ ごとの NAT、「S3 のコスト」→ ゲートウェイエンドポイント。",
+    "explanation": "「直接アクセスさせない」→ プライベートサブネット、「外へ出る」→ NAT、「AZ 障害」→ AZ ごとの NAT、「S3 のコスト」→ ゲートウェイエンドポイント。※ 2025 年 11 月からは、複数の AZ に自動で広がるリージョン NAT ゲートウェイも選べる。",
     "keywords": [
       "プライベート",
       "AZ ごと",
@@ -3261,7 +3261,7 @@
         "text": "AZ ごとに 1 つずつ作る必要がある",
         "correct": false,
         "atomId": "vpc-nat-gateway",
-        "why": "それは NAT ゲートウェイ"
+        "why": "それはゾーン NAT ゲートウェイ"
       },
       {
         "id": "c",
@@ -3276,7 +3276,7 @@
         "why": "パブリックサブネットのルートの宛先"
       }
     ],
-    "explanation": "IGW = VPC に 1 つ、冗長・スケールは AWS が管理。NAT GW = AZ ごとに作る。",
+    "explanation": "IGW = VPC に 1 つ、冗長・スケールは AWS が管理。ゾーン NAT GW = AZ ごとに作る。",
     "keywords": [
       "VPC に 1 つ"
     ],

@@ -9,6 +9,7 @@ atoms:
     facts:
       - Athena、Redshift、RDS、S3 などのデータから、グラフやダッシュボードを作れる
       - サーバーレスで、利用者の数に合わせてスケールする
+      - 2025 年 10 月から Amazon Quick Suite の一部になり、BI の機能は Amazon Quick Sight という名前になった
     triggers:
       - ダッシュボード
       - BI
@@ -21,3 +22,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/quicksight/latest/user/welcome.html
+      - https://docs.aws.amazon.com/quick/latest/userguide/what-is.html

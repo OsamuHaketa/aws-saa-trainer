@@ -37,7 +37,7 @@
         "why": "長期保管向けで、すぐに集計できない"
       }
     ],
-    "explanation": "時系列データ = Timestream。",
+    "explanation": "時系列データ = Timestream。※ 新しく使うなら Timestream for InfluxDB（LiveAnalytics は 2025 年 6 月 20 日に新規の受付を終了）。",
     "keywords": [
       "毎秒",
       "時間の範囲"
@@ -83,7 +83,7 @@
         "why": "MongoDB 互換"
       }
     ],
-    "explanation": "時系列 = Timestream。",
+    "explanation": "時系列 = Timestream。※ 新しく使うなら Timestream for InfluxDB（LiveAnalytics は 2025 年 6 月 20 日に新規の受付を終了）。",
     "keywords": [
       "時系列"
     ],

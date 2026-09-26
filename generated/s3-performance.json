@@ -10,16 +10,16 @@
     "choices": [
       {
         "id": "a",
-        "text": "PUT は 5 GB まで、オブジェクトは 5 TB まで",
+        "text": "PUT は 5 GB まで、オブジェクトは 50 TB まで",
         "correct": true,
         "atomId": "s3-multipart-upload",
-        "why": "5 GB を超えるならマルチパートアップロードが必須"
+        "why": "5 GB を超えるならマルチパートアップロードが必須。オブジェクトの上限は 2025 年 12 月に 5 TB から 50 TB に拡大した"
       },
       {
         "id": "b",
         "text": "PUT は 5 TB まで、オブジェクトは 5 PB まで",
         "correct": false,
-        "why": "PUT の上限は 5 GB、オブジェクトの上限は 5 TB"
+        "why": "PUT の上限は 5 GB、オブジェクトの上限は 50 TB"
       },
       {
         "id": "c",
@@ -32,12 +32,18 @@
         "text": "PUT もオブジェクトも上限はない",
         "correct": false,
         "why": "どちらにも上限がある"
+      },
+      {
+        "id": "e",
+        "text": "PUT は 5 GB まで、オブジェクトは 5 TB まで",
+        "correct": false,
+        "why": "5 TB は 2025 年 11 月までのオブジェクトの上限。今は 50 TB"
       }
     ],
-    "explanation": "5 GB（単一 PUT）/ 5 TB（オブジェクト）/ 100 MB 超でマルチパート推奨。",
+    "explanation": "5 GB（単一 PUT）/ 50 TB（オブジェクト。2025 年 12 月に 5 TB から拡大）/ 100 MB 超でマルチパート推奨。",
     "keywords": [
       "5 GB",
-      "5 TB"
+      "50 TB"
     ],
     "status": "draft",
     "generatedBy": "manual"

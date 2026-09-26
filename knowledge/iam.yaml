@@ -13,6 +13,7 @@ atoms:
       - IAM ポリシーでは権限を制限できない
       - MFA を有効にし、日常の作業には使わない
       - ルートユーザーのアクセスキーは作らない
+      - Organizations のメンバーアカウントでは、ルートアクセスの一元管理でルートユーザーの認証情報（パスワード・アクセスキー・MFA）を削除できる
     triggers:
       - アカウントの最上位の権限
       - ルートユーザーの保護
@@ -24,6 +25,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html
+      - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html
 
   - id: iam-user
     category: identity
@@ -227,7 +229,7 @@ atoms:
     facts:
       - Organizations の複数アカウントへのアクセスを一元管理し、シングルサインオンを提供する
       - Active Directory や Okta などの外部の ID プロバイダーと連携できる
-      - 許可セットで、アカウントごとに付ける権限を定義する
+      - アクセス許可セットで、アカウントごとに付ける権限を定義する
       - 利用者は一時的な認証情報でアクセスするので、IAM ユーザーを作らなくてよい
     triggers:
       - 複数アカウントへのシングルサインオン

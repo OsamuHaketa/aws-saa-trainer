@@ -108,9 +108,9 @@
       },
       {
         "id": "b",
-        "text": "DocumentDB はサーバーレスで、容量の管理が一切不要",
+        "text": "DocumentDB の方が書き込みを無制限にスケールできる",
         "correct": false,
-        "why": "インスタンスのサイズや台数を選ぶ（Elastic Clusters もある）"
+        "why": "ほぼ無制限にスケールするのは DynamoDB。DocumentDB はインスタンスや Serverless の容量の範囲で動く"
       },
       {
         "id": "c",

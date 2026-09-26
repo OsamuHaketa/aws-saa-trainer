@@ -12,6 +12,7 @@ atoms:
       - MongoDB のドライバーやツールをそのまま使える
       - JSON のドキュメントを柔軟なスキーマで保存・検索する
       - ストレージは 3 つの AZ に 6 つのコピーを持ち、自動で拡張する（Aurora と似た構成）
+      - インスタンスのサイズを選ぶ構成のほか、負荷に合わせて容量が増減する DocumentDB Serverless（2025 年 7 月から）もある
     triggers:
       - MongoDB を AWS のマネージドサービスに移行したい
       - JSON のドキュメントを保存したい
@@ -26,3 +27,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html
+      - https://docs.aws.amazon.com/documentdb/latest/devguide/docdb-serverless.html

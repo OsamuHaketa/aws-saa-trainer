@@ -37,7 +37,7 @@
         "why": "インターネット回線の帯域は変わらない"
       }
     ],
-    "explanation": "回線が遅い + 大量のデータ = Snowball（物理デバイス）。",
+    "explanation": "回線が遅い + 大量のデータ = Snowball（物理デバイス）。※ Snowball Edge は 2025 年 11 月 7 日から新規の顧客は注文できない（既存の顧客のみ）。",
     "keywords": [
       "500 TB",
       "1 年以上"
@@ -81,7 +81,7 @@
         "why": "S3 に取り込める"
       }
     ],
-    "explanation": "回線で現実的な時間に送れる = DataSync。回線では何週間・何か月もかかる = Snowball。",
+    "explanation": "回線で現実的な時間に送れる = DataSync。回線では何週間・何か月もかかる = Snowball。※ Snowball Edge は 2025 年 11 月 7 日から新規の顧客は注文できない（既存の顧客のみ）。",
     "keywords": [
       "回線に余裕"
     ],
@@ -125,7 +125,7 @@
         "why": "関係ない"
       }
     ],
-    "explanation": "Snowball → S3 → ライフサイクルで Glacier / Deep Archive。",
+    "explanation": "Snowball → S3 → ライフサイクルで Glacier / Deep Archive。※ Snowball Edge は 2025 年 11 月 7 日から新規の顧客は注文できない（既存の顧客のみ）。",
     "keywords": [
       "Deep Archive"
     ],

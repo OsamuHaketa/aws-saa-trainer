@@ -61,6 +61,7 @@ atoms:
       - プライベートサブネットからインターネットへの外向きの通信を可能にし、外から始まる接続は受け付けない
       - AZ ごとのリソースなので、高可用性のためには AZ ごとに作る
       - マネージドサービスで、時間単位の料金と処理したデータ量の料金がかかる
+      - パブリックサブネットに置く・AZ ごとに作る、は従来のゾーン NAT ゲートウェイの場合。2025 年 11 月から、パブリックサブネット不要で複数の AZ に自動で広がるリージョン NAT ゲートウェイも選べる
     triggers:
       - プライベートサブネットからパッチを取得したい
       - 外からは接続させずに、外へは出たい
@@ -73,6 +74,7 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
+      - https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
 
   - id: vpc-route-table
     category: networking

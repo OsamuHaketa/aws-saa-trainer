@@ -127,7 +127,7 @@
         "text": "Intelligent-Tiering に保存し、7 年後に Lifecycle で削除する",
         "correct": false,
         "atomId": "s3-intelligent-tiering",
-        "why": "変化が予測できるので監視料金は不要で、アーカイブ階層の設定もしないと安くならない"
+        "why": "変化が予測できるので監視料金は払わなくてよい。Deep Archive と同じ水準まで下げるには、アーカイブ階層の有効化も必要"
       },
       {
         "id": "d",

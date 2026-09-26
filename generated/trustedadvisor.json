@@ -98,10 +98,10 @@
     "choices": [
       {
         "id": "a",
-        "text": "ビジネス以上のサポートプラン",
+        "text": "Business Support+ 以上のプラン",
         "correct": true,
         "atomId": "trustedadvisor-checks",
-        "why": "ベーシックなどでは一部のチェックだけ"
+        "why": "ベーシックでは一部のチェックだけ。従来の Business と Enterprise On-Ramp は 2027 年 1 月 1 日に終了する"
       },
       {
         "id": "b",
@@ -124,7 +124,7 @@
         "why": "関係ない"
       }
     ],
-    "explanation": "Trusted Advisor の全チェック = ビジネス / Enterprise On-Ramp / エンタープライズのサポート。",
+    "explanation": "Trusted Advisor の全チェック = Business Support+ / Enterprise / Unified Operations のサポート（従来の Business と Enterprise On-Ramp は 2027 年 1 月に終了）。",
     "keywords": [
       "すべてのチェック"
     ],

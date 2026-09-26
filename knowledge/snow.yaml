@@ -10,6 +10,7 @@ atoms:
       - AWS から届いたデバイスにデータをコピーし、送り返すと S3 に取り込まれる
       - 数十 TB〜PB 規模で、ネットワークでの転送に時間がかかりすぎる場合に使う
       - ネットワークが限られた現場でのエッジコンピューティングにも使える
+      - 2025 年 11 月 7 日から、新規の顧客は注文できない（既存の顧客だけが使える）。新規なら DataSync、物理的な持ち込みは AWS Data Transfer Terminal、エッジの処理は Outposts を検討する
     triggers:
       - 回線が遅く、ネットワークで転送すると数か月かかる
       - 数百 TB のデータを移行したい
@@ -22,3 +23,4 @@ atoms:
     status: draft
     sources:
       - https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html
+      - https://docs.aws.amazon.com/snowball/latest/developer-guide/snowball-edge-availability-change.html
