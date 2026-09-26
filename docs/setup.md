@@ -19,7 +19,11 @@
 ## 1. Turso（DB）
 
 ```bash
+# turso は別の tap の sqld に依存している。最近の Homebrew は、信頼した tap からしか読み込まない
+brew tap libsql/sqld
+brew trust libsql/sqld     # tursodatabase/tap でも同じエラーが出たら brew trust tursodatabase/tap も
 brew install tursodatabase/tap/turso
+# Homebrew で入らないときは: curl -sSfL https://get.tur.so/install.sh | bash（~/.turso に入る）
 turso auth signup          # アカウントがあれば turso auth login
 
 turso db locations         # 東京のコード（aws-ap-northeast-1 など）を確認
