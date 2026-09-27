@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Edit(./**/.env)",
+      "Edit(./**/.env.*)",
+      "Read(./backups/**)",
+      "Read(./.vercel/**)",
+      "Bash(*.env*)",
+      "Bash(*vercel env pull*)",
+      "Bash(*turso db tokens create*)",
+      "Bash(*turso group tokens create*)",
+      "Bash(*turso auth token*)"
+    ]
+  }
+}

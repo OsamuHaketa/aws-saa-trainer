@@ -5,9 +5,12 @@ AWS SAA の知識を **Knowledge Atom**（最小の知識単位）に分解し�
 ## 使い方
 
 ```bash
-npm install
-npm run dev        # http://localhost:3000
+brew install gitleaks   # 秘密情報のチェックに使う（ないとコミットと push が止まる）
+npm install             # Git のフック（.githooks/）もここで有効になる
+npm run dev             # http://localhost:3000
 ```
+
+**秘密情報（DB のトークン・認証の秘密鍵・Google のシークレット）は、リポジトリのファイルに書かない。** 置き場所は Vercel の環境変数と `.env.local` だけ。コミット前・push 前・GitHub Actions で gitleaks が調べ、見つかれば止める。扱い方と、流出したときの作り直し方（`scripts/rotate-db-token.sh`）は [docs/setup.md の「秘密情報の扱い」](docs/setup.md#秘密情報の扱い)。
 
 初回起動時に `local.db`（学習履歴、Git 管理外）が自動で作られる。
 
@@ -32,6 +35,7 @@ npm run dev        # http://localhost:3000
 | `npm run typecheck` | 型チェック |
 | `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（ローカルの DB には起動時に自動適用） |
 | `npm run db:migrate` | マイグレーションを適用する。Turso に適用するときは `DATABASE_URL` と `DATABASE_AUTH_TOKEN` を指定する |
+| `scripts/rotate-db-token.sh` | Turso のトークンを作り直す（古いトークンはすべて無効）。新しいトークンは画面に出さずに Vercel に登録し、デプロイし直す |
 
 ## 構成
 

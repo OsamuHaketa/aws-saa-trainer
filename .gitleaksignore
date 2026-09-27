@@ -1,0 +1,8 @@
+# gitleaks が検出しても無視する箇所（コミット:ファイル:ルール:行）。
+# ここに書いてよいのは「すでに無効にした（作り直した）秘密情報」だけ。まだ有効な値は、ここに書かずに作り直す。
+
+# 2026-09-26 に docs/setup.md に貼られた Turso のトークン（dev・prod）。2026-09-27 に鍵をローテーションして無効化を確認済み
+728f0e5c03aae26a0af8e9f5c90b274bdd02ae18:docs/setup.md:jwt:47
+728f0e5c03aae26a0af8e9f5c90b274bdd02ae18:docs/setup.md:jwt:48
+728f0e5c03aae26a0af8e9f5c90b274bdd02ae18:docs/setup.md:project-env-secret:47
+728f0e5c03aae26a0af8e9f5c90b274bdd02ae18:docs/setup.md:project-env-secret:48

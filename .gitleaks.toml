@@ -1,0 +1,29 @@
+# gitleaks（秘密情報のスキャナー）の設定。標準のルールに、このプロジェクトで使う秘密情報のルールを足す。
+# 使われる場所: .githooks/pre-commit・.githooks/pre-push・.github/workflows/secret-scan.yml
+# 誤検知の行は、行末に「gitleaks:allow」を付けると無視される。流出して無効にした古い値は .gitleaksignore に書く
+
+[extend]
+useDefault = true
+
+# 環境変数の名前のあとに、値そのものが書かれている（.env の中身やコマンドの例をファイルに貼った場合など）。
+# 「<prod のトークン>」のようなプレースホルダーや「$(turso db tokens create ...)」は値に当たらないので検出しない
+[[rules]]
+id = "project-env-secret"
+description = "このプロジェクトの秘密情報（DB のトークン・認証の秘密鍵・Google のシークレット）の値"
+regex = '''\b(?:DATABASE_AUTH_TOKEN|BETTER_AUTH_SECRET|GOOGLE_CLIENT_SECRET)\s*[=:]\s*["']?([A-Za-z0-9_\-+/=.]{16,})'''
+secretGroup = 1
+keywords = ["database_auth_token", "better_auth_secret", "google_client_secret"]
+
+[[rules]]
+id = "libsql-url-with-token"
+description = "トークンを含む libSQL（Turso）の URL"
+regex = '''libsql://[^\s"'`]*[?&]authToken=([A-Za-z0-9_\-.]{20,})'''
+secretGroup = 1
+keywords = ["authtoken"]
+
+[[rules]]
+id = "google-oauth-client-secret"
+description = "Google OAuth のクライアント シークレット"
+regex = '''\b(GOCSPX-[A-Za-z0-9_-]{28})\b'''
+secretGroup = 1
+keywords = ["gocspx-"]

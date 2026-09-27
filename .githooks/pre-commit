@@ -1,0 +1,24 @@
+#!/bin/sh
+# コミットする内容に、秘密情報（トークン・パスワード・鍵）が入っていないかを調べる。見つかったらコミットを止める。
+# 有効にする: npm install（package.json の prepare が git config core.hooksPath .githooks を実行する）
+set -eu
+
+# .env 系のファイルは、git add -f で追加していてもコミットさせない（.env.example だけは例外）
+env_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '(^|/)\.env' | grep -vE '(^|/)\.env\.example$' || true)
+if [ -n "$env_files" ]; then
+  echo "✖ .env のファイルはコミットできない: $env_files" >&2
+  echo "  git restore --staged <ファイル> で外す" >&2
+  exit 1
+fi
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "✖ gitleaks がないので、秘密情報のチェックができない。brew install gitleaks でインストールしてから、もう一度コミットする" >&2
+  exit 1
+fi
+
+if ! gitleaks git --pre-commit --staged --redact --no-banner --verbose; then
+  echo "✖ 秘密情報らしきものが見つかったので、コミットを止めた（上の File と Line を確認する）" >&2
+  echo "  本物なら: ファイルから消し、値は Vercel の環境変数か .env.local に置く。すでに外に出ていたら作り直す（docs/setup.md の「秘密情報の扱い」）" >&2
+  echo "  誤検知なら: その行の末尾に gitleaks:allow と書いたコメントを付ける" >&2
+  exit 1
+fi

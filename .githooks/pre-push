@@ -1,0 +1,25 @@
+#!/bin/sh
+# push する前に、送るコミットすべてに秘密情報がないかを調べる。
+# git commit --no-verify で pre-commit を飛ばした場合や、別の環境で作ったコミットを push する場合の最後の砦
+set -eu
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "✖ gitleaks がないので、秘密情報のチェックができない。brew install gitleaks でインストールしてから、もう一度 push する" >&2
+  exit 1
+fi
+
+zero=0000000000000000000000000000000000000000
+# 標準入力に「ローカルの ref・SHA・リモートの ref・SHA」が push する ref の数だけ来る
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue # ブランチの削除
+  if [ "$remote_sha" = "$zero" ]; then
+    range="$local_sha --not --remotes" # 新しいブランチ: まだどのリモートにもないコミット
+  else
+    range="$remote_sha..$local_sha"
+  fi
+  if ! gitleaks git --log-opts="$range" --redact --no-banner --verbose; then
+    echo "✖ push するコミット（$local_ref）に秘密情報らしきものがあるので、push を止めた" >&2
+    echo "  コミットをやり直して値を消す。すでに外に出ていたら作り直す（docs/setup.md の「秘密情報の扱い」）" >&2
+    exit 1
+  fi
+done

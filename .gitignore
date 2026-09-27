@@ -8,3 +8,7 @@ local.db*
 .generated/
 backups/
 .vercel
+# 秘密鍵・証明書の類は置かない（docs/setup.md の「秘密情報の扱い」）
+*.pem
+*.key
+*.p12
