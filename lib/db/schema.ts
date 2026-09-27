@@ -99,6 +99,7 @@ export const cards = sqliteTable(
     state: integer("state").notNull(), // ts-fsrs の State: 0 New / 1 Learning / 2 Review / 3 Relearning
     lastReview: integer("last_review", { mode: "timestamp_ms" }),
     firstSeenAt: integer("first_seen_at", { mode: "timestamp_ms" }).notNull(),
+    suspendedAt: integer("suspended_at", { mode: "timestamp_ms" }), // 「復習不要」にした時刻。null なら通常どおり出題する
   },
   (t) => [primaryKey({ columns: [t.userId, t.questionId] })],
 );

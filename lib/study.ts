@@ -7,7 +7,15 @@ import type { DB } from "./db";
 import { cards, followups, reviewLogs, type CardRow, type MistakeType } from "./db/schema";
 import { cardToRow, rowToCard, scheduler, toRating } from "./fsrs";
 import { atomMastery } from "./mastery";
-import { chooseNext, followupCandidates, inScope, newQuestions, type PickReason, type SchedulerState } from "./scheduler";
+import {
+  chooseNext,
+  followupCandidates,
+  inScope,
+  isSuspended,
+  newQuestions,
+  type PickReason,
+  type SchedulerState,
+} from "./scheduler";
 
 /** 学習日の開始時刻（config.dayStartHour 時） */
 export function dayStart(now: Date): Date {
@@ -154,15 +162,17 @@ function summarize(content: Content, state: SchedulerState) {
   const { now, cards: cardMap } = state;
   let learning = 0;
   let review = 0;
+  let suspended = 0;
   for (const c of cardMap.values()) {
     const q = content.questions.get(c.questionId);
     if (!q || q.status === "retired" || !inScope(q, state.service)) continue;
-    if (c.state === State.Learning || c.state === State.Relearning) learning++;
+    if (isSuspended(c)) suspended++;
+    else if (c.state === State.Learning || c.state === State.Relearning) learning++;
     else if (c.state === State.Review && c.due <= now) review++;
   }
   const newLimitLeft = Math.max(0, config.newPerDay + state.extraNew - state.introducedToday);
   const newAvailable = Math.min(newLimitLeft, newQuestions(content, state).length);
-  return { learning, review, newAvailable, introducedToday: state.introducedToday };
+  return { learning, review, newAvailable, suspended, introducedToday: state.introducedToday };
 }
 
 export type ReviewInput = {
@@ -173,6 +183,8 @@ export type ReviewInput = {
   guessed: boolean;
   mistakeType?: MistakeType | null;
   followupId?: number | null;
+  /** 「復習不要」: 回答を記録したうえで、この問題を今後出さない */
+  suspend?: boolean;
 };
 
 export async function recordReview(db: DB, userId: string, content: Content, input: ReviewInput, now: Date) {
@@ -195,7 +207,8 @@ export async function recordReview(db: DB, userId: string, content: Content, inp
       .where(and(eq(cards.userId, userId), eq(cards.questionId, q.id)))
       .get();
     const { card: next } = scheduler.next(rowToCard(existing, now), now, rating);
-    const row = cardToRow(userId, q.id, next, existing?.firstSeenAt ?? now);
+    const suspendedAt = input.suspend ? now : (existing?.suspendedAt ?? null);
+    const row = cardToRow(userId, q.id, next, existing?.firstSeenAt ?? now, suspendedAt);
     await tx
       .insert(cards)
       .values(row)
@@ -255,8 +268,20 @@ export async function recordReview(db: DB, userId: string, content: Content, inp
       }
     }
 
-    return { correct, rating, due: next.due, followupCreated };
+    return { correct, rating, due: next.due, followupCreated, suspended: !!suspendedAt };
   });
+}
+
+/** 「復習不要」を付け外しする。外すと、回答時の FSRS の予定どおりにまた出る */
+export async function setSuspended(db: DB, userId: string, questionId: string, suspended: boolean, now: Date) {
+  const updated = await db
+    .update(cards)
+    .set({ suspendedAt: suspended ? now : null })
+    .where(and(eq(cards.userId, userId), eq(cards.questionId, questionId)))
+    .returning({ questionId: cards.questionId })
+    .all();
+  if (updated.length === 0) throw new Error(`まだ解いていない問題: ${questionId}`);
+  return { questionId, suspended };
 }
 
 /** 今日の回答数と正答数 */

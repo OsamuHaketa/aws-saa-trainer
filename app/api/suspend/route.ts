@@ -1,28 +1,23 @@
 import { z } from "zod";
 import { requireApiUser } from "@/lib/auth/session";
-import { getContent } from "@/lib/content";
 import { getDb } from "@/lib/db";
-import { MISTAKE_TYPES } from "@/lib/db/schema";
-import { recordReview } from "@/lib/study";
+import { setSuspended } from "@/lib/study";
 
 const Body = z.object({
   questionId: z.string(),
-  selectedChoiceId: z.string(),
-  shownChoiceIds: z.array(z.string()).min(1),
-  responseTimeMs: z.number().nonnegative(),
-  guessed: z.boolean(),
-  mistakeType: z.enum(MISTAKE_TYPES).nullable().optional(),
-  followupId: z.number().int().nullable().optional(),
-  suspend: z.boolean().optional(),
+  suspended: z.boolean(),
 });
 
+/** 「復習不要」の付け外し（学習画面の「元に戻す」で使う） */
 export async function POST(req: Request) {
   const user = await requireApiUser();
   if (user instanceof Response) return user;
   const body = Body.safeParse(await req.json());
   if (!body.success) return Response.json({ error: body.error.issues }, { status: 400 });
   try {
-    return Response.json(await recordReview(getDb(), user.id, getContent(), body.data, new Date()));
+    return Response.json(
+      await setSuspended(getDb(), user.id, body.data.questionId, body.data.suspended, new Date()),
+    );
   } catch (e) {
     return Response.json({ error: (e as Error).message }, { status: 400 });
   }

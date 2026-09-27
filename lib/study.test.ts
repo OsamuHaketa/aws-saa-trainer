@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { followups, reviewLogs, user } from "./db/schema";
 import { config } from "./config";
 import { toRating } from "./fsrs";
-import { distinction, getNextQuestion, loadCards, recordReview } from "./study";
+import { distinction, getNextQuestion, loadCards, recordReview, setSuspended } from "./study";
 
 const ROOT = process.cwd();
 const T0 = new Date("2026-09-25T10:00:00");
@@ -164,6 +164,52 @@ describe("出題と記録", () => {
     // ほかのサービスの Atom も使う問題は、そちらの単独の問題を先に出す必要があるので対象外
     const selfContained = inRange.filter((q) => q.atomIds.every((a) => content.atoms.get(a)?.service === "iam"));
     expect(selfContained.filter((q) => !seen.has(q.id)).map((q) => q.id)).toEqual([]);
+  });
+});
+
+describe("復習不要", () => {
+  it("復習不要にした問題は、不正解でも再出題しない", async () => {
+    const first = await getNextQuestion(db, USER, content, T0);
+    if (first.done) throw new Error("done");
+    const result = await answer(first.question.id, "wrong", T0, { suspend: true });
+    expect(result.suspended).toBe(true);
+    expect((await loadCards(db, USER)).get(first.question.id)?.suspendedAt).toEqual(T0);
+
+    // 不正解なら数分後に再学習で出るはずだが、出さない
+    const shown: string[] = [];
+    for (let i = 1; i <= 30; i++) {
+      const next = await getNextQuestion(db, USER, content, minutes(i * 5));
+      if (next.done) break;
+      expect(next.summary.suspended).toBe(1);
+      shown.push(next.question.id);
+      await answer(next.question.id, "correct", minutes(i * 5));
+    }
+    expect(shown.length).toBeGreaterThan(0);
+    expect(shown).not.toContain(first.question.id);
+  });
+
+  it("元に戻すと、回答時の予定どおりにまた出る", async () => {
+    const first = await getNextQuestion(db, USER, content, T0);
+    if (first.done) throw new Error("done");
+    await answer(first.question.id, "wrong", T0, { suspend: true });
+    await setSuspended(db, USER, first.question.id, false, minutes(1));
+    const card = (await loadCards(db, USER)).get(first.question.id);
+    expect(card?.suspendedAt).toBeNull();
+    expect(card?.state).toBe(State.Learning);
+
+    const next = await getNextQuestion(db, USER, content, minutes(30));
+    if (next.done) throw new Error("done");
+    expect(next.summary.suspended).toBe(0);
+    expect(next.summary.learning).toBe(1);
+  });
+
+  it("まだ解いていない問題や、ほかのユーザーの問題は復習不要にできない", async () => {
+    const first = await getNextQuestion(db, USER, content, T0);
+    if (first.done) throw new Error("done");
+    await expect(setSuspended(db, USER, first.question.id, true, T0)).rejects.toThrow();
+    await answer(first.question.id, "correct", T0);
+    await db.insert(user).values({ id: "user-b", name: "B", email: "b@example.com" }).run();
+    await expect(setSuspended(db, "user-b", first.question.id, true, T0)).rejects.toThrow();
   });
 });
 

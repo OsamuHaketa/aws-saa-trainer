@@ -10,7 +10,7 @@ import type { CardRow, FollowupRow } from "./db/schema";
  *   3. 復習予定日を過ぎた問題（習熟度の低い Atom を優先）
  *   4. 新しい問題（1 日の上限まで。サービスの順 → Level の低い順）
  *   5. 学習中で、予定時刻まで config.learnAheadMinutes 分以内の問題（前倒し）
- * 各段階で、直近に出た Atom の問題は後回しにする。
+ * 各段階で、直近に出た Atom の問題は後回しにする。「復習不要」にした問題は出さない。
  */
 
 export type SchedulerState = {
@@ -45,6 +45,11 @@ export type NextPick = {
 
 const IMPORTANCE_ORDER = { high: 0, medium: 1, low: 2 } as const;
 
+/** 「復習不要」にした問題か */
+export function isSuspended(card: CardRow | undefined): boolean {
+  return !!card?.suspendedAt;
+}
+
 function isLearning(card: CardRow): boolean {
   return card.state === State.Learning || card.state === State.Relearning;
 }
@@ -60,7 +65,7 @@ export function followupCandidates(
   const scored: { question: QuestionEntry; mustIncludeAtomId?: string; score: number }[] = [];
 
   for (const q of activeQuestions(content)) {
-    if (q.id === followup.sourceQuestionId || !inScope(q, service)) continue;
+    if (q.id === followup.sourceQuestionId || !inScope(q, service) || isSuspended(cards.get(q.id))) continue;
     const correct = q.choices.find((c) => c.correct);
     const wrongAtoms = new Set(q.choices.filter((c) => !c.correct).map((c) => c.atomId));
     if (q.atomIds.includes(atomId) && q.atomIds.includes(confusedAtomId)) {
@@ -153,7 +158,7 @@ export function chooseNext(
   const active = activeQuestions(content).filter((q) => q.id !== lastQuestionId && inScope(q, state.service));
   const withCard = active.flatMap((q) => {
     const card = cards.get(q.id);
-    return card ? [{ q, card }] : [];
+    return card && !isSuspended(card) ? [{ q, card }] : [];
   });
   const primaryMastery = (q: QuestionEntry) => Math.min(...q.atomIds.map((a) => mastery.get(a) ?? 0));
 
@@ -195,7 +200,15 @@ export function chooseNext(
   if (lastQuestionId) {
     const card = cards.get(lastQuestionId);
     const q = content.questions.get(lastQuestionId);
-    if (q && q.status !== "retired" && inScope(q, state.service) && card && isLearning(card) && card.due <= aheadLimit) {
+    if (
+      q &&
+      q.status !== "retired" &&
+      inScope(q, state.service) &&
+      card &&
+      !isSuspended(card) &&
+      isLearning(card) &&
+      card.due <= aheadLimit
+    ) {
       return { question: q, reason: card.due <= now ? "learning" : "ahead" };
     }
   }
