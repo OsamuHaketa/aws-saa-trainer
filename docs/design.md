@@ -15,7 +15,7 @@
 | フェーズ | 内容 | 利用者 |
 |---|---|---|
 | Phase 1: 個人クラウド化 | Vercel + Turso にデプロイ。Google ログイン。PWA としてスマホのホーム画面に追加できる | 自分だけ |
-| Phase 2: 社内テスト公開 | ログインを許可する範囲を `@xincere.jp` に広げる。ホスティングを商用利用できるプランに移す | 社内のエンジニア（数十人を想定） |
+| Phase 2: 社内テスト公開 | ログインを許可する範囲を `@example.co.jp` に広げる。ホスティングを商用利用できるプランに移す | 社内のエンジニア（数十人を想定） |
 
 Phase 1 の段階で、データモデルと認証は複数ユーザーに対応させておく。Phase 2 では設定の変更とホスティングの移行だけで済むようにする。
 
@@ -84,7 +84,7 @@ flowchart LR
 | `BETTER_AUTH_URL` | アプリの公開 URL | `http://localhost:3000` | 各環境の URL |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth クライアント | 必須 | 必須 |
 | `ALLOWED_EMAILS` | ログインを許可するメールアドレス（カンマ区切り） | 自分 | Phase 1: 自分 |
-| `ALLOWED_DOMAINS` | ログインを許可するドメイン（カンマ区切り） | 空 | Phase 2: `xincere.jp` |
+| `ALLOWED_DOMAINS` | ログインを許可するドメイン（カンマ区切り） | 空 | Phase 2: `example.co.jp` |
 
 `.env.local` は Git に入れない。Vercel では環境変数を Preview と Production で分けて登録する。
 
@@ -349,7 +349,7 @@ Google の OAuth クライアントを作る前でも、今までどおりロー
 |---|---|
 | ホスティング | Vercel Hobby は商用利用できない（従業員として使う場合も商用とみなされる）ので、次のどちらかに移す。**A. Vercel Pro**（月 $20/人。料金がかかるのはデプロイする側だけ）、**B. 会社の AWS の Amplify Hosting**（Next.js をそのまま動かせる。社内の費用で管理できる）。コードは標準的な Next.js・環境変数・Turso だけに依存させ、Vercel 固有の機能を増やさないことで、どちらにも移せるようにする |
 | DB | Turso をそのまま使う。社内公開の前に Turso の規約（商用利用）と、会社のデータの置き場所に関するルールを確認する |
-| ログイン | `ALLOWED_DOMAINS=xincere.jp` にする。OAuth クライアントを会社の Google Cloud に作り直し、ユーザーの種類を「内部」にする（7.3 の二重のアクセス制御） |
+| ログイン | `ALLOWED_DOMAINS=example.co.jp` にする。OAuth クライアントを会社の Google Cloud に作り直し、ユーザーの種類を「内部」にする（7.3 の二重のアクセス制御） |
 | バックアップ | 頻度を見直す（10 章） |
 | コンテンツ | 問題の `status: draft` をレビューし、公開してよい問題だけにする |
 | 候補の機能 | ユーザーごとの設定、フィードバック、利用状況（5.2 を参照） |
