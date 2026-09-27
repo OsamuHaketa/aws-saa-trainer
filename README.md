@@ -35,6 +35,7 @@ npm run dev             # http://localhost:3000
 | `npm run typecheck` | 型チェック |
 | `npm run db:generate` | `lib/db/schema.ts` を変えたあとにマイグレーションを作る（ローカルの DB には起動時に自動適用） |
 | `npm run db:migrate` | マイグレーションを適用する。Turso に適用するときは `DATABASE_URL` と `DATABASE_AUTH_TOKEN` を指定する |
+| `scripts/deploy.sh` | develop を本番に出す。型・テスト・問題データを確認し、未適用のマイグレーションがあれば本番のバックアップ → dev と prod に適用してから、develop と main を push して本番のデプロイを待つ。トークンは中で作って画面に出さない（`--migrate-only` でマイグレーションまで） |
 | `scripts/rotate-db-token.sh` | Turso のトークンを作り直す（古いトークンはすべて無効）。新しいトークンは画面に出さずに Vercel に登録し、デプロイし直す |
 
 ## 構成

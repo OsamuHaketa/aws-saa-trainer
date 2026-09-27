@@ -171,8 +171,9 @@ PC でも同じアカウントでログインすれば、記録は共通にな�
 
 | やること | 手順 |
 |---|---|
-| 問題を直す | `generated/*.json` を編集 → `npm run validate` → develop に push（プレビューで確認）→ main にマージ |
-| スキーマを変える | `npm run db:generate` → 本番のバックアップ → dev と prod に `npm run db:migrate` → デプロイ（後方互換にする。設計書 6.3） |
+| 問題を直す | `generated/*.json` を編集 → `npm run validate` → develop に push（プレビューで確認）→ `scripts/deploy.sh` |
+| スキーマを変える | `npm run db:generate` → develop にコミット → `scripts/deploy.sh`（本番のバックアップ → dev と prod へのマイグレーション → デプロイ をまとめて行う。マイグレーションは後方互換にする。設計書 6.3） |
+| デプロイする | `scripts/deploy.sh`。Claude はトークンを直接作れない（`.claude/settings.json` の deny）ので、このスクリプトだけを allow で許可している |
 | バックアップ | 週 1 回、本番に対して `DATABASE_URL=$(turso db show saa-trainer-prod --url) DATABASE_AUTH_TOKEN=$(turso db tokens create saa-trainer-prod --expiration 1d) npm run backup` |
 | トークンを入れ替える | `scripts/rotate-db-token.sh`（「秘密情報の扱い」の章） |
 

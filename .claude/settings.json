@@ -1,5 +1,9 @@
 {
   "permissions": {
+    "allow": [
+      "Write(./scripts/deploy.sh)",
+      "Bash(scripts/deploy.sh*)"
+    ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
