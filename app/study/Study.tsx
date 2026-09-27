@@ -58,6 +58,8 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   const [extraNew, setExtraNew] = useState(0);
   const [focus, setFocus] = useState(false);
   const [session, setSession] = useState({ answered: 0, correct: 0 });
+  // 直前に「復習不要」にした問題（次の問題の上に「元に戻す」を出す）
+  const [suspendedId, setSuspendedId] = useState<string | null>(null);
   const startedAt = useRef(0);
 
   const load = useCallback(async (extra: number, svc: string, focusMode: boolean) => {
@@ -119,7 +121,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
     [q, answered, correctChoice],
   );
 
-  const next = useCallback(async () => {
+  const next = useCallback(async (suspend = false) => {
     if (!q || !selectedChoice || submitting) return;
     setSubmitting(true);
     try {
@@ -134,11 +136,13 @@ export function Study({ services, initialService }: { services: ServiceOption[];
           guessed,
           mistakeType: mistake,
           followupId: q.followup?.id ?? null,
+          suspend,
         }),
       });
       if (redirectIfSignedOut(res)) return;
       if (!res.ok) throw new Error(await res.text());
       setSession((s) => ({ answered: s.answered + 1, correct: s.correct + (isCorrect ? 1 : 0) }));
+      setSuspendedId(suspend ? q.question.id : null);
       await load(extraNew, service, focus);
     } catch (e) {
       setError((e as Error).message);
@@ -146,6 +150,24 @@ export function Study({ services, initialService }: { services: ServiceOption[];
       setSubmitting(false);
     }
   }, [q, selectedChoice, submitting, responseMs, guessed, mistake, isCorrect, load, extraNew, service, focus]);
+
+  const undoSuspend = useCallback(async () => {
+    if (!suspendedId) return;
+    try {
+      const res = await fetch("/api/suspend", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ questionId: suspendedId, suspended: false }),
+      });
+      if (redirectIfSignedOut(res)) return;
+      if (!res.ok) throw new Error(await res.text());
+      setSuspendedId(null);
+      // 残りの件数を更新する（解答中なら問題はそのまま）
+      if (!q || !answered) await load(extraNew, service, focus);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }, [suspendedId, q, answered, load, extraNew, service, focus]);
 
   const moreNew = useCallback(() => {
     const extra = extraNew + 10;
@@ -175,6 +197,8 @@ export function Study({ services, initialService }: { services: ServiceOption[];
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         next();
+      } else if (e.key === "s") {
+        next(true);
       } else if (e.key === "g" && isCorrect) {
         setGuessed((g) => !g);
       } else if (!isCorrect) {
@@ -199,11 +223,16 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   }
   if (!data) return <p className="muted">読み込み中…</p>;
 
+  // 範囲・集中モード・件数を 1 行にまとめる（スマホで問題を上に出すため）
   const toolbar = (
     <div className={`small ${styles.toolbar}`}>
-      <label className={styles.serviceSelect}>
-        <span className="muted">範囲</span>
-        <select value={service} onChange={(e) => changeService(e.target.value)}>
+      <label className={styles.servicePill} title="出題する範囲">
+        {/* 閉じているときは短い名前だけ見せ、タップで透明な select の一覧を開く */}
+        <span className={styles.pillLabel}>{services.find((s) => s.id === service)?.label ?? "すべて"}</span>
+        <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
+          <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" />
+        </svg>
+        <select aria-label="範囲" value={service} onChange={(e) => changeService(e.target.value)}>
           <option value="">すべてのサービス</option>
           {services.map((s) => (
             <option key={s.id} value={s.id}>
@@ -212,23 +241,49 @@ export function Study({ services, initialService }: { services: ServiceOption[];
           ))}
         </select>
       </label>
-      <label className={styles.focusToggle} title="1 日の新規問題の上限なしで、未学習の問題を出し続けます">
-        <input type="checkbox" checked={focus} onChange={(e) => toggleFocus(e.target.checked)} />
-        集中モード
-      </label>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={focus}
+        aria-label="集中モード"
+        className={styles.focusSwitch}
+        onClick={() => toggleFocus(!focus)}
+        title="集中モード: 1 日の新規問題の上限なしで、未学習の問題を出し続けます"
+      >
+        <span className={styles.switchTrack} aria-hidden="true" />
+        集中
+      </button>
+      <span className={`muted ${styles.counts}`}>
+        <span>
+          復習 <b>{data.summary.review}</b>
+        </span>
+        <span>
+          学習中 <b>{data.summary.learning}</b>
+        </span>
+        <span>
+          新規 <b>{data.summary.newAvailable}</b>
+        </span>
+        {data.summary.suspended > 0 && (
+          <span>
+            復習不要 <b>{data.summary.suspended}</b>
+          </span>
+        )}
+      </span>
     </div>
   );
 
-  const summaryLine = (
-    <p className={`muted small ${styles.summary}`}>
-      <span>
-        復習 {data.summary.review} ・ 学習中 {data.summary.learning} ・ 新規 {data.summary.newAvailable}
-      </span>
-      {session.answered > 0 && (
-        <span>
-          このセッション {session.correct}/{session.answered} 問正解
-        </span>
-      )}
+  const sessionScore = session.answered > 0 && (
+    <p className="muted small">
+      このセッション {session.correct}/{session.answered} 問正解
+    </p>
+  );
+
+  const suspendedNotice = suspendedId && (
+    <p className={`small ${styles.notice}`}>
+      <span>前の問題を「復習不要」にしました。今後は出題しません。</span>
+      <button className={styles.linkButton} onClick={undoSuspend}>
+        元に戻す
+      </button>
     </p>
   );
 
@@ -236,7 +291,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
     return (
       <>
         {toolbar}
-        {summaryLine}
+        {suspendedNotice}
         <div className="card">
           {focus ? (
             <>
@@ -254,6 +309,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
               </p>
             </>
           )}
+          {sessionScore}
           <div className={styles.actions}>
             {!focus && (
               <>
@@ -279,7 +335,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   return (
     <>
       {toolbar}
-      {summaryLine}
+      {suspendedNotice}
       <article className={`card ${styles.question}`}>
         <div className={styles.meta}>
           <span className={data.reason === "followup" ? "tag warn" : "tag"}>{REASON_LABEL[data.reason]}</span>
@@ -316,7 +372,11 @@ export function Study({ services, initialService }: { services: ServiceOption[];
           <section className={styles.result}>
             <p className={isCorrect ? styles.ok : styles.ng}>
               {isCorrect ? "正解" : "不正解"}
-              <span className="muted small"> ・ {(responseMs / 1000).toFixed(1)} 秒</span>
+              <span className="muted small">
+                {" "}
+                ・ {(responseMs / 1000).toFixed(1)} 秒 ・ このセッション {session.correct + (isCorrect ? 1 : 0)}/
+                {session.answered + 1} 問正解
+              </span>
             </p>
             {!isCorrect && selectedChoice?.distinction && (
               <p className={`small ${styles.distinction}`}>
@@ -371,8 +431,16 @@ export function Study({ services, initialService }: { services: ServiceOption[];
             )}
 
             <div className={styles.actions}>
-              <button className="button" onClick={next} disabled={submitting}>
+              <button className="button" onClick={() => next()} disabled={submitting}>
                 次へ <span className="kbd key-hint">Enter</span>
+              </button>
+              <button
+                className="button secondary"
+                onClick={() => next(true)}
+                disabled={submitting}
+                title="回答を記録したうえで、この問題を今後出題しません（直後なら元に戻せます）"
+              >
+                復習不要 <span className="kbd key-hint">S</span>
               </button>
             </div>
           </section>

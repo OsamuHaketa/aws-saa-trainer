@@ -1,11 +1,3 @@
-.summary {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 4px 16px;
-  margin: 0 0 12px;
-}
-
 .question {
   padding: 24px;
 }
@@ -174,6 +166,27 @@
   margin-top: 20px;
 }
 
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.linkButton {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .error {
   white-space: pre-wrap;
   font-size: 0.8rem;
@@ -184,37 +197,104 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px 16px;
-  margin-bottom: 8px;
-}
-.serviceSelect {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  min-width: 0;
+  margin-bottom: 10px;
 }
-.serviceSelect select {
-  max-width: 100%;
-}
-.focusToggle {
-  display: flex;
+/* 範囲: 短い名前のピルの上に透明な select を重ね、タップで一覧を開く */
+.servicePill {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 32px;
+  gap: 4px;
+  max-width: 45%;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-weight: 600;
+}
+.servicePill svg {
+  flex: none;
+  color: var(--muted);
+}
+.servicePill select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  font: inherit;
   cursor: pointer;
 }
-.focusToggle input {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: var(--accent);
+.servicePill:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
-.serviceSelect select {
-  font: inherit;
-  padding: 4px 8px;
+.pillLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.focusSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 999px;
   background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.focusSwitch[aria-checked="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.switchTrack {
+  position: relative;
+  width: 26px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s;
+}
+.switchTrack::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  transition: transform 0.15s;
+}
+.focusSwitch[aria-checked="true"] .switchTrack {
+  background: var(--accent);
+}
+.focusSwitch[aria-checked="true"] .switchTrack::after {
+  transform: translateX(10px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .switchTrack,
+  .switchTrack::after {
+    transition: none;
+  }
+}
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.counts b {
   color: var(--text);
+  font-weight: 600;
 }

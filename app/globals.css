@@ -87,15 +87,35 @@ a:hover {
   text-decoration: underline;
 }
 
-/* スマホ: ヘッダーを折り返し、余白を詰める */
+.narrow-only {
+  display: none;
+}
+
+/* スマホ: ロゴを短くし、ログアウトをアイコンにしてヘッダーを 1 段に収める */
 @media (max-width: 520px) {
+  .wide-only {
+    display: none;
+  }
+  .narrow-only {
+    display: inline;
+  }
   .nav {
     flex-wrap: wrap;
     gap: 8px 16px;
-    padding: 10px 16px;
+    padding: 8px 16px;
   }
   .nav nav {
     gap: 14px;
+  }
+  .sign-out {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin: -4px -6px -4px -4px;
+  }
+  .sign-out svg {
+    display: block;
   }
 }
 
@@ -110,6 +130,11 @@ main {
   max-width: 760px;
   margin: 0 auto;
   padding: 24px 16px 64px;
+}
+@media (max-width: 520px) {
+  main {
+    padding-top: 12px;
+  }
 }
 
 h1 {

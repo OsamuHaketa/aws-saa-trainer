@@ -26,7 +26,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <header className="nav">
           <Link href="/" className="brand">
-            AWS Decision Trainer
+            <span className="wide-only">AWS Decision Trainer</span>
+            <span className="narrow-only">SAA Trainer</span>
           </Link>
           {session.ok && (
             <nav>
