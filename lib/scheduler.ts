@@ -90,15 +90,16 @@ export function followupCandidates(
 
 /**
  * 新しい問題として出してよいか。
- * 同じ Atom のより低い Level の問題をすべて出し終えてから、上の Level を出す。
- * 複数 Atom を組み合わせる問題は、各 Atom の単独の問題を 1 つ以上出してから出す
- * （単独の問題に限るのは、複数 Atom の問題どうしが互いを待ち合うのを防ぐため）。
+ * 同じ Atom の単独の問題のうち、より低い Level のものをすべて出し終えてから、上の Level を出す。
+ * 複数 Atom を組み合わせる問題は、各 Atom の単独の問題を 1 つ以上出してから出す。
+ * 待つ相手を単独の問題に限るのは、待ち合いの循環（例: 複数 Atom の Lv2 が単独の Lv3 を待ち、
+ * 単独の Lv3 が複数 Atom の Lv2 を待つ）で、どちらも出せなくなるのを防ぐため。
  */
 function isUnlocked(q: QuestionEntry, byAtom: Map<string, QuestionEntry[]>, cards: Map<string, CardRow>): boolean {
   for (const atomId of q.atomIds) {
     const siblings = (byAtom.get(atomId) ?? []).filter((s) => s.id !== q.id);
-    if (siblings.some((s) => s.level < q.level && !cards.has(s.id))) return false;
     const single = siblings.filter((s) => s.atomIds.length === 1);
+    if (single.some((s) => s.level < q.level && !cards.has(s.id))) return false;
     if (q.atomIds.length > 1 && single.length > 0 && !single.some((s) => cards.has(s.id))) return false;
   }
   return true;

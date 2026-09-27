@@ -180,11 +180,35 @@
   overflow-x: auto;
 }
 
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
 .serviceSelect {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  min-width: 0;
+}
+.serviceSelect select {
+  max-width: 100%;
+}
+.focusToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.focusToggle input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
 }
 .serviceSelect select {
   font: inherit;

@@ -9,6 +9,26 @@ import styles from "./study.module.css";
 
 type Loaded = Extract<NextQuestion, { done: false }>;
 
+const FOCUS_KEY = "study.focus";
+
+/** 集中モードのオン・オフはブラウザごとに覚えておく（保存できない環境ではオフ扱い） */
+function readFocus(): boolean {
+  try {
+    return localStorage.getItem(FOCUS_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function saveFocus(on: boolean) {
+  try {
+    if (on) localStorage.setItem(FOCUS_KEY, "1");
+    else localStorage.removeItem(FOCUS_KEY);
+  } catch {
+    // 保存できなくても、この画面の中では切り替わる
+  }
+}
+
 const MISTAKE_KEYS: [string, MistakeType][] = [
   ["q", "unknown"],
   ["w", "forgot"],
@@ -36,14 +56,16 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   const [mistake, setMistake] = useState<MistakeType | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [extraNew, setExtraNew] = useState(0);
+  const [focus, setFocus] = useState(false);
   const [session, setSession] = useState({ answered: 0, correct: 0 });
   const startedAt = useRef(0);
 
-  const load = useCallback(async (extra: number, svc: string) => {
+  const load = useCallback(async (extra: number, svc: string, focusMode: boolean) => {
     setError(null);
     try {
       const params = new URLSearchParams({ extraNew: String(extra) });
       if (svc) params.set("service", svc);
+      if (focusMode) params.set("focus", "1");
       const res = await fetch(`/api/next?${params}`, { cache: "no-store" });
       if (redirectIfSignedOut(res)) return;
       if (!res.ok) throw new Error(await res.text());
@@ -58,7 +80,9 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   }, []);
 
   useEffect(() => {
-    load(0, service);
+    const saved = readFocus();
+    setFocus(saved);
+    load(0, service, saved);
     // 初回だけ読み込む（サービスの切り替えは changeService で読み込む）
   }, [load]);
 
@@ -70,9 +94,9 @@ export function Study({ services, initialService }: { services: ServiceOption[];
       if (svc) url.searchParams.set("service", svc);
       else url.searchParams.delete("service");
       window.history.replaceState(null, "", url);
-      load(0, svc);
+      load(0, svc, focus);
     },
-    [load],
+    [load, focus],
   );
 
   const q = data && !data.done ? (data as Loaded) : null;
@@ -115,19 +139,29 @@ export function Study({ services, initialService }: { services: ServiceOption[];
       if (redirectIfSignedOut(res)) return;
       if (!res.ok) throw new Error(await res.text());
       setSession((s) => ({ answered: s.answered + 1, correct: s.correct + (isCorrect ? 1 : 0) }));
-      await load(extraNew, service);
+      await load(extraNew, service, focus);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setSubmitting(false);
     }
-  }, [q, selectedChoice, submitting, responseMs, guessed, mistake, isCorrect, load, extraNew, service]);
+  }, [q, selectedChoice, submitting, responseMs, guessed, mistake, isCorrect, load, extraNew, service, focus]);
 
   const moreNew = useCallback(() => {
     const extra = extraNew + 10;
     setExtraNew(extra);
-    load(extra, service);
-  }, [extraNew, load, service]);
+    load(extra, service, focus);
+  }, [extraNew, load, service, focus]);
+
+  const toggleFocus = useCallback(
+    (on: boolean) => {
+      setFocus(on);
+      saveFocus(on);
+      // 解答中の問題はそのまま残し、次の問題から切り替える
+      if (!q) load(extraNew, service, on);
+    },
+    [q, load, extraNew, service],
+  );
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -157,7 +191,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
       <div className="card">
         <p>エラーが発生しました。</p>
         <pre className={styles.error}>{error}</pre>
-        <button className="button" onClick={() => load(extraNew, service)}>
+        <button className="button" onClick={() => load(extraNew, service, focus)}>
           再読み込み
         </button>
       </div>
@@ -165,18 +199,24 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   }
   if (!data) return <p className="muted">読み込み中…</p>;
 
-  const serviceSelect = (
-    <label className={`small ${styles.serviceSelect}`}>
-      <span className="muted">範囲</span>
-      <select value={service} onChange={(e) => changeService(e.target.value)}>
-        <option value="">すべてのサービス</option>
-        {services.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.label}（{s.count} 問）
-          </option>
-        ))}
-      </select>
-    </label>
+  const toolbar = (
+    <div className={`small ${styles.toolbar}`}>
+      <label className={styles.serviceSelect}>
+        <span className="muted">範囲</span>
+        <select value={service} onChange={(e) => changeService(e.target.value)}>
+          <option value="">すべてのサービス</option>
+          {services.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.label}（{s.count} 問）
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className={styles.focusToggle} title="1 日の新規問題の上限なしで、未学習の問題を出し続けます">
+        <input type="checkbox" checked={focus} onChange={(e) => toggleFocus(e.target.checked)} />
+        集中モード
+      </label>
+    </div>
   );
 
   const summaryLine = (
@@ -195,17 +235,36 @@ export function Study({ services, initialService }: { services: ServiceOption[];
   if (data.done) {
     return (
       <>
-        {serviceSelect}
+        {toolbar}
         {summaryLine}
         <div className="card">
-          <h1>{service ? "このサービスの今日の分は終わりました" : "今日の分は終わりました"}</h1>
-          <p className="muted">
-            復習予定の問題はありません。今日の新規問題は {data.summary.introducedToday} 問出しました。
-          </p>
+          {focus ? (
+            <>
+              <h1>{service ? "このサービスの問題はすべて出しました" : "問題はすべて出しました"}</h1>
+              <p className="muted">
+                今出せる新しい問題も、復習予定の問題もありません。今日の新規問題は {data.summary.introducedToday}{" "}
+                問出しました。
+              </p>
+            </>
+          ) : (
+            <>
+              <h1>{service ? "このサービスの今日の分は終わりました" : "今日の分は終わりました"}</h1>
+              <p className="muted">
+                復習予定の問題はありません。今日の新規問題は {data.summary.introducedToday} 問出しました。
+              </p>
+            </>
+          )}
           <div className={styles.actions}>
-            <button className="button" onClick={moreNew}>
-              新しい問題をあと 10 問
-            </button>
+            {!focus && (
+              <>
+                <button className="button" onClick={moreNew}>
+                  新しい問題をあと 10 問
+                </button>
+                <button className="button secondary" onClick={() => toggleFocus(true)}>
+                  集中モードで続ける
+                </button>
+              </>
+            )}
             <Link className="button secondary" href="/dashboard">
               分析を見る
             </Link>
@@ -219,7 +278,7 @@ export function Study({ services, initialService }: { services: ServiceOption[];
 
   return (
     <>
-      {serviceSelect}
+      {toolbar}
       {summaryLine}
       <article className={`card ${styles.question}`}>
         <div className={styles.meta}>

@@ -1,7 +1,7 @@
 import { Rating, State } from "ts-fsrs";
 import { beforeEach, describe, expect, it } from "vitest";
 import { pickChoices } from "./choices";
-import { parseContent, type Content } from "./content";
+import { activeQuestions, parseContent, type Content } from "./content";
 import { openDb, type DB } from "./db";
 import { eq } from "drizzle-orm";
 import { followups, reviewLogs, user } from "./db/schema";
@@ -147,6 +147,23 @@ describe("出題と記録", () => {
     }
     // 同じ時刻のまま正解し続けると、新規の上限まで出したところで終わる
     expect((await loadCards(db, USER)).size).toBe(Math.min(config.newPerDay, content.questions.size));
+  });
+
+  it("集中モード（上乗せ無制限）なら、範囲の問題を出し切るまで終わらない", async () => {
+    // iam には「比較問題 Lv2」と「単独問題 Lv3」が互いを待ち合って出せなくなっていた問題がある（permissions-boundary）
+    const now = T0;
+    const inRange = activeQuestions(content).filter((q) => q.service === "iam");
+    for (let guard = 0; ; guard++) {
+      const next = await getNextQuestion(db, USER, content, now, Number.POSITIVE_INFINITY, undefined, "iam");
+      if (next.done) break;
+      await answer(next.question.id, "correct", now);
+      if (guard > inRange.length * 5) throw new Error("終わらない");
+    }
+    const seen = await loadCards(db, USER);
+    expect(inRange.length).toBeGreaterThan(config.newPerDay);
+    // ほかのサービスの Atom も使う問題は、そちらの単独の問題を先に出す必要があるので対象外
+    const selfContained = inRange.filter((q) => q.atomIds.every((a) => content.atoms.get(a)?.service === "iam"));
+    expect(selfContained.filter((q) => !seen.has(q.id)).map((q) => q.id)).toEqual([]);
   });
 });
 
